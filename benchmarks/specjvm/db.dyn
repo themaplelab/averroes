@@ -1,0 +1,10 @@
+com.sun.rsajca.Provider
+sun.io.ByteToCharISO8859_1
+sun.io.CharToByteASCII
+sun.io.ByteToCharASCII
+sun.security.provider.Sun
+sun.security.provider.PolicyFile
+java.io.UnixFileSystem
+sun.net.www.protocol.file.Handler
+java.lang.ref.Finalizer
+sun.io.CharToByteISO8859_1

@@ -1,0 +1,23 @@
+#! /usr/bin/env bash
+
+set -e
+
+benchmark=$1
+
+echo "running Spark with Averroes for ${benchmark}"
+
+program=$(basename $benchmark)
+outputdir=callgraphs/spark-averroes-call-graphs/${benchmark}
+
+# 1. make some dirs
+mkdir -p ${outputdir}/
+
+# 2. run spark-averroes.jar
+cp properties/${benchmark}.properties averroes.properties
+jar uf spark-averroes.jar averroes.properties
+java -verbose:gc -Xloggc:${outputdir}/${program}-gc.stats -jar spark-averroes.jar $benchmark
+
+# 3. copy the call graph
+cp output/sparkAverroes.gxl ${outputdir}/sparkAverroes.gxl
+
+echo ""
