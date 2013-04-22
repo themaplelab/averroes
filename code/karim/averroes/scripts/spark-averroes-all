@@ -1,0 +1,35 @@
+#! /usr/bin/env bash
+
+set -e
+
+function timing()
+{
+	echo "..."
+	/usr/bin/time -f "elapsed time: %es" $* 2>&1
+}
+
+# the dacapo benchmarks
+dacapo=( antlr bloat chart hsqldb luindex lusearch pmd xalan)
+dacapo=( "${dacapo[@]/#/dacapo/}" )
+
+# the specjvm benchmarks
+specjvm=( compress db jack javac jess raytrace )
+specjvm=( "${specjvm[@]/#/specjvm/}" )
+
+# put them all in one big array
+benchmarks=( ${dacapo[@]} ${specjvm[@]} )
+
+date
+for benchmark in ${benchmarks[@]}
+do
+  echo "running ${benchmark} ..."
+  program=$(basename $benchmark)
+  outputdir=callgraphs/spark-averroes-call-graphs/${benchmark}
+  
+  # 1. create output directory
+  mkdir -p ${outputdir}/
+  
+  # 2. run the script
+  timing ./spark-averroes ${benchmark} > ${outputdir}/${program}-sparkAverroes.stats
+done
+date

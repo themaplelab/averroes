@@ -1,0 +1,23 @@
+#! /usr/bin/env bash
+
+set -e
+
+benchmark=$1
+
+echo "generating stats for ${benchmark}"
+
+program=$(basename $benchmark)
+outputdir=callgraphs/comparisons-call-graphs/${benchmark}
+
+# 1. make some dirs
+mkdir -p ${outputdir}/
+
+# 2. run stats.jar
+cp properties/${benchmark}.properties averroes.properties
+jar uf stats.jar averroes.properties
+java -jar stats.jar ${benchmark} 
+
+# 3. copy all the difference call graphs
+cp output/*.gxl ${outputdir}/
+
+echo ""

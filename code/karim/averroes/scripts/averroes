@@ -1,0 +1,30 @@
+#! /usr/bin/env bash
+
+set -e
+
+benchmark=$1
+
+function timing()
+{
+	echo "..."
+	/usr/bin/time -f "elapsed time: %es" $* 2>&1
+}
+
+date
+mkdir -p benchmarks-averroes/dacapo
+mkdir -p benchmarks-averroes/specjvm
+
+echo "running ${benchmark}"
+program=$(basename $benchmark)
+  
+# 1. run Averroes
+cp properties/${benchmark}.properties averroes.properties
+jar uf averroes.jar averroes.properties
+timing java -jar averroes.jar
+
+# 2. copy the output JARs
+cp output/organizedApplication.jar benchmarks-averroes/${benchmark}-organized-app.jar
+cp output/organizedLibrary.jar benchmarks-averroes/${benchmark}-organized-lib.jar
+cp output/placeholderLibrary.jar benchmarks-averroes/${benchmark}-placeholder-lib.jar
+
+echo ""
