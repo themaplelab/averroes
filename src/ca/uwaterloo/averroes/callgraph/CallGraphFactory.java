@@ -3,6 +3,7 @@ package ca.uwaterloo.averroes.callgraph;
 import java.io.IOException;
 
 import ca.uwaterloo.averroes.callgraph.converters.SootCallGraphConverter;
+import ca.uwaterloo.averroes.callgraph.transformers.SparkCallGraphTransformer;
 import ca.uwaterloo.averroes.callgraph.transformers.SparkWithAverroesCallGraphTransformer;
 
 /**
@@ -23,5 +24,15 @@ public class CallGraphFactory {
 	public static CallGraph generateSparkWithAverroesCallGraph(String benchmark) throws IOException {
 		probe.CallGraph spark = new SparkWithAverroesCallGraphTransformer(benchmark).getProbeCallGraph();
 		return SootCallGraphConverter.convert(spark);
+	}
+
+	/**
+	 * Generate the call graph for Spark.
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public static probe.CallGraph generateSparkCallGraph() throws IOException {
+		return new SparkCallGraphTransformer().getProbeCallGraph();
 	}
 }

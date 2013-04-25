@@ -263,7 +263,16 @@ public class FileUtils {
 		return AverroesProperties.getOutputDir().concat(File.separator).concat("sparkAverroes.gxl");
 	}
 	
-	// Some utility methods to get the names of comparison call graphs 
+	/**
+	 * The path to the Spark call graph.
+	 * 
+	 * @return
+	 */
+	public static String sparkCallGraphFile() {
+		return AverroesProperties.getOutputDir().concat(File.separator).concat("spark.gxl");
+	}
+	
+	/* Some utility methods to get the names of comparison call graphs */ 
 	public static String missingCallGraphFile(CallGraphSource sup, CallGraphSource sub, CallGraphDiffOptions options) {
 		String suffix = options.isSetSoundnessOptions() ? "_app" : "_lib";
 		return missingCallGraphFile(sup, sub).replace(".gxl", suffix + ".gxl");

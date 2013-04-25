@@ -139,6 +139,18 @@ public final class AverroesProperties {
 	}
 
 	/**
+	 * Get {@value #INPUT_JAR_FILES} property. That is a list of the application JAR files separated by
+	 * {@link File#pathSeparator}.
+	 * 
+	 * @return
+	 */
+	public static String getInputJarFilesForSpark() {
+		String result = properties.getProperty(INPUT_JAR_FILES);
+		Assertions.notNullAssertion(result, INPUT_JAR_FILES.concat(" not found."));
+		return result;
+	}
+
+	/**
 	 * Get the {@value #LIBRARY_JAR_FILES} property. That is a list of the library JAR files separated by
 	 * {@link File#pathSeparator}.
 	 * 
@@ -148,6 +160,31 @@ public final class AverroesProperties {
 		String result = properties.getProperty(LIBRARY_JAR_FILES);
 		Assertions.notNullAssertion(result, LIBRARY_JAR_FILES.concat(" not found."));
 		return new HashSet<String>(Arrays.asList(result.split(File.pathSeparator)));
+	}
+
+	/**
+	 * Get the {@value #LIBRARY_JAR_FILES} property. That is a list of the library JAR files separated by
+	 * {@link File#pathSeparator}.
+	 * 
+	 * @return
+	 */
+	public static String getLibraryJarFilesForSpark() {
+		String result = properties.getProperty(LIBRARY_JAR_FILES);
+		Assertions.notNullAssertion(result, LIBRARY_JAR_FILES.concat(" not found."));
+		return result;
+	}
+
+	/**
+	 * Get the classpath of this program. That is a list of the input and library JAR files separated by
+	 * {@link File#pathSeparator}.
+	 * 
+	 * @return
+	 */
+	public static String getClasspath() {
+		String inputJars = getInputJarFilesForSpark().trim().concat(File.pathSeparator);
+		String libJars = getLibraryJarFilesForSpark().trim();
+		String rtJar = getJre().trim();
+		return inputJars.concat((libJars.length() > 0 ? libJars.concat(File.separator) : "")).concat(rtJar);
 	}
 
 	/**
