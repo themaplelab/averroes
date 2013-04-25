@@ -1,0 +1,13 @@
+#! /usr/bin/env bash
+
+set -e
+
+function timing()
+{
+	echo "..."
+	/usr/bin/time -f "elapsed time: %es" $* 2>&1
+}
+
+date
+timing java -jar spark.jar
+echo ""

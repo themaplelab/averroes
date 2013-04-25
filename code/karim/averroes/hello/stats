@@ -1,0 +1,47 @@
+Thu Apr 25 13:44:44 EDT 2013
+...
+Loading properties.
+Generating the call graph from Spark.
+Processing input archive: /u4/karim/workspace/averroes-home/hello/hello.jar
+Processing library archive: /u4/karim/workspace/averroes-home/jre/rt-1.4.2_11.jar
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+Total methods: 13539
+Initially reachable methods: 113
+Classes with at least one reachable method: 47
+[Spark] Pointer Assignment Graph in 2.4 seconds.
+Total types: 1588
+[Spark] Type masks in 0.7 seconds.
+VarNodes: 849
+FieldRefNodes: 127
+AllocNodes: 433
+Cleaning up graph for merged nodes
+Done cleaning up graph for merged nodes
+[Spark] Pointer Graph simplified in 0.0 seconds.
+Worklist has 441 nodes.
+Now handling field references
+Worklist has 1088 nodes.
+Now handling field references
+Worklist has 1463 nodes.
+Now handling field references
+Worklist has 1449 nodes.
+Now handling field references
+Worklist has 1268 nodes.
+Now handling field references
+Worklist has 1125 nodes.
+Now handling field references
+Worklist has 469 nodes.
+Now handling field references
+Worklist has 171 nodes.
+Now handling field references
+Worklist has 23 nodes.
+Now handling field references
+Worklist has 11 nodes.
+Now handling field references
+[Spark] Propagation in 19.2 seconds.
+[Spark] Solution found in 19.4 seconds.
+[Spark] Number of reachable methods: 5762
+Total time to finish: 33.326
+=================================================
+# edges = 25651
+=================================================
+elapsed time: 39.74s
