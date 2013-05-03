@@ -1,0 +1,121 @@
+...
+generating stats for dacapo/bloat
+Loading properties.
+Call Graph Edges
+================
+Spark: 13419
+SparkAverroes: 15157
+Doop: 12433
+DoopAverroes: 14904
+
+Library Call Graph Edges
+========================
+Spark: 885
+SparkAverroes: 880
+Doop: 841
+DoopAverroes: 878
+
+Library Call Back Edges
+=======================
+Spark: 223
+SparkAverroes: 203
+Doop: 84
+DoopAverroes: 203
+
+
+CGE
+===
+Dyn - Spark: 0
+Dyn - SparkAverroes: 0
+Dyn - Doop: 0
+Dyn - DoopAverroes: 0
+Spark - SparkAverroes: 563
+Doop - DoopAverroes: 0
+SparkAverroes - Spark: 2301
+DoopAverroes - Doop: 2471
+Cgc - DoopAverroes: 2
+DoopAverroes - Cgc: 476
+
+LCGE
+====
+Dyn - Spark: 0
+Dyn - SparkAverroes: 0
+Dyn - Doop: 0
+Dyn - DoopAverroes: 0
+Spark - SparkAverroes: 17
+Doop - DoopAverroes: 0
+SparkAverroes - Spark: 12
+DoopAverroes - Doop: 37
+Cgc - DoopAverroes: 0
+DoopAverroes - Cgc: 4
+
+LCBE
+====
+Dyn - Spark: 0
+Dyn - SparkAverroes: 0
+Dyn - Doop: 0
+Dyn - DoopAverroes: 0
+Spark - SparkAverroes: 46
+Doop - DoopAverroes: 0
+SparkAverroes - Spark: 26
+DoopAverroes - Doop: 119
+Cgc - DoopAverroes: 0
+DoopAverroes - Cgc: 13
+
+
+Frequencies of extra library call-backs
+=======================================
+SparkAverroes - Spark
+----------
+remove = 7
+clear = 4
+hasNext = 2
+next = 2
+removeAll = 2
+retainAll = 2
+<init> = 1
+addAll = 1
+hasPrevious = 1
+lastIndexOf = 1
+previous = 1
+previousIndex = 1
+put = 1
+
+DoopAverroes - Doop
+-----------
+clone = 52
+remove = 14
+hasNext = 6
+next = 6
+toString = 6
+clear = 5
+iterator = 4
+contains = 3
+add = 2
+listIterator = 2
+removeAll = 2
+retainAll = 2
+set = 2
+size = 2
+<init> = 1
+addAll = 1
+get = 1
+hasPrevious = 1
+indexOf = 1
+lastIndexOf = 1
+nextIndex = 1
+previous = 1
+previousIndex = 1
+put = 1
+removeRange = 1
+
+DoopAverroes - Cgc
+-----------
+toString = 4
+clone = 2
+hasNext = 2
+next = 2
+remove = 2
+<init> = 1
+
+elapsed time: 13.74s

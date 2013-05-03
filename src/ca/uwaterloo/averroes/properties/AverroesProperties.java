@@ -47,6 +47,7 @@ public final class AverroesProperties {
 
 	private static Properties properties = null;
 	private static List<String> dynamicClasses = null;
+	private static boolean isDisableReflection = false;
 
 	/**
 	 * Load the properties file at the first access of this class.
@@ -66,7 +67,7 @@ public final class AverroesProperties {
 	 * @throws AverroesException
 	 */
 	private static void loadProperties() throws AverroesException {
-		System.out.println("Loading properties.");
+		System.out.println("Loading properties...");
 		try {
 			properties = loadPropertiesFromFile(AverroesProperties.class.getClassLoader(), PROPERTY_FILENAME);
 		} catch (Exception e) {
@@ -100,6 +101,30 @@ public final class AverroesProperties {
 		Properties result = new Properties();
 		result.load(propertyStream);
 		return result;
+	}
+
+	/**
+	 * Process the input arguments of Averroes.
+	 * 
+	 * @param args
+	 */
+	public static void processArguments(String[] args) {
+		for (int i = 0; i < args.length; i++) {
+			if ("-disable-reflection".equals(args[i])) {
+				isDisableReflection = true;
+			} else {
+				Assertions.unknownArgument(args[i]);
+			}
+		}
+	}
+
+	/**
+	 * Is reflection support disabled or not.
+	 * 
+	 * @return
+	 */
+	public static boolean isDisableReflection() {
+		return isDisableReflection;
 	}
 
 	/**

@@ -1,0 +1,50 @@
+...
+running the original Spark for dacapo/lusearch
+Creating call graph output directory.
+Loading averroes properties.
+Generating the call graph from Spark.
+Adding application archive: /u4/karim/workspace/cgc/averroes/dacapo/lusearch.jar
+Adding library archive: /u4/karim/workspace/cgc/averroes/dacapo/lusearch-deps.jar
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+Total methods: 21086
+Initially reachable methods: 8
+Classes with at least one reachable method: 3
+[Spark] Pointer Assignment Graph in 0.6 seconds.
+Total types: 2647
+[Spark] Type masks in 0.1 seconds.
+VarNodes: 18
+FieldRefNodes: 1
+AllocNodes: 5
+Cleaning up graph for merged nodes
+Done cleaning up graph for merged nodes
+[Spark] Pointer Graph simplified in 0.0 seconds.
+Worklist has 5 nodes.
+Now handling field references
+Worklist has 1123 nodes.
+Now handling field references
+Worklist has 1669 nodes.
+Now handling field references
+Worklist has 2134 nodes.
+Now handling field references
+Worklist has 2994 nodes.
+Now handling field references
+Worklist has 3005 nodes.
+Now handling field references
+Worklist has 2307 nodes.
+Now handling field references
+Worklist has 1452 nodes.
+Now handling field references
+Worklist has 678 nodes.
+Now handling field references
+Worklist has 111 nodes.
+Now handling field references
+Worklist has 122 nodes.
+Now handling field references
+[Spark] Propagation in 79.0 seconds.
+[Spark] Solution found in 81.6 seconds.
+[Spark] Number of reachable methods: 10369
+=================================================
+Original SPARK call graph size = 53036
+=================================================
+
+elapsed time: 121.91s

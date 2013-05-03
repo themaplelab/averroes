@@ -1,0 +1,698 @@
+Fri May  3 15:08:52 EDT 2013
+Fri May  3 15:08:52 EDT 2013
+running dacapo/antlr
+...
+Loading properties...
+
+Organizing the JAR files ...
+Processing input archive: /u/karim/workspace/averroes-home/benchmarks/dacapo/antlr.jar
+Processing library archive: /u/karim/workspace/averroes-home/benchmarks/dacapo/antlr-deps.jar
+Processing library archive: /u/karim/workspace/averroes-home/jre/rt-1.4.2_11.jar
+# application classes: 202
+# library classes: 9719
+
+Preparing Averroes ...
+Adding application archive: /u/karim/workspace/averroes-home/output/organizedApplication.jar
+Adding library archive: /u/karim/workspace/averroes-home/output/organizedLibrary.jar
+
+Loading classes ...
+Soot loaded the input classes in 3.816 seconds.
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 202
+# initial library classes: 123
+# initial library methods: 2426
+# initial library fields: 772
+# referenced library methods: 210
+# referenced library fields: 7
+
+Cleaning up the class hierarchy ...
+# removed library methods: 1965
+# removed library fields: 765
+# final library methods: 493
+# final library fields: 7
+
+Generating extra library classes ...
+# generated library classes: 11
+# generated library methods: 25
+
+Creating the skeleton for Averroes's main library class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 3.189 seconds.
+Place holder library JAR file verified in 1.218 seconds.
+Total time (without verification) is 7.005 seconds.
+Total time (with verification) is 8.222999999999999 seconds.
+elapsed time: 14.09s
+
+Fri May  3 15:09:07 EDT 2013
+running dacapo/bloat
+...
+Loading properties...
+
+Organizing the JAR files ...
+Processing input archive: /u/karim/workspace/averroes-home/benchmarks/dacapo/bloat.jar
+Processing library archive: /u/karim/workspace/averroes-home/benchmarks/dacapo/bloat-deps.jar
+Processing library archive: /u/karim/workspace/averroes-home/jre/rt-1.4.2_11.jar
+# application classes: 334
+# library classes: 9719
+
+Preparing Averroes ...
+Adding application archive: /u/karim/workspace/averroes-home/output/organizedApplication.jar
+Adding library archive: /u/karim/workspace/averroes-home/output/organizedLibrary.jar
+
+Loading classes ...
+Soot loaded the input classes in 3.904 seconds.
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 334
+# initial library classes: 127
+# initial library methods: 2137
+# initial library fields: 550
+# referenced library methods: 430
+# referenced library fields: 17
+
+Cleaning up the class hierarchy ...
+# removed library methods: 1436
+# removed library fields: 533
+# final library methods: 734
+# final library fields: 17
+
+Generating extra library classes ...
+# generated library classes: 10
+# generated library methods: 28
+
+Creating the skeleton for Averroes's main library class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.324 seconds.
+Place holder library JAR file verified in 1.236 seconds.
+Total time (without verification) is 8.228 seconds.
+Total time (with verification) is 9.464 seconds.
+elapsed time: 15.21s
+
+Fri May  3 15:09:24 EDT 2013
+running dacapo/chart
+...
+Loading properties...
+
+Organizing the JAR files ...
+Processing input archive: /u/karim/workspace/averroes-home/benchmarks/dacapo/chart.jar
+Processing library archive: /u/karim/workspace/averroes-home/benchmarks/dacapo/chart-deps.jar
+Processing library archive: /u/karim/workspace/averroes-home/jre/rt-1.4.2_11.jar
+# application classes: 489
+# library classes: 10357
+
+Preparing Averroes ...
+Adding application archive: /u/karim/workspace/averroes-home/output/organizedApplication.jar
+Adding library archive: /u/karim/workspace/averroes-home/output/organizedLibrary.jar
+
+Loading classes ...
+Soot loaded the input classes in 4.651 seconds.
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 489
+# initial library classes: 354
+# initial library methods: 7007
+# initial library fields: 2573
+# referenced library methods: 896
+# referenced library fields: 89
+
+Cleaning up the class hierarchy ...
+# removed library methods: 5390
+# removed library fields: 2484
+# final library methods: 1702
+# final library fields: 89
+
+Generating extra library classes ...
+# generated library classes: 45
+# generated library methods: 152
+
+Creating the skeleton for Averroes's main library class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 13.804 seconds.
+Place holder library JAR file verified in 1.694 seconds.
+Total time (without verification) is 18.455 seconds.
+Total time (with verification) is 20.148999999999997 seconds.
+elapsed time: 26.42s
+
+Fri May  3 15:09:51 EDT 2013
+running dacapo/hsqldb
+...
+Loading properties...
+
+Organizing the JAR files ...
+Processing input archive: /u/karim/workspace/averroes-home/benchmarks/dacapo/hsqldb.jar
+Processing library archive: /u/karim/workspace/averroes-home/benchmarks/dacapo/hsqldb-deps.jar
+Processing library archive: /u/karim/workspace/averroes-home/jre/rt-1.4.2_11.jar
+# application classes: 389
+# library classes: 9882
+
+Preparing Averroes ...
+Adding application archive: /u/karim/workspace/averroes-home/output/organizedApplication.jar
+Adding library archive: /u/karim/workspace/averroes-home/output/organizedLibrary.jar
+
+Loading classes ...
+Soot loaded the input classes in 5.232 seconds.
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 389
+# initial library classes: 382
+# initial library methods: 8392
+# initial library fields: 2990
+# referenced library methods: 1670
+# referenced library fields: 54
+
+Cleaning up the class hierarchy ...
+# removed library methods: 5986
+# removed library fields: 2936
+# final library methods: 2492
+# final library fields: 54
+
+Generating extra library classes ...
+# generated library classes: 83
+# generated library methods: 835
+
+Creating the skeleton for Averroes's main library class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 13.381 seconds.
+Place holder library JAR file verified in 2.764 seconds.
+Total time (without verification) is 18.613 seconds.
+Total time (with verification) is 21.377 seconds.
+elapsed time: 27.40s
+
+Fri May  3 15:10:19 EDT 2013
+running dacapo/jython
+...
+Loading properties...
+
+Organizing the JAR files ...
+Processing input archive: /u/karim/workspace/averroes-home/benchmarks/dacapo/jython.jar
+Processing library archive: /u/karim/workspace/averroes-home/benchmarks/dacapo/jython-deps.jar
+Processing library archive: /u/karim/workspace/averroes-home/jre/rt-1.4.2_11.jar
+# application classes: 893
+# library classes: 10300
+
+Preparing Averroes ...
+Adding application archive: /u/karim/workspace/averroes-home/output/organizedApplication.jar
+Adding library archive: /u/karim/workspace/averroes-home/output/organizedLibrary.jar
+
+Loading classes ...
+Soot loaded the input classes in 4.574 seconds.
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 893
+# initial library classes: 207
+# initial library methods: 4161
+# initial library fields: 1170
+# referenced library methods: 853
+# referenced library fields: 21
+
+Cleaning up the class hierarchy ...
+# removed library methods: 2952
+# removed library fields: 1149
+# final library methods: 1263
+# final library fields: 21
+
+Generating extra library classes ...
+# generated library classes: 27
+# generated library methods: 179
+
+Creating the skeleton for Averroes's main library class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 9.932 seconds.
+Place holder library JAR file verified in 1.605 seconds.
+Total time (without verification) is 14.506 seconds.
+Total time (with verification) is 16.111 seconds.
+elapsed time: 22.55s
+
+Fri May  3 15:10:43 EDT 2013
+running dacapo/luindex
+...
+Loading properties...
+
+Organizing the JAR files ...
+Processing input archive: /u/karim/workspace/averroes-home/benchmarks/dacapo/luindex.jar
+Processing library archive: /u/karim/workspace/averroes-home/benchmarks/dacapo/luindex-deps.jar
+Processing library archive: /u/karim/workspace/averroes-home/jre/rt-1.4.2_11.jar
+# application classes: 324
+# library classes: 9719
+
+Preparing Averroes ...
+Adding application archive: /u/karim/workspace/averroes-home/output/organizedApplication.jar
+Adding library archive: /u/karim/workspace/averroes-home/output/organizedLibrary.jar
+
+Loading classes ...
+Soot loaded the input classes in 3.572 seconds.
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 324
+# initial library classes: 159
+# initial library methods: 2535
+# initial library fields: 726
+# referenced library methods: 388
+# referenced library fields: 9
+
+Cleaning up the class hierarchy ...
+# removed library methods: 1834
+# removed library fields: 717
+# final library methods: 738
+# final library fields: 9
+
+Generating extra library classes ...
+# generated library classes: 26
+# generated library methods: 41
+
+Creating the skeleton for Averroes's main library class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.041 seconds.
+Place holder library JAR file verified in 1.202 seconds.
+Total time (without verification) is 7.613 seconds.
+Total time (with verification) is 8.815000000000001 seconds.
+elapsed time: 14.58s
+
+Fri May  3 15:10:59 EDT 2013
+running dacapo/lusearch
+...
+Loading properties...
+
+Organizing the JAR files ...
+Processing input archive: /u/karim/workspace/averroes-home/benchmarks/dacapo/lusearch.jar
+Processing library archive: /u/karim/workspace/averroes-home/benchmarks/dacapo/lusearch-deps.jar
+Processing library archive: /u/karim/workspace/averroes-home/jre/rt-1.4.2_11.jar
+# application classes: 324
+# library classes: 9719
+
+Preparing Averroes ...
+Adding application archive: /u/karim/workspace/averroes-home/output/organizedApplication.jar
+Adding library archive: /u/karim/workspace/averroes-home/output/organizedLibrary.jar
+
+Loading classes ...
+Soot loaded the input classes in 3.551 seconds.
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 324
+# initial library classes: 159
+# initial library methods: 2535
+# initial library fields: 726
+# referenced library methods: 388
+# referenced library fields: 9
+
+Cleaning up the class hierarchy ...
+# removed library methods: 1834
+# removed library fields: 717
+# final library methods: 738
+# final library fields: 9
+
+Generating extra library classes ...
+# generated library classes: 26
+# generated library methods: 41
+
+Creating the skeleton for Averroes's main library class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.112 seconds.
+Place holder library JAR file verified in 1.236 seconds.
+Total time (without verification) is 7.663 seconds.
+Total time (with verification) is 8.899000000000001 seconds.
+elapsed time: 14.59s
+
+Fri May  3 15:11:14 EDT 2013
+running dacapo/pmd
+...
+Loading properties...
+
+Organizing the JAR files ...
+Processing input archive: /u/karim/workspace/averroes-home/benchmarks/dacapo/pmd.jar
+Processing library archive: /u/karim/workspace/averroes-home/benchmarks/dacapo/pmd-deps.jar
+Processing library archive: /u/karim/workspace/averroes-home/jre/rt-1.4.2_11.jar
+# application classes: 527
+# library classes: 11765
+
+Preparing Averroes ...
+Adding application archive: /u/karim/workspace/averroes-home/output/organizedApplication.jar
+Adding library archive: /u/karim/workspace/averroes-home/output/organizedLibrary.jar
+
+Loading classes ...
+Soot loaded the input classes in 5.443 seconds.
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 527
+# initial library classes: 290
+# initial library methods: 6394
+# initial library fields: 2026
+# referenced library methods: 615
+# referenced library fields: 31
+
+Cleaning up the class hierarchy ...
+# removed library methods: 5125
+# removed library fields: 1995
+# final library methods: 1333
+# final library fields: 31
+
+Generating extra library classes ...
+# generated library classes: 24
+# generated library methods: 90
+
+Creating the skeleton for Averroes's main library class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 8.851 seconds.
+Place holder library JAR file verified in 1.596 seconds.
+Total time (without verification) is 14.294 seconds.
+Total time (with verification) is 15.89 seconds.
+elapsed time: 22.68s
+
+Fri May  3 15:11:38 EDT 2013
+running dacapo/xalan
+...
+Loading properties...
+
+Organizing the JAR files ...
+Processing input archive: /u/karim/workspace/averroes-home/benchmarks/dacapo/xalan.jar
+Processing library archive: /u/karim/workspace/averroes-home/benchmarks/dacapo/xalan-deps.jar
+Processing library archive: /u/karim/workspace/averroes-home/jre/rt-1.4.2_11.jar
+# application classes: 540
+# library classes: 10275
+
+Preparing Averroes ...
+Adding application archive: /u/karim/workspace/averroes-home/output/organizedApplication.jar
+Adding library archive: /u/karim/workspace/averroes-home/output/organizedLibrary.jar
+
+Loading classes ...
+Soot loaded the input classes in 4.808 seconds.
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 540
+# initial library classes: 233
+# initial library methods: 3910
+# initial library fields: 1153
+# referenced library methods: 789
+# referenced library fields: 20
+
+Cleaning up the class hierarchy ...
+# removed library methods: 2737
+# removed library fields: 1133
+# final library methods: 1225
+# final library fields: 20
+
+Generating extra library classes ...
+# generated library classes: 48
+# generated library methods: 602
+
+Creating the skeleton for Averroes's main library class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 9.518 seconds.
+Place holder library JAR file verified in 2.129 seconds.
+Total time (without verification) is 14.326 seconds.
+Total time (with verification) is 16.455000000000002 seconds.
+elapsed time: 22.68s
+
+Fri May  3 15:12:01 EDT 2013
+running specjvm/compress
+...
+Loading properties...
+
+Organizing the JAR files ...
+Processing input archive: /u/karim/workspace/averroes-home/benchmarks/specjvm/compress.zip
+Processing library archive: /u/karim/workspace/averroes-home/benchmarks/specjvm/spec.zip
+Processing library archive: /u/karim/workspace/averroes-home/benchmarks/specjvm/sunrsasign.jar
+Processing library archive: /u/karim/workspace/averroes-home/jre/rt-1.4.2_11.jar
+# application classes: 12
+# library classes: 9829
+
+Preparing Averroes ...
+Adding application archive: /u/karim/workspace/averroes-home/output/organizedApplication.jar
+Adding library archive: /u/karim/workspace/averroes-home/output/organizedLibrary.jar
+
+Loading classes ...
+Soot loaded the input classes in 3.123 seconds.
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 12
+# initial library classes: 32
+# initial library methods: 631
+# initial library fields: 202
+# referenced library methods: 15
+# referenced library fields: 2
+
+Cleaning up the class hierarchy ...
+# removed library methods: 508
+# removed library fields: 200
+# final library methods: 135
+# final library fields: 2
+
+Generating extra library classes ...
+# generated library classes: 1
+# generated library methods: 2
+
+Creating the skeleton for Averroes's main library class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 1.227 seconds.
+Place holder library JAR file verified in 0.496 seconds.
+Total time (without verification) is 4.3500000000000005 seconds.
+Total time (with verification) is 4.846 seconds.
+elapsed time: 10.39s
+
+Fri May  3 15:12:13 EDT 2013
+running specjvm/db
+...
+Loading properties...
+
+Organizing the JAR files ...
+Processing input archive: /u/karim/workspace/averroes-home/benchmarks/specjvm/db.zip
+Processing library archive: /u/karim/workspace/averroes-home/benchmarks/specjvm/spec.zip
+Processing library archive: /u/karim/workspace/averroes-home/benchmarks/specjvm/sunrsasign.jar
+Processing library archive: /u/karim/workspace/averroes-home/jre/rt-1.4.2_11.jar
+# application classes: 3
+# library classes: 9829
+
+Preparing Averroes ...
+Adding application archive: /u/karim/workspace/averroes-home/output/organizedApplication.jar
+Adding library archive: /u/karim/workspace/averroes-home/output/organizedLibrary.jar
+
+Loading classes ...
+Soot loaded the input classes in 3.071 seconds.
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 3
+# initial library classes: 45
+# initial library methods: 827
+# initial library fields: 239
+# referenced library methods: 51
+# referenced library fields: 4
+
+Cleaning up the class hierarchy ...
+# removed library methods: 661
+# removed library fields: 235
+# final library methods: 181
+# final library fields: 4
+
+Generating extra library classes ...
+# generated library classes: 2
+# generated library methods: 5
+
+Creating the skeleton for Averroes's main library class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 1.568 seconds.
+Place holder library JAR file verified in 0.594 seconds.
+Total time (without verification) is 4.639 seconds.
+Total time (with verification) is 5.2330000000000005 seconds.
+elapsed time: 10.75s
+
+Fri May  3 15:12:24 EDT 2013
+running specjvm/jack
+...
+Loading properties...
+
+Organizing the JAR files ...
+Processing input archive: /u/karim/workspace/averroes-home/benchmarks/specjvm/jack.zip
+Processing library archive: /u/karim/workspace/averroes-home/benchmarks/specjvm/spec.zip
+Processing library archive: /u/karim/workspace/averroes-home/benchmarks/specjvm/sunrsasign.jar
+Processing library archive: /u/karim/workspace/averroes-home/jre/rt-1.4.2_11.jar
+# application classes: 56
+# library classes: 9829
+
+Preparing Averroes ...
+Adding application archive: /u/karim/workspace/averroes-home/output/organizedApplication.jar
+Adding library archive: /u/karim/workspace/averroes-home/output/organizedLibrary.jar
+
+Loading classes ...
+Soot loaded the input classes in 3.251 seconds.
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 56
+# initial library classes: 51
+# initial library methods: 891
+# initial library fields: 232
+# referenced library methods: 64
+# referenced library fields: 2
+
+Cleaning up the class hierarchy ...
+# removed library methods: 687
+# removed library fields: 230
+# final library methods: 220
+# final library fields: 2
+
+Generating extra library classes ...
+# generated library classes: 2
+# generated library methods: 5
+
+Creating the skeleton for Averroes's main library class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 1.723 seconds.
+Place holder library JAR file verified in 0.709 seconds.
+Total time (without verification) is 4.974 seconds.
+Total time (with verification) is 5.683 seconds.
+elapsed time: 11.23s
+
+Fri May  3 15:12:37 EDT 2013
+running specjvm/javac
+...
+Loading properties...
+
+Organizing the JAR files ...
+Processing input archive: /u/karim/workspace/averroes-home/benchmarks/specjvm/javac.zip
+Processing library archive: /u/karim/workspace/averroes-home/benchmarks/specjvm/spec.zip
+Processing library archive: /u/karim/workspace/averroes-home/benchmarks/specjvm/sunrsasign.jar
+Processing library archive: /u/karim/workspace/averroes-home/jre/rt-1.4.2_11.jar
+# application classes: 176
+# library classes: 9829
+
+Preparing Averroes ...
+Adding application archive: /u/karim/workspace/averroes-home/output/organizedApplication.jar
+Adding library archive: /u/karim/workspace/averroes-home/output/organizedLibrary.jar
+
+Loading classes ...
+Soot loaded the input classes in 3.465 seconds.
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 176
+# initial library classes: 70
+# initial library methods: 1166
+# initial library fields: 276
+# referenced library methods: 183
+# referenced library fields: 7
+
+Cleaning up the class hierarchy ...
+# removed library methods: 831
+# removed library fields: 269
+# final library methods: 356
+# final library fields: 7
+
+Generating extra library classes ...
+# generated library classes: 3
+# generated library methods: 7
+
+Creating the skeleton for Averroes's main library class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 2.236 seconds.
+Place holder library JAR file verified in 0.682 seconds.
+Total time (without verification) is 5.7010000000000005 seconds.
+Total time (with verification) is 6.383000000000001 seconds.
+elapsed time: 11.95s
+
+Fri May  3 15:12:50 EDT 2013
+running specjvm/jess
+...
+Loading properties...
+
+Organizing the JAR files ...
+Processing input archive: /u/karim/workspace/averroes-home/benchmarks/specjvm/jess.zip
+Processing library archive: /u/karim/workspace/averroes-home/benchmarks/specjvm/spec.zip
+Processing library archive: /u/karim/workspace/averroes-home/benchmarks/specjvm/sunrsasign.jar
+Processing library archive: /u/karim/workspace/averroes-home/jre/rt-1.4.2_11.jar
+# application classes: 5
+# library classes: 9975
+
+Preparing Averroes ...
+Adding application archive: /u/karim/workspace/averroes-home/output/organizedApplication.jar
+Adding library archive: /u/karim/workspace/averroes-home/output/organizedLibrary.jar
+
+Loading classes ...
+Soot loaded the input classes in 3.363 seconds.
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 5
+# initial library classes: 75
+# initial library methods: 1570
+# initial library fields: 519
+# referenced library methods: 63
+# referenced library fields: 12
+
+Cleaning up the class hierarchy ...
+# removed library methods: 1335
+# removed library fields: 507
+# final library methods: 257
+# final library fields: 12
+
+Generating extra library classes ...
+# generated library classes: 3
+# generated library methods: 19
+
+Creating the skeleton for Averroes's main library class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 2.047 seconds.
+Place holder library JAR file verified in 0.901 seconds.
+Total time (without verification) is 5.41 seconds.
+Total time (with verification) is 6.311 seconds.
+elapsed time: 11.92s
+
+Fri May  3 15:13:02 EDT 2013
+running specjvm/raytrace
+...
+Loading properties...
+
+Organizing the JAR files ...
+Processing input archive: /u/karim/workspace/averroes-home/benchmarks/specjvm/raytrace.zip
+Processing library archive: /u/karim/workspace/averroes-home/benchmarks/specjvm/spec.zip
+Processing library archive: /u/karim/workspace/averroes-home/benchmarks/specjvm/sunrsasign.jar
+Processing library archive: /u/karim/workspace/averroes-home/jre/rt-1.4.2_11.jar
+# application classes: 25
+# library classes: 9829
+
+Preparing Averroes ...
+Adding application archive: /u/karim/workspace/averroes-home/output/organizedApplication.jar
+Adding library archive: /u/karim/workspace/averroes-home/output/organizedLibrary.jar
+
+Loading classes ...
+Soot loaded the input classes in 3.201 seconds.
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 25
+# initial library classes: 42
+# initial library methods: 787
+# initial library fields: 236
+# referenced library methods: 35
+# referenced library fields: 2
+
+Cleaning up the class hierarchy ...
+# removed library methods: 632
+# removed library fields: 234
+# final library methods: 171
+# final library fields: 2
+
+Generating extra library classes ...
+# generated library classes: 1
+# generated library methods: 2
+
+Creating the skeleton for Averroes's main library class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 1.416 seconds.
+Place holder library JAR file verified in 0.583 seconds.
+Total time (without verification) is 4.617 seconds.
+Total time (with verification) is 5.2 seconds.
+elapsed time: 10.74s
+
+Fri May  3 15:13:14 EDT 2013

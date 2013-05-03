@@ -1,0 +1,36 @@
+...
+running Spark with Averroes for dacapo/chart
+Loading properties.
+Generating the call graph from Spark.
+
+Preparing classes ...
+Adding application archive: /u/karim/workspace/averroes-home/benchmarks-averroes/dacapo/chart-organized-app.jar
+Adding placeholder library archive: /u/karim/workspace/averroes-home/benchmarks-averroes/dacapo/chart-placeholder-lib.jar
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+Total methods: 7484
+Initially reachable methods: 118
+Classes with at least one reachable method: 116
+[Spark] Pointer Assignment Graph in 1.2 seconds.
+Total types: 998
+[Spark] Type masks in 0.8 seconds.
+VarNodes: 589
+FieldRefNodes: 9
+AllocNodes: 304
+Cleaning up graph for merged nodes
+Done cleaning up graph for merged nodes
+[Spark] Pointer Graph simplified in 0.0 seconds.
+Worklist has 307 nodes.
+Now handling field references
+Worklist has 255 nodes.
+Now handling field references
+Worklist has 227 nodes.
+Now handling field references
+Worklist has 107 nodes.
+Now handling field references
+Worklist has 3 nodes.
+Now handling field references
+[Spark] Propagation in 8.2 seconds.
+[Spark] Solution found in 8.8 seconds.
+[Spark] Number of reachable methods: 1926
+
+elapsed time: 22.30s

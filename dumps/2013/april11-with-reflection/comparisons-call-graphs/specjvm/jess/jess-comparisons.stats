@@ -1,0 +1,83 @@
+...
+generating stats for specjvm/jess
+Loading properties.
+Call Graph Edges
+================
+Spark: 6
+SparkAverroes: 6
+Doop: 6
+DoopAverroes: 6
+
+Library Call Graph Edges
+========================
+Spark: 6
+SparkAverroes: 7
+Doop: 6
+DoopAverroes: 7
+
+Library Call Back Edges
+=======================
+Spark: 64
+SparkAverroes: 12
+Doop: 8
+DoopAverroes: 12
+
+
+CGE
+===
+Dyn - Spark: 0
+Dyn - SparkAverroes: 0
+Dyn - Doop: 0
+Dyn - DoopAverroes: 0
+Spark - SparkAverroes: 0
+Doop - DoopAverroes: 0
+SparkAverroes - Spark: 0
+DoopAverroes - Doop: 0
+Cgc - DoopAverroes: 0
+DoopAverroes - Cgc: 0
+
+LCGE
+====
+Dyn - Spark: 0
+Dyn - SparkAverroes: 0
+Dyn - Doop: 0
+Dyn - DoopAverroes: 0
+Spark - SparkAverroes: 0
+Doop - DoopAverroes: 0
+SparkAverroes - Spark: 1
+DoopAverroes - Doop: 1
+Cgc - DoopAverroes: 0
+DoopAverroes - Cgc: 0
+
+LCBE
+====
+Dyn - Spark: 0
+Dyn - SparkAverroes: 0
+Dyn - Doop: 0
+Dyn - DoopAverroes: 0
+Spark - SparkAverroes: 53
+Doop - DoopAverroes: 0
+SparkAverroes - Spark: 1
+DoopAverroes - Doop: 4
+Cgc - DoopAverroes: 0
+DoopAverroes - Cgc: 0
+
+
+Frequencies of extra library call-backs
+=======================================
+SparkAverroes - Spark
+----------
+FireRule = 1
+
+DoopAverroes - Doop
+-----------
+AssertFact = 1
+FireRule = 1
+RetractFact = 1
+applet = 1
+
+DoopAverroes - Cgc
+-----------
+<EMPTY>
+
+elapsed time: 2.67s

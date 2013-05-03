@@ -1,0 +1,32 @@
+...
+running Spark with Averroes for specjvm/db
+Loading properties.
+Generating the call graph from Spark.
+
+Preparing classes ...
+Adding application archive: /u/karim/workspace/averroes-home/benchmarks-averroes/specjvm/db-organized-app.jar
+Adding placeholder library archive: /u/karim/workspace/averroes-home/benchmarks-averroes/specjvm/db-placeholder-lib.jar
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+Total methods: 218
+Initially reachable methods: 23
+Classes with at least one reachable method: 20
+[Spark] Pointer Assignment Graph in 0.4 seconds.
+Total types: 109
+[Spark] Type masks in 0.0 seconds.
+VarNodes: 72
+FieldRefNodes: 3
+AllocNodes: 41
+Cleaning up graph for merged nodes
+Done cleaning up graph for merged nodes
+[Spark] Pointer Graph simplified in 0.0 seconds.
+Worklist has 40 nodes.
+Now handling field references
+Worklist has 27 nodes.
+Now handling field references
+Worklist has 10 nodes.
+Now handling field references
+[Spark] Propagation in 1.3 seconds.
+[Spark] Solution found in 1.6 seconds.
+[Spark] Number of reachable methods: 139
+
+elapsed time: 5.66s

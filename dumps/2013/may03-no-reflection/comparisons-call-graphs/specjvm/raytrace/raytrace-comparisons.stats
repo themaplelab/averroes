@@ -1,0 +1,80 @@
+...
+generating stats for specjvm/raytrace
+Loading properties.
+Call Graph Edges
+================
+Spark: 400
+SparkAverroes: 400
+Doop: 400
+DoopAverroes: 400
+
+Library Call Graph Edges
+========================
+Spark: 34
+SparkAverroes: 34
+Doop: 34
+DoopAverroes: 34
+
+Library Call Back Edges
+=======================
+Spark: 10
+SparkAverroes: 1
+Doop: 0
+DoopAverroes: 1
+
+
+CGE
+===
+Dyn - Spark: 0
+Dyn - SparkAverroes: 0
+Dyn - Doop: 0
+Dyn - DoopAverroes: 0
+Spark - SparkAverroes: 0
+Doop - DoopAverroes: 0
+SparkAverroes - Spark: 0
+DoopAverroes - Doop: 0
+Cgc - DoopAverroes: 0
+DoopAverroes - Cgc: 0
+
+LCGE
+====
+Dyn - Spark: 0
+Dyn - SparkAverroes: 0
+Dyn - Doop: 0
+Dyn - DoopAverroes: 0
+Spark - SparkAverroes: 0
+Doop - DoopAverroes: 0
+SparkAverroes - Spark: 0
+DoopAverroes - Doop: 0
+Cgc - DoopAverroes: 0
+DoopAverroes - Cgc: 0
+
+LCBE
+====
+Dyn - Spark: 0
+Dyn - SparkAverroes: 0
+Dyn - Doop: 0
+Dyn - DoopAverroes: 0
+Spark - SparkAverroes: 10
+Doop - DoopAverroes: 0
+SparkAverroes - Spark: 1
+DoopAverroes - Doop: 1
+Cgc - DoopAverroes: 0
+DoopAverroes - Cgc: 0
+
+
+Frequencies of extra library call-backs
+=======================================
+SparkAverroes - Spark
+----------
+run = 1
+
+DoopAverroes - Doop
+-----------
+run = 1
+
+DoopAverroes - Cgc
+-----------
+<EMPTY>
+
+elapsed time: 5.55s
