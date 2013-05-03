@@ -1,0 +1,42 @@
+...
+running Spark with Averroes for dacapo/hsqldb
+Loading properties.
+Generating the call graph from Spark.
+
+Preparing classes ...
+Adding application archive: /u/karim/workspace/averroes-home/benchmarks-averroes/dacapo/hsqldb-organized-app.jar
+Adding placeholder library archive: /u/karim/workspace/averroes-home/benchmarks-averroes/dacapo/hsqldb-placeholder-lib.jar
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+Total methods: 7588
+Initially reachable methods: 129
+Classes with at least one reachable method: 122
+[Spark] Pointer Assignment Graph in 3.3 seconds.
+Total types: 965
+[Spark] Type masks in 1.8 seconds.
+VarNodes: 1065
+FieldRefNodes: 97
+AllocNodes: 455
+Cleaning up graph for merged nodes
+Done cleaning up graph for merged nodes
+[Spark] Pointer Graph simplified in 0.0 seconds.
+Worklist has 458 nodes.
+Now handling field references
+Worklist has 1856 nodes.
+Now handling field references
+Worklist has 1924 nodes.
+Now handling field references
+Worklist has 1251 nodes.
+Now handling field references
+Worklist has 1127 nodes.
+Now handling field references
+Worklist has 444 nodes.
+Now handling field references
+Worklist has 281 nodes.
+Now handling field references
+Worklist has 1 nodes.
+Now handling field references
+[Spark] Propagation in 20.1 seconds.
+[Spark] Solution found in 20.6 seconds.
+[Spark] Number of reachable methods: 4941
+
+elapsed time: 36.23s

@@ -1,0 +1,28 @@
+...
+running Spark with Averroes for specjvm/jess
+Loading properties.
+Generating the call graph from Spark.
+
+Preparing classes ...
+Adding application archive: /u/karim/workspace/averroes-home/benchmarks-averroes/specjvm/jess-organized-app.jar
+Adding placeholder library archive: /u/karim/workspace/averroes-home/benchmarks-averroes/specjvm/jess-placeholder-lib.jar
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+Total methods: 304
+Initially reachable methods: 30
+Classes with at least one reachable method: 27
+[Spark] Pointer Assignment Graph in 0.5 seconds.
+Total types: 144
+[Spark] Type masks in 0.0 seconds.
+VarNodes: 138
+FieldRefNodes: 4
+AllocNodes: 71
+Cleaning up graph for merged nodes
+Done cleaning up graph for merged nodes
+[Spark] Pointer Graph simplified in 0.0 seconds.
+Worklist has 71 nodes.
+Now handling field references
+[Spark] Propagation in 0.5 seconds.
+[Spark] Solution found in 0.8 seconds.
+[Spark] Number of reachable methods: 145
+
+elapsed time: 4.69s

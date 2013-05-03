@@ -1,0 +1,115 @@
+...
+generating stats for dacapo/pmd
+Loading properties.
+Call Graph Edges
+================
+Spark: 6893
+SparkAverroes: 4702
+Doop: 4109
+DoopAverroes: 4694
+
+Library Call Graph Edges
+========================
+Spark: 797
+SparkAverroes: 433
+Doop: 391
+DoopAverroes: 433
+
+Library Call Back Edges
+=======================
+Spark: 138
+SparkAverroes: 118
+Doop: 66
+DoopAverroes: 118
+
+
+CGE
+===
+Dyn - Spark: 0
+Dyn - SparkAverroes: 0
+Dyn - Doop: 153
+Dyn - DoopAverroes: 0
+Spark - SparkAverroes: 2461
+Doop - DoopAverroes: 0
+SparkAverroes - Spark: 270
+DoopAverroes - Doop: 585
+Cgc - DoopAverroes: 4
+DoopAverroes - Cgc: 104
+
+LCGE
+====
+Dyn - Spark: 0
+Dyn - SparkAverroes: 0
+Dyn - Doop: 43
+Dyn - DoopAverroes: 0
+Spark - SparkAverroes: 367
+Doop - DoopAverroes: 1
+SparkAverroes - Spark: 3
+DoopAverroes - Doop: 43
+Cgc - DoopAverroes: 2
+DoopAverroes - Cgc: 4
+
+LCBE
+====
+Dyn - Spark: 3
+Dyn - SparkAverroes: 0
+Dyn - Doop: 29
+Dyn - DoopAverroes: 0
+Spark - SparkAverroes: 43
+Doop - DoopAverroes: 0
+SparkAverroes - Spark: 23
+DoopAverroes - Doop: 52
+Cgc - DoopAverroes: 5
+DoopAverroes - Cgc: 9
+
+
+Frequencies of extra library call-backs
+=======================================
+SparkAverroes - Spark
+----------
+<init> = 15
+remove = 3
+getElementStringValue = 1
+getImage = 1
+hasElse = 1
+isFinal = 1
+isStatic = 1
+
+DoopAverroes - Doop
+-----------
+<init> = 15
+toString = 6
+printStackTrace = 5
+remove = 3
+equals = 2
+hashCode = 2
+call = 1
+getAttributeQName = 1
+getCommentStringValue = 1
+getElementQName = 1
+getElementStringValue = 1
+getFollowingAxisIterator = 1
+getImage = 1
+getMessage = 1
+getNamespacePrefix = 1
+getNamespaceStringValue = 1
+getPrecedingAxisIterator = 1
+getPrecedingSiblingAxisIterator = 1
+getTextStringValue = 1
+hasElse = 1
+hasNext = 1
+isFinal = 1
+isStatic = 1
+next = 1
+parseXPath = 1
+
+DoopAverroes - Cgc
+-----------
+toString = 4
+<init> = 1
+hasNext = 1
+isFinal = 1
+next = 1
+remove = 1
+
+elapsed time: 10.09s

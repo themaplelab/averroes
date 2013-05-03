@@ -1,0 +1,40 @@
+...
+running Spark with Averroes for dacapo/bloat
+Loading properties.
+Generating the call graph from Spark.
+
+Preparing classes ...
+Adding application archive: /u/karim/workspace/averroes-home/benchmarks-averroes/dacapo/bloat-organized-app.jar
+Adding placeholder library archive: /u/karim/workspace/averroes-home/benchmarks-averroes/dacapo/bloat-placeholder-lib.jar
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+Total methods: 4246
+Initially reachable methods: 40
+Classes with at least one reachable method: 39
+[Spark] Pointer Assignment Graph in 1.0 seconds.
+Total types: 559
+[Spark] Type masks in 0.3 seconds.
+VarNodes: 236
+FieldRefNodes: 2
+AllocNodes: 111
+Cleaning up graph for merged nodes
+Done cleaning up graph for merged nodes
+[Spark] Pointer Graph simplified in 0.0 seconds.
+Worklist has 111 nodes.
+Now handling field references
+Worklist has 1566 nodes.
+Now handling field references
+Worklist has 860 nodes.
+Now handling field references
+Worklist has 456 nodes.
+Now handling field references
+Worklist has 688 nodes.
+Now handling field references
+Worklist has 282 nodes.
+Now handling field references
+Worklist has 34 nodes.
+Now handling field references
+[Spark] Propagation in 16.5 seconds.
+[Spark] Solution found in 17.0 seconds.
+[Spark] Number of reachable methods: 3023
+
+elapsed time: 29.49s

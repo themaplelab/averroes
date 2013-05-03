@@ -1,6 +1,7 @@
 #! /usr/bin/env bash
 
 set -e
+reflection=$1
 
 # the dacapo benchmarks
 dacapo=( antlr bloat chart hsqldb jython luindex lusearch pmd xalan )
@@ -25,6 +26,6 @@ mkdir -p benchmarks-averroes/specjvm
 
 for benchmark in ${benchmarks[@]}
 do
-  ./averroes $benchmark
+  ./averroes $benchmark $reflection
 done
 date

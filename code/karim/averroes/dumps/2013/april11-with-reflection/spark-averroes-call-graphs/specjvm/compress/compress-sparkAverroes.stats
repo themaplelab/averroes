@@ -1,0 +1,32 @@
+...
+running Spark with Averroes for specjvm/compress
+Loading properties.
+Generating the call graph from Spark.
+
+Preparing classes ...
+Adding application archive: /u/karim/workspace/averroes-home/benchmarks-averroes/specjvm/compress-organized-app.jar
+Adding placeholder library archive: /u/karim/workspace/averroes-home/benchmarks-averroes/specjvm/compress-placeholder-lib.jar
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+Total methods: 181
+Initially reachable methods: 21
+Classes with at least one reachable method: 18
+[Spark] Pointer Assignment Graph in 0.4 seconds.
+Total types: 106
+[Spark] Type masks in 0.0 seconds.
+VarNodes: 68
+FieldRefNodes: 3
+AllocNodes: 35
+Cleaning up graph for merged nodes
+Done cleaning up graph for merged nodes
+[Spark] Pointer Graph simplified in 0.0 seconds.
+Worklist has 34 nodes.
+Now handling field references
+Worklist has 50 nodes.
+Now handling field references
+Worklist has 4 nodes.
+Now handling field references
+[Spark] Propagation in 0.9 seconds.
+[Spark] Solution found in 1.2 seconds.
+[Spark] Number of reachable methods: 95
+
+elapsed time: 4.88s

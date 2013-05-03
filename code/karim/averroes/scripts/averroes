@@ -3,6 +3,7 @@
 set -e
 
 benchmark=$1
+reflection=$2
 
 function timing()
 {
@@ -20,7 +21,12 @@ program=$(basename $benchmark)
 # 1. run Averroes
 cp properties/${benchmark}.properties averroes.properties
 jar uf averroes.jar averroes.properties
-timing java -jar averroes.jar
+
+if test "$2" = "-disable-reflection"; then
+  timing java -jar averroes.jar $reflection
+else
+  timing java -jar averroes.jar
+fi
 
 # 2. copy the output JARs
 cp output/organizedApplication.jar benchmarks-averroes/${benchmark}-organized-app.jar

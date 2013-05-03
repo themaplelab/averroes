@@ -38,4 +38,13 @@ public class Assertions {
 					.concat(System.getProperty("line.separator")).concat(verificationResult.toString()));
 		}
 	}
+
+	/**
+	 * Create an assertion that some input argument is unknown to Averroes.
+	 * 
+	 * @param argument
+	 */
+	public static void unknownArgument(String argument) {
+		throw new AssertionError("uknown argument: " + argument);
+	}
 }

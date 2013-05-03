@@ -32,6 +32,7 @@ import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
 import soot.options.Options;
 import soot.util.JasminOutputStream;
+import ca.uwaterloo.averroes.properties.AverroesProperties;
 import ca.uwaterloo.averroes.tamiflex.TamiFlexFactsDatabase;
 import ca.uwaterloo.averroes.util.io.FileUtils;
 
@@ -323,7 +324,9 @@ public class CodeGenerator {
 		handleArrayIndices();
 
 		// Create, reflectively, the application objects, and assign them to lpt
-		createObjectsFromApplicationClassNames();
+		if (!AverroesProperties.isDisableReflection()) {
+			createObjectsFromApplicationClassNames();
+		}
 
 		// Now we need to throw all the exceptions the library has access to (via lpt)
 		throwThrowables();
@@ -445,13 +448,17 @@ public class CodeGenerator {
 		}
 
 		// 2. The library can create application objects through Class.newInstance
-		for (SootClass cls : getTamiFlexApplicationClassNewInstance()) {
-			doItAllBody.createObjectOfType(cls);
+		if (!AverroesProperties.isDisableReflection()) {
+			for (SootClass cls : getTamiFlexApplicationClassNewInstance()) {
+				doItAllBody.createObjectOfType(cls);
+			}
 		}
 
 		// 3. The library can create application objects through Constructor.newInstance
-		for (SootMethod init : getTamiFlexApplicationConstructorNewInstance()) {
-			doItAllBody.createObjectByCallingConstructor(init);
+		if (!AverroesProperties.isDisableReflection()) {
+			for (SootMethod init : getTamiFlexApplicationConstructorNewInstance()) {
+				doItAllBody.createObjectByCallingConstructor(init);
+			}
 		}
 
 		// 4. The library points to some certain objects of array types
@@ -461,8 +468,10 @@ public class CodeGenerator {
 
 		// 5. The library could possibly create application objects whose class names are passed to it through
 		// calls to Class.forName
-		for (SootClass cls : getTamiFlexApplicationClassForName()) {
-			doItAllBody.createObjectOfType(cls);
+		if (!AverroesProperties.isDisableReflection()) {
+			for (SootClass cls : getTamiFlexApplicationClassForName()) {
+				doItAllBody.createObjectOfType(cls);
+			}
 		}
 	}
 
@@ -475,7 +484,12 @@ public class CodeGenerator {
 		Set<ArrayType> result = new HashSet<ArrayType>();
 		result.addAll(Hierarchy.v().getLibraryArrayTypeParameters());
 		result.addAll(Hierarchy.v().getLibraryArrayTypeReturns());
-		result.addAll(getTamiFlexApplicationArrayNewInstance());
+
+		// Only added if reflection support is enabled
+		if (!AverroesProperties.isDisableReflection()) {
+			result.addAll(getTamiFlexApplicationArrayNewInstance());
+		}
+
 		return result;
 	}
 

@@ -1,0 +1,94 @@
+...
+generating stats for dacapo/chart
+Loading properties.
+Call Graph Edges
+================
+Spark: 6732
+SparkAverroes: 1921
+Doop: 1811
+DoopAverroes: 1921
+
+Library Call Graph Edges
+========================
+Spark: 1060
+SparkAverroes: 604
+Doop: 529
+DoopAverroes: 604
+
+Library Call Back Edges
+=======================
+Spark: 490
+SparkAverroes: 149
+Doop: 55
+DoopAverroes: 149
+
+
+CGE
+===
+Dyn - Spark: 0
+Dyn - SparkAverroes: 0
+Dyn - Doop: 0
+Dyn - DoopAverroes: 0
+Spark - SparkAverroes: 4843
+Doop - DoopAverroes: 0
+SparkAverroes - Spark: 32
+DoopAverroes - Doop: 110
+Cgc - DoopAverroes: 0
+DoopAverroes - Cgc: 42
+
+LCGE
+====
+Dyn - Spark: 0
+Dyn - SparkAverroes: 0
+Dyn - Doop: 0
+Dyn - DoopAverroes: 0
+Spark - SparkAverroes: 470
+Doop - DoopAverroes: 0
+SparkAverroes - Spark: 14
+DoopAverroes - Doop: 75
+Cgc - DoopAverroes: 0
+DoopAverroes - Cgc: 33
+
+LCBE
+====
+Dyn - Spark: 0
+Dyn - SparkAverroes: 0
+Dyn - Doop: 0
+Dyn - DoopAverroes: 0
+Spark - SparkAverroes: 350
+Doop - DoopAverroes: 0
+SparkAverroes - Spark: 9
+DoopAverroes - Doop: 94
+Cgc - DoopAverroes: 0
+DoopAverroes - Cgc: 54
+
+
+Frequencies of extra library call-backs
+=======================================
+SparkAverroes - Spark
+----------
+draw = 6
+<init> = 1
+getLogo = 1
+validateObject = 1
+
+DoopAverroes - Doop
+-----------
+clone = 34
+equals = 27
+toString = 14
+hashCode = 10
+draw = 6
+<init> = 1
+getLogo = 1
+validateObject = 1
+
+DoopAverroes - Cgc
+-----------
+equals = 26
+toString = 12
+clone = 9
+hashCode = 6
+<init> = 1
+
+elapsed time: 10.21s

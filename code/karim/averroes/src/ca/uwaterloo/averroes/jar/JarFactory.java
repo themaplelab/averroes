@@ -31,6 +31,9 @@ public class JarFactory {
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) {
 		try {
+			// Process the arguments
+			AverroesProperties.processArguments(args);
+			
 			// Reset Soot
 			G.reset();
 
