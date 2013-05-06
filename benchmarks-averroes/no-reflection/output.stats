@@ -1,5 +1,5 @@
-Fri May  3 15:08:52 EDT 2013
-Fri May  3 15:08:52 EDT 2013
+Mon May  6 16:55:05 EDT 2013
+Mon May  6 16:55:05 EDT 2013
 running dacapo/antlr
 ...
 Loading properties...
@@ -16,7 +16,7 @@ Adding application archive: /u/karim/workspace/averroes-home/output/organizedApp
 Adding library archive: /u/karim/workspace/averroes-home/output/organizedLibrary.jar
 
 Loading classes ...
-Soot loaded the input classes in 3.816 seconds.
+Soot loaded the input classes in 3.159 seconds.
 
 Creating the class hierarchy for the placeholder library ...
 # initial application classes: 202
@@ -39,13 +39,13 @@ Generating extra library classes ...
 Creating the skeleton for Averroes's main library class ...
 Generating the method bodies for the placeholder library classes ...
 Generating empty basic library classes required by Soot ...
-Placeholder library classes created and validated in 3.189 seconds.
-Place holder library JAR file verified in 1.218 seconds.
-Total time (without verification) is 7.005 seconds.
-Total time (with verification) is 8.222999999999999 seconds.
-elapsed time: 14.09s
+Placeholder library classes created and validated in 2.674 seconds.
+Place holder library JAR file verified in 0.69 seconds.
+Total time (without verification) is 5.833 seconds.
+Total time (with verification) is 6.523 seconds.
+elapsed time: 11.11s
 
-Fri May  3 15:09:07 EDT 2013
+Mon May  6 16:55:17 EDT 2013
 running dacapo/bloat
 ...
 Loading properties...
@@ -62,7 +62,7 @@ Adding application archive: /u/karim/workspace/averroes-home/output/organizedApp
 Adding library archive: /u/karim/workspace/averroes-home/output/organizedLibrary.jar
 
 Loading classes ...
-Soot loaded the input classes in 3.904 seconds.
+Soot loaded the input classes in 3.185 seconds.
 
 Creating the class hierarchy for the placeholder library ...
 # initial application classes: 334
@@ -85,13 +85,13 @@ Generating extra library classes ...
 Creating the skeleton for Averroes's main library class ...
 Generating the method bodies for the placeholder library classes ...
 Generating empty basic library classes required by Soot ...
-Placeholder library classes created and validated in 4.324 seconds.
-Place holder library JAR file verified in 1.236 seconds.
-Total time (without verification) is 8.228 seconds.
-Total time (with verification) is 9.464 seconds.
-elapsed time: 15.21s
+Placeholder library classes created and validated in 3.267 seconds.
+Place holder library JAR file verified in 0.876 seconds.
+Total time (without verification) is 6.452 seconds.
+Total time (with verification) is 7.328 seconds.
+elapsed time: 11.96s
 
-Fri May  3 15:09:24 EDT 2013
+Mon May  6 16:55:30 EDT 2013
 running dacapo/chart
 ...
 Loading properties...
@@ -108,7 +108,7 @@ Adding application archive: /u/karim/workspace/averroes-home/output/organizedApp
 Adding library archive: /u/karim/workspace/averroes-home/output/organizedLibrary.jar
 
 Loading classes ...
-Soot loaded the input classes in 4.651 seconds.
+Soot loaded the input classes in 4.822 seconds.
 
 Creating the class hierarchy for the placeholder library ...
 # initial application classes: 489
@@ -131,13 +131,13 @@ Generating extra library classes ...
 Creating the skeleton for Averroes's main library class ...
 Generating the method bodies for the placeholder library classes ...
 Generating empty basic library classes required by Soot ...
-Placeholder library classes created and validated in 13.804 seconds.
-Place holder library JAR file verified in 1.694 seconds.
-Total time (without verification) is 18.455 seconds.
-Total time (with verification) is 20.148999999999997 seconds.
-elapsed time: 26.42s
+Placeholder library classes created and validated in 11.386 seconds.
+Place holder library JAR file verified in 1.35 seconds.
+Total time (without verification) is 16.208 seconds.
+Total time (with verification) is 17.558 seconds.
+elapsed time: 22.61s
 
-Fri May  3 15:09:51 EDT 2013
+Mon May  6 16:55:54 EDT 2013
 running dacapo/hsqldb
 ...
 Loading properties...
@@ -154,7 +154,7 @@ Adding application archive: /u/karim/workspace/averroes-home/output/organizedApp
 Adding library archive: /u/karim/workspace/averroes-home/output/organizedLibrary.jar
 
 Loading classes ...
-Soot loaded the input classes in 5.232 seconds.
+Soot loaded the input classes in 3.99 seconds.
 
 Creating the class hierarchy for the placeholder library ...
 # initial application classes: 389
@@ -177,13 +177,13 @@ Generating extra library classes ...
 Creating the skeleton for Averroes's main library class ...
 Generating the method bodies for the placeholder library classes ...
 Generating empty basic library classes required by Soot ...
-Placeholder library classes created and validated in 13.381 seconds.
-Place holder library JAR file verified in 2.764 seconds.
-Total time (without verification) is 18.613 seconds.
-Total time (with verification) is 21.377 seconds.
-elapsed time: 27.40s
+Placeholder library classes created and validated in 11.355 seconds.
+Place holder library JAR file verified in 2.346 seconds.
+Total time (without verification) is 15.345 seconds.
+Total time (with verification) is 17.691000000000003 seconds.
+elapsed time: 22.61s
 
-Fri May  3 15:10:19 EDT 2013
+Mon May  6 16:56:17 EDT 2013
 running dacapo/jython
 ...
 Loading properties...
@@ -200,7 +200,7 @@ Adding application archive: /u/karim/workspace/averroes-home/output/organizedApp
 Adding library archive: /u/karim/workspace/averroes-home/output/organizedLibrary.jar
 
 Loading classes ...
-Soot loaded the input classes in 4.574 seconds.
+Soot loaded the input classes in 3.764 seconds.
 
 Creating the class hierarchy for the placeholder library ...
 # initial application classes: 893
@@ -223,13 +223,13 @@ Generating extra library classes ...
 Creating the skeleton for Averroes's main library class ...
 Generating the method bodies for the placeholder library classes ...
 Generating empty basic library classes required by Soot ...
-Placeholder library classes created and validated in 9.932 seconds.
-Place holder library JAR file verified in 1.605 seconds.
-Total time (without verification) is 14.506 seconds.
-Total time (with verification) is 16.111 seconds.
-elapsed time: 22.55s
+Placeholder library classes created and validated in 8.318 seconds.
+Place holder library JAR file verified in 1.279 seconds.
+Total time (without verification) is 12.081999999999999 seconds.
+Total time (with verification) is 13.360999999999999 seconds.
+elapsed time: 18.50s
 
-Fri May  3 15:10:43 EDT 2013
+Mon May  6 16:56:36 EDT 2013
 running dacapo/luindex
 ...
 Loading properties...
@@ -246,7 +246,7 @@ Adding application archive: /u/karim/workspace/averroes-home/output/organizedApp
 Adding library archive: /u/karim/workspace/averroes-home/output/organizedLibrary.jar
 
 Loading classes ...
-Soot loaded the input classes in 3.572 seconds.
+Soot loaded the input classes in 2.899 seconds.
 
 Creating the class hierarchy for the placeholder library ...
 # initial application classes: 324
@@ -269,13 +269,13 @@ Generating extra library classes ...
 Creating the skeleton for Averroes's main library class ...
 Generating the method bodies for the placeholder library classes ...
 Generating empty basic library classes required by Soot ...
-Placeholder library classes created and validated in 4.041 seconds.
-Place holder library JAR file verified in 1.202 seconds.
-Total time (without verification) is 7.613 seconds.
-Total time (with verification) is 8.815000000000001 seconds.
-elapsed time: 14.58s
+Placeholder library classes created and validated in 3.244 seconds.
+Place holder library JAR file verified in 0.895 seconds.
+Total time (without verification) is 6.143000000000001 seconds.
+Total time (with verification) is 7.038 seconds.
+elapsed time: 11.65s
 
-Fri May  3 15:10:59 EDT 2013
+Mon May  6 16:56:49 EDT 2013
 running dacapo/lusearch
 ...
 Loading properties...
@@ -292,7 +292,7 @@ Adding application archive: /u/karim/workspace/averroes-home/output/organizedApp
 Adding library archive: /u/karim/workspace/averroes-home/output/organizedLibrary.jar
 
 Loading classes ...
-Soot loaded the input classes in 3.551 seconds.
+Soot loaded the input classes in 2.932 seconds.
 
 Creating the class hierarchy for the placeholder library ...
 # initial application classes: 324
@@ -315,13 +315,13 @@ Generating extra library classes ...
 Creating the skeleton for Averroes's main library class ...
 Generating the method bodies for the placeholder library classes ...
 Generating empty basic library classes required by Soot ...
-Placeholder library classes created and validated in 4.112 seconds.
-Place holder library JAR file verified in 1.236 seconds.
-Total time (without verification) is 7.663 seconds.
-Total time (with verification) is 8.899000000000001 seconds.
-elapsed time: 14.59s
+Placeholder library classes created and validated in 3.586 seconds.
+Place holder library JAR file verified in 0.921 seconds.
+Total time (without verification) is 6.518 seconds.
+Total time (with verification) is 7.439 seconds.
+elapsed time: 12.03s
 
-Fri May  3 15:11:14 EDT 2013
+Mon May  6 16:57:02 EDT 2013
 running dacapo/pmd
 ...
 Loading properties...
@@ -338,7 +338,7 @@ Adding application archive: /u/karim/workspace/averroes-home/output/organizedApp
 Adding library archive: /u/karim/workspace/averroes-home/output/organizedLibrary.jar
 
 Loading classes ...
-Soot loaded the input classes in 5.443 seconds.
+Soot loaded the input classes in 4.271 seconds.
 
 Creating the class hierarchy for the placeholder library ...
 # initial application classes: 527
@@ -361,13 +361,13 @@ Generating extra library classes ...
 Creating the skeleton for Averroes's main library class ...
 Generating the method bodies for the placeholder library classes ...
 Generating empty basic library classes required by Soot ...
-Placeholder library classes created and validated in 8.851 seconds.
-Place holder library JAR file verified in 1.596 seconds.
-Total time (without verification) is 14.294 seconds.
-Total time (with verification) is 15.89 seconds.
-elapsed time: 22.68s
+Placeholder library classes created and validated in 7.024 seconds.
+Place holder library JAR file verified in 1.223 seconds.
+Total time (without verification) is 11.295 seconds.
+Total time (with verification) is 12.518 seconds.
+elapsed time: 17.91s
 
-Fri May  3 15:11:38 EDT 2013
+Mon May  6 16:57:21 EDT 2013
 running dacapo/xalan
 ...
 Loading properties...
@@ -384,7 +384,7 @@ Adding application archive: /u/karim/workspace/averroes-home/output/organizedApp
 Adding library archive: /u/karim/workspace/averroes-home/output/organizedLibrary.jar
 
 Loading classes ...
-Soot loaded the input classes in 4.808 seconds.
+Soot loaded the input classes in 3.683 seconds.
 
 Creating the class hierarchy for the placeholder library ...
 # initial application classes: 540
@@ -407,13 +407,13 @@ Generating extra library classes ...
 Creating the skeleton for Averroes's main library class ...
 Generating the method bodies for the placeholder library classes ...
 Generating empty basic library classes required by Soot ...
-Placeholder library classes created and validated in 9.518 seconds.
-Place holder library JAR file verified in 2.129 seconds.
-Total time (without verification) is 14.326 seconds.
-Total time (with verification) is 16.455000000000002 seconds.
-elapsed time: 22.68s
+Placeholder library classes created and validated in 7.603 seconds.
+Place holder library JAR file verified in 1.608 seconds.
+Total time (without verification) is 11.286 seconds.
+Total time (with verification) is 12.894 seconds.
+elapsed time: 17.90s
 
-Fri May  3 15:12:01 EDT 2013
+Mon May  6 16:57:39 EDT 2013
 running specjvm/compress
 ...
 Loading properties...
@@ -431,7 +431,7 @@ Adding application archive: /u/karim/workspace/averroes-home/output/organizedApp
 Adding library archive: /u/karim/workspace/averroes-home/output/organizedLibrary.jar
 
 Loading classes ...
-Soot loaded the input classes in 3.123 seconds.
+Soot loaded the input classes in 2.548 seconds.
 
 Creating the class hierarchy for the placeholder library ...
 # initial application classes: 12
@@ -454,13 +454,13 @@ Generating extra library classes ...
 Creating the skeleton for Averroes's main library class ...
 Generating the method bodies for the placeholder library classes ...
 Generating empty basic library classes required by Soot ...
-Placeholder library classes created and validated in 1.227 seconds.
-Place holder library JAR file verified in 0.496 seconds.
-Total time (without verification) is 4.3500000000000005 seconds.
-Total time (with verification) is 4.846 seconds.
-elapsed time: 10.39s
+Placeholder library classes created and validated in 1.055 seconds.
+Place holder library JAR file verified in 0.4 seconds.
+Total time (without verification) is 3.6029999999999998 seconds.
+Total time (with verification) is 4.003 seconds.
+elapsed time: 8.51s
 
-Fri May  3 15:12:13 EDT 2013
+Mon May  6 16:57:49 EDT 2013
 running specjvm/db
 ...
 Loading properties...
@@ -478,7 +478,7 @@ Adding application archive: /u/karim/workspace/averroes-home/output/organizedApp
 Adding library archive: /u/karim/workspace/averroes-home/output/organizedLibrary.jar
 
 Loading classes ...
-Soot loaded the input classes in 3.071 seconds.
+Soot loaded the input classes in 2.555 seconds.
 
 Creating the class hierarchy for the placeholder library ...
 # initial application classes: 3
@@ -501,13 +501,13 @@ Generating extra library classes ...
 Creating the skeleton for Averroes's main library class ...
 Generating the method bodies for the placeholder library classes ...
 Generating empty basic library classes required by Soot ...
-Placeholder library classes created and validated in 1.568 seconds.
-Place holder library JAR file verified in 0.594 seconds.
-Total time (without verification) is 4.639 seconds.
-Total time (with verification) is 5.2330000000000005 seconds.
-elapsed time: 10.75s
+Placeholder library classes created and validated in 1.249 seconds.
+Place holder library JAR file verified in 0.483 seconds.
+Total time (without verification) is 3.8040000000000003 seconds.
+Total time (with verification) is 4.287 seconds.
+elapsed time: 8.72s
 
-Fri May  3 15:12:24 EDT 2013
+Mon May  6 16:57:58 EDT 2013
 running specjvm/jack
 ...
 Loading properties...
@@ -525,7 +525,7 @@ Adding application archive: /u/karim/workspace/averroes-home/output/organizedApp
 Adding library archive: /u/karim/workspace/averroes-home/output/organizedLibrary.jar
 
 Loading classes ...
-Soot loaded the input classes in 3.251 seconds.
+Soot loaded the input classes in 2.677 seconds.
 
 Creating the class hierarchy for the placeholder library ...
 # initial application classes: 56
@@ -548,13 +548,13 @@ Generating extra library classes ...
 Creating the skeleton for Averroes's main library class ...
 Generating the method bodies for the placeholder library classes ...
 Generating empty basic library classes required by Soot ...
-Placeholder library classes created and validated in 1.723 seconds.
-Place holder library JAR file verified in 0.709 seconds.
-Total time (without verification) is 4.974 seconds.
-Total time (with verification) is 5.683 seconds.
-elapsed time: 11.23s
+Placeholder library classes created and validated in 1.35 seconds.
+Place holder library JAR file verified in 0.56 seconds.
+Total time (without verification) is 4.027 seconds.
+Total time (with verification) is 4.587 seconds.
+elapsed time: 9.07s
 
-Fri May  3 15:12:37 EDT 2013
+Mon May  6 16:58:08 EDT 2013
 running specjvm/javac
 ...
 Loading properties...
@@ -572,7 +572,7 @@ Adding application archive: /u/karim/workspace/averroes-home/output/organizedApp
 Adding library archive: /u/karim/workspace/averroes-home/output/organizedLibrary.jar
 
 Loading classes ...
-Soot loaded the input classes in 3.465 seconds.
+Soot loaded the input classes in 2.862 seconds.
 
 Creating the class hierarchy for the placeholder library ...
 # initial application classes: 176
@@ -595,13 +595,13 @@ Generating extra library classes ...
 Creating the skeleton for Averroes's main library class ...
 Generating the method bodies for the placeholder library classes ...
 Generating empty basic library classes required by Soot ...
-Placeholder library classes created and validated in 2.236 seconds.
-Place holder library JAR file verified in 0.682 seconds.
-Total time (without verification) is 5.7010000000000005 seconds.
-Total time (with verification) is 6.383000000000001 seconds.
-elapsed time: 11.95s
+Placeholder library classes created and validated in 1.813 seconds.
+Place holder library JAR file verified in 0.551 seconds.
+Total time (without verification) is 4.675 seconds.
+Total time (with verification) is 5.226 seconds.
+elapsed time: 9.72s
 
-Fri May  3 15:12:50 EDT 2013
+Mon May  6 16:58:19 EDT 2013
 running specjvm/jess
 ...
 Loading properties...
@@ -619,7 +619,7 @@ Adding application archive: /u/karim/workspace/averroes-home/output/organizedApp
 Adding library archive: /u/karim/workspace/averroes-home/output/organizedLibrary.jar
 
 Loading classes ...
-Soot loaded the input classes in 3.363 seconds.
+Soot loaded the input classes in 2.825 seconds.
 
 Creating the class hierarchy for the placeholder library ...
 # initial application classes: 5
@@ -642,13 +642,13 @@ Generating extra library classes ...
 Creating the skeleton for Averroes's main library class ...
 Generating the method bodies for the placeholder library classes ...
 Generating empty basic library classes required by Soot ...
-Placeholder library classes created and validated in 2.047 seconds.
-Place holder library JAR file verified in 0.901 seconds.
-Total time (without verification) is 5.41 seconds.
-Total time (with verification) is 6.311 seconds.
-elapsed time: 11.92s
+Placeholder library classes created and validated in 1.585 seconds.
+Place holder library JAR file verified in 0.698 seconds.
+Total time (without verification) is 4.41 seconds.
+Total time (with verification) is 5.1080000000000005 seconds.
+elapsed time: 9.56s
 
-Fri May  3 15:13:02 EDT 2013
+Mon May  6 16:58:29 EDT 2013
 running specjvm/raytrace
 ...
 Loading properties...
@@ -666,7 +666,7 @@ Adding application archive: /u/karim/workspace/averroes-home/output/organizedApp
 Adding library archive: /u/karim/workspace/averroes-home/output/organizedLibrary.jar
 
 Loading classes ...
-Soot loaded the input classes in 3.201 seconds.
+Soot loaded the input classes in 2.562 seconds.
 
 Creating the class hierarchy for the placeholder library ...
 # initial application classes: 25
@@ -689,10 +689,10 @@ Generating extra library classes ...
 Creating the skeleton for Averroes's main library class ...
 Generating the method bodies for the placeholder library classes ...
 Generating empty basic library classes required by Soot ...
-Placeholder library classes created and validated in 1.416 seconds.
-Place holder library JAR file verified in 0.583 seconds.
-Total time (without verification) is 4.617 seconds.
-Total time (with verification) is 5.2 seconds.
-elapsed time: 10.74s
+Placeholder library classes created and validated in 1.179 seconds.
+Place holder library JAR file verified in 0.465 seconds.
+Total time (without verification) is 3.7409999999999997 seconds.
+Total time (with verification) is 4.2059999999999995 seconds.
+elapsed time: 8.72s
 
-Fri May  3 15:13:14 EDT 2013
+Mon May  6 16:58:38 EDT 2013
