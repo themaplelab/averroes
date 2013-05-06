@@ -183,7 +183,7 @@ public class CodeGenerator {
 
 			// Create the dotItAll method
 			createAverroesDoItAll();
-
+			
 			writeLibraryClassFile(averroesLibraryClass);
 		}
 	}

@@ -256,6 +256,15 @@ public class AverroesJimpleBody {
 	}
 
 	/**
+	 * Get the underlying Jimple body.
+	 * 
+	 * @return
+	 */
+	public JimpleBody getJimpleBody() {
+		return body;
+	}
+
+	/**
 	 * Add statements that initialize all the static fields of the declaring class.
 	 * 
 	 * @return

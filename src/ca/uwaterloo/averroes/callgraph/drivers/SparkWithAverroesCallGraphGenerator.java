@@ -22,8 +22,9 @@ public class SparkWithAverroesCallGraphGenerator {
 				throw new AverroesException("SparkAverroes expects exactly 1 argument.");
 			}
 
+			// Process the arguments
 			String benchmark = args[0];
-
+			
 			FileUtils.createDirectory(AverroesProperties.getOutputDir());
 			CallGraph spark = CallGraphFactory.generateSparkWithAverroesCallGraph(benchmark);
 			new GXLWriter().write(spark, FileUtils.sparkAverroesCallGraphFile());
