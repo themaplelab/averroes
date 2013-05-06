@@ -16,7 +16,7 @@ import ca.uwaterloo.averroes.util.io.FileUtils;
 public class CallGraphStatistics {
 
 	static String year = "2013";
-	static String day = "may03-no-reflection";
+	static String day = "may06-no-reflection";
 	static List<String> dacapo = Arrays.asList("antlr", "bloat", "chart", "hsqldb", "luindex", "lusearch", "pmd",
 			"xalan");
 	static List<String> specjvm = Arrays.asList("compress", "db", "jack", "javac", "jess", "raytrace");

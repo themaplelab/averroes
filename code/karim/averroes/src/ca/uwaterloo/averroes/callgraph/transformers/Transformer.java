@@ -38,7 +38,7 @@ public enum Transformer {
 		Map<String, String> opts = new HashMap<String, String>(PhaseOptions.v().getPhaseOptions("cg.spark"));
 		opts.put("enabled", "true");
 		opts.put("verbose", "true");
-		//opts.put("simulate-natives", "false");
+		opts.put("simulate-natives", "false"); // TODO
 		opts.put("force-gc", "true");
 		return opts;
 	}

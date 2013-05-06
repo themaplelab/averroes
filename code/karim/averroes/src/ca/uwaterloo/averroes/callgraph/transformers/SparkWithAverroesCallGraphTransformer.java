@@ -19,7 +19,6 @@ import soot.SourceLocator;
 import soot.jimple.spark.SparkTransformer;
 import soot.options.Options;
 import ca.uwaterloo.averroes.properties.AverroesProperties;
-import ca.uwaterloo.averroes.soot.SootSceneUtil;
 
 public class SparkWithAverroesCallGraphTransformer {
 	private AverroesClassProvider provider;
@@ -39,13 +38,14 @@ public class SparkWithAverroesCallGraphTransformer {
 
 		// Set some soot parameters
 		SourceLocator.v().setClassProviders(Collections.singletonList((ClassProvider) provider));
-		SootSceneUtil.addCommonDynamicClasses(provider);
+		// SootSceneUtil.addCommonDynamicClasses(provider);
 		Options.v().classes().addAll(provider.getApplicationClassNames());
 		Options.v().set_main_class(AverroesProperties.getMainClass());
 		Options.v().set_whole_program(true);
 
 		// Since we're using the crafted JAR, then we only need to add the dynamic application classes.
-		Options.v().set_dynamic_class(AverroesProperties.getDynamicApplicationClasses());
+		// Options.v().set_dynamic_class(AverroesProperties.getDynamicApplicationClasses());
+		Options.v().set_dynamic_class(new ArrayList<String>());
 
 		// Load the necessary classes
 		Scene.v().loadNecessaryClasses();
