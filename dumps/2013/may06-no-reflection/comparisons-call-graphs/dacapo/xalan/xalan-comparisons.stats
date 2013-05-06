@@ -1,0 +1,253 @@
+...
+generating stats for dacapo/xalan
+Loading properties.
+Call Graph Edges
+================
+Spark: 13079
+SparkAverroes: 15
+Doop: 9161
+DoopAverroes: 10791
+
+Library Call Graph Edges
+========================
+Spark: 1064
+SparkAverroes: 12
+Doop: 860
+DoopAverroes: 1029
+
+Library Call Back Edges
+=======================
+Spark: 492
+SparkAverroes: 7
+Doop: 156
+DoopAverroes: 662
+
+
+CGE
+===
+Dyn - Spark: 59
+Dyn - SparkAverroes: 2529
+Dyn - Doop: 250
+Dyn - DoopAverroes: 0
+Spark - SparkAverroes: 13064
+Doop - DoopAverroes: 798
+SparkAverroes - Spark: 0
+DoopAverroes - Doop: 2428
+Cgc - DoopAverroes: 1151
+DoopAverroes - Cgc: 314
+
+LCGE
+====
+Dyn - Spark: 9
+Dyn - SparkAverroes: 313
+Dyn - Doop: 42
+Dyn - DoopAverroes: 0
+Spark - SparkAverroes: 1052
+Doop - DoopAverroes: 92
+SparkAverroes - Spark: 0
+DoopAverroes - Doop: 261
+Cgc - DoopAverroes: 138
+DoopAverroes - Cgc: 18
+
+LCBE
+====
+Dyn - Spark: 28
+Dyn - SparkAverroes: 82
+Dyn - Doop: 57
+Dyn - DoopAverroes: 0
+Spark - SparkAverroes: 489
+Doop - DoopAverroes: 29
+SparkAverroes - Spark: 4
+DoopAverroes - Doop: 535
+Cgc - DoopAverroes: 44
+DoopAverroes - Cgc: 10
+
+
+Frequencies of extra library call-backs
+=======================================
+SparkAverroes - Spark
+----------
+error = 1
+fatalError = 1
+run = 1
+warning = 1
+
+DoopAverroes - Doop
+-----------
+getNodeName = 33
+clone = 17
+processingInstruction = 10
+ignorableWhitespace = 9
+write = 9
+endDocument = 8
+endPrefixMapping = 8
+error = 8
+fatalError = 8
+skippedEntity = 8
+startDocument = 8
+startElement = 8
+warning = 8
+characters = 7
+comment = 7
+endDTD = 7
+endElement = 7
+endEntity = 7
+setDocumentLocator = 7
+startDTD = 7
+startEntity = 7
+startPrefixMapping = 7
+endCDATA = 6
+getPrefix = 6
+startCDATA = 6
+getLength = 5
+getLocalName = 5
+getValue = 5
+notationDecl = 5
+unparsedEntityDecl = 5
+appendChild = 4
+attributeDecl = 4
+elementDecl = 4
+externalEntityDecl = 4
+getAttribute = 4
+getNodeType = 4
+getNodeValue = 4
+internalEntityDecl = 4
+setPrefix = 4
+<init> = 3
+cloneNode = 3
+close = 3
+equals = 3
+flush = 3
+getAttributes = 3
+getChildNodes = 3
+getErrorListener = 3
+getFirstChild = 3
+getLastChild = 3
+getNamespaceURI = 3
+getNextSibling = 3
+getOutputProperties = 3
+getOwnerDocument = 3
+getParentNode = 3
+getPreviousSibling = 3
+getPublicId = 3
+getSystemId = 3
+getType = 3
+getURIResolver = 3
+hasAttributes = 3
+hasChildNodes = 3
+insertBefore = 3
+isSupported = 3
+item = 3
+newTransformer = 3
+newTransformerHandler = 3
+normalize = 3
+removeChild = 3
+replaceChild = 3
+resolveEntity = 3
+setAttribute = 3
+setErrorListener = 3
+setNodeValue = 3
+setSystemId = 3
+setURIResolver = 3
+clearParameters = 2
+createAttribute = 2
+createAttributeNS = 2
+createCDATASection = 2
+createComment = 2
+createDocumentFragment = 2
+createElement = 2
+createElementNS = 2
+createEntityReference = 2
+createProcessingInstruction = 2
+createTextNode = 2
+getAttributeNS = 2
+getAttributeNode = 2
+getAttributeNodeNS = 2
+getDoctype = 2
+getDocumentElement = 2
+getElementById = 2
+getElementsByTagName = 2
+getElementsByTagNameNS = 2
+getImplementation = 2
+getIndex = 2
+getName = 2
+getOutputProperty = 2
+getOwnerElement = 2
+getParameter = 2
+getPrefixes = 2
+getSpecified = 2
+getTagName = 2
+getTransformer = 2
+getURI = 2
+hasAttribute = 2
+hasAttributeNS = 2
+importNode = 2
+newXMLFilter = 2
+parse = 2
+printStackTrace = 2
+removeAttribute = 2
+removeAttributeNS = 2
+removeAttributeNode = 2
+run = 2
+setAttributeNS = 2
+setAttributeNode = 2
+setAttributeNodeNS = 2
+setOutputProperties = 2
+setOutputProperty = 2
+setParameter = 2
+setResult = 2
+setValue = 2
+toString = 2
+transform = 2
+addAttribute = 1
+appendData = 1
+createDocument = 1
+createDocumentType = 1
+declarePrefix = 1
+deleteData = 1
+detach = 1
+getAssociatedStylesheet = 1
+getData = 1
+getDeclaredPrefixes = 1
+getExpandEntityReferences = 1
+getFeature = 1
+getFilter = 1
+getNamedItem = 1
+getNamedItemNS = 1
+getQName = 1
+getRoot = 1
+getTarget = 1
+getTemplates = 1
+getWhatToShow = 1
+hasFeature = 1
+hasMoreElements = 1
+hashCode = 1
+initCause = 1
+insertData = 1
+newTemplates = 1
+newTemplatesHandler = 1
+nextElement = 1
+nextNode = 1
+popContext = 1
+previousNode = 1
+processName = 1
+pushContext = 1
+removeNamedItem = 1
+removeNamedItemNS = 1
+replaceData = 1
+setContentHandler = 1
+setData = 1
+setNamedItem = 1
+setNamedItemNS = 1
+setParent = 1
+splitText = 1
+substringData = 1
+
+DoopAverroes - Cgc
+-----------
+clone = 6
+toString = 2
+<init> = 1
+equals = 1
+
+elapsed time: 15.37s

@@ -1,0 +1,38 @@
+...
+running Spark with Averroes for dacapo/antlr
+Loading properties...
+Generating the call graph from Spark.
+
+Preparing classes ...
+Adding application archive: /u/karim/workspace/averroes-home/benchmarks-averroes/dacapo/antlr-organized-app.jar
+Adding placeholder library archive: /u/karim/workspace/averroes-home/benchmarks-averroes/dacapo/antlr-placeholder-lib.jar
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+Total methods: 2695
+Initially reachable methods: 35
+Classes with at least one reachable method: 35
+[Spark] Pointer Assignment Graph in 0.6 seconds.
+Total types: 402
+[Spark] Type masks in 0.1 seconds.
+VarNodes: 169
+FieldRefNodes: 2
+AllocNodes: 106
+Cleaning up graph for merged nodes
+Done cleaning up graph for merged nodes
+[Spark] Pointer Graph simplified in 0.0 seconds.
+Worklist has 106 nodes.
+Now handling field references
+Worklist has 320 nodes.
+Now handling field references
+Worklist has 358 nodes.
+Now handling field references
+Worklist has 281 nodes.
+Now handling field references
+Worklist has 176 nodes.
+Now handling field references
+Worklist has 14 nodes.
+Now handling field references
+[Spark] Propagation in 7.7 seconds.
+[Spark] Solution found in 8.1 seconds.
+[Spark] Number of reachable methods: 999
+
+elapsed time: 17.80s

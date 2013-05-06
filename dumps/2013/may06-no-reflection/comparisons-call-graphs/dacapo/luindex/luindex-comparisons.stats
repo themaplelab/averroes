@@ -1,0 +1,89 @@
+...
+generating stats for dacapo/luindex
+Loading properties.
+Call Graph Edges
+================
+Spark: 1412
+SparkAverroes: 450
+Doop: 693
+DoopAverroes: 924
+
+Library Call Graph Edges
+========================
+Spark: 336
+SparkAverroes: 154
+Doop: 205
+DoopAverroes: 246
+
+Library Call Back Edges
+=======================
+Spark: 136
+SparkAverroes: 21
+Doop: 21
+DoopAverroes: 37
+
+
+CGE
+===
+Dyn - Spark: 0
+Dyn - SparkAverroes: 244
+Dyn - Doop: 244
+Dyn - DoopAverroes: 0
+Spark - SparkAverroes: 963
+Doop - DoopAverroes: 0
+SparkAverroes - Spark: 1
+DoopAverroes - Doop: 231
+Cgc - DoopAverroes: 0
+DoopAverroes - Cgc: 1
+
+LCGE
+====
+Dyn - Spark: 0
+Dyn - SparkAverroes: 53
+Dyn - Doop: 53
+Dyn - DoopAverroes: 0
+Spark - SparkAverroes: 182
+Doop - DoopAverroes: 0
+SparkAverroes - Spark: 0
+DoopAverroes - Doop: 41
+Cgc - DoopAverroes: 0
+DoopAverroes - Cgc: 3
+
+LCBE
+====
+Dyn - Spark: 4
+Dyn - SparkAverroes: 6
+Dyn - Doop: 6
+Dyn - DoopAverroes: 0
+Spark - SparkAverroes: 116
+Doop - DoopAverroes: 0
+SparkAverroes - Spark: 1
+DoopAverroes - Doop: 16
+Cgc - DoopAverroes: 0
+DoopAverroes - Cgc: 10
+
+
+Frequencies of extra library call-backs
+=======================================
+SparkAverroes - Spark
+----------
+finalize = 1
+
+DoopAverroes - Doop
+-----------
+toString = 7
+clone = 5
+<init> = 1
+accept = 1
+equals = 1
+hashCode = 1
+
+DoopAverroes - Cgc
+-----------
+toString = 5
+clone = 2
+<init> = 1
+equals = 1
+hashCode = 1
+
+elapsed time: 6.92s

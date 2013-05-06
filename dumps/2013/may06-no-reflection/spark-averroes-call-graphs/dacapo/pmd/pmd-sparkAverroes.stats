@@ -1,0 +1,38 @@
+...
+running Spark with Averroes for dacapo/pmd
+Loading properties...
+Generating the call graph from Spark.
+
+Preparing classes ...
+Adding application archive: /u/karim/workspace/averroes-home/benchmarks-averroes/dacapo/pmd-organized-app.jar
+Adding placeholder library archive: /u/karim/workspace/averroes-home/benchmarks-averroes/dacapo/pmd-placeholder-lib.jar
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+Total methods: 4865
+Initially reachable methods: 83
+Classes with at least one reachable method: 83
+[Spark] Pointer Assignment Graph in 1.3 seconds.
+Total types: 916
+[Spark] Type masks in 0.6 seconds.
+VarNodes: 405
+FieldRefNodes: 2
+AllocNodes: 213
+Cleaning up graph for merged nodes
+Done cleaning up graph for merged nodes
+[Spark] Pointer Graph simplified in 0.0 seconds.
+Worklist has 213 nodes.
+Now handling field references
+Worklist has 79 nodes.
+Now handling field references
+Worklist has 482 nodes.
+Now handling field references
+Worklist has 214 nodes.
+Now handling field references
+Worklist has 50 nodes.
+Now handling field references
+Worklist has 3 nodes.
+Now handling field references
+[Spark] Propagation in 13.4 seconds.
+[Spark] Solution found in 13.9 seconds.
+[Spark] Number of reachable methods: 2309
+
+elapsed time: 24.67s

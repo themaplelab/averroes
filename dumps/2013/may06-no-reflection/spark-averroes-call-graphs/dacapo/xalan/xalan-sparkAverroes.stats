@@ -1,0 +1,30 @@
+...
+running Spark with Averroes for dacapo/xalan
+Loading properties...
+Generating the call graph from Spark.
+
+Preparing classes ...
+Adding application archive: /u/karim/workspace/averroes-home/benchmarks-averroes/dacapo/xalan-organized-app.jar
+Adding placeholder library archive: /u/karim/workspace/averroes-home/benchmarks-averroes/dacapo/xalan-placeholder-lib.jar
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+Total methods: 6795
+Initially reachable methods: 53
+Classes with at least one reachable method: 53
+[Spark] Pointer Assignment Graph in 1.4 seconds.
+Total types: 904
+[Spark] Type masks in 0.5 seconds.
+VarNodes: 551
+FieldRefNodes: 4
+AllocNodes: 195
+Cleaning up graph for merged nodes
+Done cleaning up graph for merged nodes
+[Spark] Pointer Graph simplified in 0.0 seconds.
+Worklist has 197 nodes.
+Now handling field references
+Worklist has 4 nodes.
+Now handling field references
+[Spark] Propagation in 1.9 seconds.
+[Spark] Solution found in 2.4 seconds.
+[Spark] Number of reachable methods: 949
+
+elapsed time: 12.87s
