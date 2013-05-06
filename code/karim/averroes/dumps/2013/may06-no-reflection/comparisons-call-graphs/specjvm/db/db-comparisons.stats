@@ -1,0 +1,80 @@
+...
+generating stats for specjvm/db
+Loading properties.
+Call Graph Edges
+================
+Spark: 47
+SparkAverroes: 48
+Doop: 47
+DoopAverroes: 48
+
+Library Call Graph Edges
+========================
+Spark: 23
+SparkAverroes: 24
+Doop: 24
+DoopAverroes: 24
+
+Library Call Back Edges
+=======================
+Spark: 12
+SparkAverroes: 3
+Doop: 2
+DoopAverroes: 3
+
+
+CGE
+===
+Dyn - Spark: 0
+Dyn - SparkAverroes: 0
+Dyn - Doop: 0
+Dyn - DoopAverroes: 0
+Spark - SparkAverroes: 0
+Doop - DoopAverroes: 0
+SparkAverroes - Spark: 1
+DoopAverroes - Doop: 1
+Cgc - DoopAverroes: 0
+DoopAverroes - Cgc: 1
+
+LCGE
+====
+Dyn - Spark: 0
+Dyn - SparkAverroes: 0
+Dyn - Doop: 0
+Dyn - DoopAverroes: 0
+Spark - SparkAverroes: 0
+Doop - DoopAverroes: 0
+SparkAverroes - Spark: 1
+DoopAverroes - Doop: 0
+Cgc - DoopAverroes: 0
+DoopAverroes - Cgc: 0
+
+LCBE
+====
+Dyn - Spark: 0
+Dyn - SparkAverroes: 0
+Dyn - Doop: 0
+Dyn - DoopAverroes: 0
+Spark - SparkAverroes: 10
+Doop - DoopAverroes: 0
+SparkAverroes - Spark: 1
+DoopAverroes - Doop: 1
+Cgc - DoopAverroes: 0
+DoopAverroes - Cgc: 1
+
+
+Frequencies of extra library call-backs
+=======================================
+SparkAverroes - Spark
+----------
+harnessMain = 1
+
+DoopAverroes - Doop
+-----------
+harnessMain = 1
+
+DoopAverroes - Cgc
+-----------
+harnessMain = 1
+
+elapsed time: 2.53s
