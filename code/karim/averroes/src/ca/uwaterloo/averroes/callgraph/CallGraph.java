@@ -83,6 +83,50 @@ public class CallGraph {
 		return Collections.unmodifiableSet(methodSet);
 	}
 
+	/**
+	 * Get a set of those methods that are transitively reachable in the call graph from its entry points.
+	 * 
+	 * @return
+	 */
+	public Set<ProbeMethod> findReachables() {
+		// Add entry points, and library call backs
+		Set<ProbeMethod> reachables = new HashSet<ProbeMethod>(applicationEntryPoints());
+		reachables.addAll(libToAppEdges);
+
+		while (true) {
+			Set<ProbeMethod> newReachables = new HashSet<ProbeMethod>();
+			for (CallEdge e : appToAppEdges) {
+				if (reachables.contains(e.src()) && !reachables.contains(e.dst())) {
+					newReachables.add(e.dst());
+				}
+			}
+
+			if (newReachables.isEmpty()) {
+				break;
+			}
+			reachables.addAll(newReachables);
+		}
+
+		return reachables;
+	}
+
+	/**
+	 * Get the set of application entry points. This is used for dynamic call graphs.
+	 * 
+	 * @return
+	 */
+	public Set<ProbeMethod> applicationEntryPoints() {
+		Set<ProbeMethod> result = new HashSet<ProbeMethod>();
+		
+		for (ProbeMethod method : entryPoints) {
+			if(!method.cls().pkg().startsWith("java.lang")) {
+				result.add(method);
+			}
+		}
+		
+		return result;
+	}
+
 	public boolean hasLibraryEdges() {
 		return appToLibEdges.size() > 0 || libToAppEdges.size() > 0;
 	}
