@@ -19,6 +19,7 @@ import soot.SootMethod;
 import soot.Type;
 import soot.VoidType;
 import soot.coffi.AverroesApplicationConstantPool;
+import soot.tagkit.Tag;
 import soot.util.NumberedString;
 import ca.uwaterloo.averroes.properties.AverroesProperties;
 import ca.uwaterloo.averroes.util.SetUtils;
@@ -1773,6 +1774,7 @@ public class Hierarchy {
 				toRemove.add(method);
 			} else {
 				cleanupLibraryMethodExceptions(method);
+				cleanupLibraryMethodTags(method); // TODO
 				makeNotNative(method);
 			}
 		}
@@ -1803,6 +1805,23 @@ public class Hierarchy {
 		// Remove the exceptions the proper way.
 		for (SootClass exception : toRemove) {
 			libraryMethod.removeException(exception);
+		}
+	}
+
+	/**
+	 * Cleanup the tag list of a library method. There's no need for tags/annotations in a placeholder library.
+	 * 
+	 * @param libraryMethod
+	 */
+	private void cleanupLibraryMethodTags(SootMethod libraryMethod) {
+		Set<String> toRemove = new HashSet<String>();
+		for (Tag tag : libraryMethod.getTags()) {
+			toRemove.add(tag.getName());
+		}
+
+		// Remove the exceptions the proper way.
+		for (String tag : toRemove) {
+			libraryMethod.removeTag(tag);
 		}
 	}
 
