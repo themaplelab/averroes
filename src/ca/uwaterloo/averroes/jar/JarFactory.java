@@ -33,7 +33,7 @@ public class JarFactory {
 		try {
 			// Process the arguments
 			AverroesProperties.processArguments(args);
-			
+
 			// Reset Soot
 			G.reset();
 
