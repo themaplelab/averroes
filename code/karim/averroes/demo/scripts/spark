@@ -1,0 +1,7 @@
+#! /usr/bin/env bash
+
+set -e
+
+date
+java -Xmx1024m -jar spark.jar
+echo ""
