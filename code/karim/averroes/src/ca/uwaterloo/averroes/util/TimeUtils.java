@@ -18,7 +18,7 @@ public class TimeUtils {
 	 * @return
 	 */
 	public static double elapsedTime(long start) {
-		return (System.currentTimeMillis() - start) / 1000.0;
+		return MathUtils.round((System.currentTimeMillis() - start) / 1000.0);
 	}
 
 	/**
@@ -27,7 +27,7 @@ public class TimeUtils {
 	 * @return
 	 */
 	public static double elapsedTime() {
-		return (System.currentTimeMillis() - start) / 1000.0;
+		return MathUtils.round((System.currentTimeMillis() - start) / 1000.0);
 	}
 
 	/**
@@ -36,7 +36,7 @@ public class TimeUtils {
 	 * @return
 	 */
 	public static double elapsedSplitTime() {
-		return (System.currentTimeMillis() - splitStart) / 1000.0;
+		return MathUtils.round((System.currentTimeMillis() - splitStart) / 1000.0);
 	}
 
 	/**

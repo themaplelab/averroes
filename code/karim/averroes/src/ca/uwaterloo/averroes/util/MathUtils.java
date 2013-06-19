@@ -19,4 +19,14 @@ public class MathUtils {
 		return (double) tmp / factor;
 	}
 
+	/**
+	 * Round a double value to the nearest two decimal places.
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public static double round(double value) {
+		return round(value, 2);
+	}
+
 }
