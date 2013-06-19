@@ -66,6 +66,10 @@ public class CallGraph {
 	public void setSource(CallGraphSource source) {
 		this.source = source;
 	}
+	
+	public int size() {
+		return appToAppEdges.size() + appToLibEdges.size() + libToAppEdges.size();
+	}
 
 	public Set<ProbeMethod> methods() {
 		Set<ProbeMethod> methodSet = new HashSet<ProbeMethod>();
