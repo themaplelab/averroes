@@ -1,1 +1,28 @@
-Benchmarks to analyze: luindex, raytrace (or any Spec JVM benchmark)
+Step 1
+Introduce yourself, speak a bit about the project (1 minute max).
+
+Step 2
+Point out the sign that says the presentation date/time: Thursday July 4th, Session 5 (14:15-15:15pm), last presenation.
+
+Step 3
+The DEMO
+
+Step 4
+Show the table of benchmarks and tell them let's pick a benchmark that doesn't take long to run, and choose raytrace.
+Alternatively, if they ask to run a specific benchmark, by all means do that.
+
+Step 5
+Explain while Averroes is running, what each line of the output represents
+- Jar organization: sorts out input jars into application & library based on regular expression in properties file
+- Loading the classes into Soot
+- Creating the class hierarchy
+- Cleaning up the hierarchy: removes unnecessary fields, methods, classes
+- Generating extra classes: create concrete classes implementations for some library classes (e.g., Vector.elements()
+and Enumeration).
+- Creating Averroes.class
+- Using Soot to validate the internal Jimple structure of placeholder library and generate class files
+- Using BCEL to verify the structure of the class files in the generated JAR
+
+Step 6
+Use Spark to generate the call graphs for that benchmark, or any other really if they'd like
+Have the table for Spark times ready so that they can compare both times.
