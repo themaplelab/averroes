@@ -12,6 +12,7 @@ import ca.uwaterloo.averroes.properties.AverroesProperties;
 import ca.uwaterloo.averroes.soot.CodeGenerator;
 import ca.uwaterloo.averroes.soot.Hierarchy;
 import ca.uwaterloo.averroes.soot.SootSceneUtil;
+import ca.uwaterloo.averroes.util.MathUtils;
 import ca.uwaterloo.averroes.util.TimeUtils;
 import ca.uwaterloo.averroes.util.io.FileUtils;
 
@@ -31,6 +32,9 @@ public class JarFactory {
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) {
 		try {
+			// Find the total execution time, instead of depending on the Unix time command
+			TimeUtils.splitStart();
+			
 			// Process the arguments
 			AverroesProperties.processArguments(args);
 
@@ -130,8 +134,11 @@ public class JarFactory {
 			librJarFile.verify();
 			double bcel = TimeUtils.elapsedTime();
 			System.out.println("Place holder library JAR file verified in " + bcel + " seconds.");
-			System.out.println("Total time (without verification) is " + (soot + averroes) + " seconds.");
-			System.out.println("Total time (with verification) is " + (soot + averroes + bcel) + " seconds.");
+			System.out.println("Total time (without verification) is " + MathUtils.round(soot + averroes) + " seconds.");
+			System.out.println("Total time (with verification) is " + MathUtils.round(soot + averroes + bcel) + " seconds.");
+			
+			double total = TimeUtils.elapsedSplitTime();
+			System.out.println("Elapsed time: " + total + " seconds.");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
