@@ -1,0 +1,25 @@
+#! /usr/bin/env bash
+
+set -e
+reflection=$1
+
+# the dacapo benchmarks
+dacapo=( antlr bloat chart hsqldb jython luindex lusearch pmd xalan )
+dacapo=( "${dacapo[@]/#/dacapo/}" )
+
+# the specjvm benchmarks
+specjvm=( compress db jack javac jess raytrace )
+specjvm=( "${specjvm[@]/#/specjvm/}" )
+
+# put them all in one big array
+benchmarks=( ${dacapo[@]} ${specjvm[@]} )
+
+date
+mkdir -p benchmarks-averroes/dacapo
+mkdir -p benchmarks-averroes/specjvm
+
+for benchmark in ${benchmarks[@]}
+do
+  ./averroes $benchmark $reflection
+done
+date
