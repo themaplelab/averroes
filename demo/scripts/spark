@@ -2,6 +2,22 @@
 
 set -e
 
-date
-java -Xmx1024m -jar spark.jar
+benchmark=$1
+
+echo "running Spark for ${benchmark}"
+
+program=$(basename $benchmark)
+outputdir=callgraphs/spark-call-graphs/${benchmark}
+
+# 1. make some dirs
+mkdir -p ${outputdir}/
+
+# 2. run spark.jar
+cp properties/${benchmark}.properties averroes.properties
+jar uf spark.jar averroes.properties
+java -verbose:gc -Xloggc:${outputdir}/${program}-spark-gc.stats -Xmx1024m -jar spark.jar $benchmark
+
+# 3. copy the call graph
+cp output/spark.gxl ${outputdir}/spark.gxl
+
 echo ""
