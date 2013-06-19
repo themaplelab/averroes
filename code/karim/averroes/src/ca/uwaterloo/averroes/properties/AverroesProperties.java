@@ -206,10 +206,10 @@ public final class AverroesProperties {
 	 * @return
 	 */
 	public static String getClasspath() {
-		String inputJars = getInputJarFilesForSpark().trim().concat(File.pathSeparator);
+		String inputJars = getInputJarFilesForSpark().trim();
 		String libJars = getLibraryJarFilesForSpark().trim();
 		String rtJar = getJre().trim();
-		return inputJars.concat((libJars.length() > 0 ? libJars.concat(File.separator) : "")).concat(rtJar);
+		return inputJars + (libJars.length() > 0 ? File.pathSeparator + libJars : "") + File.pathSeparator + rtJar;
 	}
 
 	/**
