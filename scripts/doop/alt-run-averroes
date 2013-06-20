@@ -1,0 +1,18 @@
+#! /bin/bash
+
+# usage: alt-run-averroes jre# mainclass benchmark
+
+set -e
+
+basedir=$(dirname $0)
+cd $basedir
+
+# first remove the previous analysis results
+echo "clearing all cached results ..."
+rm -rf tmp/ jars/ cache/ results/ last-analysis 2>&1
+
+if test "$1" = "system"; then
+  $(pwd)/run-averroes -main $2 -lib $4 -disable-reflection -enable-imprecise-exceptions context-insensitive $3 2>&1
+else
+  $(pwd)/run-averroes -jre $1 -main $2 -lib $4 -disable-reflection -enable-imprecise-exceptions context-insensitive $3 2>&1
+fi

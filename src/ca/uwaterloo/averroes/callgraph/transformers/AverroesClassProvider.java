@@ -185,7 +185,7 @@ public class AverroesClassProvider implements ClassProvider {
 	 * @throws IOException
 	 */
 	private List<String> addApplicationArchive() throws IOException {
-		return addArchive(FileUtils.composePath("benchmarks-averroes", benchmark + "-organized-app.jar"), true);
+		return addArchive(FileUtils.organizedApplicationJarFile(benchmark), true);
 	}
 
 	/**
@@ -195,7 +195,7 @@ public class AverroesClassProvider implements ClassProvider {
 	 * @throws IOException
 	 */
 	private List<String> addLibraryArchive() throws IOException {
-		return addArchive(FileUtils.composePath("benchmarks-averroes", benchmark + "-placeholder-lib.jar"), false);
+		return addArchive(FileUtils.placeholderLibraryJarFile(benchmark), false);
 	}
 
 	/**

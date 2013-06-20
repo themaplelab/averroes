@@ -9,5 +9,7 @@
 	<classpathentry kind="lib" path="lib/jasminclasses-2.5.0.jar" sourcepath="lib/jasminsrc-2.5.0.jar"/>
 	<classpathentry kind="lib" path="lib/polyglotclasses-1.3.5.jar" sourcepath="lib/polyglotsrc-1.3.5.jar"/>
 	<classpathentry kind="lib" path="lib/gxl.jar"/>
+	<classpathentry kind="lib" path="lib/iris-0.60.jar"/>
+	<classpathentry kind="lib" path="lib/iris-parser-0.60.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
