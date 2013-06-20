@@ -1,9 +1,12 @@
-package ca.uwaterloo.averroes.callgraph;
+package ca.uwaterloo.averroes.callgraph.viewers;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.zip.GZIPInputStream;
 
+import ca.uwaterloo.averroes.callgraph.CallGraph;
+import ca.uwaterloo.averroes.callgraph.CallGraphPrintOptions;
+import ca.uwaterloo.averroes.callgraph.CallGraphSource;
 import ca.uwaterloo.averroes.callgraph.gxl.GXLReader;
 
 /**
@@ -50,6 +53,10 @@ public class CallGraphInfo {
 	}
 
 	private static void parseParams(String[] args) {
+		if (args.length < 2) {
+			usage();
+		}
+
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals("-e")) {
 				dashE = true;

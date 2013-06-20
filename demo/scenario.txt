@@ -2,7 +2,7 @@ Step 1
 Introduce yourself, speak a bit about the project (1 minute max).
 
 Step 2
-Point out the sign that says the presentation date/time: Thursday July 4th, Session 5 (14:15-15:15pm), last presenation.
+Point out the sign that says the presentation date/time: Thursday July 4th, Session 5 (14:15-15:15pm), last presentation.
 
 Step 3
 The DEMO
@@ -26,3 +26,6 @@ and Enumeration).
 Step 6
 Use Spark to generate the call graphs for that benchmark, or any other really if they'd like
 Have the table for Spark times ready so that they can compare both times.
+
+Step 7
+Use cginfo.jar (or even better, the http viewer) to view the call graph.
