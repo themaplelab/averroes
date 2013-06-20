@@ -235,6 +235,15 @@ public class FileUtils {
 	public static String placeholderLibraryJarFile() {
 		return AverroesProperties.getOutputDir().concat(File.separator).concat("placeholderLibrary.jar");
 	}
+	
+	/**
+	 * The path to the placeholder library JAR file of a benchmark.
+	 * 
+	 * @return
+	 */
+	public static String placeholderLibraryJarFile(String benchmark) {
+		return composePath("benchmarks-averroes", benchmark + "-placeholder-lib.jar");
+	}
 
 	/**
 	 * The path to the organized application JAR file.
@@ -244,6 +253,15 @@ public class FileUtils {
 	public static String organizedApplicationJarFile() {
 		return AverroesProperties.getOutputDir().concat(File.separator).concat("organizedApplication.jar");
 	}
+	
+	/**
+	 * The path to the organized application JAR file of a benchmark.
+	 * 
+	 * @return
+	 */
+	public static String organizedApplicationJarFile(String benchmark) {
+		return composePath("benchmarks-averroes", benchmark + "-organized-app.jar");
+	}
 
 	/**
 	 * The path to the organized library JAR file.
@@ -252,6 +270,15 @@ public class FileUtils {
 	 */
 	public static String organizedLibraryJarFile() {
 		return AverroesProperties.getOutputDir().concat(File.separator).concat("organizedLibrary.jar");
+	}
+	
+	/**
+	 * The path to the organized library JAR file of a benchmark.
+	 * 
+	 * @return
+	 */
+	public static String organizedLibraryJarFile(String benchmark) {
+		return composePath("benchmarks-averroes", benchmark + "-organized-lib.jar");
 	}
 
 	/**
@@ -270,6 +297,23 @@ public class FileUtils {
 	 */
 	public static String sparkCallGraphFile() {
 		return AverroesProperties.getOutputDir().concat(File.separator).concat("spark.gxl");
+	}
+	
+	/**
+	 * The path to the DoopAverroes call graph.
+	 * 
+	 * @return
+	 */
+	public static String doopAverroesCallGraphFile() {
+		return AverroesProperties.getOutputDir().concat(File.separator).concat("doopAverroes.gxl");
+	}
+	
+	/**
+	 * The path to the DoopAverroes executable
+	 * @return
+	 */
+	public static String doopAverroesRunExe(String doopHome) {
+		return doopHome.concat(File.separator).concat("alt-run-averroes");
 	}
 	
 	/* Some utility methods to get the names of comparison call graphs */ 

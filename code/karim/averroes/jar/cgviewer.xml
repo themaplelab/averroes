@@ -12,8 +12,8 @@
 			</manifest>
 			<zipfileset src="jar-in-jar-loader.zip" />
 			<fileset dir="../bin" excludes="averroes.properties"/>
-			<zipfileset dir="../lib" excludes="META-INF/*.SF" includes="probe.jar" />
-			<zipfileset dir="../lib" excludes="META-INF/*.SF" includes="gxl.jar" />
+			<zipfileset dir="../lib" includes="probe.jar" />
+			<zipfileset dir="../lib" includes="gxl.jar" />
 		</jar>
 	</target>
 </project>

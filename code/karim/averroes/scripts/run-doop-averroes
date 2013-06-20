@@ -1,0 +1,30 @@
+#! /usr/bin/env bash
+
+set -e
+
+benchmark=$1
+
+echo "running Doop with Averroes for ${benchmark}"
+
+
+program=$(basename $benchmark)
+outputdir=callgraphs/doop-averroes-call-graphs/${benchmark}
+doop=${outputdir}/doopAverroes.tar.gz
+doopHome=/u/karim/workspace/doop
+
+# 1. make some dirs
+mkdir -p ${outputdir}/
+
+# 2. run doop-averroes.jar
+cp properties/${benchmark}.properties averroes.properties
+jar uf doop-averroes.jar averroes.properties
+java -jar doop-averroes.jar $doopHome $benchmark
+
+# 3. copy the call graph
+cp output/doopAverroes.gxl ${outputdir}/doopAverroes.gxl
+
+# 4. copy database
+echo "making the database of Doop with Averroes available at ${doop} ..."
+tar -czf ${doop} ../doop/last-analysis/*
+
+echo ""

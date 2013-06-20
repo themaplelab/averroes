@@ -1,0 +1,639 @@
+#!/bin/bash
+
+set -e
+
+function usage()
+{
+  cat <<EOF
+Usage: run [OPTION]... ANALYSIS JARFILE
+
+Analysis:
+  context-insensitive
+  1-call-site-sensitive
+  1-call-site-sensitive+heap
+  1-object-sensitive
+  1-object-sensitive+heap
+  2-object-sensitive
+  2-object-sensitive+heap
+  2-full-object-sensitive+heap
+  2-full-type-object-sensitive+heap
+  2-type-sensitive+heap
+  thread-sensitive
+
+Options:
+  -main Class       Specify the main class
+  -lib FILE			The crafted library JAR file used by the application
+  -jre VERSION      One of 1.3, 1.4, 1.5, 1.6 (default: system)
+  -jre1.3           Use jre1.3 (default: system)
+  -jre1.4           Use jre1.4 (default: system)
+  -jre1.5           Use jre1.5 (default: system)
+  -jre1.6           Use jre1.6 (default: system)
+  -os NAME          Specify the operating system to simulate (win32, winnt, unix, default: unix)
+  -stats            Load additional logic for collecting statistics
+  -sanity           Load additional logic for sanity checks
+  -mem GIGABYTES    Restrict memory usage (default: 1G) (32-bit Linux only)
+  -cache            The analysis is only run if the result is not in the cache
+  -dynamic FILE     File with tab-separated data for Config:DynamicClass (multiple occurences allowed)
+  -logicProfile NR  Profile the execution of logic, show the top NR predicates
+  -logLevel LEVEL   Log the execution of logic at level LEVEL (for example: all)
+  -logMemStats      Log virtual memory statistics (currently Linux only, uses vmstat)
+
+Options for features:
+  -distinguish-class-string-constants (default)
+       By default, the analysis only distinguishes string constants
+       that might statically resolve the use of reflection. All other
+       string constants are merged into a single representation.
+
+  -distinguish-all-string-constants
+       The analysis distinguishes all string constants.
+
+  -distinguish-no-string-constants
+       Merge all string constants, including those that might help to
+       resolve the use of reflection. This results in less precise
+       results for reflection, since we have to assume that
+       Class.forName applied to a string constant can load any class
+       referred to by a string constant.
+
+  -merge-string-buffers
+       Merge all allocations of stringbuffers into a single
+       representation.
+
+       Merging string buffers can improve performance considerably,
+       depending on the kind of analysis that is selected. For
+       context-insensitive and call-site-sensitive analyses it is
+       generally useful, for object-sensitive analyses it is actually
+       harmful.
+
+  -no-context-repeat
+       For an object-sensitive analysis that mixes caller object and 
+       receiver contexts, check if the contexts are the same and attempt
+       to maintain as many different contexts as possible.
+
+Options for benchmarks and comparisons:
+  -paddle-compat
+       Mode for exact comparison of results to Paddle. This option
+       disables exceptions, unless enabled after this option.
+
+  -disable-precise-exceptions
+       Disables precise exception analysis (default: enabled)
+
+  -enable-imprecise-exceptions
+       Enables an imprecise Paddle/Spark compatible analysis of exceptions
+
+  -disable-reflective-methods
+       Disables reflective method reasoning. 
+
+  -disable-reflection
+       Disables reflection reasoning altogether.
+       
+Options for client analyses:
+  -enable-exception-flow
+       Enable exception-flow analysis, which determines the exception
+       handlers that can potentially handle exceptions thrown by a
+       throw instruction.
+
+Report issues to martin.bravenboer@acm.org
+EOF
+}
+
+# Make bloxbatch available on the PATH
+if test "x${LOGICBLOX_HOME}" = "x"; then
+  export LOGICBLOX_HOME=/u/karim/logicblox/LogicBlox-3.7.3
+fi
+
+if test ! -e "$LOGICBLOX_HOME/bin/bloxbatch"; then
+  echo "error: \$LOGICBLOX_HOME/bin/bloxbatch does not exist. \$LOGICBLOX_HOME = $LOGICBLOX_HOME"
+  exit 1
+fi
+
+export PATH=$LOGICBLOX_HOME/bin:$PATH
+export LD_LIBRARY_PATH=$LOGICBLOX_HOME/bin:$LD_LIBRARY_PATH
+export LB_MEM_NOWARN=1
+export JAVA_HOME=$(dirname $(dirname $(dirname $(readlink -f /usr/bin/java))))
+export MALLOC_CHECK_=0
+
+bloxbatch="$LOGICBLOX_HOME/bin/bloxbatch"
+
+# defaults for options
+CPPFLAGS_EXCEPTIONS="-DEXCEPTIONS_PRECISE"
+CPPFLAGS_PADDLE_COMPAT=""
+CPPFLAGS_STATS=""
+CPPFLAGS_CLIENT_ANALYSES=""
+CPPFLAGS_STRING_BUFFERS=""
+CPPFLAGS_STRING_CONSTANTS="-DDISTINGUISH_CLASS_STRING_CONSTANTS"
+CPPFLAGS_CONTEXT=""
+CPPFLAGS_REFLECTION=""
+cache="false"
+sanity="false"
+stats="false"
+ssa="false"
+classlib="system"
+mainclass=""
+os="unix"
+dynamics=""
+logicProfile=""
+logLevel=""
+refine="false"
+
+originalCommandLine="$*"
+
+# process options
+while test "${1:0:1}" = "-"; do
+  case $1 in
+    "-paddle-compat")
+      CPPFLAGS_PADDLE_COMPAT="-DPADDLE_COMPAT"
+      CPPFLAGS_EXCEPTIONS=""
+      shift 1
+      ;;
+    "-disable-precise-exceptions")
+      CPPFLAGS_EXCEPTIONS=""
+      shift 1
+      ;;
+    "-enable-imprecise-exceptions")
+      CPPFLAGS_EXCEPTIONS="-DEXCEPTIONS_IMPRECISE"
+      shift 1
+      ;;
+
+    "-enable-experimental-exceptions")
+      CPPFLAGS_EXCEPTIONS="-DEXCEPTIONS_EXPERIMENTAL"
+      shift 1
+      ;;
+    "-enable-exceptions-filter")
+      CPPFLAGS_EXCEPTIONS_EXPERIMENTAL="${CPPFLAGS_EXCEPTIONS_EXPERIMENTAL} -DEXCEPTIONS_FILTER"
+      shift 1
+      ;;
+    "-enable-exceptions-order")
+      CPPFLAGS_EXCEPTIONS_EXPERIMENTAL="${CPPFLAGS_EXCEPTIONS_EXPERIMENTAL} -DEXCEPTIONS_ORDER"
+      shift 1
+      ;;
+    "-enable-exceptions-range")
+      CPPFLAGS_EXCEPTIONS_EXPERIMENTAL="${CPPFLAGS_EXCEPTIONS_EXPERIMENTAL} -DEXCEPTIONS_RANGE"
+      shift 1
+      ;;
+    "-enable-exceptions-cs")
+      CPPFLAGS_EXCEPTIONS_EXPERIMENTAL="${CPPFLAGS_EXCEPTIONS_EXPERIMENTAL} -DEXCEPTIONS_CS"
+      shift 1
+      ;;
+
+    "-disable-reflective-methods")
+      CPPFLAGS_REFLECTION="-DDISABLE_REFLECTIVE_METHS"
+      shift 1
+      ;;
+    "-disable-reflection")
+      CPPFLAGS_REFLECTION="-DDISABLE_REFLECTION"
+      shift 1
+      ;;
+
+    "-enable-exception-flow")
+      CPPFLAGS_CLIENT_ANALYSES="${CPPFLAGS_CLIENT_ANALYSES} -DCLIENT_EXCEPTION_FLOW"
+      shift 1
+      ;;
+    "-distinguish-all-string-constants")
+      CPPFLAGS_STRING_CONSTANTS="-DDISTINGUISH_ALL_STRING_CONSTANTS"
+      shift 1
+      ;;
+    "-distinguish-class-string-constants")
+      CPPFLAGS_STRING_CONSTANTS="-DDISTINGUISH_CLASS_STRING_CONSTANTS"
+      shift 1
+      ;;
+    "-distinguish-no-string-constants")
+      CPPFLAGS_STRING_CONSTANTS="-DDISTINGUISH_NO_STRING_CONSTANTS"
+      shift 1
+      ;;
+    "-merge-string-buffers")
+      CPPFLAGS_STRING_BUFFERS="-DMERGE_STRING_BUFFERS"
+      shift 1
+      ;;
+    "-no-context-repeat")
+      CPPFLAGS_CONTEXT="-DNO_CONTEXT_REPEAT"
+      shift 1
+      ;;
+    "-ssa")
+      ssa="true"
+      shift 1
+      ;;
+    "-cache")
+      cache="true"
+      shift 1
+      ;;
+    "-jre")
+      shift 1
+      classlib="jre$1"
+      shift 1
+      ;;
+    "-main")
+      shift 1
+      mainclass="$1"
+      shift 1
+      ;;
+    "-lib")
+      shift 1
+      deps="$1"
+      shift 1
+      ;;
+    "-jre1.3" | "-jre1.4" | "-jre1.5" | "-jre1.6")
+      classlib="${1:1:6}"
+      shift 1
+      ;;
+    "-stats")
+      stats="true"
+      # CPPFLAGS_STATS="-DSTATISTICS"
+      shift 1
+      ;;
+    "-sanity")
+      sanity="true"
+      shift 1
+      ;;
+    "-mem")
+      shift 1
+      memory="$1"
+      shift 1
+      ;;
+    "-dynamic")
+      shift 1
+      dynamics="${dynamics} $1"
+      shift 1
+      ;;
+    "-logicProfile")
+      shift 1
+      logicProfile="-logicProfile $1"
+      shift 1
+      ;;
+    "-logLevel")
+      shift 1
+      logLevel="-logLevel $1"
+      shift 1
+      ;;
+    "-logMemStats")
+      logMemStats="true"
+      shift 1
+      ;;
+    "-help" | "--help")
+      usage
+      exit 1
+      ;;
+    *)
+      echo "invalid option: $1"
+      usage
+      exit 1
+      ;;
+  esac
+done
+
+case $classlib in
+  "jre1.3")
+    CPPFLAGS_JRE="-DJRE13"
+    ;;
+  "jre1.4")
+    CPPFLAGS_JRE="-DJRE14"
+    ;;
+  "jre1.5")
+    CPPFLAGS_JRE="-DJRE15"
+    ;;
+  "jre1.6")
+    CPPFLAGS_JRE="-DJRE16"
+    ;;
+  "system")
+    CPPFLAGS_JRE="-DJRE16"
+    ;;
+  *)
+    echo "invalid class library: $classlib"
+    usage
+    exit 1
+    ;;
+esac
+
+case $os in
+  "unix")
+    CPPFLAGS_OS="-DOS_UNIX"
+    ;;
+  "winnt")
+    CPPFLAGS_OS="-DOS_WINNT"
+    ;;
+  "win32")
+    CPPFLAGS_OS="-DOS_WIN32"
+    ;;
+  *)
+    echo "unsupported operating system: $os"
+    usage
+    exit 1
+    ;;
+esac
+
+CPPFLAGS="${CPPFLAGS_EXCEPTIONS} ${CPPFLAGS_EXCEPTIONS_EXPERIMENTAL} ${CPPFLAGS_PADDLE_COMPAT} ${CPPFLAGS_STATS} ${CPPFLAGS_CLIENT_ANALYSES} ${CPPFLAGS_JRE} ${CPPFLAGS_OS} ${CPPFLAGS_STRING_CONSTANTS} ${CPPFLAGS_STRING_BUFFERS} ${CPPFLAGS_CONTEXT} ${CPPFLAGS_REFLECTION}"
+
+# process the analysis argument
+if test -e logic/$1/analysis.logic; then
+  analysis=$1
+else
+  echo "error: unsupported analysis $1"
+  exit 1
+fi
+
+shift 1
+arg=$1
+
+# process the jar file argument
+if test -d $arg; then
+  echo "sorry, directories are currently not supported"
+  exit 1
+else
+  if test $(basename $(dirname $arg)) = "dacapo"; then
+    echo "running dacapo benchmark $benchmark"
+    if test "x$mainclass" = "x"; then
+      mainclass="dacapo.$benchmark.Main2"
+    fi
+  elif test $(basename $(dirname $arg)) = "specjvm"; then
+    echo "running specjvm benchmark $benchmark"
+    if test "x$mainclass" = "x"; then
+      mainclass="spec.benchamrks.$benchmark.Main"
+    fi
+  fi
+  # the crafted library jar file is already in input command array, just setup dynamics and the app jar
+  jars="$arg"
+  depargs="-l $deps"
+
+  dyn="$(dirname $arg)/$(basename $arg .jar).dynamic"
+  if test -e "${dyn}"; then
+	dynamics="${dynamics} ${dyn}"
+  fi
+fi
+
+function preprocess()
+{
+  cpp -CC -P $CPPFLAGS $1 $2
+}
+
+function timing()
+{
+  echo "..."
+  /usr/bin/time -f "elapsed time: %es" $*
+}
+
+function benchmark()
+{
+  echo "..."
+  echo "MBBENCH logicblox START"
+  /usr/bin/time -f "elapsed time: %es" $*
+  echo "MBBENCH logicblox STOP"
+}
+
+function create-database()
+{
+  set -e
+  rm -rf $database
+
+  if test -e $cachedatabase; then
+    echo "using cached database ($cachedatabase)"
+  else
+    if test -e $cachefacts; then
+      echo "using cached facts ($cachefacts)"
+    else
+      echo -n "generating facts ($jars $depargs) in $cachefacts "
+
+      rm -rf tmp/facts
+      mkdir -p tmp/facts
+
+      if test $ssa = "true"; then
+        sootFactGenArgs="$sootFactGenArgs -ssa"
+      fi
+      
+      timing java -cp lib/sootclasses-2.5.0.jar:lib/soot-fact-generation.jar Main \
+        -main $mainclass $sootFactGenArgs -full -d tmp/facts $jars $depargs
+
+      mkdir -p $cachefacts
+      mv tmp/facts/* $cachefacts
+    fi
+
+    mkdir -p $(dirname $cachedatabase)
+
+    echo -n "creating database in $cachedatabase "
+    timing $bloxbatch -db $cachedatabase -create -overwrite -blocks base
+
+    echo -n "loading fact declarations "
+    timing $bloxbatch -db $cachedatabase -addBlock -file logic/library/fact-declarations.logic
+
+    echo -n "loading facts "
+    rm -rf $(dirname $cachedatabase)/facts
+    ln -s $(pwd)/$cachefacts $(dirname $cachedatabase)/facts
+
+    $(pwd)/gen-import $(pwd)/tmp/fact-declarations.import $cachefacts
+    timing $bloxbatch -db $cachedatabase -import $(pwd)/tmp/fact-declarations.import
+
+    rm $(dirname $cachedatabase)/facts
+
+    echo "setting main class to $mainclass"
+    $bloxbatch -db $cachedatabase -execute "+MainClass(x) <- ClassType(x), Type:Value(x:\"$mainclass\")."
+  fi
+
+  mkdir -p $(dirname $database)
+  cp -R $cachedatabase $database
+}
+
+function analyze()
+{
+  if test "$sanity" = "true"; then
+    echo -n "loading sanity "
+    timing $bloxbatch -db $database -addBlock -file logic/library/sanity.logic
+  fi
+
+  for dynamic in $dynamics; do
+    cat > tmp/dynamic.import <<EOF
+option,delimiter,"	"
+option,hasColumnNames,false
+
+fromFile,"$(readlink -f $dynamic)",a,inv,b,type
+toPredicate,Config:DynamicClass,type,inv
+EOF
+    $bloxbatch -db $database -import $(pwd)/tmp/dynamic.import
+  done
+
+  echo -n "loading $analysis declarations"
+  timing $bloxbatch -db $database -addBlock -file tmp/$analysis-declarations.logic
+  echo -n "loading $analysis delta rules"
+  timing $bloxbatch -db $database -execute -file tmp/$analysis-delta.logic
+  echo -n "loading reflection delta rules"
+  timing $bloxbatch -db $database -execute -file tmp/reflection-delta.logic
+  echo -n "loading client delta rules"
+  timing $bloxbatch -db $database -execute -file tmp/exception-flow-delta.logic
+  echo -n "loading $analysis rules "
+
+  # killall BloxPagerDaemon || echo "whatever"
+  # sleep 4
+  
+  if test "$logMemStats" = "true"; then
+    vmstat -n 3 > $metadir/vmstat.log &
+    vmstatPid="$!"
+    trap "kill $vmstatPid" INT TERM
+  fi
+
+  if test "$refine" = "true"; then
+    echo -n "loading $analysis refinement facts"
+    # despite what the bloxbatch -help says, "-importDelimited" doesn't quite work and
+    # DO NOT use -importDir, or it will treat everything in there as a script. 2+ hours of my
+    # life lost.
+    cat > $(pwd)/tmp/$analysis-refine.import <<EOF
+option,delimiter,","
+option,hasColumnNames,false
+
+fromFile,"$(pwd)/tmp/$analysis-TempSiteToRefine.csv",a,MethodInvocationRef,b,HeapAllocationRef
+toPredicate,TempSiteToRefine,MethodInvocationRef,HeapAllocationRef
+EOF
+    $bloxbatch -db $database -import $(pwd)/tmp/$analysis-refine.import 
+    echo -n "integrating $analysis refinement facts"
+    $bloxbatch -db $database -execute "+SiteToRefine(?heap,?invocation) <- TempSiteToRefine(?heap,?invocation)."
+    echo -n "performing refined analysis $analysis"
+  fi
+
+  benchmark $bloxbatch -db $database -addBlock -file tmp/$analysis.logic $logLevel $logicProfile
+
+  if test "$logMemStats" = "true"; then
+    kill $vmstatPid
+    trap - INT TERM
+  fi
+}
+
+function reanalyze()
+{
+  preprocess logic/$analysis/refinement-delta.logic tmp/$analysis-refinement-delta.logic
+  echo -n "loading $analysis refinement-delta rules"
+  timing $bloxbatch -db $database -execute -file tmp/$analysis-refinement-delta.logic
+  timing $bloxbatch -db $database -exportCsv TempSiteToRefine -overwrite -exportDataDir tmp -exportFilePrefix $analysis-
+  create-database
+  write-meta
+  refine="true"
+  analyze
+}
+
+
+function write-meta()
+{
+  mkdir $metadir
+
+  echo "$originalCommandLine" > $metadir/command-line
+  echo "$CPPFLAGS" > $metadir/CPPFLAGS
+  echo "$classlib" > $metadir/classlib
+  echo "$analysis" > $metadir/analysis
+  echo "$jars"     > $metadir/jars
+  echo "$deps"     > $metadir/deps
+}
+
+function link-result()
+{
+  echo "making database available at $humandatabase"
+  mkdir -p $(dirname $humandatabase)
+  rm -rf $humandatabase
+
+  if test "$stats" = "true"; then
+    ln -s $(pwd)/$statsdatabase $humandatabase
+  else
+    ln -s $(pwd)/$database $humandatabase
+  fi
+
+  echo "making database available at last-analysis"
+  rm -f last-analysis
+
+  if test "$stats" = "true"; then
+    ln -s $(pwd)/$statsdatabase last-analysis
+  else
+    ln -s $(pwd)/$database last-analysis
+  fi
+}
+
+function output-results()
+{
+  echo "retrieving call graph edges ..."
+  { /usr/bin/time -f "elapsed time: %es" $bloxbatch -db $database -print InsensCallGraphEdge 1>InsensCallGraphEdge.results; } 2>&1
+
+  echo "retrieving entry points ..."
+  { /usr/bin/time -f "elapsed time: %es" $bloxbatch -db $database -print MainMethodDeclaration 1>MainMethodDeclaration.results; } 2>&1
+}
+
+function run-stats()
+{
+  rm -rf $statsdatabase
+  mkdir -p $(dirname $statsdatabase)
+
+  echo "copying database to load statistics "
+  cp -R $database $statsdatabase
+  cpp -CC -P $CPPFLAGS -include logic/$analysis/macros.logic logic/library/statistics.logic tmp/$analysis-statistics.logic
+
+  echo -n "loading statistics "
+  timing $bloxbatch -db $statsdatabase -addBlock -file tmp/$analysis-statistics.logic
+}
+
+function run-stats-cache()
+{
+  if test "$stats" = "true"; then
+    if test "$cache" = "true"; then
+      if test -e $statsdatabase; then
+        echo "statistics database is cached, not performing $analysis analysis for $jars"
+      else
+        run-stats
+      fi
+    else
+      run-stats
+    fi
+  fi
+}
+
+function run-analysis()
+{
+  mkdir -p tmp
+  create-database
+  write-meta
+  analyze
+  run-stats-cache
+  link-result
+  ./stats $analysis $classlib $arg $stats
+  if test -e logic/$analysis/refinement-delta.logic; then
+    reanalyze
+    run-stats-cache
+    link-result
+    ./stats $analysis $classlib $arg $stats
+  fi
+  output-results
+}
+
+mkdir -p tmp
+
+preprocess logic/$analysis/declarations.logic tmp/$analysis-declarations.logic
+preprocess logic/$analysis/delta.logic tmp/$analysis-delta.logic
+preprocess logic/library/reflection-delta.logic tmp/reflection-delta.logic
+preprocess logic/client/exception-flow-delta.logic tmp/exception-flow-delta.logic
+preprocess logic/$analysis/analysis.logic tmp/$analysis.logic
+
+inputsum=$(cat $jars $deps | sha256sum | awk '{print $1}')
+logicsum=$(cat tmp/$analysis-declarations.logic \
+               tmp/$analysis-delta.logic \
+               tmp/reflection-delta.logic \
+               tmp/exception-flow-delta.logic \
+               tmp/$analysis.logic \
+               | sha256sum | awk '{print $1}')
+
+if test $ssa = "true"; then
+  cachefacts="cache/input-facts/${classlib}-ssa/$inputsum"
+  cachedatabase="cache/input-database/${classlib}-ssa/$inputsum"
+  database="cache/analysis/${logicsum}/${classlib}-ssa/${inputsum}"
+  statsdatabase="cache/stats/${logicsum}/${classlib}/${inputsum}"
+  humandatabase="results/${analysis}/${classlib}-ssa/$arg"
+else
+  cachefacts="cache/input-facts/${classlib}/$inputsum"
+  cachedatabase="cache/input-database/${classlib}/$inputsum"
+  database="cache/analysis/${logicsum}/${classlib}/${inputsum}"
+  statsdatabase="cache/stats/${logicsum}/${classlib}/${inputsum}"
+  humandatabase="results/${analysis}/${classlib}/$arg"
+fi
+
+metadir=$database/.doop-meta
+
+if test "$cache" = "true"; then
+  if test -e $database; then
+    echo "database is cached, not performing $analysis analysis for $jars"
+    run-stats-cache
+    link-result
+    exit 0
+  fi
+fi
+
+run-analysis
