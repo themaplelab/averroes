@@ -50,8 +50,8 @@ library_jar_files =
 dynamic_classes_file = hello/hello.dyn
 
 ##### 
-# The path to the TamiFlex output file that contains the TamiFlex reflection facts
-# about this program.
+# The path to a file that contains uses of reflection in the TamiFlexformat.
+# This can either be the output file from TamiFlex, or a manually created file.
 #
 # Info: the path does not have to be absolute. The file can be empty.
 #####
