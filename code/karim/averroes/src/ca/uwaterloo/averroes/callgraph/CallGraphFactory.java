@@ -34,8 +34,9 @@ public class CallGraphFactory {
 	 * @return
 	 * @throws IOException
 	 */
-	public static probe.CallGraph generateSparkCallGraph() throws IOException {
-		return new SparkCallGraphTransformer().getProbeCallGraph();
+	public static CallGraph generateSparkCallGraph() throws IOException {
+		probe.CallGraph spark = new SparkCallGraphTransformer().getProbeCallGraph();
+		return SootCallGraphConverter.convert(spark);
 	}
 
 	/**

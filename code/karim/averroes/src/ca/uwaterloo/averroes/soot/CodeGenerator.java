@@ -335,6 +335,8 @@ public class CodeGenerator {
 		// NOTE: We should ignore the return statement in this method as the last statement will be the "throw"
 		// statement, and the return type is void.
 		// body.insertReturnStmt();
+		
+		System.out.println(doItAllBody.getJimpleBody());
 
 		// Finally validate the Jimple body
 		doItAllBody.validate();
