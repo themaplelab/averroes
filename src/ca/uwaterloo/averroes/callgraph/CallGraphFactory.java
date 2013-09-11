@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import ca.uwaterloo.averroes.callgraph.converters.DoopCallGraphConverter;
 import ca.uwaterloo.averroes.callgraph.converters.SootCallGraphConverter;
+import ca.uwaterloo.averroes.callgraph.transformers.AndroidCallGraphTransformer;
 import ca.uwaterloo.averroes.callgraph.transformers.SparkCallGraphTransformer;
 import ca.uwaterloo.averroes.callgraph.transformers.SparkWithAverroesCallGraphTransformer;
 import ca.uwaterloo.averroes.util.CommandExecuter;
@@ -38,7 +39,18 @@ public class CallGraphFactory {
 		probe.CallGraph spark = new SparkCallGraphTransformer().getProbeCallGraph();
 		return SootCallGraphConverter.convert(spark);
 	}
-
+	
+	/**
+	 * Generate the call graph for an Android apk.
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public static CallGraph generateAndroidCallGraph() throws IOException {
+		probe.CallGraph android = new AndroidCallGraphTransformer().getProbeCallGraph();
+		return SootCallGraphConverter.convert(android);
+	}
+	
 	/**
 	 * Generate the call graph for DoopAverroes.
 	 * 

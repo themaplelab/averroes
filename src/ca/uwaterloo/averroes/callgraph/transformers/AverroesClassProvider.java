@@ -207,7 +207,7 @@ public class AverroesClassProvider implements ClassProvider {
 			Resource resource = classes.get(className);
 			try {
 				InputStream stream = resource.open();
-				return new CoffiClassSource(className, stream);
+				return new CoffiClassSource(className, stream, "", ""); // TODO: fix for nightly version
 			} catch (IOException exc) {
 				throw new RuntimeException(exc);
 			}

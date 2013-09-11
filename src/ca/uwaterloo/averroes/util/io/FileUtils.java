@@ -300,6 +300,15 @@ public class FileUtils {
 	}
 	
 	/**
+	 * The path to the Android call graph.
+	 * 
+	 * @return
+	 */
+	public static String androidCallGraphFile() {
+		return AverroesProperties.getOutputDir().concat(File.separator).concat("anrdoid.gxl");
+	}
+	
+	/**
 	 * The path to the DoopAverroes call graph.
 	 * 
 	 * @return
