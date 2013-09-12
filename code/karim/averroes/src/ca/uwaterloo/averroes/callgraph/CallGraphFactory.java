@@ -46,9 +46,9 @@ public class CallGraphFactory {
 	 * @return
 	 * @throws IOException
 	 */
-	public static CallGraph generateAndroidCallGraph() throws IOException {
+	public static probe.CallGraph generateAndroidCallGraph() throws IOException {
 		probe.CallGraph android = new AndroidCallGraphTransformer().getProbeCallGraph();
-		return SootCallGraphConverter.convert(android);
+		return android;
 	}
 	
 	/**

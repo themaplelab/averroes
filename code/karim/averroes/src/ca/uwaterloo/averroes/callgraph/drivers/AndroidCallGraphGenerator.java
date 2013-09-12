@@ -1,10 +1,10 @@
 package ca.uwaterloo.averroes.callgraph.drivers;
 
-import ca.uwaterloo.averroes.callgraph.CallGraph;
+import java.io.FileOutputStream;
+
+import probe.CallGraph;
+import probe.GXLWriter;
 import ca.uwaterloo.averroes.callgraph.CallGraphFactory;
-import ca.uwaterloo.averroes.callgraph.gxl.GXLConverter;
-import ca.uwaterloo.averroes.callgraph.gxl.GXLWriter;
-import ca.uwaterloo.averroes.dot.Format;
 import ca.uwaterloo.averroes.properties.AverroesProperties;
 import ca.uwaterloo.averroes.util.TimeUtils;
 import ca.uwaterloo.averroes.util.io.FileUtils;
@@ -24,12 +24,11 @@ public class AndroidCallGraphGenerator {
 			FileUtils.createDirectory(AverroesProperties.getOutputDir());
 			CallGraph android = CallGraphFactory.generateAndroidCallGraph();
 			System.out.println("Total time to finish: " + TimeUtils.elapsedTime());
-			new GXLWriter().write(android, FileUtils.androidCallGraphFile());
-			GXLConverter.probeGxl2Dot(FileUtils.androidCallGraphFile(), Format.DOT);
+			new GXLWriter().write(android, new FileOutputStream(FileUtils.androidCallGraphFile()));
 
 			// Print some statistics
 			System.out.println("=================================================");
-			System.out.println("# edges = " + android.size());
+			System.out.println("# edges = " + android.edges().size());
 			System.out.println("=================================================");
 		} catch (Exception e) {
 			e.printStackTrace();
