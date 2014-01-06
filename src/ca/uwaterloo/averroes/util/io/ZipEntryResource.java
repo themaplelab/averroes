@@ -32,6 +32,14 @@ public class ZipEntryResource implements Resource {
 	public InputStream open() throws IOException {
 		return doJDKBugWorkaround(archive.getInputStream(entry), entry.getSize());
 	}
+	
+	public ZipFile archive() {
+		return archive;
+	}
+	
+	public ZipEntry entry() {
+		return entry;
+	}
 
 	/**
 	 * Copied from SourceLocator because FoundFile is not accessible outside the soot package.
