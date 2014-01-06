@@ -43,7 +43,7 @@ public class AndroidCallGraphTransformer {
 
 		// the input application
 		List<String> dirs = new ArrayList<String>();
-		dirs.add("droidbench/ArraysAndLists_ArrayAccess1.apk");
+		dirs.add("droidbench/HelloWorld-debug-unaligned.apk");
 		Options.v().set_process_dir(dirs);
 
 		// Set some soot parameters
@@ -54,11 +54,25 @@ public class AndroidCallGraphTransformer {
 		// Options.v().set_main_class(AverroesProperties.getMainClass());
 		Options.v().set_whole_program(true);
 
-		System.out.println(Scene.v().getSootClassPath());
-
 		// Load the necessary classes
 		Scene.v().loadNecessaryClasses();
 		Scene.v().setMainClassFromOptions();
+
+		// Set the main class
+		// Scene.v().setMainClass(Scene.v().getSootClass("ca.uwaterloo.helloworld.MainActivity"));
+
+		// Set entry points
+		List<SootMethod> entryPoints = new ArrayList<SootMethod>();
+		entryPoints
+				.add(Scene.v().getMethod("<ca.uwaterloo.helloworld.MainActivity: void onCreate(android.os.Bundle)>"));
+		entryPoints.add(Scene.v().getMethod(
+				"<ca.uwaterloo.helloworld.MainActivity: boolean onCreateOptionsMenu(android.view.Menu)>"));
+		Scene.v().setEntryPoints(entryPoints);
+
+		System.out.println(Scene.v().getEntryPoints());
+		// System.out.println(Scene.v().getMainClass());
+		// System.out.println(Scene.v().getMainMethod());
+		// System.exit(0);
 
 		// Run the Spark transformer
 		SparkTransformer.v().transform("", Transformer.SPARK.options());
@@ -70,6 +84,7 @@ public class AndroidCallGraphTransformer {
 		Iterator<soot.jimple.toolkits.callgraph.Edge> it = cg.listener();
 		while (it.hasNext()) {
 			soot.jimple.toolkits.callgraph.Edge e = it.next();
+			System.out.println(e.toString()); // TODO
 			if (e.isExplicit() || e.kind().equals(Kind.NEWINSTANCE)) {
 				probecg.edges().add(new probe.CallEdge(probeMethod(e.src()), probeMethod(e.tgt())));
 			}
