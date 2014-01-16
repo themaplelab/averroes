@@ -305,7 +305,7 @@ public class FileUtils {
 	 * @return
 	 */
 	public static String androidCallGraphFile() {
-		return AverroesProperties.getOutputDir().concat(File.separator).concat("anrdoid.gxl");
+		return AverroesProperties.getOutputDir().concat(File.separator).concat("android.txt.gzip");
 	}
 	
 	/**
