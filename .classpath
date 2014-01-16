@@ -16,5 +16,7 @@
 	<classpathentry kind="lib" path="lib/dexlib2-2.0b5-dev.jar"/>
 	<classpathentry kind="lib" path="lib/baksmali-2.0b5.jar"/>
 	<classpathentry kind="lib" path="lib/guava-15.0.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/soot-infoflow-android"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/soot-infoflow"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

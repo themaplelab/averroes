@@ -1,5 +1,6 @@
 package ca.uwaterloo.averroes.soot;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,6 +13,7 @@ import java.util.TreeSet;
 import soot.ArrayType;
 import soot.Modifier;
 import soot.RefLikeType;
+import soot.RefType;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootField;
@@ -38,6 +40,7 @@ public class Hierarchy {
 	public static final String JAVA_LANG_CLASS = "java.lang.Class";
 	public static final String JAVA_LANG_THROWABLE = "java.lang.Throwable";
 	public static final String JAVA_LANG_REF_FINALIZER = "java.lang.ref.Finalizer";
+	public static final String JAVA_LANG_STRING = "java.lang.String";
 
 	public static final String FOR_NAME_SIG = "<java.lang.Class: java.lang.Class forName(java.lang.String)>";
 	public static final String NEW_INSTANCE_SIG = "<java.lang.Class: java.lang.Object newInstance()>";
@@ -620,6 +623,14 @@ public class Hierarchy {
 	 */
 	public SootClass getJavaLangThrowable() {
 		return nameToLibraryClass.get(JAVA_LANG_THROWABLE);
+	}
+
+	public Type getStringArrayType() {
+		return ArrayType.v(RefType.v("java.lang.String"), 1);
+	}
+	
+	public List<Type> getMainParams() {
+		return Arrays.asList(new Type[] { getStringArrayType() });
 	}
 
 	/**
