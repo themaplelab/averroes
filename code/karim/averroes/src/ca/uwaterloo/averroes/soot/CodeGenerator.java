@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import soot.ArrayType;
 import soot.Local;
 import soot.Modifier;
 import soot.RefLikeType;
+import soot.RefType;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
@@ -47,6 +49,7 @@ public class CodeGenerator {
 	private static CodeGenerator instance = new CodeGenerator();
 
 	public static final String AVERROES_LIBRARY_CLASS = "ca.uwaterloo.averroes.Library";
+	public static final String ANDROID_MAIN_CLASS = "ca.uwaterloo.averroes.AndroidMainClass";
 	public static final String LIBRARY_POINTS_TO = "libraryPointsTo";
 	public static final String LIBRARY_POINTS_TO_FIELD_SIGNATURE = "<" + AVERROES_LIBRARY_CLASS + ": java.lang.Object "
 			+ LIBRARY_POINTS_TO + ">";
@@ -183,9 +186,27 @@ public class CodeGenerator {
 
 			// Create the dotItAll method
 			createAverroesDoItAll();
-			
+
 			writeLibraryClassFile(averroesLibraryClass);
 		}
+	}
+
+	public SootClass createAndroidMainClass(String name) {
+		// Create the class
+		SootClass mainClass = new SootClass(ANDROID_MAIN_CLASS, Modifier.PUBLIC);
+		mainClass.setSuperclass(Hierarchy.v().getJavaLangObject());
+
+		// Create the main method
+		SootMethod main = new SootMethod("main", Hierarchy.v().getMainParams(), VoidType.v(), Modifier.PUBLIC
+				| Modifier.STATIC);
+
+		JimpleBody body = Jimple.v().newBody(main);
+		main.setActiveBody(body);
+		body.insertIdentityStmts();
+
+		averroesLibraryClass.addMethod(main);
+
+		return mainClass;
 	}
 
 	/**
@@ -335,7 +356,7 @@ public class CodeGenerator {
 		// NOTE: We should ignore the return statement in this method as the last statement will be the "throw"
 		// statement, and the return type is void.
 		// body.insertReturnStmt();
-		
+
 		System.out.println(doItAllBody.getJimpleBody());
 
 		// Finally validate the Jimple body
