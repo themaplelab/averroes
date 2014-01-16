@@ -1,9 +1,10 @@
 package ca.uwaterloo.averroes.callgraph.drivers;
 
 import java.io.FileOutputStream;
+import java.util.zip.GZIPOutputStream;
 
 import probe.CallGraph;
-import probe.GXLWriter;
+import probe.TextWriter;
 import ca.uwaterloo.averroes.callgraph.CallGraphFactory;
 import ca.uwaterloo.averroes.properties.AverroesProperties;
 import ca.uwaterloo.averroes.util.TimeUtils;
@@ -24,7 +25,10 @@ public class AndroidCallGraphGenerator {
 			FileUtils.createDirectory(AverroesProperties.getOutputDir());
 			CallGraph android = CallGraphFactory.generateAndroidCallGraph();
 			System.out.println("Total time to finish: " + TimeUtils.elapsedTime());
-			new GXLWriter().write(android, new FileOutputStream(FileUtils.androidCallGraphFile()));
+			
+			// Write the cal graph to disk
+			TextWriter writer = new TextWriter();
+			writer.write(android, new GZIPOutputStream(new FileOutputStream(FileUtils.androidCallGraphFile())));
 
 			// Print some statistics
 			System.out.println("=================================================");
