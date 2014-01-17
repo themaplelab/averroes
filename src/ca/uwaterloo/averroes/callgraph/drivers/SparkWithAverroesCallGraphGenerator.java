@@ -44,7 +44,7 @@ public class SparkWithAverroesCallGraphGenerator {
 
 	private static void usage() {
 		System.out.println("");
-		System.out.println("Usage: java -jar sparkaverroes.jar <benchmark_name>");
+		System.out.println("Usage: java -jar spark-averroes.jar <benchmark_name>");
 		System.out.println("");
 	}
 }

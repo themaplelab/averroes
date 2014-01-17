@@ -6,6 +6,7 @@ import java.util.zip.GZIPOutputStream;
 import probe.CallGraph;
 import probe.TextWriter;
 import ca.uwaterloo.averroes.callgraph.CallGraphFactory;
+import ca.uwaterloo.averroes.exceptions.AverroesException;
 import ca.uwaterloo.averroes.properties.AverroesProperties;
 import ca.uwaterloo.averroes.util.TimeUtils;
 import ca.uwaterloo.averroes.util.io.FileUtils;
@@ -16,19 +17,27 @@ import ca.uwaterloo.averroes.util.io.FileUtils;
  * @author karim
  * 
  */
-public class AndroidCallGraphGenerator {
+public class AndroidWithAverroesCallGraphGenerator {
 
 	public static void main(String[] args) {
 		try {
-			// Generate the call graph
 			TimeUtils.reset();
+
+			if (args.length != 1) {
+				usage();
+				throw new AverroesException("AndroidAverroes expects exactly 1 arguments.");
+			}
+
+			// Process the arguments
+			String benchmark = args[0];
+
 			FileUtils.createDirectory(AverroesProperties.getOutputDir());
-			CallGraph android = CallGraphFactory.generateAndroidCallGraph();
+			CallGraph android = CallGraphFactory.generateAndroidWithAverroesCallGraph(benchmark);
 			System.out.println("Total time to finish: " + TimeUtils.elapsedTime());
-			
-			// Write the cal graph to disk
+
+			// Write the android-averroes call graph to disk
 			TextWriter writer = new TextWriter();
-			writer.write(android, new GZIPOutputStream(new FileOutputStream(FileUtils.androidCallGraphFile())));
+			writer.write(android, new GZIPOutputStream(new FileOutputStream(FileUtils.androidAverroesCallGraphFile())));
 
 			// Print some statistics
 			System.out.println("=================================================");
@@ -42,7 +51,7 @@ public class AndroidCallGraphGenerator {
 
 	public static void usage() {
 		System.out.println("");
-		System.out.println("Usage: java -jar android.jar");
+		System.out.println("Usage: java -jar android-averroes.jar <benchmark_name>");
 		System.out.println("");
 	}
 }
