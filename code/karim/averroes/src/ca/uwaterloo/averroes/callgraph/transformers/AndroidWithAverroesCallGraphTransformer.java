@@ -19,15 +19,15 @@ import soot.jimple.infoflow.android.SetupApplication;
 import soot.jimple.spark.SparkTransformer;
 import soot.options.Options;
 
-public class AndroidCallGraphTransformer {
-	// private JarOrganizer organizer;
-
-	public AndroidCallGraphTransformer() {
-		// organizer = new JarOrganizer();
+public class AndroidWithAverroesCallGraphTransformer {
+	private AverroesClassProvider provider;
+	
+	public AndroidWithAverroesCallGraphTransformer(String benchmark) {
+		provider = new AverroesClassProvider(benchmark);
 	}
 
 	// @SuppressWarnings("unchecked")
-	public CallGraph run() throws IOException {
+	public CallGraph getProbeCallGraph() throws IOException {
 		System.out.println("Generating the call graph for an Android apk.");
 
 		// Stuff from infoflow-android

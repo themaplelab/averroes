@@ -309,6 +309,15 @@ public class FileUtils {
 	}
 	
 	/**
+	 * The path to the android-averroes call graph.
+	 * 
+	 * @return
+	 */
+	public static String androidAverroesCallGraphFile() {
+		return AverroesProperties.getOutputDir().concat(File.separator).concat("androidAverroes.txt.gzip");
+	}
+	
+	/**
 	 * The path to the DoopAverroes call graph.
 	 * 
 	 * @return
