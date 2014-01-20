@@ -1,20 +1,23 @@
 package ca.uwaterloo.averroes.jar;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.Set;
 
-import soot.ClassProvider;
+import org.jf.dexlib2.DexFileFactory;
+import org.jf.dexlib2.dexbacked.DexBackedDexFile;
+import org.jf.dexlib2.dexbacked.raw.HeaderItem;
+
 import soot.DexClassProvider;
 import soot.G;
+import soot.RefType;
 import soot.Scene;
 import soot.SootClass;
-import soot.SourceLocator;
+import soot.Type;
+import soot.coffi.Util;
 import soot.options.Options;
 import ca.uwaterloo.averroes.properties.AverroesProperties;
 import ca.uwaterloo.averroes.soot.CodeGenerator;
 import ca.uwaterloo.averroes.soot.Hierarchy;
-import ca.uwaterloo.averroes.soot.SootSceneUtil;
 import ca.uwaterloo.averroes.util.MathUtils;
 import ca.uwaterloo.averroes.util.TimeUtils;
 import ca.uwaterloo.averroes.util.io.FileUtils;
@@ -58,31 +61,36 @@ public class AndroidJarFactory {
 			Options.v().set_soot_classpath(AverroesProperties.getAndroidAppClassPath());
 			Options.v().set_src_prec(Options.src_prec_apk);
 			soot.options.Options.v().set_android_jars(AverroesProperties.getAndroidPath());
+			Options.v().set_validate(true);
+
+			// Load the necessary classes
+			TimeUtils.reset();
+			System.out.println("");
+			System.out.println("Loading classes ...");
 			Scene.v().loadNecessaryClasses();
+			double soot = TimeUtils.elapsedTime();
+			System.out.println("Soot loaded the input classes in " + soot + " seconds.");
 
 			// Print some statistics
 			System.out.println("# application classes: " + Scene.v().getApplicationClasses().size());
 			System.out.println("# library classes: " + Scene.v().getLibraryClasses().size());
-			System.exit(0);
 
-			// Add the organized archives for the application and its dependencies.
-			TimeUtils.reset();
-			JarFactoryClassProvider provider = new JarFactoryClassProvider();
-			provider.prepareJarFactoryClasspath();
-
-			// Set some soot parameters
-			SourceLocator.v().setClassProviders(Collections.singletonList((ClassProvider) provider));
-			Options.v().classes().addAll(provider.getApplicationClassNames());
-			Options.v().set_main_class(AverroesProperties.getMainClass());
-			Options.v().set_validate(true);
-
-			// Load the necessary classes
-			System.out.println("");
-			System.out.println("Loading classes ...");
-			Scene.v().loadNecessaryClasses();
-			Scene.v().setMainClassFromOptions();
-			double soot = TimeUtils.elapsedTime();
-			System.out.println("Soot loaded the input classes in " + soot + " seconds.");
+			DexBackedDexFile dex = DexFileFactory.loadDexFile(AverroesProperties.getApkLocation(), 17);
+			int stringCount = dex.readSmallUint(HeaderItem.STRING_COUNT_OFFSET);
+			System.out.println(stringCount);
+			for (int i = 0; i < stringCount; i++) {
+				try {
+					Type tpe = Util.v().jimpleTypeOfFieldDescriptor(dex.getString(i));
+					if (tpe instanceof RefType) {
+						SootClass sc = ((RefType) tpe).getSootClass();
+						if (AverroesProperties.isApplicationClass(sc)) {
+							System.out.println(sc);
+						}
+					}
+				} catch (RuntimeException e) {
+					// eat it
+				}
+			}
 
 			// Now let Averroes do its thing
 			// First, create the class hierarchy

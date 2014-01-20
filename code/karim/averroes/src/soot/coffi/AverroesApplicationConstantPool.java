@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import soot.RefType;
 import soot.ResolutionFailedException;
 import soot.Scene;
 import soot.SootClass;
@@ -27,6 +28,7 @@ public class AverroesApplicationConstantPool {
 
 	private Set<SootMethod> libraryMethods;
 	private Set<SootField> libraryFields;
+	private Set<SootClass> classesReferencedByName;
 
 	private Hierarchy hierarchy;
 
@@ -39,6 +41,7 @@ public class AverroesApplicationConstantPool {
 	public AverroesApplicationConstantPool(Hierarchy hierarchy) {
 		libraryMethods = new HashSet<SootMethod>();
 		libraryFields = new HashSet<SootField>();
+		classesReferencedByName = new HashSet<SootClass>();
 
 		this.hierarchy = hierarchy;
 
@@ -61,6 +64,15 @@ public class AverroesApplicationConstantPool {
 	 */
 	public Set<SootField> getLibraryFields() {
 		return libraryFields;
+	}
+
+	/**
+	 * Get the set of classes that are referenced by name in the constant pool of any application class.
+	 * 
+	 * @return
+	 */
+	public Set<SootClass> getClassesReferencedByName() {
+		return classesReferencedByName;
 	}
 
 	/**
@@ -87,6 +99,7 @@ public class AverroesApplicationConstantPool {
 	 * Initialize the application constant pool.
 	 */
 	private void initialize() {
+		findClassesReferencedByName();
 		findLibraryMethodsInApplicationConstantPool();
 		findLibraryFieldsInApplicationConstantPool();
 	}
@@ -162,6 +175,53 @@ public class AverroesApplicationConstantPool {
 					// If the resolved method is in the library, add it to the result
 					if (hierarchy.isLibraryMethod(method)) {
 						result.add(method);
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Find all the classes whose name is referenced in the constant pool of application classes.
+	 */
+	private void findClassesReferencedByName() {
+		classesReferencedByName = new HashSet<SootClass>();
+
+		// Add the classes whose name appear in the constant pool of application classes
+		for (SootClass applicationClass : hierarchy.getApplicationClasses()) {
+			classesReferencedByName.addAll(findClassesReferencedByName(applicationClass));
+		}
+	}
+
+	/**
+	 * Get the classes referenced by name in the constant pool of an application class.
+	 * 
+	 * @param applicationClass
+	 */
+	private Set<SootClass> findClassesReferencedByName(SootClass applicationClass) {
+		Set<SootClass> result = new HashSet<SootClass>();
+
+		/*
+		 * This is only useful if the application class has any methods. Some classes will not have any methods in them,
+		 * e.g., org.jfree.data.xml.DatasetTags which is an interface that has some final constants only.
+		 */
+		if (applicationClass.getMethodCount() > 0) {
+			ClassFile coffiClass = getCoffiClass(applicationClass);
+			cp_info[] constantPool = coffiClass.constant_pool;
+
+			for (cp_info constantPoolEntry : constantPool) {
+				if (constantPoolEntry instanceof CONSTANT_String_info) {
+					CONSTANT_String_info stringInfo = (CONSTANT_String_info) constantPoolEntry;
+
+					// Get the soot class
+					CONSTANT_Utf8_info s = (CONSTANT_Utf8_info) constantPool[stringInfo.string_index];
+					String className = s.convert();
+					Type tpe = Util.v().jimpleTypeOfFieldDescriptor(className);
+					
+					if(tpe instanceof RefType) {
+						result.add(((RefType) tpe).getSootClass());
 					}
 				}
 			}
