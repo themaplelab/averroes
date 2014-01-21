@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import soot.RefType;
 import soot.ResolutionFailedException;
 import soot.Scene;
 import soot.SootClass;
@@ -14,6 +13,7 @@ import soot.SootFieldRef;
 import soot.SootMethod;
 import soot.SootMethodRef;
 import soot.Type;
+import soot.options.Options;
 import ca.uwaterloo.averroes.soot.Hierarchy;
 
 /**
@@ -26,9 +26,9 @@ import ca.uwaterloo.averroes.soot.Hierarchy;
  */
 public class AverroesApplicationConstantPool {
 
+	private Set<SootClass> applicationClasses;
 	private Set<SootMethod> libraryMethods;
 	private Set<SootField> libraryFields;
-	private Set<SootClass> classesReferencedByName;
 
 	private Hierarchy hierarchy;
 
@@ -39,9 +39,9 @@ public class AverroesApplicationConstantPool {
 	 * @param hierarchy
 	 */
 	public AverroesApplicationConstantPool(Hierarchy hierarchy) {
+		applicationClasses = new HashSet<SootClass>();
 		libraryMethods = new HashSet<SootMethod>();
 		libraryFields = new HashSet<SootField>();
-		classesReferencedByName = new HashSet<SootClass>();
 
 		this.hierarchy = hierarchy;
 
@@ -71,8 +71,8 @@ public class AverroesApplicationConstantPool {
 	 * 
 	 * @return
 	 */
-	public Set<SootClass> getClassesReferencedByName() {
-		return classesReferencedByName;
+	public Set<SootClass> getApplicationClasses() {
+		return applicationClasses;
 	}
 
 	/**
@@ -99,7 +99,7 @@ public class AverroesApplicationConstantPool {
 	 * Initialize the application constant pool.
 	 */
 	private void initialize() {
-		findClassesReferencedByName();
+		findApplicationClassesReferencedByName();
 		findLibraryMethodsInApplicationConstantPool();
 		findLibraryFieldsInApplicationConstantPool();
 	}
@@ -186,12 +186,17 @@ public class AverroesApplicationConstantPool {
 	/**
 	 * Find all the classes whose name is referenced in the constant pool of application classes.
 	 */
-	private void findClassesReferencedByName() {
-		classesReferencedByName = new HashSet<SootClass>();
+	private void findApplicationClassesReferencedByName() {
+		applicationClasses = new HashSet<SootClass>();
 
-		// Add the classes whose name appear in the constant pool of application classes
-		for (SootClass applicationClass : hierarchy.getApplicationClasses()) {
-			classesReferencedByName.addAll(findClassesReferencedByName(applicationClass));
+		// If we're processing an android apk, process the global string constant pool
+		if (Options.v().src_prec() == Options.src_prec_apk) {
+			
+		} else {
+			// Add the classes whose name appear in the constant pool of application classes
+			for (SootClass applicationClass : hierarchy.getApplicationClasses()) {
+				applicationClasses.addAll(findApplicationClassesReferencedByName(applicationClass));
+			}
 		}
 	}
 
@@ -200,7 +205,7 @@ public class AverroesApplicationConstantPool {
 	 * 
 	 * @param applicationClass
 	 */
-	private Set<SootClass> findClassesReferencedByName(SootClass applicationClass) {
+	private Set<SootClass> findApplicationClassesReferencedByName(SootClass applicationClass) {
 		Set<SootClass> result = new HashSet<SootClass>();
 
 		/*
@@ -215,13 +220,12 @@ public class AverroesApplicationConstantPool {
 				if (constantPoolEntry instanceof CONSTANT_String_info) {
 					CONSTANT_String_info stringInfo = (CONSTANT_String_info) constantPoolEntry;
 
-					// Get the soot class
+					// Get the class name
 					CONSTANT_Utf8_info s = (CONSTANT_Utf8_info) constantPool[stringInfo.string_index];
 					String className = s.convert();
-					Type tpe = Util.v().jimpleTypeOfFieldDescriptor(className);
-					
-					if(tpe instanceof RefType) {
-						result.add(((RefType) tpe).getSootClass());
+
+					if (hierarchy.isApplicationClass(className)) {
+						result.add(hierarchy.getClass(className));
 					}
 				}
 			}
@@ -250,7 +254,7 @@ public class AverroesApplicationConstantPool {
 	 * @param applicationClass
 	 * @return
 	 */
-	private Set<SootField> getLibraryFieldsInConstantPool(SootClass applicationClass) {
+	private Set<SootField> findLibraryFieldsInConstantPool(SootClass applicationClass) {
 		Set<SootField> result = new HashSet<SootField>();
 
 		/*
@@ -317,7 +321,7 @@ public class AverroesApplicationConstantPool {
 
 		// Add the library methods that appear in the constant pool of application classes
 		for (SootClass applicationClass : hierarchy.getApplicationClasses()) {
-			libraryFields.addAll(getLibraryFieldsInConstantPool(applicationClass));
+			libraryFields.addAll(findLibraryFieldsInConstantPool(applicationClass));
 		}
 	}
 
