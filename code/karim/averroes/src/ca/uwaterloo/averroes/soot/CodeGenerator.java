@@ -468,26 +468,33 @@ public class CodeGenerator {
 			doItAllBody.createObjectOfType(cls);
 		}
 
-		// 2. The library can create application objects through Class.newInstance
+		// 2. Convert any use of application class name string constants to explicit instantiations.
+		for (SootClass cls : Hierarchy.v().getApplicationConstantPool().getApplicationClasses()) {
+			if (!Hierarchy.isAbstractClass(cls) && !cls.isInterface()) {
+				doItAllBody.createObjectOfType(cls);
+			}
+		}
+
+		// 3. The library can create application objects through Class.newInstance
 		if (!AverroesProperties.isDisableReflection()) {
 			for (SootClass cls : getTamiFlexApplicationClassNewInstance()) {
 				doItAllBody.createObjectOfType(cls);
 			}
 		}
 
-		// 3. The library can create application objects through Constructor.newInstance
+		// 4. The library can create application objects through Constructor.newInstance
 		if (!AverroesProperties.isDisableReflection()) {
 			for (SootMethod init : getTamiFlexApplicationConstructorNewInstance()) {
 				doItAllBody.createObjectByCallingConstructor(init);
 			}
 		}
 
-		// 4. The library points to some certain objects of array types
+		// 5. The library points to some certain objects of array types
 		for (ArrayType type : getArrayTypesAccessibleToLibrary()) {
 			doItAllBody.createObjectOfType(type);
 		}
 
-		// 5. The library could possibly create application objects whose class names are passed to it through
+		// 6. The library could possibly create application objects whose class names are passed to it through
 		// calls to Class.forName
 		if (!AverroesProperties.isDisableReflection()) {
 			for (SootClass cls : getTamiFlexApplicationClassForName()) {

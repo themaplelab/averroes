@@ -83,7 +83,7 @@ public class AndroidJarFactory {
 					Type tpe = Util.v().jimpleTypeOfFieldDescriptor(dex.getString(i));
 					if (tpe instanceof RefType) {
 						SootClass sc = ((RefType) tpe).getSootClass();
-						if (AverroesProperties.isApplicationClass(sc)) {
+						if (Hierarchy.v().isApplicationClass(sc)) {
 							System.out.println(sc);
 						}
 					}

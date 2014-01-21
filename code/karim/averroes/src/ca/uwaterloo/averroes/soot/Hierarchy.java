@@ -77,6 +77,8 @@ public class Hierarchy {
 
 	private HashMap<SootClass, Set<SootMethod>> classToLibrarySuperMethods;
 	private Set<SootMethod> librarySuperMethodsOfApplicationMethods;
+	
+	private Set<SootClass> applicationClassesReferencedByName;
 	private Set<SootMethod> libraryMethodsReferencedInApplication;
 	private Set<SootField> libraryFieldsReferencedInApplication;
 
@@ -153,6 +155,8 @@ public class Hierarchy {
 
 		classToLibrarySuperMethods = new HashMap<SootClass, Set<SootMethod>>();
 		librarySuperMethodsOfApplicationMethods = new HashSet<SootMethod>();
+		
+		applicationClassesReferencedByName = new HashSet<SootClass>();
 		libraryMethodsReferencedInApplication = new HashSet<SootMethod>();
 		libraryFieldsReferencedInApplication = new HashSet<SootField>();
 
@@ -1692,8 +1696,13 @@ public class Hierarchy {
 	private void findLibraryEntitiesReferencedInApplication() {
 		applicationConstantPool = new AverroesApplicationConstantPool(this);
 
+		findApplicationClassesReferencedByName();
 		findLibraryMethodsReferencedInApplication();
 		findLibraryFieldsReferencedInApplication();
+	}
+	
+	private void findApplicationClassesReferencedByName() {
+		applicationClassesReferencedByName.addAll(applicationConstantPool.getApplicationClasses());
 	}
 
 	/**
