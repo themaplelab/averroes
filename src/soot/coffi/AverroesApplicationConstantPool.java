@@ -1,10 +1,16 @@
 package soot.coffi;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.jf.dexlib2.DexFileFactory;
+import org.jf.dexlib2.dexbacked.DexBackedDexFile;
+import org.jf.dexlib2.dexbacked.raw.HeaderItem;
+
+import soot.RefType;
 import soot.ResolutionFailedException;
 import soot.Scene;
 import soot.SootClass;
@@ -14,6 +20,7 @@ import soot.SootMethod;
 import soot.SootMethodRef;
 import soot.Type;
 import soot.options.Options;
+import ca.uwaterloo.averroes.properties.AverroesProperties;
 import ca.uwaterloo.averroes.soot.Hierarchy;
 
 /**
@@ -185,19 +192,49 @@ public class AverroesApplicationConstantPool {
 
 	/**
 	 * Find all the classes whose name is referenced in the constant pool of application classes.
+	 * 
+	 * @throws IOException
 	 */
 	private void findApplicationClassesReferencedByName() {
 		applicationClasses = new HashSet<SootClass>();
 
 		// If we're processing an android apk, process the global string constant pool
 		if (Options.v().src_prec() == Options.src_prec_apk) {
-			
+			applicationClasses.addAll(findAndroidApplicationClassNameStringConstants());
 		} else {
 			// Add the classes whose name appear in the constant pool of application classes
 			for (SootClass applicationClass : hierarchy.getApplicationClasses()) {
 				applicationClasses.addAll(findApplicationClassesReferencedByName(applicationClass));
 			}
 		}
+	}
+
+	private Set<SootClass> findAndroidApplicationClassNameStringConstants() {
+		Set<SootClass> result = new HashSet<SootClass>();
+		try {
+			DexBackedDexFile dex = DexFileFactory.loadDexFile(AverroesProperties.getApkLocation(), 17);
+			int stringCount = dex.readSmallUint(HeaderItem.STRING_COUNT_OFFSET);
+			for (int i = 0; i < stringCount; i++) {
+				try {
+					Type tpe = Util.v().jimpleTypeOfFieldDescriptor(dex.getString(i));
+					
+					if (tpe instanceof RefType) {
+						SootClass sc = ((RefType) tpe).getSootClass();
+						
+						if (hierarchy.isApplicationClass(sc)) {
+							result.add(sc);
+							System.out.println(sc);
+						}
+					}
+				} catch (RuntimeException e) {
+					// eat it
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return result;
 	}
 
 	/**
@@ -242,9 +279,14 @@ public class AverroesApplicationConstantPool {
 	private void findLibraryMethodsInApplicationConstantPool() {
 		libraryMethods = new HashSet<SootMethod>();
 
-		// Add the library methods that appear in the constant pool of application classes
-		for (SootClass applicationClass : hierarchy.getApplicationClasses()) {
-			libraryMethods.addAll(findLibraryMethodsInConstantPool(applicationClass));
+		// If we're processing an android apk, process the global string constant pool
+		if (Options.v().src_prec() == Options.src_prec_apk) {
+			// nothing
+		} else {
+			// Add the library methods that appear in the constant pool of application classes
+			for (SootClass applicationClass : hierarchy.getApplicationClasses()) {
+				libraryMethods.addAll(findLibraryMethodsInConstantPool(applicationClass));
+			}
 		}
 	}
 
@@ -319,9 +361,14 @@ public class AverroesApplicationConstantPool {
 	private void findLibraryFieldsInApplicationConstantPool() {
 		libraryFields = new HashSet<SootField>();
 
-		// Add the library methods that appear in the constant pool of application classes
-		for (SootClass applicationClass : hierarchy.getApplicationClasses()) {
-			libraryFields.addAll(findLibraryFieldsInConstantPool(applicationClass));
+		// If we're processing an android apk, process the global string constant pool
+		if (Options.v().src_prec() == Options.src_prec_apk) {
+			// nothing
+		} else {
+			// Add the library methods that appear in the constant pool of application classes
+			for (SootClass applicationClass : hierarchy.getApplicationClasses()) {
+				libraryFields.addAll(findLibraryFieldsInConstantPool(applicationClass));
+			}
 		}
 	}
 

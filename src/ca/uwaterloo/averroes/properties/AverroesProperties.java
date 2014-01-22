@@ -267,15 +267,17 @@ public final class AverroesProperties {
 	public static List<String> getDynamicClasses() throws IOException {
 		if (dynamicClasses == null) {
 			dynamicClasses = new ArrayList<String>();
-			String property = properties.getProperty(DYNAMIC_CLASSES_FILE);
-			Assertions.notNullAssertion(property, DYNAMIC_CLASSES_FILE.concat(" not found."));
+			String property = properties.getProperty(DYNAMIC_CLASSES_FILE, "");
 
-			BufferedReader in = new BufferedReader(new FileReader(property));
-			String line;
-			while ((line = in.readLine()) != null) {
-				dynamicClasses.add(line);
+			// If a file was given, process it, if not, then just return an empty list.
+			if (!property.equalsIgnoreCase("")) {
+				BufferedReader in = new BufferedReader(new FileReader(property));
+				String line;
+				while ((line = in.readLine()) != null) {
+					dynamicClasses.add(line);
+				}
+				in.close();
 			}
-			in.close();
 		}
 
 		return dynamicClasses;
@@ -323,9 +325,8 @@ public final class AverroesProperties {
 	 * @return
 	 */
 	public static String getTamiFlexFactsFile() {
-		String result = properties.getProperty(TAMIFLEX_FACTS_FILE);
-		Assertions.notNullAssertion(result, TAMIFLEX_FACTS_FILE.concat(" not found."));
-		return result;
+		// If not TamiFlex is given, that's fine, just return the empty string.
+		return properties.getProperty(TAMIFLEX_FACTS_FILE, "");
 	}
 
 	/**

@@ -3,17 +3,10 @@ package ca.uwaterloo.averroes.jar;
 import java.io.File;
 import java.util.Set;
 
-import org.jf.dexlib2.DexFileFactory;
-import org.jf.dexlib2.dexbacked.DexBackedDexFile;
-import org.jf.dexlib2.dexbacked.raw.HeaderItem;
-
 import soot.DexClassProvider;
 import soot.G;
-import soot.RefType;
 import soot.Scene;
 import soot.SootClass;
-import soot.Type;
-import soot.coffi.Util;
 import soot.options.Options;
 import ca.uwaterloo.averroes.properties.AverroesProperties;
 import ca.uwaterloo.averroes.soot.CodeGenerator;
@@ -74,23 +67,6 @@ public class AndroidJarFactory {
 			// Print some statistics
 			System.out.println("# application classes: " + Scene.v().getApplicationClasses().size());
 			System.out.println("# library classes: " + Scene.v().getLibraryClasses().size());
-
-			DexBackedDexFile dex = DexFileFactory.loadDexFile(AverroesProperties.getApkLocation(), 17);
-			int stringCount = dex.readSmallUint(HeaderItem.STRING_COUNT_OFFSET);
-			System.out.println(stringCount);
-			for (int i = 0; i < stringCount; i++) {
-				try {
-					Type tpe = Util.v().jimpleTypeOfFieldDescriptor(dex.getString(i));
-					if (tpe instanceof RefType) {
-						SootClass sc = ((RefType) tpe).getSootClass();
-						if (Hierarchy.v().isApplicationClass(sc)) {
-							System.out.println(sc);
-						}
-					}
-				} catch (RuntimeException e) {
-					// eat it
-				}
-			}
 
 			// Now let Averroes do its thing
 			// First, create the class hierarchy

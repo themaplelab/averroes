@@ -37,7 +37,14 @@ public class TamiFlexFactsDatabase {
 	 * @throws IOException
 	 */
 	private static void loadFacts() throws IOException {
-		BufferedReader in = new BufferedReader(new FileReader(AverroesProperties.getTamiFlexFactsFile()));
+		String fileToLoad = AverroesProperties.getTamiFlexFactsFile();
+
+		// If no file is given, no facts to load, just return.
+		if (fileToLoad.equalsIgnoreCase("")) {
+			return;
+		}
+
+		BufferedReader in = new BufferedReader(new FileReader(fileToLoad));
 		String line;
 
 		while ((line = in.readLine()) != null) {
