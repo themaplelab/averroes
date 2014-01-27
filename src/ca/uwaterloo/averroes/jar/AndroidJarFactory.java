@@ -47,7 +47,7 @@ public class AndroidJarFactory {
 			Set<String> appClasses = DexClassProvider.classesOfDex(new File(AverroesProperties.getApkLocation()));
 
 			Options.v().set_no_bodies_for_excluded(true);
-			Options.v().set_allow_phantom_refs(true);
+			// Options.v().set_allow_phantom_refs(true);
 			Options.v().set_output_format(Options.output_format_none);
 			Options.v().classes().addAll(appClasses);
 			Options.v().set_soot_classpath(AverroesProperties.getAndroidAppClassPath());
@@ -62,6 +62,8 @@ public class AndroidJarFactory {
 			Scene.v().loadNecessaryClasses();
 			double soot = TimeUtils.elapsedTime();
 			System.out.println("Soot loaded the input classes in " + soot + " seconds.");
+
+//			System.out.println(Scene.v().getSootClass("java.lang.Finalizer").resolvingLevel());
 
 			// Print some statistics
 			System.out.println("# application classes: " + Scene.v().getApplicationClasses().size());
