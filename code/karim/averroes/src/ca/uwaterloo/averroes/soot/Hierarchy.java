@@ -22,7 +22,6 @@ import soot.Type;
 import soot.VoidType;
 import soot.coffi.AverroesApplicationConstantPool;
 import soot.tagkit.Tag;
-import soot.util.NumberedString;
 import ca.uwaterloo.averroes.properties.AverroesProperties;
 import ca.uwaterloo.averroes.util.SetUtils;
 
@@ -35,19 +34,6 @@ import ca.uwaterloo.averroes.util.SetUtils;
 public class Hierarchy {
 
 	private static Hierarchy instance = new Hierarchy();
-
-	public static final String JAVA_LANG_OBJECT = "java.lang.Object";
-	public static final String JAVA_LANG_CLASS = "java.lang.Class";
-	public static final String JAVA_LANG_THROWABLE = "java.lang.Throwable";
-	public static final String JAVA_LANG_REF_FINALIZER = "java.lang.ref.Finalizer";
-	public static final String JAVA_LANG_STRING = "java.lang.String";
-
-	public static final String FOR_NAME_SIG = "<java.lang.Class: java.lang.Class forName(java.lang.String)>";
-	public static final String NEW_INSTANCE_SIG = "<java.lang.Class: java.lang.Object newInstance()>";
-	public static final String FINALIZE_SIG = "<java.lang.Object: void finalize()>";
-
-	public static final NumberedString DEFAULT_CONSTRUCTOR_SIG = Scene.v().getSubSigNumberer()
-			.findOrAdd("void <init>()");
 
 	private AverroesApplicationConstantPool applicationConstantPool;
 
@@ -77,7 +63,7 @@ public class Hierarchy {
 
 	private HashMap<SootClass, Set<SootMethod>> classToLibrarySuperMethods;
 	private Set<SootMethod> librarySuperMethodsOfApplicationMethods;
-	
+
 	private Set<SootClass> applicationClassesReferencedByName;
 	private Set<SootMethod> libraryMethodsReferencedInApplication;
 	private Set<SootField> libraryFieldsReferencedInApplication;
@@ -155,7 +141,7 @@ public class Hierarchy {
 
 		classToLibrarySuperMethods = new HashMap<SootClass, Set<SootMethod>>();
 		librarySuperMethodsOfApplicationMethods = new HashSet<SootMethod>();
-		
+
 		applicationClassesReferencedByName = new HashSet<SootClass>();
 		libraryMethodsReferencedInApplication = new HashSet<SootMethod>();
 		libraryFieldsReferencedInApplication = new HashSet<SootField>();
@@ -357,8 +343,8 @@ public class Hierarchy {
 	 */
 	public boolean isBasicLibraryMethod(SootMethod method) {
 		String sig = method.getSignature();
-		return method.isConstructor() || isStaticInitializer(method) || sig.equals(FOR_NAME_SIG)
-				|| sig.equals(NEW_INSTANCE_SIG) || sig.equals(FINALIZE_SIG);
+		return method.isConstructor() || isStaticInitializer(method) || sig.equals(Names.FOR_NAME_SIG)
+				|| sig.equals(Names.NEW_INSTANCE_SIG) || sig.equals(Names.FINALIZE_SIG);
 	}
 
 	/**
@@ -368,7 +354,7 @@ public class Hierarchy {
 	 * @return
 	 */
 	public static boolean hasDefaultConstructor(SootClass cls) {
-		return cls.declaresMethod(DEFAULT_CONSTRUCTOR_SIG);
+		return cls.declaresMethod(Names.DEFAULT_CONSTRUCTOR_SIG);
 	}
 
 	/**
@@ -378,7 +364,7 @@ public class Hierarchy {
 	 * @return
 	 */
 	public static SootMethod getDefaultConstructor(SootClass cls) {
-		return cls.getMethod(DEFAULT_CONSTRUCTOR_SIG);
+		return cls.getMethod(Names.DEFAULT_CONSTRUCTOR_SIG);
 	}
 
 	/**
@@ -404,7 +390,7 @@ public class Hierarchy {
 	 * @return
 	 */
 	public SootMethod getDirectSuperclassDefaultConstructor(SootMethod method) {
-		return getDirectSuperclassOf(method.getDeclaringClass()).getMethod(DEFAULT_CONSTRUCTOR_SIG);
+		return getDirectSuperclassOf(method.getDeclaringClass()).getMethod(Names.DEFAULT_CONSTRUCTOR_SIG);
 	}
 
 	/**
@@ -424,7 +410,7 @@ public class Hierarchy {
 	public void addDefaultConstructorToLibraryClass(SootClass libraryClass) {
 		if (!libraryClass.isInterface()) {
 			if (hasDefaultConstructor(libraryClass)) {
-				makePublic(libraryClass.getMethod(DEFAULT_CONSTRUCTOR_SIG));
+				makePublic(libraryClass.getMethod(Names.DEFAULT_CONSTRUCTOR_SIG));
 			} else {
 				addMethodToLibraryClass(libraryClass, getNewDefaultConstructor());
 			}
@@ -608,7 +594,7 @@ public class Hierarchy {
 	 * @return
 	 */
 	public SootClass getJavaLangObject() {
-		return nameToLibraryClass.get(JAVA_LANG_OBJECT);
+		return nameToLibraryClass.get(Names.JAVA_LANG_OBJECT);
 	}
 
 	/**
@@ -617,7 +603,7 @@ public class Hierarchy {
 	 * @return
 	 */
 	public SootClass getJavaLangClass() {
-		return nameToLibraryClass.get(JAVA_LANG_CLASS);
+		return nameToLibraryClass.get(Names.JAVA_LANG_CLASS);
 	}
 
 	/**
@@ -626,13 +612,13 @@ public class Hierarchy {
 	 * @return
 	 */
 	public SootClass getJavaLangThrowable() {
-		return nameToLibraryClass.get(JAVA_LANG_THROWABLE);
+		return nameToLibraryClass.get(Names.JAVA_LANG_THROWABLE);
 	}
 
 	public Type getStringArrayType() {
 		return ArrayType.v(RefType.v("java.lang.String"), 1);
 	}
-	
+
 	public List<Type> getMainParams() {
 		return Arrays.asList(new Type[] { getStringArrayType() });
 	}
@@ -644,7 +630,7 @@ public class Hierarchy {
 	 * @return
 	 */
 	public boolean isDeclaredInJavaLangObject(SootMethod method) {
-		return method.getDeclaringClass().getName().equals(JAVA_LANG_OBJECT);
+		return method.getDeclaringClass().getName().equals(Names.JAVA_LANG_OBJECT);
 	}
 
 	/**
@@ -1700,7 +1686,7 @@ public class Hierarchy {
 		findLibraryMethodsReferencedInApplication();
 		findLibraryFieldsReferencedInApplication();
 	}
-	
+
 	private void findApplicationClassesReferencedByName() {
 		applicationClassesReferencedByName.addAll(applicationConstantPool.getApplicationClasses());
 	}

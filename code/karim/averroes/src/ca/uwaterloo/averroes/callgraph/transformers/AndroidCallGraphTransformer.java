@@ -20,12 +20,6 @@ import soot.jimple.spark.SparkTransformer;
 import soot.options.Options;
 
 public class AndroidCallGraphTransformer {
-	// private JarOrganizer organizer;
-
-	public AndroidCallGraphTransformer() {
-		// organizer = new JarOrganizer();
-	}
-
 	// @SuppressWarnings("unchecked")
 	public CallGraph run() throws IOException {
 		System.out.println("Generating the call graph for an Android apk.");

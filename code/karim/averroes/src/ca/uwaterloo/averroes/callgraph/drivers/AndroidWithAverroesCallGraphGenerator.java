@@ -6,7 +6,6 @@ import java.util.zip.GZIPOutputStream;
 import probe.CallGraph;
 import probe.TextWriter;
 import ca.uwaterloo.averroes.callgraph.CallGraphFactory;
-import ca.uwaterloo.averroes.exceptions.AverroesException;
 import ca.uwaterloo.averroes.properties.AverroesProperties;
 import ca.uwaterloo.averroes.util.TimeUtils;
 import ca.uwaterloo.averroes.util.io.FileUtils;
@@ -23,16 +22,8 @@ public class AndroidWithAverroesCallGraphGenerator {
 		try {
 			TimeUtils.reset();
 
-			if (args.length != 1) {
-				usage();
-				throw new AverroesException("AndroidAverroes expects exactly 1 arguments.");
-			}
-
-			// Process the arguments
-			String benchmark = args[0];
-
 			FileUtils.createDirectory(AverroesProperties.getOutputDir());
-			CallGraph android = CallGraphFactory.generateAndroidWithAverroesCallGraph(benchmark);
+			CallGraph android = CallGraphFactory.generateAndroidWithAverroesCallGraph();
 			System.out.println("Total time to finish: " + TimeUtils.elapsedTime());
 
 			// Write the android-averroes call graph to disk

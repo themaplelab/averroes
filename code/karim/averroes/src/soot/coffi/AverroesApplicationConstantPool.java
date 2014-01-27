@@ -223,7 +223,7 @@ public class AverroesApplicationConstantPool {
 						
 						if (hierarchy.isApplicationClass(sc)) {
 							result.add(sc);
-							System.out.println(sc);
+//							System.out.println(sc); // TODO
 						}
 					}
 				} catch (RuntimeException e) {

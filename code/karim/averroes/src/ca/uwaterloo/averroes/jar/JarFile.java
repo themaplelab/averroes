@@ -27,7 +27,7 @@ import org.apache.bcel.verifier.VerifierFactory;
 import soot.SootMethod;
 import ca.uwaterloo.averroes.exceptions.Assertions;
 import ca.uwaterloo.averroes.properties.AverroesProperties;
-import ca.uwaterloo.averroes.soot.Hierarchy;
+import ca.uwaterloo.averroes.soot.Names;
 import ca.uwaterloo.averroes.util.io.FileUtils;
 
 /**
@@ -211,7 +211,7 @@ public class JarFile {
 			for (int i = 0; i < methods.length; i++) {
 				VerificationResult vr;
 				// Do a pass 3a for the constructor of java.lang.Object because we are using an uninitialized "this".
-				if (cls.getClassName().equals(Hierarchy.JAVA_LANG_OBJECT)
+				if (cls.getClassName().equals(Names.JAVA_LANG_OBJECT)
 						&& methods[i].getName().equals(SootMethod.constructorName)) {
 					vr = verifier.doPass3a(i);
 				} else {
