@@ -201,6 +201,15 @@ public final class AverroesProperties {
 	}
 
 	/**
+	 * Get the location of the jar file generated for the input apk. This jar file is obtained via the tool dex2jar.
+	 * 
+	 * @return
+	 */
+	public static String getApkJarLocation() {
+		return getApkLocation().replace(".apk", ".jar");
+	}
+
+	/**
 	 * Get the {@value #LIBRARY_JAR_FILES} property. That is a list of the library JAR files separated by
 	 * {@link File#pathSeparator}.
 	 * 
