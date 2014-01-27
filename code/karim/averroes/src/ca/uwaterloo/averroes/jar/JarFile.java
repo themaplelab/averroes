@@ -26,6 +26,7 @@ import org.apache.bcel.verifier.VerifierFactory;
 
 import soot.SootMethod;
 import ca.uwaterloo.averroes.exceptions.Assertions;
+import ca.uwaterloo.averroes.properties.AverroesProperties;
 import ca.uwaterloo.averroes.soot.Hierarchy;
 import ca.uwaterloo.averroes.util.io.FileUtils;
 
@@ -86,9 +87,11 @@ public class JarFile {
 		close();
 
 		// Set BCEL's repository class path.
-		SyntheticRepository rep = SyntheticRepository.getInstance(new ClassPath(jar.concat(System.getProperty(
-				"path.separator").concat(FileUtils.organizedApplicationJarFile()))));
+		SyntheticRepository rep = SyntheticRepository.getInstance(new ClassPath(jar
+				+ System.getProperty("path.separator") + AverroesProperties.getApkJarLocation()));
 		Repository.setRepository(rep);
+
+		// System.out.println("rep classpath: " + Repository.getRepository().getClassPath()); // TODO
 
 		// Now add all those class files in the crafted JAR file to the BCEL repository.
 		for (String classFile : classFiles) {
