@@ -1,6 +1,5 @@
 package ca.uwaterloo.averroes.callgraph.transformers;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,6 +17,7 @@ import soot.SootMethod;
 import soot.jimple.infoflow.android.SetupApplication;
 import soot.jimple.spark.SparkTransformer;
 import soot.options.Options;
+import ca.uwaterloo.averroes.properties.AverroesProperties;
 
 public class AndroidCallGraphTransformer {
 	// @SuppressWarnings("unchecked")
@@ -25,11 +25,7 @@ public class AndroidCallGraphTransformer {
 		System.out.println("Generating the call graph for an Android apk.");
 
 		// Stuff from infoflow-android
-		String androidJar = "android";
-		String apkFileLocation = "droidbench/HelloWorld-debug-unaligned.apk";
-		String path = apkFileLocation + File.pathSeparator + Scene.v().getAndroidJarPath(androidJar, apkFileLocation);
-
-		SetupApplication app = new SetupApplication("android", apkFileLocation);
+		SetupApplication app = new SetupApplication("android", AverroesProperties.getApkLocation());
 		app.calculateSourcesSinksEntrypoints("SourcesAndSinks.txt");
 
 		// Initialize soot
@@ -38,9 +34,9 @@ public class AndroidCallGraphTransformer {
 		Options.v().set_allow_phantom_refs(true);
 		Options.v().set_output_format(Options.output_format_none);
 		Options.v().set_whole_program(true);
-		Options.v().set_soot_classpath(path);
+		Options.v().set_soot_classpath(AverroesProperties.getAndroidAppClassPath());
 		Options.v().set_src_prec(Options.src_prec_apk);
-		soot.options.Options.v().set_android_jars(androidJar);
+		soot.options.Options.v().set_android_jars(AverroesProperties.getAndroidPath());
 		Scene.v().loadNecessaryClasses();
 
 		List<String> entryPoints = new ArrayList<String>();

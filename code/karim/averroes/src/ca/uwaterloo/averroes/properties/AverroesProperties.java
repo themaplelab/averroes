@@ -227,7 +227,7 @@ public final class AverroesProperties {
 	 * 
 	 * @return
 	 */
-	public static String getLibraryJarFilesForSpark() {
+	public static String getLibraryClassPath() {
 		String result = properties.getProperty(LIBRARY_JAR_FILES);
 		Assertions.notNullAssertion(result, LIBRARY_JAR_FILES.concat(" not found."));
 		return result;
@@ -256,6 +256,15 @@ public final class AverroesProperties {
 	}
 
 	/**
+	 * Get the classpath for the input android app, if we're using the averroes-generated placeholder library.
+	 * 
+	 * @return
+	 */
+	public static String getAndroidAverroesClassPath() {
+		return getApkLocation() + File.pathSeparator + "droidbench/placeholderLibrary.jar";
+	}
+
+	/**
 	 * Get the classpath of this program. That is a list of the input and library JAR files separated by
 	 * {@link File#pathSeparator}.
 	 * 
@@ -263,7 +272,7 @@ public final class AverroesProperties {
 	 */
 	public static String getClasspath() {
 		String inputJars = getInputJarFilesForSpark().trim();
-		String libJars = getLibraryJarFilesForSpark().trim();
+		String libJars = getLibraryClassPath().trim();
 		String rtJar = getJre().trim();
 		return inputJars + (libJars.length() > 0 ? File.pathSeparator + libJars : "") + File.pathSeparator + rtJar;
 	}
