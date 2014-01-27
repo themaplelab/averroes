@@ -28,7 +28,7 @@ public class SparkWithAverroesCallGraphTransformer {
 	}
 
 	@SuppressWarnings("unchecked")
-	public probe.CallGraph getProbeCallGraph() throws IOException {
+	public probe.CallGraph run() throws IOException {
 		System.out.println("Generating the call graph from Spark.");
 
 		// Reset Soot

@@ -46,19 +46,6 @@ public class CodeGenerator {
 
 	private static CodeGenerator instance = new CodeGenerator();
 
-	public static final String AVERROES_LIBRARY_CLASS = "ca.uwaterloo.averroes.Library";
-	public static final String ANDROID_MAIN_CLASS = "ca.uwaterloo.averroes.AndroidMainClass";
-	public static final String LIBRARY_POINTS_TO = "libraryPointsTo";
-	public static final String LIBRARY_POINTS_TO_FIELD_SIGNATURE = "<" + AVERROES_LIBRARY_CLASS + ": java.lang.Object "
-			+ LIBRARY_POINTS_TO + ">";
-	public static final String FINALIZE_POINTS_TO = "finalizePointsTo";
-	public static final String FINALIZE_POINTS_TO_FIELD_SIGNATURE = "<" + AVERROES_LIBRARY_CLASS
-			+ ": java.lang.Object " + FINALIZE_POINTS_TO + ">";
-
-	public static final String AVERROES_DO_IT_ALL_METHOD_NAME = "doItAll";
-	public static final String AVERROES_DO_IT_ALL_METHOD_SIGNATURE = "<" + AVERROES_LIBRARY_CLASS + ": void "
-			+ AVERROES_DO_IT_ALL_METHOD_NAME + "()>";
-
 	private HashMap<SootClass, SootClass> libraryInterfaceToConcreteImplementationClass;
 	private HashMap<SootClass, SootClass> abstractLibraryClassToConcreteImplementationClass;
 
@@ -142,7 +129,8 @@ public class CodeGenerator {
 	 * @return
 	 */
 	public SootMethod getAverroesDoItAll() {
-		return averroesLibraryClass.getMethod(Hierarchy.signatureToSubsignature(AVERROES_DO_IT_ALL_METHOD_SIGNATURE));
+		return averroesLibraryClass.getMethod(Hierarchy
+				.signatureToSubsignature(Names.AVERROES_DO_IT_ALL_METHOD_SIGNATURE));
 	}
 
 	/**
@@ -151,7 +139,8 @@ public class CodeGenerator {
 	 * @return
 	 */
 	public SootField getAverroesLibraryPointsTo() {
-		return averroesLibraryClass.getField(Hierarchy.signatureToSubsignature(LIBRARY_POINTS_TO_FIELD_SIGNATURE));
+		return averroesLibraryClass
+				.getField(Hierarchy.signatureToSubsignature(Names.LIBRARY_POINTS_TO_FIELD_SIGNATURE));
 	}
 
 	/**
@@ -160,7 +149,8 @@ public class CodeGenerator {
 	 * @return
 	 */
 	public SootField getAverroesFinalizePointsTo() {
-		return averroesLibraryClass.getField(Hierarchy.signatureToSubsignature(FINALIZE_POINTS_TO_FIELD_SIGNATURE));
+		return averroesLibraryClass.getField(Hierarchy
+				.signatureToSubsignature(Names.FINALIZE_POINTS_TO_FIELD_SIGNATURE));
 	}
 
 	/**
@@ -171,14 +161,14 @@ public class CodeGenerator {
 	public void createAverroesLibraryClass() throws IOException {
 		if (averroesLibraryClass == null) {
 			// Create the class
-			averroesLibraryClass = new SootClass(AVERROES_LIBRARY_CLASS, Modifier.PUBLIC);
+			averroesLibraryClass = new SootClass(Names.AVERROES_LIBRARY_CLASS, Modifier.PUBLIC);
 			averroesLibraryClass.setSuperclass(Hierarchy.v().getJavaLangObject());
 
 			// Create the LPT field
-			SootField libraryPointsTo = new SootField(LIBRARY_POINTS_TO, Hierarchy.v().getJavaLangObject().getType(),
-					Modifier.PUBLIC | Modifier.STATIC);
-			SootField finalizePointsTo = new SootField(FINALIZE_POINTS_TO, Hierarchy.v().getJavaLangObject().getType(),
-					Modifier.PUBLIC | Modifier.STATIC);
+			SootField libraryPointsTo = new SootField(Names.LIBRARY_POINTS_TO, Hierarchy.v().getJavaLangObject()
+					.getType(), Modifier.PUBLIC | Modifier.STATIC);
+			SootField finalizePointsTo = new SootField(Names.FINALIZE_POINTS_TO, Hierarchy.v().getJavaLangObject()
+					.getType(), Modifier.PUBLIC | Modifier.STATIC);
 			averroesLibraryClass.addField(libraryPointsTo);
 			averroesLibraryClass.addField(finalizePointsTo);
 
@@ -187,24 +177,6 @@ public class CodeGenerator {
 
 			writeLibraryClassFile(averroesLibraryClass);
 		}
-	}
-
-	public SootClass createAndroidMainClass(String name) {
-		// Create the class
-		SootClass mainClass = new SootClass(ANDROID_MAIN_CLASS, Modifier.PUBLIC);
-		mainClass.setSuperclass(Hierarchy.v().getJavaLangObject());
-
-		// Create the main method
-		SootMethod main = new SootMethod("main", Hierarchy.v().getMainParams(), VoidType.v(), Modifier.PUBLIC
-				| Modifier.STATIC);
-
-		JimpleBody body = Jimple.v().newBody(main);
-		main.setActiveBody(body);
-		body.insertIdentityStmts();
-
-		averroesLibraryClass.addMethod(main);
-
-		return mainClass;
 	}
 
 	/**
@@ -324,7 +296,7 @@ public class CodeGenerator {
 	 * to array elements, throwing exceptions and all the stuff that the library could do.
 	 */
 	private void createAverroesDoItAll() {
-		SootMethod doItAll = new SootMethod(AVERROES_DO_IT_ALL_METHOD_NAME, Collections.<Type> emptyList(),
+		SootMethod doItAll = new SootMethod(Names.AVERROES_DO_IT_ALL_METHOD_NAME, Collections.<Type> emptyList(),
 				VoidType.v(), Modifier.PUBLIC | Modifier.STATIC);
 
 		doItAllBody = new AverroesJimpleBody(doItAll);
@@ -355,7 +327,7 @@ public class CodeGenerator {
 		// statement, and the return type is void.
 		// body.insertReturnStmt();
 
-		System.out.println(doItAllBody.getJimpleBody());
+		// System.out.println(doItAllBody.getJimpleBody());
 
 		// Finally validate the Jimple body
 		doItAllBody.validate();
@@ -367,7 +339,7 @@ public class CodeGenerator {
 	 */
 	private void callFinalize() {
 		Local fpt = doItAllBody.getFpt();
-		SootMethod finalize = Hierarchy.v().getMethod(Hierarchy.FINALIZE_SIG);
+		SootMethod finalize = Hierarchy.v().getMethod(Names.FINALIZE_SIG);
 		doItAllBody.insertVirtualInvokeStatement(fpt, finalize);
 	}
 
@@ -438,8 +410,8 @@ public class CodeGenerator {
 	 * Create objects for application classes if the library knows their name constants.
 	 */
 	private void createObjectsFromApplicationClassNames() {
-		SootMethod forName = Hierarchy.v().getMethod(Hierarchy.FOR_NAME_SIG);
-		SootMethod newInstance = Hierarchy.v().getMethod(Hierarchy.NEW_INSTANCE_SIG);
+		SootMethod forName = Hierarchy.v().getMethod(Names.FOR_NAME_SIG);
+		SootMethod newInstance = Hierarchy.v().getMethod(Names.NEW_INSTANCE_SIG);
 		List<Value> args = doItAllBody.prepareActualArguments(forName);
 		Local classes = doItAllBody.newLocal(Hierarchy.v().getJavaLangClass().getType());
 		Local instances = doItAllBody.newLocal(Hierarchy.v().getJavaLangObject().getType());
@@ -762,7 +734,7 @@ public class CodeGenerator {
 	private void addDefaultConstructorToGeneratedClass(SootClass generatedClass) {
 		if (!generatedClass.isInterface()) {
 			if (Hierarchy.hasDefaultConstructor(generatedClass)) {
-				Hierarchy.makePublic(generatedClass.getMethod(Hierarchy.DEFAULT_CONSTRUCTOR_SIG));
+				Hierarchy.makePublic(generatedClass.getMethod(Names.DEFAULT_CONSTRUCTOR_SIG));
 			} else {
 				addMethodToGeneratedClass(generatedClass, Hierarchy.getNewDefaultConstructor());
 			}

@@ -3,6 +3,7 @@ package ca.uwaterloo.averroes.callgraph;
 import java.io.IOException;
 
 import ca.uwaterloo.averroes.callgraph.converters.DoopCallGraphConverter;
+import ca.uwaterloo.averroes.callgraph.converters.ProbeCallGraphCollapser;
 import ca.uwaterloo.averroes.callgraph.converters.SootCallGraphConverter;
 import ca.uwaterloo.averroes.callgraph.transformers.AndroidCallGraphTransformer;
 import ca.uwaterloo.averroes.callgraph.transformers.AndroidWithAverroesCallGraphTransformer;
@@ -26,7 +27,7 @@ public class CallGraphFactory {
 	 * @throws IOException
 	 */
 	public static CallGraph generateSparkWithAverroesCallGraph(String benchmark) throws IOException {
-		probe.CallGraph spark = new SparkWithAverroesCallGraphTransformer(benchmark).getProbeCallGraph();
+		probe.CallGraph spark = new SparkWithAverroesCallGraphTransformer(benchmark).run();
 		return SootCallGraphConverter.convert(spark);
 	}
 
@@ -49,7 +50,7 @@ public class CallGraphFactory {
 	 */
 	public static probe.CallGraph generateAndroidCallGraph() throws IOException {
 		probe.CallGraph android = new AndroidCallGraphTransformer().run();
-		return android;
+		return ProbeCallGraphCollapser.collapse(android);
 	}
 
 	/**
@@ -58,9 +59,9 @@ public class CallGraphFactory {
 	 * @return
 	 * @throws IOException
 	 */
-	public static probe.CallGraph generateAndroidWithAverroesCallGraph(String benchmark) throws IOException {
-		probe.CallGraph android = new AndroidWithAverroesCallGraphTransformer(benchmark).getProbeCallGraph();
-		return android;
+	public static probe.CallGraph generateAndroidWithAverroesCallGraph() throws IOException {
+		probe.CallGraph android = new AndroidWithAverroesCallGraphTransformer().run();
+		return ProbeCallGraphCollapser.collapse(android);
 	}
 
 	/**

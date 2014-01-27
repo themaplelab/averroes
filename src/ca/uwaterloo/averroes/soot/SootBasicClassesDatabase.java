@@ -45,7 +45,7 @@ public class SootBasicClassesDatabase {
 				SootClass basicClass = new SootClass(className);
 
 				// Add the register method to the finalizer class
-				if (className.equals(Hierarchy.JAVA_LANG_REF_FINALIZER)) {
+				if (className.equals(Names.JAVA_LANG_REF_FINALIZER)) {
 					SootMethod register = new SootMethod("register", Arrays.asList(hierarchy.getJavaLangObject()
 							.getType()), VoidType.v(), Modifier.STATIC);
 					basicClass.addMethod(register);
