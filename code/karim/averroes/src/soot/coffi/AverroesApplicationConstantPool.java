@@ -1,9 +1,7 @@
 package soot.coffi;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.jf.dexlib2.DexFileFactory;
@@ -17,11 +15,12 @@ import soot.SootClass;
 import soot.SootField;
 import soot.SootFieldRef;
 import soot.SootMethod;
-import soot.SootMethodRef;
 import soot.Type;
 import soot.options.Options;
 import ca.uwaterloo.averroes.properties.AverroesProperties;
 import ca.uwaterloo.averroes.soot.Hierarchy;
+import ca.uwaterloo.averroes.util.BytecodeUtils;
+import ca.uwaterloo.averroes.util.DexUtils;
 
 /**
  * A class that holds the values of library methods and fields found in the constant pool of application classes. The
@@ -153,31 +152,13 @@ public class AverroesApplicationConstantPool {
 					if (className.charAt(0) == '[') {
 						className = "java.lang.Object";
 					}
-					SootClass cls = Scene.v().getSootClass(className);
 
 					// Get the method name, parameter types, and return type
 					CONSTANT_NameAndType_info i = (CONSTANT_NameAndType_info) constantPool[methodInfo
 							.getNameAndTypeIndex()];
 					String methodName = ((CONSTANT_Utf8_info) (constantPool[i.name_index])).convert();
 					String methodDescriptor = ((CONSTANT_Utf8_info) (constantPool[i.descriptor_index])).convert();
-					List<Type> parameterTypes = getParameterTypes(methodDescriptor);
-					Type returnType = getReturnType(methodDescriptor);
-
-					// Get the method ref and resolve it to a Soot method
-					SootMethodRef methodRef = Scene.v().makeMethodRef(cls, methodName, parameterTypes, returnType,
-							false);
-					SootMethod method;
-
-					/*
-					 * We have to do this ugly code. Try first and see if the method is not static. If it is static,
-					 * then create a new methodRef in the catch and resolve it again with isStatic = true.
-					 */
-					try {
-						method = methodRef.resolve();
-					} catch (ResolutionFailedException e) {
-						methodRef = Scene.v().makeMethodRef(cls, methodName, parameterTypes, returnType, true);
-					}
-					method = methodRef.resolve();
+					SootMethod method = BytecodeUtils.asSootMethod(className, methodName, methodDescriptor);
 
 					// If the resolved method is in the library, add it to the result
 					if (hierarchy.isLibraryMethod(method)) {
@@ -200,7 +181,7 @@ public class AverroesApplicationConstantPool {
 
 		// If we're processing an android apk, process the global string constant pool
 		if (Options.v().src_prec() == Options.src_prec_apk) {
-			applicationClasses.addAll(findAndroidApplicationClassNameStringConstants());
+			applicationClasses.addAll(findAndroidApplicationClassesReferencedByName());
 		} else {
 			// Add the classes whose name appear in the constant pool of application classes
 			for (SootClass applicationClass : hierarchy.getApplicationClasses()) {
@@ -209,7 +190,12 @@ public class AverroesApplicationConstantPool {
 		}
 	}
 
-	private Set<SootClass> findAndroidApplicationClassNameStringConstants() {
+	/**
+	 * Search the android string constant pool for application class names.
+	 * 
+	 * @return
+	 */
+	private Set<SootClass> findAndroidApplicationClassesReferencedByName() {
 		Set<SootClass> result = new HashSet<SootClass>();
 		try {
 			DexBackedDexFile dex = DexFileFactory.loadDexFile(AverroesProperties.getApkLocation(), 17);
@@ -217,17 +203,16 @@ public class AverroesApplicationConstantPool {
 			for (int i = 0; i < stringCount; i++) {
 				try {
 					Type tpe = Util.v().jimpleTypeOfFieldDescriptor(dex.getString(i));
-					
+
 					if (tpe instanceof RefType) {
 						SootClass sc = ((RefType) tpe).getSootClass();
-						
+
 						if (hierarchy.isApplicationClass(sc)) {
 							result.add(sc);
-//							System.out.println(sc); // TODO
 						}
 					}
 				} catch (RuntimeException e) {
-					// eat it
+					// eat it, some entries won't be for class names
 				}
 			}
 		} catch (IOException e) {
@@ -281,13 +266,39 @@ public class AverroesApplicationConstantPool {
 
 		// If we're processing an android apk, process the global string constant pool
 		if (Options.v().src_prec() == Options.src_prec_apk) {
-			// nothing
+			libraryMethods.addAll(findLibraryMethodsInAndroidApplicationConstantPool());
 		} else {
 			// Add the library methods that appear in the constant pool of application classes
 			for (SootClass applicationClass : hierarchy.getApplicationClasses()) {
 				libraryMethods.addAll(findLibraryMethodsInConstantPool(applicationClass));
 			}
 		}
+	}
+
+	/**
+	 * Search the android string constant pool for application class names.
+	 * 
+	 * @return
+	 */
+	private Set<SootMethod> findLibraryMethodsInAndroidApplicationConstantPool() {
+		Set<SootMethod> result = new HashSet<SootMethod>();
+		try {
+			DexBackedDexFile dex = DexFileFactory.loadDexFile(AverroesProperties.getApkLocation(), 17);
+			int stringCount = dex.readSmallUint(HeaderItem.METHOD_COUNT_OFFSET);
+			for (int i = 0; i < stringCount; i++) {
+				SootMethod method = DexUtils.asSootMethod(dex, i);
+
+				// If the resolved method is in the library, add it to the result
+				if (hierarchy.isLibraryMethod(method)) {
+					System.out.println(method);
+					result.add(method);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return result;
 	}
 
 	/**
@@ -370,32 +381,5 @@ public class AverroesApplicationConstantPool {
 				libraryFields.addAll(findLibraryFieldsInConstantPool(applicationClass));
 			}
 		}
-	}
-
-	/**
-	 * Get the parameter types of a method from its descriptor.
-	 * 
-	 * @param methodDescriptor
-	 * @return
-	 */
-	private static List<Type> getParameterTypes(String methodDescriptor) {
-		Type[] types = Util.v().jimpleTypesOfFieldOrMethodDescriptor(methodDescriptor);
-		List<Type> result = new ArrayList<Type>();
-		for (int i = 0; i < types.length - 1; i++) {
-			result.add(types[i]);
-		}
-		return result;
-
-	}
-
-	/**
-	 * Get the return type of a method from its descriptor.
-	 * 
-	 * @param methodDescriptor
-	 * @return
-	 */
-	private static Type getReturnType(String methodDescriptor) {
-		Type[] types = Util.v().jimpleTypesOfFieldOrMethodDescriptor(methodDescriptor);
-		return types[types.length - 1];
 	}
 }

@@ -29,7 +29,6 @@ public class JarFactory {
 	 * 
 	 * @param args
 	 */
-	@SuppressWarnings("unchecked")
 	public static void main(String[] args) {
 		try {
 			// Find the total execution time, instead of depending on the Unix time command

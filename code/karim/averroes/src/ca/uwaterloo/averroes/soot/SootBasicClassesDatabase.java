@@ -10,6 +10,7 @@ import soot.Modifier;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
+import soot.Type;
 import soot.VoidType;
 import ca.uwaterloo.averroes.properties.AverroesProperties;
 
@@ -46,7 +47,7 @@ public class SootBasicClassesDatabase {
 
 				// Add the register method to the finalizer class
 				if (className.equals(Names.JAVA_LANG_REF_FINALIZER)) {
-					SootMethod register = new SootMethod("register", Arrays.asList(hierarchy.getJavaLangObject()
+					SootMethod register = new SootMethod("register", Arrays.asList((Type) hierarchy.getJavaLangObject()
 							.getType()), VoidType.v(), Modifier.STATIC);
 					basicClass.addMethod(register);
 					AverroesJimpleBody body = new AverroesJimpleBody(register);
