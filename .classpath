@@ -3,7 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/bcel-5.2.jar" sourcepath="lib/bcel-5.2-src.zip"/>
-	<classpathentry kind="lib" path="lib/sootclasses.jar" sourcepath="lib/soot-src.zip"/>
 	<classpathentry kind="src" path="dat"/>
 	<classpathentry kind="lib" path="lib/jasminclasses.jar" sourcepath="lib/jasminsrc-2.5.0.jar"/>
 	<classpathentry kind="lib" path="lib/polyglotclasses-1.3.5.jar" sourcepath="lib/polyglotsrc-1.3.5.jar"/>
@@ -12,11 +11,12 @@
 	<classpathentry kind="lib" path="lib/iris-parser-0.60.jar"/>
 	<classpathentry kind="lib" path="lib/AXMLPrinter2.jar"/>
 	<classpathentry kind="lib" path="lib/baksmali-1.3.2.jar"/>
-	<classpathentry kind="lib" path="lib/dexlib2-2.0b5-dev.jar"/>
+	<classpathentry kind="lib" path="lib/dexlib2-2.0b5-dev.jar" sourcepath="/Users/karim/Documents/workspace/smali/dexlib2/src/main/java"/>
 	<classpathentry kind="lib" path="lib/baksmali-2.0b5.jar"/>
 	<classpathentry kind="lib" path="lib/guava-15.0.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/soot-infoflow-android"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/soot-infoflow"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/probe"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/soot"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

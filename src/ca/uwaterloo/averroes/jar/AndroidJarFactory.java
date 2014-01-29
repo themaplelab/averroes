@@ -28,7 +28,6 @@ public class AndroidJarFactory {
 	 * 
 	 * @param args
 	 */
-	@SuppressWarnings("unchecked")
 	public static void main(String[] args) {
 		try {
 			// Find the total execution time, instead of depending on the Unix time command
@@ -46,9 +45,9 @@ public class AndroidJarFactory {
 			// Get the application class names, i.e., all classes in the input android apk
 			Set<String> appClasses = DexClassProvider.classesOfDex(new File(AverroesProperties.getApkLocation()));
 
-			Options.v().set_no_bodies_for_excluded(true);
+			// Options.v().set_no_bodies_for_excluded(true);
 			// Options.v().set_allow_phantom_refs(true);
-			Options.v().set_output_format(Options.output_format_none);
+			// Options.v().set_output_format(Options.output_format_none);
 			Options.v().classes().addAll(appClasses);
 			Options.v().set_soot_classpath(AverroesProperties.getAndroidAppClassPath());
 			Options.v().set_src_prec(Options.src_prec_apk);
@@ -62,8 +61,6 @@ public class AndroidJarFactory {
 			Scene.v().loadNecessaryClasses();
 			double soot = TimeUtils.elapsedTime();
 			System.out.println("Soot loaded the input classes in " + soot + " seconds.");
-
-//			System.out.println(Scene.v().getSootClass("java.lang.Finalizer").resolvingLevel());
 
 			// Print some statistics
 			System.out.println("# application classes: " + Scene.v().getApplicationClasses().size());

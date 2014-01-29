@@ -9,6 +9,7 @@ import probe.ObjectManager;
 import probe.ProbeClass;
 import probe.ProbeMethod;
 import soot.Kind;
+import soot.Local;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
@@ -24,14 +25,18 @@ public class AndroidWithAverroesCallGraphTransformer {
 
 		// Initialize soot
 		soot.G.reset();
-		Options.v().set_no_bodies_for_excluded(true);
-//		 Options.v().set_allow_phantom_refs(true);
-		Options.v().set_output_format(Options.output_format_none);
+		// Options.v().set_no_bodies_for_excluded(true);
+		// Options.v().set_allow_phantom_refs(true);
+		// Options.v().set_output_format(Options.output_format_none);
 		Options.v().set_whole_program(true);
 		Options.v().set_soot_classpath(AverroesProperties.getAndroidAverroesClassPath());
 		Options.v().set_src_prec(Options.src_prec_apk);
 		soot.options.Options.v().set_android_jars(AverroesProperties.getAndroidPath());
+		Scene.v().addBasicClass("android.app.Activity");
 		Scene.v().loadNecessaryClasses();
+
+		// SootClass sc = Scene.v().getSootClass("android.app.Activity");
+		// System.out.println(SootClass.levelToString(sc.resolvingLevel()));
 
 		// Make doItAll the entry point of the call graph
 		SootMethod mainMethod = Scene.v().getMethod(Names.AVERROES_DO_IT_ALL_METHOD_SIGNATURE);
@@ -44,6 +49,14 @@ public class AndroidWithAverroesCallGraphTransformer {
 		CallGraph probecg = new CallGraph();
 		soot.jimple.toolkits.callgraph.CallGraph cg = Scene.v().getCallGraph();
 
+		SootMethod m = Scene.v().getMethod(Names.AVERROES_DO_IT_ALL_METHOD_SIGNATURE);
+		System.out.println(m.getActiveBody());
+		
+		for(Local l : m.getActiveBody().getLocals()) {
+			
+		}
+		System.exit(0);
+		
 		Iterator<soot.jimple.toolkits.callgraph.Edge> it = cg.listener();
 		while (it.hasNext()) {
 			soot.jimple.toolkits.callgraph.Edge e = it.next();
