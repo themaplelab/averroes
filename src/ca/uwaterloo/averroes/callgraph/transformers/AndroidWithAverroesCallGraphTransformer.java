@@ -1,17 +1,22 @@
 package ca.uwaterloo.averroes.callgraph.transformers;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Set;
 
 import probe.CallGraph;
 import probe.ObjectManager;
 import probe.ProbeClass;
 import probe.ProbeMethod;
+import soot.DexClassProvider;
 import soot.Kind;
 import soot.Local;
 import soot.Scene;
 import soot.SootClass;
+import soot.SootField;
 import soot.SootMethod;
 import soot.jimple.spark.SparkTransformer;
 import soot.options.Options;
@@ -28,12 +33,19 @@ public class AndroidWithAverroesCallGraphTransformer {
 		// Options.v().set_no_bodies_for_excluded(true);
 		// Options.v().set_allow_phantom_refs(true);
 		// Options.v().set_output_format(Options.output_format_none);
+		Set<String> appClasses = DexClassProvider.classesOfDex(new File(AverroesProperties.getApkLocation()));
+		Options.v().classes().addAll(appClasses);
+		// Options.v().set_process_dir(Arrays.asList("droidbench/placeholderLibrary.jar"));
+
 		Options.v().set_whole_program(true);
+		Options.v().set_full_resolver(true);
 		Options.v().set_soot_classpath(AverroesProperties.getAndroidAverroesClassPath());
 		Options.v().set_src_prec(Options.src_prec_apk);
-		soot.options.Options.v().set_android_jars(AverroesProperties.getAndroidPath());
-		Scene.v().addBasicClass("android.app.Activity");
+		Options.v().set_force_android_jar("droidbench/placeholderLibrary.jar");
+
 		Scene.v().loadNecessaryClasses();
+
+		System.out.println(Scene.v().getApplicationClasses());
 
 		// SootClass sc = Scene.v().getSootClass("android.app.Activity");
 		// System.out.println(SootClass.levelToString(sc.resolvingLevel()));
@@ -50,18 +62,27 @@ public class AndroidWithAverroesCallGraphTransformer {
 		soot.jimple.toolkits.callgraph.CallGraph cg = Scene.v().getCallGraph();
 
 		SootMethod m = Scene.v().getMethod(Names.AVERROES_DO_IT_ALL_METHOD_SIGNATURE);
+		SootField f = Scene.v().getField(Names.LIBRARY_POINTS_TO_FIELD_SIGNATURE);
 		System.out.println(m.getActiveBody());
-		
-		for(Local l : m.getActiveBody().getLocals()) {
-			
+		System.out.println(Scene.v().getSootClass("ca.uwaterloo.helloworld.MainActivity").getSuperclass());
+		System.out.println("Pt-set of libraryPointsTo" + "\n\t" + Scene.v().getPointsToAnalysis().reachingObjects(f));
+
+		for (Local l : m.getActiveBody().getLocals()) {
+			if (l.getName().equals("r1") || l.getName().equals("r2") || l.getName().equals("r45")) {
+				System.out.println("Pt-set of " + l.getName() + "\n\t"
+						+ Scene.v().getPointsToAnalysis().reachingObjects(l));
+			}
 		}
-		System.exit(0);
-		
+
 		Iterator<soot.jimple.toolkits.callgraph.Edge> it = cg.listener();
 		while (it.hasNext()) {
 			soot.jimple.toolkits.callgraph.Edge e = it.next();
 			if (e.isExplicit() || e.kind().equals(Kind.NEWINSTANCE)) {
 				probecg.edges().add(new probe.CallEdge(probeMethod(e.src()), probeMethod(e.tgt())));
+
+				if (e.tgt().getName().contains("onCreate")) {
+					System.out.println(e.src() + "\n\t" + e.tgt());
+				}
 			}
 		}
 

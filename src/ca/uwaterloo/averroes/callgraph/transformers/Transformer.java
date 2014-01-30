@@ -6,8 +6,7 @@ import java.util.Map;
 import soot.PhaseOptions;
 
 public enum Transformer {
-	CHA("class hierarchy analysis", chaOptions()),
-	SPARK("spark", sparkOptions());
+	CHA("class hierarchy analysis", chaOptions()), SPARK("spark", sparkOptions());
 
 	private String transformer;
 	private Map<String, String> options;
@@ -24,7 +23,7 @@ public enum Transformer {
 	public Map<String, String> options() {
 		return options;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private static Map<String, String> chaOptions() {
 		Map<String, String> opts = new HashMap<String, String>(PhaseOptions.v().getPhaseOptions("cg.cha"));
@@ -32,7 +31,7 @@ public enum Transformer {
 		opts.put("verbose", "true");
 		return opts;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private static Map<String, String> sparkOptions() {
 		Map<String, String> opts = new HashMap<String, String>(PhaseOptions.v().getPhaseOptions("cg.spark"));
@@ -40,6 +39,7 @@ public enum Transformer {
 		opts.put("verbose", "true");
 		opts.put("simulate-natives", "false"); // TODO
 		opts.put("force-gc", "true");
+		// opts.put("ignore-types", "true");
 		return opts;
 	}
 }
