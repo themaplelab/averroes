@@ -303,6 +303,7 @@ public class Hierarchy {
 	public void cleanupLibraryClasses() {
 		for (SootClass libraryClass : libraryClasses) {
 			addDefaultConstructorToLibraryClass(libraryClass);
+			cleanupLibraryClassTags(libraryClass);
 			cleanupMethodsInLibraryClass(libraryClass);
 			cleanupFieldsInLibraryClass(libraryClass);
 		}
@@ -1828,6 +1829,23 @@ public class Hierarchy {
 		// Remove the exceptions the proper way.
 		for (String tag : toRemove) {
 			libraryMethod.removeTag(tag);
+		}
+	}
+	
+	/**
+	 * Cleanup the tag list of a library class. There's no need for tags/annotations in a placeholder library.
+	 * 
+	 * @param libraryMethod
+	 */
+	private void cleanupLibraryClassTags(SootClass libraryClass) {
+		Set<String> toRemove = new HashSet<String>();
+		for (Tag tag : libraryClass.getTags()) {
+			toRemove.add(tag.getName());
+		}
+
+		// Remove the exceptions the proper way.
+		for (String tag : toRemove) {
+			libraryClass.removeTag(tag);
 		}
 	}
 
