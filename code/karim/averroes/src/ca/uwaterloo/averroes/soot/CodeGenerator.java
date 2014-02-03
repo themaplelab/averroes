@@ -170,17 +170,19 @@ public class CodeGenerator {
 			androidDummyMainClass.setSuperclass(Hierarchy.v().getJavaLangObject());
 
 			// Add the main method
-			SootMethod main = new SootMethod(Names.MAIN_METHOD, Collections.<Type> emptyList(), VoidType.v(),
+			SootMethod main = new SootMethod(Names.MAIN_METHOD, Hierarchy.v().getMainParams(), VoidType.v(),
 					Modifier.PUBLIC | Modifier.STATIC);
-
-			AverroesJimpleBody body = new AverroesJimpleBody(main);
 			androidDummyMainClass.addMethod(main);
 
-			// Insert the standard Jimple body footer, this also adds the call to the method doItAll()
-			body.insertStandardJimpleBodyFooter();
+			// Create a simple Jimple body that calls the method doItAll()
+			JimpleBody b = Jimple.v().newBody(main);
+			main.setActiveBody(b);
+			b.insertIdentityStmts();
+			b.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(getAverroesDoItAll().makeRef())));
+			b.getUnits().addLast(Jimple.v().newReturnVoidStmt());
 
 			// Validate the Jimple body
-			body.validate();
+			b.validate();
 
 			// Write the class file to disk
 			writeLibraryClassFile(androidDummyMainClass);

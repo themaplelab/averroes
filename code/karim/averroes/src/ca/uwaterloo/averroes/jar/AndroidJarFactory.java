@@ -44,14 +44,12 @@ public class AndroidJarFactory {
 
 			// Get the application class names, i.e., all classes in the input android apk
 			Set<String> appClasses = DexClassProvider.classesOfDex(new File(AverroesProperties.getApkLocation()));
-
-			// Options.v().set_no_bodies_for_excluded(true);
-			// Options.v().set_allow_phantom_refs(true);
-			// Options.v().set_output_format(Options.output_format_none);
 			Options.v().classes().addAll(appClasses);
+
+			// Set the soot classpath, android path, and validate jimple bodies.
 			Options.v().set_soot_classpath(AverroesProperties.getAndroidAppClassPath());
 			Options.v().set_src_prec(Options.src_prec_apk);
-			soot.options.Options.v().set_android_jars(AverroesProperties.getAndroidPath());
+			Options.v().set_android_jars(AverroesProperties.getAndroidPath());
 			Options.v().set_validate(true);
 
 			// Load the necessary classes

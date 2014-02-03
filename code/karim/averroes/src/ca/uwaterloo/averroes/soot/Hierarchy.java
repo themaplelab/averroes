@@ -13,7 +13,6 @@ import java.util.TreeSet;
 import soot.ArrayType;
 import soot.Modifier;
 import soot.RefLikeType;
-import soot.RefType;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootField;
@@ -616,10 +615,18 @@ public class Hierarchy {
 		return nameToLibraryClass.get(Names.JAVA_LANG_THROWABLE);
 	}
 
+	/**
+	 * Get the String[] type.
+	 * @return
+	 */
 	public Type getStringArrayType() {
-		return ArrayType.v(RefType.v("java.lang.String"), 1);
+		return ArrayType.v(nameToClass.get(Names.JAVA_LANG_STRING).getType(), 1);
 	}
 
+	/**
+	 * Get the parameters of the standard main method.
+	 * @return
+	 */
 	public List<Type> getMainParams() {
 		return Arrays.asList(new Type[] { getStringArrayType() });
 	}
@@ -1831,7 +1838,7 @@ public class Hierarchy {
 			libraryMethod.removeTag(tag);
 		}
 	}
-	
+
 	/**
 	 * Cleanup the tag list of a library class. There's no need for tags/annotations in a placeholder library.
 	 * 
