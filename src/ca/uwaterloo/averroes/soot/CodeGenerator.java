@@ -54,6 +54,7 @@ public class CodeGenerator {
 
 	private SootClass averroesLibraryClass = null;
 	private AverroesJimpleBody doItAllBody = null;
+	private SootClass androidDummyMainClass = null;
 
 	/**
 	 * Get the CodeGenerator singleton.
@@ -154,6 +155,40 @@ public class CodeGenerator {
 	}
 
 	/**
+	 * Create a dummy main class for an android app. This basically is a class that contains one method: the main
+	 * method, which calls the Library.doItAll() method. This class will be part of the placeholderLibrary.jar for
+	 * convenience. It can then be used as the main_class for, in fact, any android app, either using the Soot call
+	 * graph generator or any other tool.
+	 * 
+	 * @throws IOException
+	 * 
+	 */
+	public void createAndroidDummyMainClass() throws IOException {
+		if (androidDummyMainClass == null) {
+			// Create the class
+			androidDummyMainClass = new SootClass(Names.ANDROID_DUMMY_MAIN_CLASS, Modifier.PUBLIC);
+			androidDummyMainClass.setSuperclass(Hierarchy.v().getJavaLangObject());
+
+			// Add the main method
+			SootMethod main = new SootMethod(Names.MAIN_METHOD, Collections.<Type> emptyList(), VoidType.v(),
+					Modifier.PUBLIC | Modifier.STATIC);
+
+			AverroesJimpleBody body = new AverroesJimpleBody(main);
+			androidDummyMainClass.addMethod(main);
+
+			// Insert the standard Jimple body footer, this also adds the call to the method doItAll()
+			body.insertStandardJimpleBodyFooter();
+
+			// Validate the Jimple body
+			body.validate();
+
+			// Write the class file to disk
+			writeLibraryClassFile(androidDummyMainClass);
+		}
+
+	}
+
+	/**
 	 * Create the Averroes library class where all the fun takes place ;)
 	 * 
 	 * @throws IOException
@@ -175,6 +210,7 @@ public class CodeGenerator {
 			// Create the dotItAll method
 			createAverroesDoItAll();
 
+			// Write the class file to disk
 			writeLibraryClassFile(averroesLibraryClass);
 		}
 	}

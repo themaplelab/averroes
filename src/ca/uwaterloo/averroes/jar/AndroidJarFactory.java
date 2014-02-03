@@ -107,6 +107,10 @@ public class AndroidJarFactory {
 			System.out.println("Creating the skeleton for Averroes's main library class ...");
 			CodeGenerator.v().createAverroesLibraryClass();
 
+			// Create the dummy main class
+			System.out.println("Creating the Android dummy main class ...");
+			CodeGenerator.v().createAndroidDummyMainClass();
+
 			// Create method bodies to the library classes
 			System.out.println("Generating the method bodies for the placeholder library classes ...");
 			CodeGenerator.v().createLibraryMethodBodies();
