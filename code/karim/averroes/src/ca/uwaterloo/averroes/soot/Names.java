@@ -5,6 +5,7 @@ import soot.util.NumberedString;
 
 public class Names {
 	public static final String AVERROES_LIBRARY_CLASS = "ca.uwaterloo.averroes.Library";
+	public static final String ANDROID_DUMMY_MAIN_CLASS = "ca.uwaterloo.averroes.AndroidDummyMainClass";
 	public static final String BLOB = "blob";
 	public static final String LIBRARY_POINTS_TO = "libraryPointsTo";
 	public static final String LIBRARY_POINTS_TO_FIELD_SIGNATURE = "<" + AVERROES_LIBRARY_CLASS + ": java.lang.Object "
@@ -14,6 +15,7 @@ public class Names {
 			+ ": java.lang.Object " + FINALIZE_POINTS_TO + ">";
 
 	public static final String AVERROES_DO_IT_ALL_METHOD_NAME = "doItAll";
+	public static final String MAIN_METHOD = "main";
 	public static final String AVERROES_DO_IT_ALL_METHOD_SIGNATURE = "<" + AVERROES_LIBRARY_CLASS + ": void "
 			+ AVERROES_DO_IT_ALL_METHOD_NAME + "()>";
 
