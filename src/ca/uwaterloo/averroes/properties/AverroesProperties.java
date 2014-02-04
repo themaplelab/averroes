@@ -24,6 +24,7 @@ import soot.options.Options;
 import ca.uwaterloo.averroes.exceptions.Assertions;
 import ca.uwaterloo.averroes.exceptions.AverroesException;
 import ca.uwaterloo.averroes.soot.Names;
+import ca.uwaterloo.averroes.util.io.FileUtils;
 
 /**
  * A utility class that holds all the properties required by Averroes to run. For the possible values of each property,
@@ -270,16 +271,17 @@ public final class AverroesProperties {
 	 * @return
 	 */
 	public static String getAndroidAppClassPath() {
-		return getApkLocation() + File.pathSeparator + Scene.v().getAndroidJarPath(getAndroidPath(), getApkLocation());
+		return FileUtils.composePath(getApkLocation(), Scene.v().getAndroidJarPath(getAndroidPath(), getApkLocation()));
 	}
 
 	/**
 	 * Get the classpath for the input android app, if we're using the averroes-generated placeholder library.
 	 * 
+	 * @param benchmark
 	 * @return
 	 */
-	public static String getAndroidAverroesClassPath() {
-		return getApkLocation() + File.pathSeparator + "droidbench/placeholderLibrary.jar";
+	public static String getAndroidAverroesClassPath(String benchmark) {
+		return FileUtils.composePath(getApkLocation(), FileUtils.androidPlaceholderLibraryJarFile(benchmark));
 	}
 
 	/**

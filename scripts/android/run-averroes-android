@@ -1,0 +1,41 @@
+#! /usr/bin/env bash
+
+set -e
+
+benchmark=$1
+props=averroes.properties
+
+function timing()
+{
+	echo "..."
+	/usr/bin/time -f "elapsed time: %es" $* 2>&1
+}
+
+date
+
+mkdir -p benchmarks-averroes/android
+
+echo "running ${benchmark}"
+program=$(basename $benchmark)
+apk=droidbench/${benchmark}.apk
+  
+# 1. create the averroes properties file
+touch ${props}
+echo "main_class = ca.uwaterloo.averroes.AndroidDummyMainClass" > ${props}
+echo "android_path = android" >> ${props}
+echo "output_dir = output" >> ${props}
+echo "apk_location = ${apk}" >> ${props}
+if test "${benchmark}" = "AndroidSpecific_Obfuscation1"; then
+  echo "ca.uwaterloo.averroes.AndroidDummyMainClass:de.ecspride.**:android.telephony.TelephonyManager" >> ${props}
+else
+  echo "ca.uwaterloo.averroes.AndroidDummyMainClass:de.ecspride.**" >> ${props}
+fi
+
+# 2. run Averroes
+jar uf averroes-android.jar ${props}
+timing java -jar averroes-android.jar -disable-reflection
+
+# 3. copy the output JARs
+cp output/placeholderLibrary.jar benchmarks-averroes/android/${benchmark}-placeholder-lib.jar
+
+echo ""
