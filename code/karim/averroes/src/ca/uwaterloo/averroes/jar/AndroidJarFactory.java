@@ -29,6 +29,9 @@ public class AndroidJarFactory {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		// TODO: needs to be removed when we depend on the -android flag
+		Options.v().set_src_prec(Options.src_prec_apk);
+
 		try {
 			// Find the total execution time, instead of depending on the Unix time command
 			TimeUtils.splitStart();

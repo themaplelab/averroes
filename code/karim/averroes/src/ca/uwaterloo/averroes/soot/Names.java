@@ -28,6 +28,8 @@ public class Names {
 	public static final String FOR_NAME_SIG = "<java.lang.Class: java.lang.Class forName(java.lang.String)>";
 	public static final String NEW_INSTANCE_SIG = "<java.lang.Class: java.lang.Object newInstance()>";
 	public static final String FINALIZE_SIG = "<java.lang.Object: void finalize()>";
+	
+	public static final String ANDROID_R = "R";
 
 	public static final NumberedString DEFAULT_CONSTRUCTOR_SIG = Scene.v().getSubSigNumberer()
 			.findOrAdd("void <init>()");

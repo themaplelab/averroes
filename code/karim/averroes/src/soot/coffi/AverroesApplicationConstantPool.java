@@ -207,7 +207,8 @@ public class AverroesApplicationConstantPool {
 					if (tpe instanceof RefType) {
 						SootClass sc = ((RefType) tpe).getSootClass();
 
-						if (hierarchy.isApplicationClass(sc)) {
+						// Ignore the R class and its inner classes here
+						if (hierarchy.isApplicationClass(sc) && !AverroesProperties.isAndroidRClassOrInnerClass(sc)) {
 							result.add(sc);
 						}
 					}
