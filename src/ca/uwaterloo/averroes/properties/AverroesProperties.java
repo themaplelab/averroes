@@ -19,8 +19,11 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.Type;
+import soot.jimple.infoflow.android.manifest.ProcessManifest;
+import soot.options.Options;
 import ca.uwaterloo.averroes.exceptions.Assertions;
 import ca.uwaterloo.averroes.exceptions.AverroesException;
+import ca.uwaterloo.averroes.soot.Names;
 
 /**
  * A utility class that holds all the properties required by Averroes to run. For the possible values of each property,
@@ -50,7 +53,9 @@ public final class AverroesProperties {
 	private static Properties properties = null;
 	private static List<String> dynamicClasses = null;
 	private static boolean isDisableReflection = false;
-	private static boolean isAndroidApk = false;
+
+	private static ProcessManifest processManifest = null;
+	private static boolean isProcessingAndroidApk = false;
 
 	/**
 	 * Load the properties file at the first access of this class.
@@ -73,6 +78,11 @@ public final class AverroesProperties {
 		System.out.println("Loading properties...");
 		try {
 			properties = loadPropertiesFromFile(AverroesProperties.class.getClassLoader(), PROPERTY_FILENAME);
+
+			// If we're processing an apk, process its manifest
+			if (Options.v().src_prec() == Options.src_prec_apk) {
+				processAndroidManifest();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new AverroesException("Unable to load Averroes properties.", e);
@@ -107,6 +117,14 @@ public final class AverroesProperties {
 	}
 
 	/**
+	 * Load the android manifest of the specified apk.
+	 */
+	private static void processAndroidManifest() {
+		processManifest = new ProcessManifest();
+		processManifest.loadManifestFile(getApkLocation());
+	}
+
+	/**
 	 * Process the input arguments of Averroes.
 	 * 
 	 * @param args
@@ -116,7 +134,7 @@ public final class AverroesProperties {
 			if ("-disable-reflection".equals(args[i])) {
 				isDisableReflection = true;
 			} else if ("-android".equals(args[i])) {
-				isAndroidApk = true;
+				isProcessingAndroidApk = true;
 			} else {
 				Assertions.unknownArgument(args[i]);
 			}
@@ -137,8 +155,8 @@ public final class AverroesProperties {
 	 * 
 	 * @return
 	 */
-	public static boolean isAndroidApk() {
-		return isAndroidApk;
+	public static boolean isProcessingAndroidApk() {
+		return isProcessingAndroidApk;
 	}
 
 	/**
@@ -378,6 +396,55 @@ public final class AverroesProperties {
 	 */
 	public static String getJavaHome() {
 		return System.getProperty("java.home");
+	}
+
+	/**
+	 * Check if a class is the android R class, or one of its inner classes.
+	 * 
+	 * @param probeClass
+	 * @return
+	 */
+	public static boolean isAndroidRClassOrInnerClass(ProbeClass probeClass) {
+		if (Options.v().src_prec() != Options.src_prec_apk) {
+			throw new RuntimeException("Oops. Checking for Android R class, but we are not processing an apk.");
+		}
+
+		if (probeClass.pkg().equalsIgnoreCase(processManifest.getPackageName())) {
+			return probeClass.name().equalsIgnoreCase(Names.ANDROID_R)
+					|| probeClass.name().startsWith(Names.ANDROID_R + "$");
+		}
+
+		return false;
+	}
+
+	/**
+	 * Check if a class is the android R class, or one of its inner classes.
+	 * 
+	 * @param sootClass
+	 * @return
+	 */
+	public static boolean isAndroidRClassOrInnerClass(SootClass sootClass) {
+		return isAndroidRClassOrInnerClass(sootClass.getName());
+	}
+
+	/**
+	 * Check if a class is the android R class, or one of its inner classes.
+	 * 
+	 * @param className
+	 * @return
+	 */
+	public static boolean isAndroidRClassOrInnerClass(String className) {
+		return isAndroidRClassOrInnerClass(ObjectManager.v().getClass(className));
+	}
+
+	/**
+	 * Check if a class is the android R class, or one of its inner classes.
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public static boolean isAndroidRClassOrInnerClass(Type type) {
+		return isAndroidRClassOrInnerClass(type.toString());
 	}
 
 	/**
