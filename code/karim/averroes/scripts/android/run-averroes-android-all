@@ -1,0 +1,23 @@
+#! /usr/bin/env bash
+
+set -e
+
+# the droidbench programs
+droidbench="droidbench-apks.txt"
+
+function timing()
+{
+	echo "..."
+	/usr/bin/time -f "elapsed time: %es" $* 2>&1
+}
+
+date
+
+mkdir -p benchmarks-averroes/android
+
+while read benchmark
+do
+./run-averroes-android ${benchmark}
+done < ${droidbench}
+
+date

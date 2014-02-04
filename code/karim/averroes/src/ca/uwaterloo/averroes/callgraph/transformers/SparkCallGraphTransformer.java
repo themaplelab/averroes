@@ -24,7 +24,6 @@ public class SparkCallGraphTransformer {
 		organizer = new JarOrganizer();
 	}
 
-	@SuppressWarnings("unchecked")
 	public CallGraph getProbeCallGraph() throws IOException {
 		System.out.println("Generating the call graph from Spark.");
 		

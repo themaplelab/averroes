@@ -235,7 +235,7 @@ public class FileUtils {
 	public static String placeholderLibraryJarFile() {
 		return AverroesProperties.getOutputDir().concat(File.separator).concat("placeholderLibrary.jar");
 	}
-	
+
 	/**
 	 * The path to the placeholder library JAR file of a benchmark.
 	 * 
@@ -246,6 +246,16 @@ public class FileUtils {
 	}
 
 	/**
+	 * The path to the android placeholder library JAr file of a benchmark.
+	 * 
+	 * @param benchmark
+	 * @return
+	 */
+	public static String androidPlaceholderLibraryJarFile(String benchmark) {
+		return composePath("benchmarks-averroes", "android", benchmark + "-placeholder-lib.jar");
+	}
+
+	/**
 	 * The path to the organized application JAR file.
 	 * 
 	 * @return
@@ -253,7 +263,7 @@ public class FileUtils {
 	public static String organizedApplicationJarFile() {
 		return AverroesProperties.getOutputDir().concat(File.separator).concat("organizedApplication.jar");
 	}
-	
+
 	/**
 	 * The path to the organized application JAR file of a benchmark.
 	 * 
@@ -271,7 +281,7 @@ public class FileUtils {
 	public static String organizedLibraryJarFile() {
 		return AverroesProperties.getOutputDir().concat(File.separator).concat("organizedLibrary.jar");
 	}
-	
+
 	/**
 	 * The path to the organized library JAR file of a benchmark.
 	 * 
@@ -289,7 +299,7 @@ public class FileUtils {
 	public static String sparkAverroesCallGraphFile() {
 		return AverroesProperties.getOutputDir().concat(File.separator).concat("sparkAverroes.gxl");
 	}
-	
+
 	/**
 	 * The path to the Spark call graph.
 	 * 
@@ -298,7 +308,7 @@ public class FileUtils {
 	public static String sparkCallGraphFile() {
 		return AverroesProperties.getOutputDir().concat(File.separator).concat("spark.gxl");
 	}
-	
+
 	/**
 	 * The path to the Android call graph.
 	 * 
@@ -307,7 +317,7 @@ public class FileUtils {
 	public static String androidCallGraphFile() {
 		return AverroesProperties.getOutputDir().concat(File.separator).concat("android.txt.gzip");
 	}
-	
+
 	/**
 	 * The path to the android-averroes call graph.
 	 * 
@@ -316,7 +326,7 @@ public class FileUtils {
 	public static String androidAverroesCallGraphFile() {
 		return AverroesProperties.getOutputDir().concat(File.separator).concat("androidAverroes.txt.gzip");
 	}
-	
+
 	/**
 	 * The path to the DoopAverroes call graph.
 	 * 
@@ -325,16 +335,17 @@ public class FileUtils {
 	public static String doopAverroesCallGraphFile() {
 		return AverroesProperties.getOutputDir().concat(File.separator).concat("doopAverroes.gxl");
 	}
-	
+
 	/**
 	 * The path to the DoopAverroes executable
+	 * 
 	 * @return
 	 */
 	public static String doopAverroesRunExe(String doopHome) {
 		return doopHome.concat(File.separator).concat("alt-run-averroes");
 	}
-	
-	/* Some utility methods to get the names of comparison call graphs */ 
+
+	/* Some utility methods to get the names of comparison call graphs */
 	public static String missingCallGraphFile(CallGraphSource sup, CallGraphSource sub, CallGraphDiffOptions options) {
 		String suffix = options.isSetSoundnessOptions() ? "_app" : "_lib";
 		return missingCallGraphFile(sup, sub).replace(".gxl", suffix + ".gxl");
@@ -346,15 +357,15 @@ public class FileUtils {
 	}
 
 	public static String missingCallGraphFile(CallGraphSource sup, CallGraphSource sub) {
-		return AverroesProperties.getOutputDir().concat(File.separator).concat(sup.source()).concat("-").concat(sub.source())
-				.concat(".gxl");
+		return AverroesProperties.getOutputDir().concat(File.separator).concat(sup.source()).concat("-")
+				.concat(sub.source()).concat(".gxl");
 	}
 
 	public static String extraCallGraphFile(CallGraphSource sup, CallGraphSource sub) {
-		return AverroesProperties.getOutputDir().concat(File.separator).concat(sub.source()).concat("-").concat(sup.source())
-				.concat(".gxl");
+		return AverroesProperties.getOutputDir().concat(File.separator).concat(sub.source()).concat("-")
+				.concat(sup.source()).concat(".gxl");
 	}
-	
+
 	/**
 	 * Compose a path from the given arguments.
 	 * 

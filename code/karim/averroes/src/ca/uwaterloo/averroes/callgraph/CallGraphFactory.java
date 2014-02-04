@@ -59,8 +59,8 @@ public class CallGraphFactory {
 	 * @return
 	 * @throws IOException
 	 */
-	public static probe.CallGraph generateAndroidWithAverroesCallGraph() throws IOException {
-		probe.CallGraph android = new AndroidWithAverroesCallGraphTransformer().run();
+	public static probe.CallGraph generateAndroidWithAverroesCallGraph(String benchmark) throws IOException {
+		probe.CallGraph android = AndroidWithAverroesCallGraphTransformer.run(benchmark);
 		return ProbeCallGraphCollapser.collapse(android);
 	}
 

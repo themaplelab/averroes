@@ -27,7 +27,6 @@ public class SparkWithAverroesCallGraphTransformer {
 		provider = new AverroesClassProvider(benchmark);
 	}
 
-	@SuppressWarnings("unchecked")
 	public probe.CallGraph run() throws IOException {
 		System.out.println("Generating the call graph from Spark.");
 

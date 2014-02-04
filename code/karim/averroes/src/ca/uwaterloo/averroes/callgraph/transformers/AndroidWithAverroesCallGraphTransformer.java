@@ -20,9 +20,8 @@ import soot.options.Options;
 import ca.uwaterloo.averroes.properties.AverroesProperties;
 
 public class AndroidWithAverroesCallGraphTransformer {
-	// @SuppressWarnings("unchecked")
-	public CallGraph run() throws IOException {
-		System.out.println("Generating the call graph for an Android apk.");
+	public static CallGraph run(String benchmark) throws IOException {
+		System.out.println("Generating the call graph for " + benchmark + ".apk");
 
 		// Initialize soot
 		soot.G.reset();
@@ -36,10 +35,10 @@ public class AndroidWithAverroesCallGraphTransformer {
 		appClasses.add(AverroesProperties.getMainClass());
 		Options.v().classes().addAll(appClasses);
 		Options.v().set_main_class(AverroesProperties.getMainClass());
-		
+
 		Options.v().set_whole_program(true);
 		Options.v().set_full_resolver(true);
-		Options.v().set_soot_classpath(AverroesProperties.getAndroidAverroesClassPath());
+		Options.v().set_soot_classpath(AverroesProperties.getAndroidAverroesClassPath(benchmark));
 		Options.v().set_src_prec(Options.src_prec_apk);
 		// Options.v().set_android_jars(AverroesProperties.getAndroidPath());
 		Options.v().set_force_android_jar("droidbench/placeholderLibrary.jar");
@@ -81,7 +80,7 @@ public class AndroidWithAverroesCallGraphTransformer {
 	 * @param sootMethod
 	 * @return
 	 */
-	private ProbeMethod probeMethod(SootMethod sootMethod) {
+	private static ProbeMethod probeMethod(SootMethod sootMethod) {
 		SootClass sootClass = sootMethod.getDeclaringClass();
 		ProbeClass cls = ObjectManager.v().getClass(sootClass.toString());
 		return ObjectManager.v().getMethod(cls, sootMethod.getName(), sootMethod.getBytecodeParms());
