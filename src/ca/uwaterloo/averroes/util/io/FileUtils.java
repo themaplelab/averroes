@@ -376,7 +376,7 @@ public class FileUtils {
 		String path = "";
 
 		for (int i = 0; i < args.length - 1; i++) {
-			path = path.concat(args[i]).concat(File.separator);
+			path = path + args[i] + File.separator;
 		}
 		path = path.concat(args[args.length - 1]);
 
