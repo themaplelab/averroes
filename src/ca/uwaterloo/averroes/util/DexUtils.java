@@ -1,14 +1,21 @@
 package ca.uwaterloo.averroes.util;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.jf.dexlib2.dexbacked.DexBackedDexFile;
 import org.jf.dexlib2.dexbacked.raw.MethodIdItem;
 import org.jf.dexlib2.dexbacked.raw.ProtoIdItem;
 
-import ca.uwaterloo.averroes.soot.Names;
 import soot.ArrayType;
+import soot.DexClassProvider;
 import soot.SootMethod;
 import soot.Type;
 import soot.dexpler.Util;
+import ca.uwaterloo.averroes.properties.AverroesProperties;
+import ca.uwaterloo.averroes.soot.Names;
 
 public class DexUtils {
 
@@ -53,5 +60,18 @@ public class DexUtils {
 		String methodName = dexFile.getString(nameIndex);
 
 		return type instanceof ArrayType && methodName.equalsIgnoreCase(Names.CLONE);
+	}
+
+	public static Set<String> applicationClassesOfDex(String path) throws IOException {
+		Set<String> result = new HashSet<String>();
+		Set<String> allClasses = DexClassProvider.classesOfDex(new File(path));
+
+		for (String className : allClasses) {
+			if (AverroesProperties.isApplicationClass(className)) {
+				result.add(className);
+			}
+		}
+
+		return result;
 	}
 }

@@ -11,6 +11,7 @@ import soot.options.Options;
 import ca.uwaterloo.averroes.properties.AverroesProperties;
 import ca.uwaterloo.averroes.soot.CodeGenerator;
 import ca.uwaterloo.averroes.soot.Hierarchy;
+import ca.uwaterloo.averroes.util.DexUtils;
 import ca.uwaterloo.averroes.util.MathUtils;
 import ca.uwaterloo.averroes.util.TimeUtils;
 import ca.uwaterloo.averroes.util.io.FileUtils;
@@ -46,7 +47,7 @@ public class AndroidJarFactory {
 			FileUtils.createDirectory(AverroesProperties.getOutputDir());
 
 			// Get the application class names, i.e., all classes in the input android apk
-			Set<String> appClasses = DexClassProvider.classesOfDex(new File(AverroesProperties.getApkLocation()));
+			Set<String> appClasses = DexUtils.applicationClassesOfDex(AverroesProperties.getApkLocation());
 			Options.v().classes().addAll(appClasses);
 
 			// Set the soot classpath, android path, and validate jimple bodies.

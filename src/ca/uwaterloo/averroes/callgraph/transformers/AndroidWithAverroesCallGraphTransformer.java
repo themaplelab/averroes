@@ -1,6 +1,5 @@
 package ca.uwaterloo.averroes.callgraph.transformers;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Iterator;
@@ -10,7 +9,6 @@ import probe.CallGraph;
 import probe.ObjectManager;
 import probe.ProbeClass;
 import probe.ProbeMethod;
-import soot.DexClassProvider;
 import soot.Kind;
 import soot.Scene;
 import soot.SootClass;
@@ -18,6 +16,8 @@ import soot.SootMethod;
 import soot.jimple.spark.SparkTransformer;
 import soot.options.Options;
 import ca.uwaterloo.averroes.properties.AverroesProperties;
+import ca.uwaterloo.averroes.util.DexUtils;
+import ca.uwaterloo.averroes.util.io.FileUtils;
 
 public class AndroidWithAverroesCallGraphTransformer {
 	public static CallGraph run(String benchmark) throws IOException {
@@ -31,7 +31,7 @@ public class AndroidWithAverroesCallGraphTransformer {
 		// Options.v().set_process_dir(Arrays.asList("droidbench/placeholderLibrary.jar"));
 
 		// Set the application classes
-		Set<String> appClasses = DexClassProvider.classesOfDex(new File(AverroesProperties.getApkLocation()));
+		Set<String> appClasses = DexUtils.applicationClassesOfDex(AverroesProperties.getApkLocation());
 		appClasses.add(AverroesProperties.getMainClass());
 		Options.v().classes().addAll(appClasses);
 		Options.v().set_main_class(AverroesProperties.getMainClass());
@@ -41,12 +41,14 @@ public class AndroidWithAverroesCallGraphTransformer {
 		Options.v().set_soot_classpath(AverroesProperties.getAndroidAverroesClassPath(benchmark));
 		Options.v().set_src_prec(Options.src_prec_apk);
 		// Options.v().set_android_jars(AverroesProperties.getAndroidPath());
-		Options.v().set_force_android_jar("droidbench/placeholderLibrary.jar");
+		Options.v().set_force_android_jar(FileUtils.androidPlaceholderLibraryJarFile(benchmark));
 
+		Options.v().set_verbose(true);
+		
 		// Load the necessary classes
 		Scene.v().loadNecessaryClasses();
 		Scene.v().setMainClassFromOptions();
-
+		
 		// Make the main method of the dummy class the entry point of the call graph
 		// SootMethod mainMethod = Scene.v().getMethod(Names.AVERROES_DO_IT_ALL_METHOD_SIGNATURE);
 		Scene.v().setEntryPoints(Collections.singletonList(Scene.v().getMainMethod()));
