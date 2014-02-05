@@ -30,6 +30,7 @@ public class Names {
 	public static final String FINALIZE_SIG = "<java.lang.Object: void finalize()>";
 	
 	public static final String ANDROID_R = "R";
+	public static final String CLONE = "clone";
 
 	public static final NumberedString DEFAULT_CONSTRUCTOR_SIG = Scene.v().getSubSigNumberer()
 			.findOrAdd("void <init>()");

@@ -1,39 +1,35 @@
 package ca.uwaterloo.averroes.callgraph.drivers;
 
-import java.util.Arrays;
-import java.util.List;
+import java.io.IOException;
+
+import org.jf.dexlib2.DexFileFactory;
+import org.jf.dexlib2.dexbacked.DexBackedDexFile;
+import org.jf.dexlib2.dexbacked.raw.HeaderItem;
+import org.jf.dexlib2.dexbacked.raw.MethodIdItem;
+
+import soot.dexpler.Util;
+import ca.uwaterloo.averroes.properties.AverroesProperties;
 
 public class Test {
 
 	public static void main(String[] args) {
-		List<A> list = Arrays.asList(new A(), new B(), new C(), new D());
+		try {
+			DexBackedDexFile dex = DexFileFactory.loadDexFile(AverroesProperties.getApkLocation(), 17);
+			int methodCount = dex.readSmallUint(HeaderItem.METHOD_COUNT_OFFSET);
+			System.out.println(methodCount);
+			for (int i = 0; i < methodCount; i++) {
+				int methodOffset = dex.getMethodIdItemOffset(i);
+				int typeIndex = dex.readUshort(methodOffset + MethodIdItem.CLASS_OFFSET);
+				String className = Util.dottedClassName(dex.getType(typeIndex));
+				System.out.println(className);
+			}
 
-		for (A temp : list) {
-			A a = (A) temp;
-			System.out.println(a.getClass());
-			a.foo();
+			// for (ClassDef c : dex.getClasses()) {
+			// String name = Util.dottedClassName(c.getType());
+			// System.out.println(name);
+			// }
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-
-	}
-}
-
-class A {
-	public void foo() {
-		System.out.println("A.foo");
-	}
-}
-
-class B extends A {
-	public void foo() {
-		System.out.println("B.foo");
-	}
-}
-
-class C extends A {
-}
-
-class D extends A {
-	public void foo() {
-		System.out.println("D.foo");
 	}
 }

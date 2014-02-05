@@ -26,9 +26,9 @@ echo "android_path = android" >> ${props}
 echo "output_dir = output" >> ${props}
 echo "apk_location = ${apk}" >> ${props}
 if test "${benchmark}" = "AndroidSpecific_Obfuscation1"; then
-  echo "ca.uwaterloo.averroes.AndroidDummyMainClass:de.ecspride.**:android.telephony.TelephonyManager" >> ${props}
+  echo "application_includes = ca.uwaterloo.averroes.AndroidDummyMainClass:de.ecspride.**:android.telephony.TelephonyManager" >> ${props}
 else
-  echo "ca.uwaterloo.averroes.AndroidDummyMainClass:de.ecspride.**" >> ${props}
+  echo "application_includes = ca.uwaterloo.averroes.AndroidDummyMainClass:de.ecspride.**" >> ${props}
 fi
 
 # 2. run Averroes

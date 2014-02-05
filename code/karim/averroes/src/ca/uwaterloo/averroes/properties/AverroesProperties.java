@@ -271,7 +271,7 @@ public final class AverroesProperties {
 	 * @return
 	 */
 	public static String getAndroidAppClassPath() {
-		return FileUtils.composePath(getApkLocation(), Scene.v().getAndroidJarPath(getAndroidPath(), getApkLocation()));
+		return getApkLocation() + File.pathSeparator + Scene.v().getAndroidJarPath(getAndroidPath(), getApkLocation());
 	}
 
 	/**
@@ -281,7 +281,7 @@ public final class AverroesProperties {
 	 * @return
 	 */
 	public static String getAndroidAverroesClassPath(String benchmark) {
-		return FileUtils.composePath(getApkLocation(), FileUtils.androidPlaceholderLibraryJarFile(benchmark));
+		return getApkLocation() + File.pathSeparator + FileUtils.androidPlaceholderLibraryJarFile(benchmark);
 	}
 
 	/**

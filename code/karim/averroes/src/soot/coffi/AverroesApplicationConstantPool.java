@@ -285,14 +285,15 @@ public class AverroesApplicationConstantPool {
 		Set<SootMethod> result = new HashSet<SootMethod>();
 		try {
 			DexBackedDexFile dex = DexFileFactory.loadDexFile(AverroesProperties.getApkLocation(), 17);
-			int stringCount = dex.readSmallUint(HeaderItem.METHOD_COUNT_OFFSET);
-			for (int i = 0; i < stringCount; i++) {
-				SootMethod method = DexUtils.asSootMethod(dex, i);
+			int methodCount = dex.readSmallUint(HeaderItem.METHOD_COUNT_OFFSET);
+			for (int i = 0; i < methodCount; i++) {
+				if (DexUtils.isArrayClone(dex, i) == false) {
+					SootMethod method = DexUtils.asSootMethod(dex, i);
 
-				// If the resolved method is in the library, add it to the result
-				if (hierarchy.isLibraryMethod(method)) {
-					System.out.println(method);
-					result.add(method);
+					// If the resolved method is in the library, add it to the result
+					if (hierarchy.isLibraryMethod(method)) {
+						result.add(method);
+					}
 				}
 			}
 		} catch (IOException e) {
