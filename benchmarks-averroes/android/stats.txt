@@ -1,0 +1,2749 @@
+Thu Feb  6 12:34:45 EST 2014
+Thu Feb  6 12:34:45 EST 2014
+running AndroidNonspecific_Loop1
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.34 seconds.
+# application classes: 10
+# library classes: 1014
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 10
+# initial library classes: 545
+# initial library methods: 9973
+# initial library fields: 4613
+# referenced library methods: 3071
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6396
+# removed library fields: 4613
+# final library methods: 3712
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.96 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/AndroidNonspecific_Loop1.jar
+Placeholder library JAR file verified in 1.83 seconds.
+Total time (without verification) is 10.3 seconds.
+Total time (with verification) is 12.13 seconds.
+Elapsed time: 12.49 seconds.
+elapsed time: 12.75s
+
+Thu Feb  6 12:35:00 EST 2014
+running AndroidNonspecific_Loop2
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.42 seconds.
+# application classes: 10
+# library classes: 1014
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 10
+# initial library classes: 545
+# initial library methods: 9973
+# initial library fields: 4613
+# referenced library methods: 3071
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6396
+# removed library fields: 4613
+# final library methods: 3712
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 5.27 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/AndroidNonspecific_Loop2.jar
+Placeholder library JAR file verified in 1.9 seconds.
+Total time (without verification) is 10.69 seconds.
+Total time (with verification) is 12.59 seconds.
+Elapsed time: 12.95 seconds.
+elapsed time: 13.21s
+
+Thu Feb  6 12:35:15 EST 2014
+running AndroidNonspecific_SourceCodeSpecific1
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.34 seconds.
+# application classes: 10
+# library classes: 1014
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 10
+# initial library classes: 547
+# initial library methods: 9993
+# initial library fields: 4615
+# referenced library methods: 3070
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6403
+# removed library fields: 4615
+# final library methods: 3725
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 31
+# generated library methods: 82
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.95 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/AndroidNonspecific_SourceCodeSpecific1.jar
+Placeholder library JAR file verified in 1.82 seconds.
+Total time (without verification) is 10.29 seconds.
+Total time (with verification) is 12.11 seconds.
+Elapsed time: 12.48 seconds.
+elapsed time: 12.73s
+
+Thu Feb  6 12:35:30 EST 2014
+running AndroidNonspecific_StaticInitialization1
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 4.97 seconds.
+# application classes: 11
+# library classes: 1014
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 11
+# initial library classes: 545
+# initial library methods: 9973
+# initial library fields: 4613
+# referenced library methods: 3068
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6398
+# removed library fields: 4613
+# final library methods: 3710
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.51 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/AndroidNonspecific_StaticInitialization1.jar
+Placeholder library JAR file verified in 1.84 seconds.
+Total time (without verification) is 9.48 seconds.
+Total time (with verification) is 11.32 seconds.
+Elapsed time: 11.67 seconds.
+elapsed time: 11.93s
+
+Thu Feb  6 12:35:44 EST 2014
+running AndroidNonspecific_UnreachableCode
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.19 seconds.
+# application classes: 10
+# library classes: 1013
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 10
+# initial library classes: 544
+# initial library methods: 9957
+# initial library fields: 4601
+# referenced library methods: 3068
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6384
+# removed library fields: 4601
+# final library methods: 3708
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 5.1 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/AndroidNonspecific_UnreachableCode.jar
+Placeholder library JAR file verified in 1.84 seconds.
+Total time (without verification) is 10.29 seconds.
+Total time (with verification) is 12.13 seconds.
+Elapsed time: 12.49 seconds.
+elapsed time: 12.75s
+
+Thu Feb  6 12:35:59 EST 2014
+running AndroidSpecific_DirectLeak1
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.3 seconds.
+# application classes: 10
+# library classes: 1014
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 10
+# initial library classes: 545
+# initial library methods: 9973
+# initial library fields: 4613
+# referenced library methods: 3068
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6398
+# removed library fields: 4613
+# final library methods: 3710
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 5.03 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/AndroidSpecific_DirectLeak1.jar
+Placeholder library JAR file verified in 1.84 seconds.
+Total time (without verification) is 10.33 seconds.
+Total time (with verification) is 12.17 seconds.
+Elapsed time: 12.62 seconds.
+elapsed time: 12.88s
+
+Thu Feb  6 12:36:14 EST 2014
+running AndroidSpecific_InactiveActivity
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.38 seconds.
+# application classes: 10
+# library classes: 1013
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 10
+# initial library classes: 544
+# initial library methods: 9957
+# initial library fields: 4601
+# referenced library methods: 3067
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6385
+# removed library fields: 4601
+# final library methods: 3707
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 5.02 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/AndroidSpecific_InactiveActivity.jar
+Placeholder library JAR file verified in 1.86 seconds.
+Total time (without verification) is 10.4 seconds.
+Total time (with verification) is 12.26 seconds.
+Elapsed time: 12.61 seconds.
+elapsed time: 12.86s
+
+Thu Feb  6 12:36:29 EST 2014
+running AndroidSpecific_Library2
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.4 seconds.
+# application classes: 12
+# library classes: 1070
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 12
+# initial library classes: 604
+# initial library methods: 10599
+# initial library fields: 4879
+# referenced library methods: 3450
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6595
+# removed library fields: 4879
+# final library methods: 4167
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 36
+# generated library methods: 100
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.97 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/AndroidSpecific_Library2.jar
+Placeholder library JAR file verified in 2.05 seconds.
+Total time (without verification) is 10.37 seconds.
+Total time (with verification) is 12.42 seconds.
+Elapsed time: 12.78 seconds.
+elapsed time: 13.05s
+
+Thu Feb  6 12:36:44 EST 2014
+running AndroidSpecific_LogNoLeak
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.36 seconds.
+# application classes: 10
+# library classes: 1007
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 10
+# initial library classes: 543
+# initial library methods: 9901
+# initial library fields: 4545
+# referenced library methods: 3066
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6333
+# removed library fields: 4545
+# final library methods: 3703
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.96 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/AndroidSpecific_LogNoLeak.jar
+Placeholder library JAR file verified in 1.85 seconds.
+Total time (without verification) is 10.32 seconds.
+Total time (with verification) is 12.17 seconds.
+Elapsed time: 12.52 seconds.
+elapsed time: 12.78s
+
+Thu Feb  6 12:36:59 EST 2014
+running AndroidSpecific_Obfuscation1
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.39 seconds.
+# application classes: 12
+# library classes: 1064
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 12
+# initial library classes: 603
+# initial library methods: 10543
+# initial library fields: 4823
+# referenced library methods: 3449
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6543
+# removed library fields: 4823
+# final library methods: 4163
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 36
+# generated library methods: 100
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 5.23 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/AndroidSpecific_Obfuscation1.jar
+Placeholder library JAR file verified in 1.99 seconds.
+Total time (without verification) is 10.62 seconds.
+Total time (with verification) is 12.61 seconds.
+Elapsed time: 12.97 seconds.
+elapsed time: 13.24s
+
+Thu Feb  6 12:37:14 EST 2014
+running AndroidSpecific_PrivateDataLeak1
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.21 seconds.
+# application classes: 12
+# library classes: 1008
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 12
+# initial library classes: 545
+# initial library methods: 9932
+# initial library fields: 4557
+# referenced library methods: 3073
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6353
+# removed library fields: 4557
+# final library methods: 3715
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.37 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/AndroidSpecific_PrivateDataLeak1.jar
+Placeholder library JAR file verified in 1.8 seconds.
+Total time (without verification) is 9.58 seconds.
+Total time (with verification) is 11.38 seconds.
+Elapsed time: 11.74 seconds.
+elapsed time: 12.00s
+
+Thu Feb  6 12:37:28 EST 2014
+running AndroidSpecific_PrivateDataLeak2
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.24 seconds.
+# application classes: 10
+# library classes: 1007
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 10
+# initial library classes: 547
+# initial library methods: 9931
+# initial library fields: 4545
+# referenced library methods: 3066
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6360
+# removed library fields: 4545
+# final library methods: 3707
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 35
+# generated library methods: 93
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.49 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/AndroidSpecific_PrivateDataLeak2.jar
+Placeholder library JAR file verified in 1.81 seconds.
+Total time (without verification) is 9.73 seconds.
+Total time (with verification) is 11.54 seconds.
+Elapsed time: 11.9 seconds.
+elapsed time: 12.16s
+
+Thu Feb  6 12:37:42 EST 2014
+running AndroidSpecific_PrivateDataLeak3
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.14 seconds.
+# application classes: 11
+# library classes: 1070
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 11
+# initial library classes: 604
+# initial library methods: 10599
+# initial library fields: 4879
+# referenced library methods: 3457
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6589
+# removed library fields: 4879
+# final library methods: 4173
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 36
+# generated library methods: 100
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.82 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/AndroidSpecific_PrivateDataLeak3.jar
+Placeholder library JAR file verified in 2.02 seconds.
+Total time (without verification) is 9.96 seconds.
+Total time (with verification) is 11.98 seconds.
+Elapsed time: 12.33 seconds.
+elapsed time: 12.59s
+
+Thu Feb  6 12:37:57 EST 2014
+running ArraysAndLists_ArrayAccess1
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.39 seconds.
+# application classes: 10
+# library classes: 1014
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 10
+# initial library classes: 545
+# initial library methods: 9973
+# initial library fields: 4613
+# referenced library methods: 3068
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6398
+# removed library fields: 4613
+# final library methods: 3710
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 5.01 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/ArraysAndLists_ArrayAccess1.jar
+Placeholder library JAR file verified in 1.85 seconds.
+Total time (without verification) is 10.4 seconds.
+Total time (with verification) is 12.25 seconds.
+Elapsed time: 12.61 seconds.
+elapsed time: 12.88s
+
+Thu Feb  6 12:38:12 EST 2014
+running ArraysAndLists_ArrayAccess2
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.3 seconds.
+# application classes: 10
+# library classes: 1014
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 10
+# initial library classes: 545
+# initial library methods: 9973
+# initial library fields: 4613
+# referenced library methods: 3068
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6398
+# removed library fields: 4613
+# final library methods: 3710
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.91 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/ArraysAndLists_ArrayAccess2.jar
+Placeholder library JAR file verified in 1.81 seconds.
+Total time (without verification) is 10.21 seconds.
+Total time (with verification) is 12.02 seconds.
+Elapsed time: 12.38 seconds.
+elapsed time: 12.64s
+
+Thu Feb  6 12:38:27 EST 2014
+running ArraysAndLists_HashMapAccess1
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 4.65 seconds.
+# application classes: 11
+# library classes: 1070
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 11
+# initial library classes: 604
+# initial library methods: 10599
+# initial library fields: 4879
+# referenced library methods: 3450
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6595
+# removed library fields: 4879
+# final library methods: 4167
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 36
+# generated library methods: 100
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.77 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/ArraysAndLists_HashMapAccess1.jar
+Placeholder library JAR file verified in 1.99 seconds.
+Total time (without verification) is 9.42 seconds.
+Total time (with verification) is 11.41 seconds.
+Elapsed time: 11.76 seconds.
+elapsed time: 12.01s
+
+Thu Feb  6 12:38:41 EST 2014
+running ArraysAndLists_ListAccess1
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.38 seconds.
+# application classes: 10
+# library classes: 1017
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 10
+# initial library classes: 548
+# initial library methods: 10059
+# initial library fields: 4616
+# referenced library methods: 3069
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6474
+# removed library fields: 4616
+# final library methods: 3720
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.55 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/ArraysAndLists_ListAccess1.jar
+Placeholder library JAR file verified in 1.83 seconds.
+Total time (without verification) is 9.93 seconds.
+Total time (with verification) is 11.76 seconds.
+Elapsed time: 12.11 seconds.
+elapsed time: 12.38s
+
+Thu Feb  6 12:38:55 EST 2014
+running Callbacks_AnonymousClass1
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.27 seconds.
+# application classes: 11
+# library classes: 1027
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 11
+# initial library classes: 547
+# initial library methods: 10036
+# initial library fields: 4600
+# referenced library methods: 3078
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6454
+# removed library fields: 4600
+# final library methods: 3720
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 33
+# generated library methods: 89
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.57 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/Callbacks_AnonymousClass1.jar
+Placeholder library JAR file verified in 1.86 seconds.
+Total time (without verification) is 9.84 seconds.
+Total time (with verification) is 11.7 seconds.
+Elapsed time: 12.05 seconds.
+elapsed time: 12.30s
+
+Thu Feb  6 12:39:10 EST 2014
+running Callbacks_Button1
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 4.79 seconds.
+# application classes: 10
+# library classes: 1019
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 10
+# initial library classes: 546
+# initial library methods: 9992
+# initial library fields: 4622
+# referenced library methods: 3070
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6414
+# removed library fields: 4622
+# final library methods: 3714
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 5.15 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/Callbacks_Button1.jar
+Placeholder library JAR file verified in 1.82 seconds.
+Total time (without verification) is 9.94 seconds.
+Total time (with verification) is 11.76 seconds.
+Elapsed time: 12.11 seconds.
+elapsed time: 12.37s
+
+Thu Feb  6 12:39:24 EST 2014
+running Callbacks_Button2
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.4 seconds.
+# application classes: 12
+# library classes: 1015
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 12
+# initial library classes: 546
+# initial library methods: 9978
+# initial library fields: 4613
+# referenced library methods: 3071
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6398
+# removed library fields: 4613
+# final library methods: 3716
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.95 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/Callbacks_Button2.jar
+Placeholder library JAR file verified in 1.87 seconds.
+Total time (without verification) is 10.35 seconds.
+Total time (with verification) is 12.22 seconds.
+Elapsed time: 12.57 seconds.
+elapsed time: 12.83s
+
+Thu Feb  6 12:39:39 EST 2014
+running Callbacks_Button3
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.25 seconds.
+# application classes: 13
+# library classes: 1071
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 13
+# initial library classes: 605
+# initial library methods: 10604
+# initial library fields: 4879
+# referenced library methods: 3451
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6596
+# removed library fields: 4879
+# final library methods: 4172
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 36
+# generated library methods: 100
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 5.46 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/Callbacks_Button3.jar
+Placeholder library JAR file verified in 2.01 seconds.
+Total time (without verification) is 10.71 seconds.
+Total time (with verification) is 12.72 seconds.
+Elapsed time: 13.08 seconds.
+elapsed time: 13.34s
+
+Thu Feb  6 12:39:54 EST 2014
+running Callbacks_LocationLeak1
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.33 seconds.
+# application classes: 11
+# library classes: 1027
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 11
+# initial library classes: 547
+# initial library methods: 10036
+# initial library fields: 4600
+# referenced library methods: 3077
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6455
+# removed library fields: 4600
+# final library methods: 3719
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 33
+# generated library methods: 89
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.61 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/Callbacks_LocationLeak1.jar
+Placeholder library JAR file verified in 1.87 seconds.
+Total time (without verification) is 9.94 seconds.
+Total time (with verification) is 11.81 seconds.
+Elapsed time: 12.17 seconds.
+elapsed time: 12.42s
+
+Thu Feb  6 12:40:09 EST 2014
+running Callbacks_LocationLeak2
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.3 seconds.
+# application classes: 10
+# library classes: 1027
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 10
+# initial library classes: 547
+# initial library methods: 10036
+# initial library fields: 4600
+# referenced library methods: 3077
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6455
+# removed library fields: 4600
+# final library methods: 3719
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 33
+# generated library methods: 89
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.69 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/Callbacks_LocationLeak2.jar
+Placeholder library JAR file verified in 1.85 seconds.
+Total time (without verification) is 9.99 seconds.
+Total time (with verification) is 11.84 seconds.
+Elapsed time: 12.2 seconds.
+elapsed time: 12.46s
+
+Thu Feb  6 12:40:23 EST 2014
+running Callbacks_LocationLeak3
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.33 seconds.
+# application classes: 13
+# library classes: 1078
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 13
+# initial library classes: 605
+# initial library methods: 10643
+# initial library fields: 4857
+# referenced library methods: 3454
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6638
+# removed library fields: 4857
+# final library methods: 4170
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 37
+# generated library methods: 105
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 6.07 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/Callbacks_LocationLeak3.jar
+Placeholder library JAR file verified in 2.03 seconds.
+Total time (without verification) is 11.4 seconds.
+Total time (with verification) is 13.43 seconds.
+Elapsed time: 13.78 seconds.
+elapsed time: 14.05s
+
+Thu Feb  6 12:40:39 EST 2014
+running Callbacks_MethodOverride1
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.44 seconds.
+# application classes: 10
+# library classes: 1013
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 10
+# initial library classes: 544
+# initial library methods: 9957
+# initial library fields: 4601
+# referenced library methods: 3068
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6384
+# removed library fields: 4601
+# final library methods: 3708
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 5.01 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/Callbacks_MethodOverride1.jar
+Placeholder library JAR file verified in 1.82 seconds.
+Total time (without verification) is 10.45 seconds.
+Total time (with verification) is 12.27 seconds.
+Elapsed time: 12.63 seconds.
+elapsed time: 12.89s
+
+Thu Feb  6 12:40:54 EST 2014
+running Callbacks_MultiHandlers1
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 4.92 seconds.
+# application classes: 15
+# library classes: 1078
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 15
+# initial library classes: 605
+# initial library methods: 10643
+# initial library fields: 4857
+# referenced library methods: 3455
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6638
+# removed library fields: 4857
+# final library methods: 4170
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 37
+# generated library methods: 105
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 6.29 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/Callbacks_MultiHandlers1.jar
+Placeholder library JAR file verified in 2.01 seconds.
+Total time (without verification) is 11.21 seconds.
+Total time (with verification) is 13.22 seconds.
+Elapsed time: 13.56 seconds.
+elapsed time: 13.83s
+
+Thu Feb  6 12:41:10 EST 2014
+running Callbacks_Ordering1
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.28 seconds.
+# application classes: 12
+# library classes: 1079
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 12
+# initial library classes: 607
+# initial library methods: 10651
+# initial library fields: 4879
+# referenced library methods: 3456
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6658
+# removed library fields: 4879
+# final library methods: 4158
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 38
+# generated library methods: 106
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 5.59 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/Callbacks_Ordering1.jar
+Placeholder library JAR file verified in 2.05 seconds.
+Total time (without verification) is 10.87 seconds.
+Total time (with verification) is 12.92 seconds.
+Elapsed time: 13.29 seconds.
+elapsed time: 13.54s
+
+Thu Feb  6 12:41:26 EST 2014
+running Callbacks_RegisterGlobal1
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.24 seconds.
+# application classes: 13
+# library classes: 1072
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 13
+# initial library classes: 606
+# initial library methods: 10626
+# initial library fields: 4882
+# referenced library methods: 3465
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6608
+# removed library fields: 4882
+# final library methods: 4181
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 37
+# generated library methods: 108
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 5.35 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/Callbacks_RegisterGlobal1.jar
+Placeholder library JAR file verified in 2.0 seconds.
+Total time (without verification) is 10.59 seconds.
+Total time (with verification) is 12.59 seconds.
+Elapsed time: 12.96 seconds.
+elapsed time: 13.22s
+
+Thu Feb  6 12:41:41 EST 2014
+running Callbacks_RegisterGlobal2
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.14 seconds.
+# application classes: 13
+# library classes: 1072
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 13
+# initial library classes: 605
+# initial library methods: 10619
+# initial library fields: 4882
+# referenced library methods: 3459
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6603
+# removed library fields: 4882
+# final library methods: 4179
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 36
+# generated library methods: 100
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.66 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/Callbacks_RegisterGlobal2.jar
+Placeholder library JAR file verified in 2.02 seconds.
+Total time (without verification) is 9.8 seconds.
+Total time (with verification) is 11.82 seconds.
+Elapsed time: 12.18 seconds.
+elapsed time: 12.43s
+
+Thu Feb  6 12:41:56 EST 2014
+running Callbacks_Unregister1
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.47 seconds.
+# application classes: 2
+# library classes: 1081
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 2
+# initial library classes: 615
+# initial library methods: 10614
+# initial library fields: 4893
+# referenced library methods: 3462
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6596
+# removed library fields: 4893
+# final library methods: 4182
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 36
+# generated library methods: 100
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.87 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/Callbacks_Unregister1.jar
+Placeholder library JAR file verified in 2.01 seconds.
+Total time (without verification) is 10.34 seconds.
+Total time (with verification) is 12.35 seconds.
+Elapsed time: 12.72 seconds.
+elapsed time: 12.97s
+
+Thu Feb  6 12:42:11 EST 2014
+running FieldAndObjectSensitivity_FieldSensitivity1
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.21 seconds.
+# application classes: 11
+# library classes: 1014
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 11
+# initial library classes: 545
+# initial library methods: 9973
+# initial library fields: 4613
+# referenced library methods: 3068
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6398
+# removed library fields: 4613
+# final library methods: 3710
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.39 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/FieldAndObjectSensitivity_FieldSensitivity1.jar
+Placeholder library JAR file verified in 1.8 seconds.
+Total time (without verification) is 9.6 seconds.
+Total time (with verification) is 11.4 seconds.
+Elapsed time: 11.76 seconds.
+elapsed time: 12.02s
+
+Thu Feb  6 12:42:25 EST 2014
+running FieldAndObjectSensitivity_FieldSensitivity2
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 4.98 seconds.
+# application classes: 11
+# library classes: 1014
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 11
+# initial library classes: 545
+# initial library methods: 9973
+# initial library fields: 4613
+# referenced library methods: 3068
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6398
+# removed library fields: 4613
+# final library methods: 3710
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 5.17 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/FieldAndObjectSensitivity_FieldSensitivity2.jar
+Placeholder library JAR file verified in 1.89 seconds.
+Total time (without verification) is 10.15 seconds.
+Total time (with verification) is 12.04 seconds.
+Elapsed time: 12.41 seconds.
+elapsed time: 12.66s
+
+Thu Feb  6 12:42:39 EST 2014
+running FieldAndObjectSensitivity_FieldSensitivity3
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.27 seconds.
+# application classes: 11
+# library classes: 1014
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 11
+# initial library classes: 545
+# initial library methods: 9973
+# initial library fields: 4613
+# referenced library methods: 3068
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6398
+# removed library fields: 4613
+# final library methods: 3710
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.46 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/FieldAndObjectSensitivity_FieldSensitivity3.jar
+Placeholder library JAR file verified in 1.82 seconds.
+Total time (without verification) is 9.73 seconds.
+Total time (with verification) is 11.55 seconds.
+Elapsed time: 11.91 seconds.
+elapsed time: 12.17s
+
+Thu Feb  6 12:42:54 EST 2014
+running FieldAndObjectSensitivity_FieldSensitivity4
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.31 seconds.
+# application classes: 11
+# library classes: 1014
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 11
+# initial library classes: 545
+# initial library methods: 9973
+# initial library fields: 4613
+# referenced library methods: 3068
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6398
+# removed library fields: 4613
+# final library methods: 3710
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.92 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/FieldAndObjectSensitivity_FieldSensitivity4.jar
+Placeholder library JAR file verified in 1.88 seconds.
+Total time (without verification) is 10.23 seconds.
+Total time (with verification) is 12.11 seconds.
+Elapsed time: 12.47 seconds.
+elapsed time: 12.74s
+
+Thu Feb  6 12:43:08 EST 2014
+running FieldAndObjectSensitivity_InheritedObjects1
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.36 seconds.
+# application classes: 13
+# library classes: 1014
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 13
+# initial library classes: 545
+# initial library methods: 9973
+# initial library fields: 4613
+# referenced library methods: 3068
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6398
+# removed library fields: 4613
+# final library methods: 3710
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.81 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/FieldAndObjectSensitivity_InheritedObjects1.jar
+Placeholder library JAR file verified in 1.79 seconds.
+Total time (without verification) is 10.17 seconds.
+Total time (with verification) is 11.96 seconds.
+Elapsed time: 12.31 seconds.
+elapsed time: 12.57s
+
+Thu Feb  6 12:43:23 EST 2014
+running FieldAndObjectSensitivity_ObjectSensitivity1
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 4.95 seconds.
+# application classes: 10
+# library classes: 1017
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 10
+# initial library classes: 548
+# initial library methods: 10059
+# initial library fields: 4616
+# referenced library methods: 3071
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6472
+# removed library fields: 4616
+# final library methods: 3722
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.64 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/FieldAndObjectSensitivity_ObjectSensitivity1.jar
+Placeholder library JAR file verified in 1.82 seconds.
+Total time (without verification) is 9.59 seconds.
+Total time (with verification) is 11.41 seconds.
+Elapsed time: 11.76 seconds.
+elapsed time: 12.02s
+
+Thu Feb  6 12:43:37 EST 2014
+running FieldAndObjectSensitivity_ObjectSensitivity2
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.29 seconds.
+# application classes: 11
+# library classes: 1014
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 11
+# initial library classes: 545
+# initial library methods: 9973
+# initial library fields: 4613
+# referenced library methods: 3068
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6398
+# removed library fields: 4613
+# final library methods: 3710
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.93 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/FieldAndObjectSensitivity_ObjectSensitivity2.jar
+Placeholder library JAR file verified in 1.88 seconds.
+Total time (without verification) is 10.22 seconds.
+Total time (with verification) is 12.1 seconds.
+Elapsed time: 12.45 seconds.
+elapsed time: 12.70s
+
+Thu Feb  6 12:43:52 EST 2014
+running GeneralJava_Exceptions1
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.14 seconds.
+# application classes: 11
+# library classes: 1070
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 11
+# initial library classes: 604
+# initial library methods: 10599
+# initial library fields: 4879
+# referenced library methods: 3449
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6597
+# removed library fields: 4879
+# final library methods: 4165
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 36
+# generated library methods: 100
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.75 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/GeneralJava_Exceptions1.jar
+Placeholder library JAR file verified in 1.99 seconds.
+Total time (without verification) is 9.89 seconds.
+Total time (with verification) is 11.88 seconds.
+Elapsed time: 12.23 seconds.
+elapsed time: 12.49s
+
+Thu Feb  6 12:44:06 EST 2014
+running GeneralJava_Exceptions2
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.37 seconds.
+# application classes: 11
+# library classes: 1070
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 11
+# initial library classes: 604
+# initial library methods: 10599
+# initial library fields: 4879
+# referenced library methods: 3449
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6596
+# removed library fields: 4879
+# final library methods: 4166
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 36
+# generated library methods: 100
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.86 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/GeneralJava_Exceptions2.jar
+Placeholder library JAR file verified in 1.96 seconds.
+Total time (without verification) is 10.23 seconds.
+Total time (with verification) is 12.19 seconds.
+Elapsed time: 12.55 seconds.
+elapsed time: 12.80s
+
+Thu Feb  6 12:44:21 EST 2014
+running GeneralJava_Exceptions3
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.07 seconds.
+# application classes: 11
+# library classes: 1070
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 11
+# initial library classes: 604
+# initial library methods: 10599
+# initial library fields: 4879
+# referenced library methods: 3448
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6597
+# removed library fields: 4879
+# final library methods: 4165
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 36
+# generated library methods: 100
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.69 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/GeneralJava_Exceptions3.jar
+Placeholder library JAR file verified in 1.96 seconds.
+Total time (without verification) is 9.76 seconds.
+Total time (with verification) is 11.72 seconds.
+Elapsed time: 12.08 seconds.
+elapsed time: 12.33s
+
+Thu Feb  6 12:44:36 EST 2014
+running GeneralJava_Exceptions4
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.43 seconds.
+# application classes: 11
+# library classes: 1070
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 11
+# initial library classes: 604
+# initial library methods: 10599
+# initial library fields: 4879
+# referenced library methods: 3448
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6597
+# removed library fields: 4879
+# final library methods: 4165
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 36
+# generated library methods: 100
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 5.17 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/GeneralJava_Exceptions4.jar
+Placeholder library JAR file verified in 1.97 seconds.
+Total time (without verification) is 10.6 seconds.
+Total time (with verification) is 12.57 seconds.
+Elapsed time: 12.92 seconds.
+elapsed time: 13.18s
+
+Thu Feb  6 12:44:51 EST 2014
+running GeneralJava_Loop1
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.23 seconds.
+# application classes: 10
+# library classes: 1014
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 10
+# initial library classes: 545
+# initial library methods: 9973
+# initial library fields: 4613
+# referenced library methods: 3071
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6396
+# removed library fields: 4613
+# final library methods: 3712
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.46 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/GeneralJava_Loop1.jar
+Placeholder library JAR file verified in 1.8 seconds.
+Total time (without verification) is 9.69 seconds.
+Total time (with verification) is 11.49 seconds.
+Elapsed time: 11.84 seconds.
+elapsed time: 12.10s
+
+Thu Feb  6 12:45:05 EST 2014
+running GeneralJava_Loop2
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 4.59 seconds.
+# application classes: 10
+# library classes: 1014
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 10
+# initial library classes: 545
+# initial library methods: 9973
+# initial library fields: 4613
+# referenced library methods: 3071
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6396
+# removed library fields: 4613
+# final library methods: 3712
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.43 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/GeneralJava_Loop2.jar
+Placeholder library JAR file verified in 1.81 seconds.
+Total time (without verification) is 9.02 seconds.
+Total time (with verification) is 10.83 seconds.
+Elapsed time: 11.18 seconds.
+elapsed time: 11.44s
+
+Thu Feb  6 12:45:19 EST 2014
+running GeneralJava_SourceCodeSpecific1
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 4.96 seconds.
+# application classes: 10
+# library classes: 1014
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 10
+# initial library classes: 547
+# initial library methods: 9993
+# initial library fields: 4615
+# referenced library methods: 3070
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6403
+# removed library fields: 4615
+# final library methods: 3725
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 31
+# generated library methods: 82
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 5.14 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/GeneralJava_SourceCodeSpecific1.jar
+Placeholder library JAR file verified in 1.83 seconds.
+Total time (without verification) is 10.1 seconds.
+Total time (with verification) is 11.93 seconds.
+Elapsed time: 12.29 seconds.
+elapsed time: 12.54s
+
+Thu Feb  6 12:45:33 EST 2014
+running GeneralJava_StaticInitialization1
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.4 seconds.
+# application classes: 11
+# library classes: 1014
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 11
+# initial library classes: 545
+# initial library methods: 9973
+# initial library fields: 4613
+# referenced library methods: 3068
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6398
+# removed library fields: 4613
+# final library methods: 3710
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 5.1 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/GeneralJava_StaticInitialization1.jar
+Placeholder library JAR file verified in 1.85 seconds.
+Total time (without verification) is 10.5 seconds.
+Total time (with verification) is 12.35 seconds.
+Elapsed time: 12.7 seconds.
+elapsed time: 12.96s
+
+Thu Feb  6 12:45:48 EST 2014
+running GeneralJava_UnreachableCode
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.39 seconds.
+# application classes: 10
+# library classes: 1013
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 10
+# initial library classes: 544
+# initial library methods: 9957
+# initial library fields: 4601
+# referenced library methods: 3068
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6384
+# removed library fields: 4601
+# final library methods: 3708
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.94 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/GeneralJava_UnreachableCode.jar
+Placeholder library JAR file verified in 1.84 seconds.
+Total time (without verification) is 10.33 seconds.
+Total time (with verification) is 12.17 seconds.
+Elapsed time: 12.51 seconds.
+elapsed time: 12.77s
+
+Thu Feb  6 12:46:03 EST 2014
+running GeneralJava_VirtualDispatch1
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.21 seconds.
+# application classes: 12
+# library classes: 1013
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 12
+# initial library classes: 544
+# initial library methods: 9957
+# initial library fields: 4601
+# referenced library methods: 3067
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6385
+# removed library fields: 4601
+# final library methods: 3707
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.87 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/GeneralJava_VirtualDispatch1.jar
+Placeholder library JAR file verified in 1.83 seconds.
+Total time (without verification) is 10.08 seconds.
+Total time (with verification) is 11.91 seconds.
+Elapsed time: 12.4 seconds.
+elapsed time: 12.66s
+
+Thu Feb  6 12:46:18 EST 2014
+running ImplicitFlows_ImplicitFlow1
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.36 seconds.
+# application classes: 10
+# library classes: 1013
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 10
+# initial library classes: 547
+# initial library methods: 10013
+# initial library fields: 4605
+# referenced library methods: 3072
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6423
+# removed library fields: 4605
+# final library methods: 3727
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 5.05 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/ImplicitFlows_ImplicitFlow1.jar
+Placeholder library JAR file verified in 1.82 seconds.
+Total time (without verification) is 10.41 seconds.
+Total time (with verification) is 12.23 seconds.
+Elapsed time: 12.58 seconds.
+elapsed time: 12.85s
+
+Thu Feb  6 12:46:33 EST 2014
+running ImplicitFlows_ImplicitFlow2
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.32 seconds.
+# application classes: 10
+# library classes: 1007
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 10
+# initial library classes: 547
+# initial library methods: 9931
+# initial library fields: 4545
+# referenced library methods: 3067
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6359
+# removed library fields: 4545
+# final library methods: 3708
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 35
+# generated library methods: 93
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 5.18 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/ImplicitFlows_ImplicitFlow2.jar
+Placeholder library JAR file verified in 1.86 seconds.
+Total time (without verification) is 10.5 seconds.
+Total time (with verification) is 12.36 seconds.
+Elapsed time: 12.71 seconds.
+elapsed time: 12.97s
+
+Thu Feb  6 12:46:48 EST 2014
+running ImplicitFlows_ImplicitFlow3
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.28 seconds.
+# application classes: 13
+# library classes: 1010
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 13
+# initial library classes: 550
+# initial library methods: 10017
+# initial library fields: 4548
+# referenced library methods: 3068
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6435
+# removed library fields: 4548
+# final library methods: 3718
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 35
+# generated library methods: 93
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.5 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/ImplicitFlows_ImplicitFlow3.jar
+Placeholder library JAR file verified in 1.83 seconds.
+Total time (without verification) is 9.78 seconds.
+Total time (with verification) is 11.61 seconds.
+Elapsed time: 11.96 seconds.
+elapsed time: 12.22s
+
+Thu Feb  6 12:47:02 EST 2014
+running ImplicitFlows_ImplicitFlow4
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.27 seconds.
+# application classes: 10
+# library classes: 1007
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 10
+# initial library classes: 547
+# initial library methods: 9931
+# initial library fields: 4545
+# referenced library methods: 3068
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6359
+# removed library fields: 4545
+# final library methods: 3708
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 35
+# generated library methods: 93
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.78 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/ImplicitFlows_ImplicitFlow4.jar
+Placeholder library JAR file verified in 1.84 seconds.
+Total time (without verification) is 10.05 seconds.
+Total time (with verification) is 11.89 seconds.
+Elapsed time: 12.25 seconds.
+elapsed time: 12.50s
+
+Thu Feb  6 12:47:16 EST 2014
+running InterAppCommunication_ActivityCommunication1
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.09 seconds.
+# application classes: 11
+# library classes: 1014
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 11
+# initial library classes: 545
+# initial library methods: 9973
+# initial library fields: 4613
+# referenced library methods: 3068
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6398
+# removed library fields: 4613
+# final library methods: 3710
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 5.01 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/InterAppCommunication_ActivityCommunication1.jar
+Placeholder library JAR file verified in 1.8 seconds.
+Total time (without verification) is 10.1 seconds.
+Total time (with verification) is 11.9 seconds.
+Elapsed time: 12.25 seconds.
+elapsed time: 12.50s
+
+Thu Feb  6 12:47:31 EST 2014
+running InterAppCommunication_IntentSink1
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.34 seconds.
+# application classes: 10
+# library classes: 1013
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 10
+# initial library classes: 544
+# initial library methods: 9957
+# initial library fields: 4601
+# referenced library methods: 3067
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6385
+# removed library fields: 4601
+# final library methods: 3707
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.85 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/InterAppCommunication_IntentSink1.jar
+Placeholder library JAR file verified in 1.84 seconds.
+Total time (without verification) is 10.19 seconds.
+Total time (with verification) is 12.03 seconds.
+Elapsed time: 12.38 seconds.
+elapsed time: 12.64s
+
+Thu Feb  6 12:47:46 EST 2014
+running InterAppCommunication_IntentSink2
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.37 seconds.
+# application classes: 10
+# library classes: 1013
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 10
+# initial library classes: 548
+# initial library methods: 9987
+# initial library fields: 4601
+# referenced library methods: 3067
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6412
+# removed library fields: 4601
+# final library methods: 3711
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 35
+# generated library methods: 93
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 5.04 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/InterAppCommunication_IntentSink2.jar
+Placeholder library JAR file verified in 1.83 seconds.
+Total time (without verification) is 10.41 seconds.
+Total time (with verification) is 12.24 seconds.
+Elapsed time: 12.58 seconds.
+elapsed time: 12.84s
+
+Thu Feb  6 12:48:01 EST 2014
+running Lifecycle_ActivityLifecycle1
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.41 seconds.
+# application classes: 10
+# library classes: 1022
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 10
+# initial library classes: 547
+# initial library methods: 10066
+# initial library fields: 4676
+# referenced library methods: 3072
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6481
+# removed library fields: 4676
+# final library methods: 3723
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 34
+# generated library methods: 87
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 5.0 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/Lifecycle_ActivityLifecycle1.jar
+Placeholder library JAR file verified in 1.82 seconds.
+Total time (without verification) is 10.41 seconds.
+Total time (with verification) is 12.23 seconds.
+Elapsed time: 12.57 seconds.
+elapsed time: 12.83s
+
+Thu Feb  6 12:48:15 EST 2014
+running Lifecycle_ActivityLifecycle2
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.32 seconds.
+# application classes: 11
+# library classes: 1014
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 11
+# initial library classes: 545
+# initial library methods: 9973
+# initial library fields: 4613
+# referenced library methods: 3068
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6398
+# removed library fields: 4613
+# final library methods: 3710
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 5.0 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/Lifecycle_ActivityLifecycle2.jar
+Placeholder library JAR file verified in 1.85 seconds.
+Total time (without verification) is 10.32 seconds.
+Total time (with verification) is 12.17 seconds.
+Elapsed time: 12.53 seconds.
+elapsed time: 12.79s
+
+Thu Feb  6 12:48:30 EST 2014
+running Lifecycle_ActivityLifecycle3
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.37 seconds.
+# application classes: 10
+# library classes: 1014
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 10
+# initial library classes: 545
+# initial library methods: 9973
+# initial library fields: 4613
+# referenced library methods: 3069
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6397
+# removed library fields: 4613
+# final library methods: 3711
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.96 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/Lifecycle_ActivityLifecycle3.jar
+Placeholder library JAR file verified in 1.82 seconds.
+Total time (without verification) is 10.33 seconds.
+Total time (with verification) is 12.15 seconds.
+Elapsed time: 12.51 seconds.
+elapsed time: 12.78s
+
+Thu Feb  6 12:48:45 EST 2014
+running Lifecycle_ActivityLifecycle4
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.3 seconds.
+# application classes: 10
+# library classes: 1014
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 10
+# initial library classes: 545
+# initial library methods: 9973
+# initial library fields: 4613
+# referenced library methods: 3068
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6398
+# removed library fields: 4613
+# final library methods: 3710
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 5.02 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/Lifecycle_ActivityLifecycle4.jar
+Placeholder library JAR file verified in 1.82 seconds.
+Total time (without verification) is 10.32 seconds.
+Total time (with verification) is 12.14 seconds.
+Elapsed time: 12.49 seconds.
+elapsed time: 12.75s
+
+Thu Feb  6 12:49:00 EST 2014
+running Lifecycle_ApplicationLifecycle1
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.27 seconds.
+# application classes: 11
+# library classes: 1016
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 11
+# initial library classes: 546
+# initial library methods: 9993
+# initial library fields: 4616
+# referenced library methods: 3071
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6416
+# removed library fields: 4616
+# final library methods: 3712
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 5.17 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/Lifecycle_ApplicationLifecycle1.jar
+Placeholder library JAR file verified in 1.84 seconds.
+Total time (without verification) is 10.44 seconds.
+Total time (with verification) is 12.28 seconds.
+Elapsed time: 12.63 seconds.
+elapsed time: 12.89s
+
+Thu Feb  6 12:49:15 EST 2014
+running Lifecycle_ApplicationLifecycle2
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.25 seconds.
+# application classes: 11
+# library classes: 1016
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 11
+# initial library classes: 546
+# initial library methods: 9993
+# initial library fields: 4616
+# referenced library methods: 3072
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6415
+# removed library fields: 4616
+# final library methods: 3713
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.86 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/Lifecycle_ApplicationLifecycle2.jar
+Placeholder library JAR file verified in 1.84 seconds.
+Total time (without verification) is 10.11 seconds.
+Total time (with verification) is 11.95 seconds.
+Elapsed time: 12.31 seconds.
+elapsed time: 12.57s
+
+Thu Feb  6 12:49:30 EST 2014
+running Lifecycle_ApplicationLifecycle3
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.26 seconds.
+# application classes: 13
+# library classes: 1078
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 13
+# initial library classes: 607
+# initial library methods: 10695
+# initial library fields: 4893
+# referenced library methods: 3460
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6675
+# removed library fields: 4893
+# final library methods: 4183
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 37
+# generated library methods: 107
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 5.73 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/Lifecycle_ApplicationLifecycle3.jar
+Placeholder library JAR file verified in 2.0 seconds.
+Total time (without verification) is 10.99 seconds.
+Total time (with verification) is 12.99 seconds.
+Elapsed time: 13.35 seconds.
+elapsed time: 13.61s
+
+Thu Feb  6 12:49:45 EST 2014
+running Lifecycle_BroadcastReceiverLifecycle1
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 4.97 seconds.
+# application classes: 7
+# library classes: 1014
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 7
+# initial library classes: 545
+# initial library methods: 9973
+# initial library fields: 4613
+# referenced library methods: 3068
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6399
+# removed library fields: 4613
+# final library methods: 3709
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.52 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/Lifecycle_BroadcastReceiverLifecycle1.jar
+Placeholder library JAR file verified in 1.83 seconds.
+Total time (without verification) is 9.49 seconds.
+Total time (with verification) is 11.32 seconds.
+Elapsed time: 11.68 seconds.
+elapsed time: 11.94s
+
+Thu Feb  6 12:49:59 EST 2014
+running Lifecycle_ServiceLifecycle1
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 4.66 seconds.
+# application classes: 7
+# library classes: 1016
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 7
+# initial library classes: 546
+# initial library methods: 9995
+# initial library fields: 4628
+# referenced library methods: 3072
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6417
+# removed library fields: 4628
+# final library methods: 3713
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 33
+# generated library methods: 86
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 4.55 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/Lifecycle_ServiceLifecycle1.jar
+Placeholder library JAR file verified in 1.82 seconds.
+Total time (without verification) is 9.21 seconds.
+Total time (with verification) is 11.03 seconds.
+Elapsed time: 11.38 seconds.
+elapsed time: 11.63s
+
+Thu Feb  6 12:50:13 EST 2014
+running Reflection_Reflection1
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 4.79 seconds.
+# application classes: 13
+# library classes: 1070
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 13
+# initial library classes: 604
+# initial library methods: 10599
+# initial library fields: 4879
+# referenced library methods: 3452
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6594
+# removed library fields: 4879
+# final library methods: 4168
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 36
+# generated library methods: 100
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 5.22 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/Reflection_Reflection1.jar
+Placeholder library JAR file verified in 1.97 seconds.
+Total time (without verification) is 10.01 seconds.
+Total time (with verification) is 11.98 seconds.
+Elapsed time: 12.33 seconds.
+elapsed time: 12.60s
+
+Thu Feb  6 12:50:28 EST 2014
+running Reflection_Reflection2
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.36 seconds.
+# application classes: 13
+# library classes: 1070
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 13
+# initial library classes: 604
+# initial library methods: 10599
+# initial library fields: 4879
+# referenced library methods: 3452
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6594
+# removed library fields: 4879
+# final library methods: 4168
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 36
+# generated library methods: 100
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 5.84 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/Reflection_Reflection2.jar
+Placeholder library JAR file verified in 1.99 seconds.
+Total time (without verification) is 11.2 seconds.
+Total time (with verification) is 13.19 seconds.
+Elapsed time: 13.56 seconds.
+elapsed time: 13.82s
+
+Thu Feb  6 12:50:43 EST 2014
+running Reflection_Reflection3
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 5.32 seconds.
+# application classes: 12
+# library classes: 1070
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 12
+# initial library classes: 605
+# initial library methods: 10604
+# initial library fields: 4881
+# referenced library methods: 3453
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6595
+# removed library fields: 4881
+# final library methods: 4172
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 36
+# generated library methods: 100
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 5.41 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/Reflection_Reflection3.jar
+Placeholder library JAR file verified in 1.95 seconds.
+Total time (without verification) is 10.73 seconds.
+Total time (with verification) is 12.68 seconds.
+Elapsed time: 13.04 seconds.
+elapsed time: 13.30s
+
+Thu Feb  6 12:50:59 EST 2014
+running Reflection_Reflection4
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 4.96 seconds.
+# application classes: 13
+# library classes: 1070
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 13
+# initial library classes: 604
+# initial library methods: 10599
+# initial library fields: 4879
+# referenced library methods: 3452
+# referenced library fields: 0
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6594
+# removed library fields: 4879
+# final library methods: 4168
+# final library fields: 0
+
+Generating extra library classes ...
+# generated library classes: 36
+# generated library methods: 100
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 5.42 seconds.
+rep classpath: output/placeholderLibrary.jar:droidbench/Reflection_Reflection4.jar
+Placeholder library JAR file verified in 1.96 seconds.
+Total time (without verification) is 10.38 seconds.
+Total time (with verification) is 12.34 seconds.
+Elapsed time: 12.69 seconds.
+elapsed time: 12.95s
+
+Thu Feb  6 12:51:14 EST 2014
