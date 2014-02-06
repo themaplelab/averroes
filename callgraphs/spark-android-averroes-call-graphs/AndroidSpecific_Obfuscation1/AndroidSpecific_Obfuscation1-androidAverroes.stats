@@ -1,0 +1,30 @@
+...
+running Spark with Averroes for AndroidSpecific_Obfuscation1
+Loading properties...
+Generating the call graph for AndroidSpecific_Obfuscation1.apk
+droidbench/AndroidSpecific_Obfuscation1.apk
+Using 'benchmarks-averroes/android/AndroidSpecific_Obfuscation1-placeholder-lib.jar' as android.jar
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+Total methods: 3889
+Initially reachable methods: 134
+Classes with at least one reachable method: 134
+[Spark] Pointer Assignment Graph in 1.1 seconds.
+Total types: 736
+[Spark] Type masks in 0.0 seconds.
+VarNodes: 505
+FieldRefNodes: 3
+AllocNodes: 487
+Cleaning up graph for merged nodes
+Done cleaning up graph for merged nodes
+[Spark] Pointer Graph simplified in 0.0 seconds.
+Worklist has 488 nodes.
+Now handling field references
+[Spark] Propagation in 1.5 seconds.
+[Spark] Solution found in 1.8 seconds.
+[Spark] Number of reachable methods: 658
+Total time to finish: 6.05
+=================================================
+# edges = 12
+=================================================
+
+elapsed time: 8.38s

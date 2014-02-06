@@ -1,0 +1,314 @@
+...
+running Spark for InterAppCommunication_ActivityCommunication1
+Loading properties...
+Generating the call graph for an Android apk.
+[main] INFO soot.jimple.infoflow.android.SetupApplication - ARSC file parsing took 0.019399653 seconds
+Using 'android/android-17/android.jar' as android.jar
+[main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
+    public static void dummyMainMethod()
+    {
+        int $i0;
+        de.ecspride.Activity1 $r0;
+        android.os.Bundle $r1, $r3;
+        de.ecspride.Activity2 $r2;
+
+        $i0 = 0;
+
+     label0:
+        $r0 = new de.ecspride.Activity1;
+        specialinvoke $r0.<de.ecspride.Activity1: void <init>()>();
+        if $i0 == 0 goto label6;
+
+     label1:
+        $r1 = new android.os.Bundle;
+        specialinvoke $r1.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r0.<de.ecspride.Activity1: void onCreate(android.os.Bundle)>($r1);
+        $r1 = null;
+
+     label2:
+        if $i0 == 1 goto label3;
+
+        if $i0 == 2 goto label2;
+
+        if $i0 == 3 goto label1;
+
+     label3:
+        if $i0 == 4 goto label5;
+
+        if $i0 == 5 goto label4;
+
+        if $i0 == 6 goto label1;
+
+     label4:
+        if $i0 == 7 goto label2;
+
+     label5:
+        if $i0 == 8 goto label6;
+
+     label6:
+        $r2 = new de.ecspride.Activity2;
+        specialinvoke $r2.<de.ecspride.Activity2: void <init>()>();
+        if $i0 == 9 goto label12;
+
+     label7:
+        $r3 = new android.os.Bundle;
+        specialinvoke $r3.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r2.<de.ecspride.Activity2: void onCreate(android.os.Bundle)>($r3);
+        $r3 = null;
+
+     label8:
+        if $i0 == 10 goto label9;
+
+        if $i0 == 11 goto label8;
+
+        if $i0 == 12 goto label7;
+
+     label9:
+        if $i0 == 13 goto label11;
+
+        if $i0 == 14 goto label10;
+
+        if $i0 == 15 goto label7;
+
+     label10:
+        if $i0 == 16 goto label8;
+
+     label11:
+        if $i0 == 17 goto label12;
+
+     label12:
+        if $i0 == 18 goto label0;
+
+        return;
+    }
+
+Warning: java.lang.ref.Finalizer is a phantom class!
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+[Spark] Pointer Assignment Graph in 0.2 seconds.
+[Spark] Type masks in 0.0 seconds.
+[Spark] Pointer Graph simplified in 0.0 seconds.
+[Spark] Propagation in 4.0 seconds.
+[Spark] Solution found in 4.0 seconds.
+Callback analysis done.
+Warning: TextView is a phantom class!
+Warning: de.ecspride.TextView is a phantom class!
+Warning: android.view.TextView is a phantom class!
+Found 0 layout controls in file res/layout/activity_activity1.xml
+Found 0 layout controls in file res/layout/activity_activity2.xml
+Transforming dummyMainClass... 
+Transforming de.ecspride.Activity1... 
+Transforming de.ecspride.Activity2... 
+Using 'android/android-17/android.jar' as android.jar
+[main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
+    public static void dummyMainMethod()
+    {
+        int $i0;
+        de.ecspride.Activity1 $r0;
+        android.os.Bundle $r1, $r3;
+        de.ecspride.Activity2 $r2;
+
+        $i0 = 0;
+
+     label0:
+        $r0 = new de.ecspride.Activity1;
+        specialinvoke $r0.<de.ecspride.Activity1: void <init>()>();
+        if $i0 == 0 goto label6;
+
+     label1:
+        $r1 = new android.os.Bundle;
+        specialinvoke $r1.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r0.<de.ecspride.Activity1: void onCreate(android.os.Bundle)>($r1);
+        $r1 = null;
+
+     label2:
+        if $i0 == 1 goto label2;
+
+        if $i0 == 2 goto label3;
+
+        if $i0 == 3 goto label2;
+
+        if $i0 == 4 goto label1;
+
+     label3:
+        if $i0 == 5 goto label5;
+
+        if $i0 == 6 goto label4;
+
+        if $i0 == 7 goto label1;
+
+     label4:
+        if $i0 == 8 goto label2;
+
+     label5:
+        if $i0 == 9 goto label6;
+
+     label6:
+        $r2 = new de.ecspride.Activity2;
+        specialinvoke $r2.<de.ecspride.Activity2: void <init>()>();
+        if $i0 == 10 goto label12;
+
+     label7:
+        $r3 = new android.os.Bundle;
+        specialinvoke $r3.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r2.<de.ecspride.Activity2: void onCreate(android.os.Bundle)>($r3);
+        $r3 = null;
+
+     label8:
+        if $i0 == 11 goto label8;
+
+        if $i0 == 12 goto label9;
+
+        if $i0 == 13 goto label8;
+
+        if $i0 == 14 goto label7;
+
+     label9:
+        if $i0 == 15 goto label11;
+
+        if $i0 == 16 goto label10;
+
+        if $i0 == 17 goto label7;
+
+     label10:
+        if $i0 == 18 goto label8;
+
+     label11:
+        if $i0 == 19 goto label12;
+
+     label12:
+        if $i0 == 20 goto label0;
+
+        return;
+    }
+
+Warning: java.lang.ref.Finalizer is a phantom class!
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+[Spark] Pointer Assignment Graph in 0.0 seconds.
+[Spark] Type masks in 0.0 seconds.
+[Spark] Pointer Graph simplified in 0.0 seconds.
+[Spark] Propagation in 2.2 seconds.
+[Spark] Solution found in 2.2 seconds.
+Running incremental callback analysis for 2 components...
+Incremental callback analysis done.
+Transforming dummyMainClass... 
+Transforming de.ecspride.Activity1... 
+Transforming de.ecspride.Activity2... 
+Found 2 callback methods for 2 components
+Entry point calculation done.
+Created a SourceSinkManager with 127 sources, 61 sinks, and 2 callback methods.
+Using 'android/android-17/android.jar' as android.jar
+Warning: java.lang.ref.Finalizer is a phantom class!
+de.ecspride.Activity1
+	<de.ecspride.Activity1: void onCreate(android.os.Bundle)>
+de.ecspride.Activity2
+	<de.ecspride.Activity2: void onCreate(android.os.Bundle)>
+[main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
+    public static void dummyMainMethod()
+    {
+        int $i0;
+        de.ecspride.Activity1 $r0;
+        android.os.Bundle $r1, $r3;
+        de.ecspride.Activity2 $r2;
+
+        $i0 = 0;
+
+     label0:
+        $r0 = new de.ecspride.Activity1;
+        specialinvoke $r0.<de.ecspride.Activity1: void <init>()>();
+        if $i0 == 0 goto label6;
+
+     label1:
+        $r1 = new android.os.Bundle;
+        specialinvoke $r1.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r0.<de.ecspride.Activity1: void onCreate(android.os.Bundle)>($r1);
+        $r1 = null;
+
+     label2:
+        if $i0 == 1 goto label2;
+
+        if $i0 == 2 goto label3;
+
+        if $i0 == 3 goto label2;
+
+        if $i0 == 4 goto label1;
+
+     label3:
+        if $i0 == 5 goto label5;
+
+        if $i0 == 6 goto label4;
+
+        if $i0 == 7 goto label1;
+
+     label4:
+        if $i0 == 8 goto label2;
+
+     label5:
+        if $i0 == 9 goto label6;
+
+     label6:
+        $r2 = new de.ecspride.Activity2;
+        specialinvoke $r2.<de.ecspride.Activity2: void <init>()>();
+        if $i0 == 10 goto label12;
+
+     label7:
+        $r3 = new android.os.Bundle;
+        specialinvoke $r3.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r2.<de.ecspride.Activity2: void onCreate(android.os.Bundle)>($r3);
+        $r3 = null;
+
+     label8:
+        if $i0 == 11 goto label8;
+
+        if $i0 == 12 goto label9;
+
+        if $i0 == 13 goto label8;
+
+        if $i0 == 14 goto label7;
+
+     label9:
+        if $i0 == 15 goto label11;
+
+        if $i0 == 16 goto label10;
+
+        if $i0 == 17 goto label7;
+
+     label10:
+        if $i0 == 18 goto label8;
+
+     label11:
+        if $i0 == 19 goto label12;
+
+     label12:
+        if $i0 == 20 goto label0;
+
+        return;
+    }
+
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+Total methods: 40220
+Initially reachable methods: 3
+Classes with at least one reachable method: 3
+[Spark] Pointer Assignment Graph in 0.0 seconds.
+Total types: 5866
+[Spark] Type masks in 0.0 seconds.
+VarNodes: 15
+FieldRefNodes: 1
+AllocNodes: 8
+Cleaning up graph for merged nodes
+Done cleaning up graph for merged nodes
+[Spark] Pointer Graph simplified in 0.0 seconds.
+Worklist has 8 nodes.
+Now handling field references
+Worklist has 61 nodes.
+Now handling field references
+Worklist has 2 nodes.
+Now handling field references
+[Spark] Propagation in 1.4 seconds.
+[Spark] Solution found in 3.9 seconds.
+[Spark] Number of reachable methods: 493
+Total time to finish: 37.41
+=================================================
+# edges = 8
+=================================================
+
+elapsed time: 39.83s

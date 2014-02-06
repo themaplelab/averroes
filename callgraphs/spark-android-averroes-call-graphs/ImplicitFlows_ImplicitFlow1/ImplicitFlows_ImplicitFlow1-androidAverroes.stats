@@ -1,0 +1,49 @@
+...
+running Spark with Averroes for ImplicitFlows_ImplicitFlow1
+Loading properties...
+Generating the call graph for ImplicitFlows_ImplicitFlow1.apk
+droidbench/ImplicitFlows_ImplicitFlow1.apk
+Using 'benchmarks-averroes/android/ImplicitFlows_ImplicitFlow1-placeholder-lib.jar' as android.jar
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+Total methods: 3479
+Initially reachable methods: 126
+Classes with at least one reachable method: 126
+[Spark] Pointer Assignment Graph in 1.0 seconds.
+Total types: 670
+[Spark] Type masks in 0.0 seconds.
+VarNodes: 451
+FieldRefNodes: 2
+AllocNodes: 436
+Cleaning up graph for merged nodes
+Done cleaning up graph for merged nodes
+[Spark] Pointer Graph simplified in 0.0 seconds.
+Worklist has 436 nodes.
+soot.AbstractSootFieldRef$FieldResolutionFailedException: Class java.lang.System doesn't have field err : java.io.PrintStream; failed to resolve in superclasses and interfacesLooking in java.lang.System which has fields []
+Looking in java.lang.Object which has fields []
+
+	at soot.AbstractSootFieldRef.resolve(AbstractSootFieldRef.java:118)
+	at soot.AbstractSootFieldRef.resolve(AbstractSootFieldRef.java:76)
+	at soot.jimple.StaticFieldRef.getField(StaticFieldRef.java:75)
+	at soot.jimple.spark.builder.MethodNodeFactory.caseStaticFieldRef(MethodNodeFactory.java:276)
+	at soot.jimple.StaticFieldRef.apply(StaticFieldRef.java:90)
+	at soot.jimple.spark.builder.MethodNodeFactory$1.caseAssignStmt(MethodNodeFactory.java:78)
+	at soot.jimple.internal.JAssignStmt.apply(JAssignStmt.java:222)
+	at soot.jimple.spark.builder.MethodNodeFactory.handleStmt(MethodNodeFactory.java:69)
+	at soot.jimple.spark.pag.MethodPAG.buildNormal(MethodPAG.java:179)
+	at soot.jimple.spark.pag.MethodPAG.build(MethodPAG.java:148)
+	at soot.jimple.spark.solver.OnFlyCallGraph.processReachables(OnFlyCallGraph.java:64)
+	at soot.jimple.spark.solver.OnFlyCallGraph.build(OnFlyCallGraph.java:56)
+	at soot.jimple.spark.solver.PropWorklist.handleVarNode(PropWorklist.java:123)
+	at soot.jimple.spark.solver.PropWorklist.propagate(PropWorklist.java:53)
+	at soot.jimple.spark.SparkTransformer.internalTransform(SparkTransformer.java:152)
+	at soot.SceneTransformer.transform(SceneTransformer.java:39)
+	at ca.uwaterloo.averroes.callgraph.transformers.AndroidWithAverroesCallGraphTransformer.run(AndroidWithAverroesCallGraphTransformer.java:59)
+	at ca.uwaterloo.averroes.callgraph.CallGraphFactory.generateAndroidWithAverroesCallGraph(CallGraphFactory.java:63)
+	at ca.uwaterloo.averroes.callgraph.drivers.AndroidWithAverroesCallGraphGenerator.main(AndroidWithAverroesCallGraphGenerator.java:35)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:616)
+	at org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader.main(JarRsrcLoader.java:58)
+Command exited with non-zero status 1
+elapsed time: 7.47s

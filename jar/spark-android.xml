@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="spark-android">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <target name="create_run_jar">
+        <jar destfile="/Users/karim/Documents/workspace/averroes/jar/spark-android.jar">
+            <manifest>
+                <attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
+                <attribute name="Rsrc-Main-Class" value="ca.uwaterloo.averroes.callgraph.drivers.AndroidCallGraphGenerator"/>
+                <attribute name="Class-Path" value="."/>
+                <attribute name="Rsrc-Class-Path" value="./ bcel-5.2.jar dexlib2-2.0b5-dev.jar jasminclasses.jar polyglotclasses-1.3.5.jar iris-0.60.jar iris-parser-0.60.jar baksmali-1.3.2.jar dexlib2-2.0b5-dev.jar baksmali-2.0b5.jar guava-15.0.jar java_cup.jar guava-14.0.1.jar slf4j-api-1.7.5.jar slf4j-simple-1.7.5.jar polyglot.jar AXMLPrinter2.jar axml-1.0.jar gxl.jar"/>
+            </manifest>
+            <zipfileset src="jar-in-jar-loader.zip"/>
+            <fileset dir="/Users/karim/Documents/workspace/averroes/bin"/>
+            <zipfileset dir="/Users/karim/Documents/workspace/averroes/lib" includes="bcel-5.2.jar"/>
+            <zipfileset dir="/Users/karim/Documents/workspace/averroes/lib" includes="jasminclasses.jar"/>
+            <zipfileset dir="/Users/karim/Documents/workspace/averroes/lib" includes="polyglotclasses-1.3.5.jar"/>
+            <zipfileset dir="/Users/karim/Documents/workspace/averroes/lib" includes="dexlib2-2.0b5-dev.jar"/>
+            <zipfileset dir="/Users/karim/Documents/workspace/averroes/lib" includes="iris-0.60.jar"/>
+            <zipfileset dir="/Users/karim/Documents/workspace/averroes/lib" includes="iris-parser-0.60.jar"/>
+            <fileset dir="/Users/karim/git/soot-infoflow-android/bin"/>
+            <fileset dir="/Users/karim/git/soot/classes"/>
+            <fileset dir="/Users/karim/git/jasmin/classes"/>
+            <zipfileset dir="/Users/karim/git/jasmin/libs" includes="java_cup.jar"/>
+            <fileset dir="/Users/karim/git/heros/bin"/>
+            <zipfileset dir="/Users/karim/git/heros" includes="guava-14.0.1.jar"/>
+            <zipfileset dir="/Users/karim/git/soot/libs" includes="polyglot.jar"/>
+            <zipfileset dir="/Users/karim/git/soot/libs" includes="AXMLPrinter2.jar"/>
+            <zipfileset dir="/Users/karim/git/soot/libs" includes="baksmali-2.0b5.jar"/>
+            <zipfileset dir="/Users/karim/git/soot/libs" includes="baksmali-1.3.2.jar"/>
+            <fileset dir="/Users/karim/git/soot-infoflow/bin"/>
+            <zipfileset dir="/Users/karim/git/soot-infoflow/lib" includes="slf4j-api-1.7.5.jar"/>
+            <zipfileset dir="/Users/karim/git/soot-infoflow/lib" includes="slf4j-simple-1.7.5.jar"/>
+            <zipfileset dir="/Users/karim/git/soot-infoflow-android/lib" includes="axml-1.0.jar"/>
+            <fileset dir="/Users/karim/Documents/workspace/probe/bin"/>
+        </jar>
+    </target>
+</project>

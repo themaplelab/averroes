@@ -1,0 +1,28 @@
+#! /usr/bin/env bash
+
+# the droidbench programs
+droidbench="droidbench-apks.txt"
+
+function timing()
+{
+	echo "..."
+	/usr/bin/time -f "elapsed time: %es" $* 2>&1
+}
+
+date
+
+mkdir -p benchmarks-averroes/android
+
+while read benchmark
+do
+  echo "running ${benchmark} ..."
+  outputdir=callgraphs/spark-android-call-graphs/${benchmark}
+  
+  # 1. create output directory
+  mkdir -p ${outputdir}/
+  
+  # 2. run the script
+  timing ./spark-android ${benchmark} > ${outputdir}/${benchmark}-android.stats
+done < ${droidbench}
+
+date

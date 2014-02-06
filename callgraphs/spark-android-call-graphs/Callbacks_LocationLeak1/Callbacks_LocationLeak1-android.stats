@@ -1,0 +1,275 @@
+...
+running Spark for Callbacks_LocationLeak1
+Loading properties...
+Generating the call graph for an Android apk.
+[main] INFO soot.jimple.infoflow.android.SetupApplication - ARSC file parsing took 0.019235962 seconds
+Using 'android/android-17/android.jar' as android.jar
+[main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
+    public static void dummyMainMethod()
+    {
+        int $i0;
+        de.ecspride.LocationLeak1 $r0;
+        android.os.Bundle $r1;
+
+        $i0 = 0;
+
+     label0:
+        $r0 = new de.ecspride.LocationLeak1;
+        specialinvoke $r0.<de.ecspride.LocationLeak1: void <init>()>();
+        if $i0 == 0 goto label6;
+
+     label1:
+        $r1 = new android.os.Bundle;
+        specialinvoke $r1.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r0.<de.ecspride.LocationLeak1: void onCreate(android.os.Bundle)>($r1);
+        $r1 = null;
+
+     label2:
+        virtualinvoke $r0.<de.ecspride.LocationLeak1: void onResume()>();
+        if $i0 == 1 goto label3;
+
+        if $i0 == 2 goto label2;
+
+        if $i0 == 3 goto label1;
+
+     label3:
+        if $i0 == 4 goto label5;
+
+        if $i0 == 5 goto label4;
+
+        if $i0 == 6 goto label1;
+
+     label4:
+        if $i0 == 7 goto label2;
+
+     label5:
+        if $i0 == 8 goto label6;
+
+     label6:
+        if $i0 == 9 goto label0;
+
+        return;
+    }
+
+Warning: java.lang.ref.Finalizer is a phantom class!
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+[Spark] Pointer Assignment Graph in 0.2 seconds.
+[Spark] Type masks in 0.0 seconds.
+[Spark] Pointer Graph simplified in 0.0 seconds.
+[Spark] Propagation in 5.0 seconds.
+[Spark] Solution found in 5.0 seconds.
+Callback analysis done.
+Found 0 layout controls in file res/layout/activity_location_leak1.xml
+Transforming dummyMainClass... 
+Transforming de.ecspride.LocationLeak1... 
+Using 'android/android-17/android.jar' as android.jar
+[main] WARN soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Ran into a constructor generation loop for class de.ecspride.LocationLeak1$MyLocationListener, substituting with null...
+[main] WARN soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Ran into a constructor generation loop for class android.location.Location, substituting with null...
+[main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
+    public static void dummyMainMethod()
+    {
+        int $i0;
+        de.ecspride.LocationLeak1 $r0;
+        android.os.Bundle $r1;
+        de.ecspride.LocationLeak1$MyLocationListener $r2, $r3;
+        android.location.Location $r4, $r5;
+
+        $i0 = 0;
+
+     label0:
+        $r0 = new de.ecspride.LocationLeak1;
+        specialinvoke $r0.<de.ecspride.LocationLeak1: void <init>()>();
+        if $i0 == 0 goto label8;
+
+     label1:
+        $r1 = new android.os.Bundle;
+        specialinvoke $r1.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r0.<de.ecspride.LocationLeak1: void onCreate(android.os.Bundle)>($r1);
+        $r1 = null;
+
+     label2:
+        virtualinvoke $r0.<de.ecspride.LocationLeak1: void onResume()>();
+
+     label3:
+        $r2 = null;
+        $r3 = new de.ecspride.LocationLeak1$MyLocationListener;
+        specialinvoke $r3.<de.ecspride.LocationLeak1$MyLocationListener: void <init>(de.ecspride.LocationLeak1,de.ecspride.LocationLeak1$MyLocationListener)>($r0, $r2);
+        if $i0 == 1 goto label4;
+
+        $r4 = null;
+        $r5 = new android.location.Location;
+        specialinvoke $r5.<android.location.Location: void <init>(android.location.Location)>($r4);
+        virtualinvoke $r3.<de.ecspride.LocationLeak1$MyLocationListener: void onLocationChanged(android.location.Location)>($r5);
+        $r5 = null;
+
+     label4:
+        if $i0 == 2 goto label3;
+
+        if $i0 == 3 goto label3;
+
+        if $i0 == 4 goto label5;
+
+        if $i0 == 5 goto label2;
+
+        if $i0 == 6 goto label1;
+
+     label5:
+        if $i0 == 7 goto label7;
+
+        if $i0 == 8 goto label6;
+
+        if $i0 == 9 goto label1;
+
+     label6:
+        if $i0 == 10 goto label2;
+
+     label7:
+        if $i0 == 11 goto label8;
+
+     label8:
+        if $i0 == 12 goto label0;
+
+        return;
+    }
+
+Warning: java.lang.ref.Finalizer is a phantom class!
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+[Spark] Pointer Assignment Graph in 0.0 seconds.
+[Spark] Type masks in 0.0 seconds.
+[Spark] Pointer Graph simplified in 0.0 seconds.
+[Spark] Propagation in 3.5 seconds.
+[Spark] Solution found in 3.5 seconds.
+Running incremental callback analysis for 1 components...
+Incremental callback analysis done.
+Transforming dummyMainClass... 
+Transforming de.ecspride.LocationLeak1... 
+Found 3 callback methods for 1 components
+Entry point calculation done.
+Created a SourceSinkManager with 127 sources, 61 sinks, and 3 callback methods.
+Using 'android/android-17/android.jar' as android.jar
+Warning: java.lang.ref.Finalizer is a phantom class!
+de.ecspride.LocationLeak1
+	<de.ecspride.LocationLeak1: void onResume()>
+	<de.ecspride.LocationLeak1: void onCreate(android.os.Bundle)>
+	<de.ecspride.LocationLeak1$MyLocationListener: void onLocationChanged(android.location.Location)>
+[main] WARN soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Ran into a constructor generation loop for class de.ecspride.LocationLeak1$MyLocationListener, substituting with null...
+[main] WARN soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Ran into a constructor generation loop for class android.location.Location, substituting with null...
+[main] WARN soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Ran into a constructor generation loop for class de.ecspride.LocationLeak1$MyLocationListener, substituting with null...
+[main] WARN soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Ran into a constructor generation loop for class android.location.Location, substituting with null...
+[main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
+    public static void dummyMainMethod()
+    {
+        int $i0;
+        de.ecspride.LocationLeak1 $r0, $r5;
+        de.ecspride.LocationLeak1$MyLocationListener $r1, $r2, $r7, $r8;
+        android.location.Location $r3, $r4, $r9, $r10;
+        android.os.Bundle $r6;
+
+        $i0 = 0;
+
+     label0:
+        $r0 = new de.ecspride.LocationLeak1;
+        specialinvoke $r0.<de.ecspride.LocationLeak1: void <init>()>();
+        $r1 = null;
+        $r2 = new de.ecspride.LocationLeak1$MyLocationListener;
+        specialinvoke $r2.<de.ecspride.LocationLeak1$MyLocationListener: void <init>(de.ecspride.LocationLeak1,de.ecspride.LocationLeak1$MyLocationListener)>($r0, $r1);
+        if $i0 == 0 goto label3;
+
+     label1:
+        if $i0 == 1 goto label2;
+
+        $r3 = null;
+        $r4 = new android.location.Location;
+        specialinvoke $r4.<android.location.Location: void <init>(android.location.Location)>($r3);
+        virtualinvoke $r2.<de.ecspride.LocationLeak1$MyLocationListener: void onLocationChanged(android.location.Location)>($r4);
+        $r4 = null;
+
+     label2:
+        if $i0 == 2 goto label1;
+
+     label3:
+        $r5 = new de.ecspride.LocationLeak1;
+        specialinvoke $r5.<de.ecspride.LocationLeak1: void <init>()>();
+        if $i0 == 3 goto label11;
+
+     label4:
+        $r6 = new android.os.Bundle;
+        specialinvoke $r6.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r5.<de.ecspride.LocationLeak1: void onCreate(android.os.Bundle)>($r6);
+        $r6 = null;
+
+     label5:
+        virtualinvoke $r5.<de.ecspride.LocationLeak1: void onResume()>();
+
+     label6:
+        $r7 = null;
+        $r8 = new de.ecspride.LocationLeak1$MyLocationListener;
+        specialinvoke $r8.<de.ecspride.LocationLeak1$MyLocationListener: void <init>(de.ecspride.LocationLeak1,de.ecspride.LocationLeak1$MyLocationListener)>($r5, $r7);
+        if $i0 == 4 goto label7;
+
+        $r9 = null;
+        $r10 = new android.location.Location;
+        specialinvoke $r10.<android.location.Location: void <init>(android.location.Location)>($r9);
+        virtualinvoke $r8.<de.ecspride.LocationLeak1$MyLocationListener: void onLocationChanged(android.location.Location)>($r10);
+        $r10 = null;
+
+     label7:
+        if $i0 == 5 goto label6;
+
+        if $i0 == 6 goto label6;
+
+        if $i0 == 7 goto label8;
+
+        if $i0 == 8 goto label5;
+
+        if $i0 == 9 goto label4;
+
+     label8:
+        if $i0 == 10 goto label10;
+
+        if $i0 == 11 goto label9;
+
+        if $i0 == 12 goto label4;
+
+     label9:
+        if $i0 == 13 goto label5;
+
+     label10:
+        if $i0 == 14 goto label11;
+
+     label11:
+        if $i0 == 15 goto label0;
+
+        return;
+    }
+
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+Total methods: 39191
+Initially reachable methods: 4
+Classes with at least one reachable method: 4
+[Spark] Pointer Assignment Graph in 0.0 seconds.
+Total types: 5722
+[Spark] Type masks in 0.0 seconds.
+VarNodes: 24
+FieldRefNodes: 1
+AllocNodes: 12
+Cleaning up graph for merged nodes
+Done cleaning up graph for merged nodes
+[Spark] Pointer Graph simplified in 0.0 seconds.
+Worklist has 12 nodes.
+Now handling field references
+Worklist has 15 nodes.
+Now handling field references
+Worklist has 55 nodes.
+Now handling field references
+Worklist has 2 nodes.
+Now handling field references
+[Spark] Propagation in 1.6 seconds.
+[Spark] Solution found in 4.2 seconds.
+[Spark] Number of reachable methods: 555
+Total time to finish: 40.54
+=================================================
+# edges = 14
+=================================================
+
+elapsed time: 42.97s

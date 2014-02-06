@@ -1,0 +1,30 @@
+...
+running Spark with Averroes for InterAppCommunication_IntentSink2
+Loading properties...
+Generating the call graph for InterAppCommunication_IntentSink2.apk
+droidbench/InterAppCommunication_IntentSink2.apk
+Using 'benchmarks-averroes/android/InterAppCommunication_IntentSink2-placeholder-lib.jar' as android.jar
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+Total methods: 3470
+Initially reachable methods: 126
+Classes with at least one reachable method: 126
+[Spark] Pointer Assignment Graph in 1.0 seconds.
+Total types: 673
+[Spark] Type masks in 0.0 seconds.
+VarNodes: 453
+FieldRefNodes: 2
+AllocNodes: 438
+Cleaning up graph for merged nodes
+Done cleaning up graph for merged nodes
+[Spark] Pointer Graph simplified in 0.0 seconds.
+Worklist has 438 nodes.
+Now handling field references
+[Spark] Propagation in 1.2 seconds.
+[Spark] Solution found in 1.5 seconds.
+[Spark] Number of reachable methods: 594
+Total time to finish: 5.54
+=================================================
+# edges = 7
+=================================================
+
+elapsed time: 7.84s

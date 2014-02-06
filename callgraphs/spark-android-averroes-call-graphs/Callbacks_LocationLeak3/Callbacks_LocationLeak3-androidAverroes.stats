@@ -1,0 +1,30 @@
+...
+running Spark with Averroes for Callbacks_LocationLeak3
+Loading properties...
+Generating the call graph for Callbacks_LocationLeak3.apk
+droidbench/Callbacks_LocationLeak3.apk
+Using 'benchmarks-averroes/android/Callbacks_LocationLeak3-placeholder-lib.jar' as android.jar
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+Total methods: 3901
+Initially reachable methods: 134
+Classes with at least one reachable method: 134
+[Spark] Pointer Assignment Graph in 1.1 seconds.
+Total types: 740
+[Spark] Type masks in 0.0 seconds.
+VarNodes: 513
+FieldRefNodes: 3
+AllocNodes: 489
+Cleaning up graph for merged nodes
+Done cleaning up graph for merged nodes
+[Spark] Pointer Graph simplified in 0.0 seconds.
+Worklist has 490 nodes.
+Now handling field references
+[Spark] Propagation in 1.7 seconds.
+[Spark] Solution found in 2.1 seconds.
+[Spark] Number of reachable methods: 673
+Total time to finish: 6.5
+=================================================
+# edges = 18
+=================================================
+
+elapsed time: 8.82s

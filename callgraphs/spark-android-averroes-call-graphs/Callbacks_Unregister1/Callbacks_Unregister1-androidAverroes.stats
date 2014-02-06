@@ -1,0 +1,30 @@
+...
+running Spark with Averroes for Callbacks_Unregister1
+Loading properties...
+Generating the call graph for Callbacks_Unregister1.apk
+droidbench/Callbacks_Unregister1.apk
+Using 'benchmarks-averroes/android/Callbacks_Unregister1-placeholder-lib.jar' as android.jar
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+Total methods: 3897
+Initially reachable methods: 135
+Classes with at least one reachable method: 135
+[Spark] Pointer Assignment Graph in 1.1 seconds.
+Total types: 738
+[Spark] Type masks in 0.0 seconds.
+VarNodes: 519
+FieldRefNodes: 3
+AllocNodes: 497
+Cleaning up graph for merged nodes
+Done cleaning up graph for merged nodes
+[Spark] Pointer Graph simplified in 0.0 seconds.
+Worklist has 498 nodes.
+Now handling field references
+[Spark] Propagation in 1.8 seconds.
+[Spark] Solution found in 2.1 seconds.
+[Spark] Number of reachable methods: 678
+Total time to finish: 6.51
+=================================================
+# edges = 11
+=================================================
+
+elapsed time: 8.75s

@@ -1,0 +1,194 @@
+...
+running Spark for Lifecycle_ServiceLifecycle1
+Loading properties...
+Generating the call graph for an Android apk.
+[main] INFO soot.jimple.infoflow.android.SetupApplication - ARSC file parsing took 0.018901349 seconds
+Using 'android/android-17/android.jar' as android.jar
+[main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
+    public static void dummyMainMethod()
+    {
+        int $i0, $i1;
+        de.ecspride.MainService $r0;
+        android.content.Intent $r1, $r2;
+        android.os.IBinder $r3;
+
+        $i0 = 0;
+
+     label0:
+        $r0 = new de.ecspride.MainService;
+        specialinvoke $r0.<de.ecspride.MainService: void <init>()>();
+        $r1 = new android.content.Intent;
+        specialinvoke $r1.<android.content.Intent: void <init>()>();
+        $i1 = virtualinvoke $r0.<de.ecspride.MainService: int onStartCommand(android.content.Intent,int,int)>($r1, 0, 0);
+        $r1 = null;
+        $r2 = new android.content.Intent;
+        specialinvoke $r2.<android.content.Intent: void <init>()>();
+        $r3 = virtualinvoke $r0.<de.ecspride.MainService: android.os.IBinder onBind(android.content.Intent)>($r2);
+        $r2 = null;
+
+     label1:
+        if $i0 == 0 goto label2;
+
+        if $i0 == 1 goto label1;
+
+     label2:
+        if $i0 == 2 goto label0;
+
+        return;
+    }
+
+Warning: java.lang.ref.Finalizer is a phantom class!
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+[Spark] Pointer Assignment Graph in 0.1 seconds.
+[Spark] Type masks in 0.0 seconds.
+[Spark] Pointer Graph simplified in 0.0 seconds.
+[Spark] Propagation in 0.0 seconds.
+[Spark] Solution found in 0.0 seconds.
+Callback analysis done.
+Transforming dummyMainClass... 
+Transforming de.ecspride.MainService... 
+Using 'android/android-17/android.jar' as android.jar
+[main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
+    public static void dummyMainMethod()
+    {
+        int $i0, $i1;
+        de.ecspride.MainService $r0;
+        android.content.Intent $r1, $r2;
+        android.os.IBinder $r3;
+
+        $i0 = 0;
+
+     label0:
+        $r0 = new de.ecspride.MainService;
+        specialinvoke $r0.<de.ecspride.MainService: void <init>()>();
+        $r1 = new android.content.Intent;
+        specialinvoke $r1.<android.content.Intent: void <init>()>();
+        $i1 = virtualinvoke $r0.<de.ecspride.MainService: int onStartCommand(android.content.Intent,int,int)>($r1, 0, 0);
+        $r1 = null;
+
+     label1:
+        if $i0 == 0 goto label2;
+
+        virtualinvoke $r0.<de.ecspride.MainService: void onLowMemory()>();
+
+     label2:
+        if $i0 == 1 goto label1;
+
+        $r2 = new android.content.Intent;
+        specialinvoke $r2.<android.content.Intent: void <init>()>();
+        $r3 = virtualinvoke $r0.<de.ecspride.MainService: android.os.IBinder onBind(android.content.Intent)>($r2);
+        $r2 = null;
+
+     label3:
+        if $i0 == 2 goto label4;
+
+        virtualinvoke $r0.<de.ecspride.MainService: void onLowMemory()>();
+
+     label4:
+        if $i0 == 3 goto label3;
+
+        if $i0 == 4 goto label5;
+
+        if $i0 == 5 goto label3;
+
+     label5:
+        if $i0 == 6 goto label0;
+
+        return;
+    }
+
+Warning: java.lang.ref.Finalizer is a phantom class!
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+[Spark] Pointer Assignment Graph in 0.0 seconds.
+[Spark] Type masks in 0.0 seconds.
+[Spark] Pointer Graph simplified in 0.0 seconds.
+[Spark] Propagation in 1.7 seconds.
+[Spark] Solution found in 1.7 seconds.
+Running incremental callback analysis for 1 components...
+Incremental callback analysis done.
+Transforming dummyMainClass... 
+Transforming de.ecspride.MainService... 
+Found 3 callback methods for 1 components
+Entry point calculation done.
+Created a SourceSinkManager with 127 sources, 61 sinks, and 3 callback methods.
+Using 'android/android-17/android.jar' as android.jar
+Warning: java.lang.ref.Finalizer is a phantom class!
+de.ecspride.MainService
+	<de.ecspride.MainService: int onStartCommand(android.content.Intent,int,int)>
+	<de.ecspride.MainService: android.os.IBinder onBind(android.content.Intent)>
+	<de.ecspride.MainService: void onLowMemory()>
+[main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
+    public static void dummyMainMethod()
+    {
+        int $i0, $i1;
+        de.ecspride.MainService $r0;
+        android.content.Intent $r1, $r2;
+        android.os.IBinder $r3;
+
+        $i0 = 0;
+
+     label0:
+        $r0 = new de.ecspride.MainService;
+        specialinvoke $r0.<de.ecspride.MainService: void <init>()>();
+        $r1 = new android.content.Intent;
+        specialinvoke $r1.<android.content.Intent: void <init>()>();
+        $i1 = virtualinvoke $r0.<de.ecspride.MainService: int onStartCommand(android.content.Intent,int,int)>($r1, 0, 0);
+        $r1 = null;
+
+     label1:
+        if $i0 == 0 goto label2;
+
+        virtualinvoke $r0.<de.ecspride.MainService: void onLowMemory()>();
+
+     label2:
+        if $i0 == 1 goto label1;
+
+        $r2 = new android.content.Intent;
+        specialinvoke $r2.<android.content.Intent: void <init>()>();
+        $r3 = virtualinvoke $r0.<de.ecspride.MainService: android.os.IBinder onBind(android.content.Intent)>($r2);
+        $r2 = null;
+
+     label3:
+        if $i0 == 2 goto label4;
+
+        virtualinvoke $r0.<de.ecspride.MainService: void onLowMemory()>();
+
+     label4:
+        if $i0 == 3 goto label3;
+
+        if $i0 == 4 goto label5;
+
+        if $i0 == 5 goto label3;
+
+     label5:
+        if $i0 == 6 goto label0;
+
+        return;
+    }
+
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+Total methods: 40217
+Initially reachable methods: 2
+Classes with at least one reachable method: 2
+[Spark] Pointer Assignment Graph in 0.0 seconds.
+Total types: 5862
+[Spark] Type masks in 0.0 seconds.
+VarNodes: 5
+FieldRefNodes: 0
+AllocNodes: 4
+Cleaning up graph for merged nodes
+Done cleaning up graph for merged nodes
+[Spark] Pointer Graph simplified in 0.0 seconds.
+Worklist has 4 nodes.
+Now handling field references
+Worklist has 2 nodes.
+Now handling field references
+[Spark] Propagation in 1.2 seconds.
+[Spark] Solution found in 3.6 seconds.
+[Spark] Number of reachable methods: 172
+Total time to finish: 31.66
+=================================================
+# edges = 7
+=================================================
+
+elapsed time: 34.01s

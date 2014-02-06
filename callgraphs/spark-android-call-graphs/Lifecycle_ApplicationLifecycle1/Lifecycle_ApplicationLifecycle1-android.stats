@@ -1,0 +1,253 @@
+...
+running Spark for Lifecycle_ApplicationLifecycle1
+Loading properties...
+Generating the call graph for an Android apk.
+[main] INFO soot.jimple.infoflow.android.SetupApplication - ARSC file parsing took 0.019366709 seconds
+Using 'android/android-17/android.jar' as android.jar
+[main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
+    public static void dummyMainMethod()
+    {
+        int $i0;
+        de.ecspride.ApplicationLifecyle1 $r0;
+        de.ecspride.MainActivity $r1;
+        android.os.Bundle $r2;
+
+        $i0 = 0;
+        $r0 = new de.ecspride.ApplicationLifecyle1;
+        specialinvoke $r0.<de.ecspride.ApplicationLifecyle1: void <init>()>();
+        virtualinvoke $r0.<de.ecspride.ApplicationLifecyle1: void onCreate()>();
+
+     label0:
+        $r1 = new de.ecspride.MainActivity;
+        specialinvoke $r1.<de.ecspride.MainActivity: void <init>()>();
+        if $i0 == 0 goto label6;
+
+     label1:
+        $r2 = new android.os.Bundle;
+        specialinvoke $r2.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r1.<de.ecspride.MainActivity: void onCreate(android.os.Bundle)>($r2);
+        $r2 = null;
+
+     label2:
+        virtualinvoke $r1.<de.ecspride.MainActivity: void onResume()>();
+        if $i0 == 1 goto label3;
+
+        if $i0 == 2 goto label2;
+
+        if $i0 == 3 goto label1;
+
+     label3:
+        if $i0 == 4 goto label5;
+
+        if $i0 == 5 goto label4;
+
+        if $i0 == 6 goto label1;
+
+     label4:
+        if $i0 == 7 goto label2;
+
+     label5:
+        if $i0 == 8 goto label6;
+
+     label6:
+        if $i0 == 9 goto label6;
+
+        if $i0 == 10 goto label0;
+
+        return;
+    }
+
+Warning: java.lang.ref.Finalizer is a phantom class!
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+[Spark] Pointer Assignment Graph in 0.2 seconds.
+[Spark] Type masks in 0.0 seconds.
+[Spark] Pointer Graph simplified in 0.0 seconds.
+[Spark] Propagation in 4.1 seconds.
+[Spark] Solution found in 4.1 seconds.
+Callback analysis done.
+Found 0 layout controls in file res/layout/activity_application_lifecyle1.xml
+Found 0 layout controls in file res/layout/activity_main.xml
+Transforming dummyMainClass... 
+Transforming de.ecspride.ApplicationLifecyle1... 
+Transforming de.ecspride.MainActivity... 
+Using 'android/android-17/android.jar' as android.jar
+[main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
+    public static void dummyMainMethod()
+    {
+        int $i0;
+        de.ecspride.ApplicationLifecyle1 $r0;
+        de.ecspride.MainActivity $r1;
+        android.os.Bundle $r2;
+
+        $i0 = 0;
+        $r0 = new de.ecspride.ApplicationLifecyle1;
+        specialinvoke $r0.<de.ecspride.ApplicationLifecyle1: void <init>()>();
+
+     label0:
+        if $i0 == 0 goto label1;
+
+     label1:
+        if $i0 == 1 goto label0;
+
+        virtualinvoke $r0.<de.ecspride.ApplicationLifecyle1: void onCreate()>();
+
+     label2:
+        $r1 = new de.ecspride.MainActivity;
+        specialinvoke $r1.<de.ecspride.MainActivity: void <init>()>();
+        if $i0 == 2 goto label9;
+
+     label3:
+        $r2 = new android.os.Bundle;
+        specialinvoke $r2.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r1.<de.ecspride.MainActivity: void onCreate(android.os.Bundle)>($r2);
+        $r2 = null;
+
+     label4:
+        virtualinvoke $r1.<de.ecspride.MainActivity: void onResume()>();
+
+     label5:
+        if $i0 == 3 goto label5;
+
+        if $i0 == 4 goto label6;
+
+        if $i0 == 5 goto label4;
+
+        if $i0 == 6 goto label3;
+
+     label6:
+        if $i0 == 7 goto label8;
+
+        if $i0 == 8 goto label7;
+
+        if $i0 == 9 goto label3;
+
+     label7:
+        if $i0 == 10 goto label4;
+
+     label8:
+        if $i0 == 11 goto label9;
+
+     label9:
+        if $i0 == 12 goto label9;
+
+        if $i0 == 13 goto label2;
+
+        return;
+    }
+
+Warning: java.lang.ref.Finalizer is a phantom class!
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+[Spark] Pointer Assignment Graph in 0.0 seconds.
+[Spark] Type masks in 0.0 seconds.
+[Spark] Pointer Graph simplified in 0.0 seconds.
+[Spark] Propagation in 2.2 seconds.
+[Spark] Solution found in 2.2 seconds.
+Running incremental callback analysis for 2 components...
+Incremental callback analysis done.
+Transforming dummyMainClass... 
+Transforming de.ecspride.ApplicationLifecyle1... 
+Transforming de.ecspride.MainActivity... 
+Found 3 callback methods for 2 components
+Entry point calculation done.
+Created a SourceSinkManager with 127 sources, 61 sinks, and 3 callback methods.
+Using 'android/android-17/android.jar' as android.jar
+Warning: java.lang.ref.Finalizer is a phantom class!
+de.ecspride.ApplicationLifecyle1
+	<de.ecspride.ApplicationLifecyle1: void onCreate()>
+de.ecspride.MainActivity
+	<de.ecspride.MainActivity: void onResume()>
+	<de.ecspride.MainActivity: void onCreate(android.os.Bundle)>
+[main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
+    public static void dummyMainMethod()
+    {
+        int $i0;
+        de.ecspride.ApplicationLifecyle1 $r0;
+        de.ecspride.MainActivity $r1;
+        android.os.Bundle $r2;
+
+        $i0 = 0;
+        $r0 = new de.ecspride.ApplicationLifecyle1;
+        specialinvoke $r0.<de.ecspride.ApplicationLifecyle1: void <init>()>();
+
+     label0:
+        if $i0 == 0 goto label1;
+
+     label1:
+        if $i0 == 1 goto label0;
+
+        virtualinvoke $r0.<de.ecspride.ApplicationLifecyle1: void onCreate()>();
+
+     label2:
+        $r1 = new de.ecspride.MainActivity;
+        specialinvoke $r1.<de.ecspride.MainActivity: void <init>()>();
+        if $i0 == 2 goto label9;
+
+     label3:
+        $r2 = new android.os.Bundle;
+        specialinvoke $r2.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r1.<de.ecspride.MainActivity: void onCreate(android.os.Bundle)>($r2);
+        $r2 = null;
+
+     label4:
+        virtualinvoke $r1.<de.ecspride.MainActivity: void onResume()>();
+
+     label5:
+        if $i0 == 3 goto label5;
+
+        if $i0 == 4 goto label6;
+
+        if $i0 == 5 goto label4;
+
+        if $i0 == 6 goto label3;
+
+     label6:
+        if $i0 == 7 goto label8;
+
+        if $i0 == 8 goto label7;
+
+        if $i0 == 9 goto label3;
+
+     label7:
+        if $i0 == 10 goto label4;
+
+     label8:
+        if $i0 == 11 goto label9;
+
+     label9:
+        if $i0 == 12 goto label9;
+
+        if $i0 == 13 goto label2;
+
+        return;
+    }
+
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+Total methods: 40221
+Initially reachable methods: 3
+Classes with at least one reachable method: 3
+[Spark] Pointer Assignment Graph in 0.0 seconds.
+Total types: 5866
+[Spark] Type masks in 0.0 seconds.
+VarNodes: 14
+FieldRefNodes: 1
+AllocNodes: 7
+Cleaning up graph for merged nodes
+Done cleaning up graph for merged nodes
+[Spark] Pointer Graph simplified in 0.0 seconds.
+Worklist has 7 nodes.
+Now handling field references
+Worklist has 6 nodes.
+Now handling field references
+Worklist has 55 nodes.
+Now handling field references
+Worklist has 2 nodes.
+Now handling field references
+[Spark] Propagation in 1.4 seconds.
+[Spark] Solution found in 4.1 seconds.
+[Spark] Number of reachable methods: 484
+Total time to finish: 38.22
+=================================================
+# edges = 10
+=================================================
+
+elapsed time: 40.65s

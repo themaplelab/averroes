@@ -1,0 +1,30 @@
+...
+running Spark with Averroes for AndroidNonspecific_UnreachableCode
+Loading properties...
+Generating the call graph for AndroidNonspecific_UnreachableCode.apk
+droidbench/AndroidNonspecific_UnreachableCode.apk
+Using 'benchmarks-averroes/android/AndroidNonspecific_UnreachableCode-placeholder-lib.jar' as android.jar
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+Total methods: 3458
+Initially reachable methods: 126
+Classes with at least one reachable method: 126
+[Spark] Pointer Assignment Graph in 1.0 seconds.
+Total types: 666
+[Spark] Type masks in 0.0 seconds.
+VarNodes: 449
+FieldRefNodes: 2
+AllocNodes: 434
+Cleaning up graph for merged nodes
+Done cleaning up graph for merged nodes
+[Spark] Pointer Graph simplified in 0.0 seconds.
+Worklist has 434 nodes.
+Now handling field references
+[Spark] Propagation in 1.2 seconds.
+[Spark] Solution found in 1.5 seconds.
+[Spark] Number of reachable methods: 590
+Total time to finish: 5.75
+=================================================
+# edges = 7
+=================================================
+
+elapsed time: 8.09s

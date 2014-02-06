@@ -1,0 +1,431 @@
+...
+running Spark for Callbacks_MultiHandlers1
+Loading properties...
+Generating the call graph for an Android apk.
+[main] INFO soot.jimple.infoflow.android.SetupApplication - ARSC file parsing took 0.020168176 seconds
+Using 'android/android-17/android.jar' as android.jar
+[main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
+    public static void dummyMainMethod()
+    {
+        int $i0;
+        de.ecspride.MultiHandlers2 $r0;
+        android.os.Bundle $r1, $r3;
+        de.ecspride.MultiHandlers1 $r2;
+
+        $i0 = 0;
+
+     label0:
+        $r0 = new de.ecspride.MultiHandlers2;
+        specialinvoke $r0.<de.ecspride.MultiHandlers2: void <init>()>();
+        if $i0 == 0 goto label6;
+
+     label1:
+        $r1 = new android.os.Bundle;
+        specialinvoke $r1.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r0.<de.ecspride.MultiHandlers2: void onCreate(android.os.Bundle)>($r1);
+        $r1 = null;
+
+     label2:
+        virtualinvoke $r0.<de.ecspride.MultiHandlers2: void onResume()>();
+        if $i0 == 1 goto label3;
+
+        if $i0 == 2 goto label2;
+
+        if $i0 == 3 goto label1;
+
+     label3:
+        if $i0 == 4 goto label5;
+
+        if $i0 == 5 goto label4;
+
+        if $i0 == 6 goto label1;
+
+     label4:
+        if $i0 == 7 goto label2;
+
+     label5:
+        if $i0 == 8 goto label6;
+
+     label6:
+        $r2 = new de.ecspride.MultiHandlers1;
+        specialinvoke $r2.<de.ecspride.MultiHandlers1: void <init>()>();
+        if $i0 == 9 goto label12;
+
+     label7:
+        $r3 = new android.os.Bundle;
+        specialinvoke $r3.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r2.<de.ecspride.MultiHandlers1: void onCreate(android.os.Bundle)>($r3);
+        $r3 = null;
+
+     label8:
+        virtualinvoke $r2.<de.ecspride.MultiHandlers1: void onResume()>();
+        if $i0 == 10 goto label9;
+
+        if $i0 == 11 goto label8;
+
+        if $i0 == 12 goto label7;
+
+     label9:
+        if $i0 == 13 goto label11;
+
+        if $i0 == 14 goto label10;
+
+        if $i0 == 15 goto label7;
+
+     label10:
+        if $i0 == 16 goto label8;
+
+     label11:
+        if $i0 == 17 goto label12;
+
+     label12:
+        if $i0 == 18 goto label0;
+
+        return;
+    }
+
+Warning: java.lang.ref.Finalizer is a phantom class!
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+[Spark] Pointer Assignment Graph in 0.2 seconds.
+[Spark] Type masks in 0.0 seconds.
+[Spark] Pointer Graph simplified in 0.0 seconds.
+[Spark] Propagation in 4.4 seconds.
+[Spark] Solution found in 4.4 seconds.
+Callback analysis done.
+Warning: TextView is a phantom class!
+Warning: de.ecspride.TextView is a phantom class!
+Warning: android.view.TextView is a phantom class!
+Found 0 layout controls in file res/layout/activity_multi_handlers1.xml
+Found 0 layout controls in file res/layout/activity_multi_handlers2.xml
+Transforming dummyMainClass... 
+Transforming de.ecspride.MultiHandlers2... 
+Transforming de.ecspride.MultiHandlers1... 
+Using 'android/android-17/android.jar' as android.jar
+[main] WARN soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Ran into a constructor generation loop for class android.location.Location, substituting with null...
+[main] WARN soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Ran into a constructor generation loop for class android.location.Location, substituting with null...
+[main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
+    public static void dummyMainMethod()
+    {
+        int $i0;
+        de.ecspride.MultiHandlers2 $r0;
+        android.os.Bundle $r1, $r6;
+        de.ecspride.MyLocationListener1 $r2;
+        android.location.Location $r3, $r4, $r8, $r9;
+        de.ecspride.MultiHandlers1 $r5;
+        de.ecspride.MyLocationListener2 $r7;
+
+        $i0 = 0;
+
+     label0:
+        $r0 = new de.ecspride.MultiHandlers2;
+        specialinvoke $r0.<de.ecspride.MultiHandlers2: void <init>()>();
+        if $i0 == 0 goto label8;
+
+     label1:
+        $r1 = new android.os.Bundle;
+        specialinvoke $r1.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r0.<de.ecspride.MultiHandlers2: void onCreate(android.os.Bundle)>($r1);
+        $r1 = null;
+
+     label2:
+        virtualinvoke $r0.<de.ecspride.MultiHandlers2: void onResume()>();
+
+     label3:
+        $r2 = new de.ecspride.MyLocationListener1;
+        specialinvoke $r2.<de.ecspride.MyLocationListener1: void <init>(de.ecspride.IDataProvider)>($r0);
+        if $i0 == 1 goto label4;
+
+        $r3 = null;
+        $r4 = new android.location.Location;
+        specialinvoke $r4.<android.location.Location: void <init>(android.location.Location)>($r3);
+        virtualinvoke $r2.<de.ecspride.MyLocationListener1: void onLocationChanged(android.location.Location)>($r4);
+        $r4 = null;
+
+     label4:
+        if $i0 == 2 goto label3;
+
+        if $i0 == 3 goto label3;
+
+        if $i0 == 4 goto label5;
+
+        if $i0 == 5 goto label2;
+
+        if $i0 == 6 goto label1;
+
+     label5:
+        if $i0 == 7 goto label7;
+
+        if $i0 == 8 goto label6;
+
+        if $i0 == 9 goto label1;
+
+     label6:
+        if $i0 == 10 goto label2;
+
+     label7:
+        if $i0 == 11 goto label8;
+
+     label8:
+        $r5 = new de.ecspride.MultiHandlers1;
+        specialinvoke $r5.<de.ecspride.MultiHandlers1: void <init>()>();
+        if $i0 == 12 goto label16;
+
+     label9:
+        $r6 = new android.os.Bundle;
+        specialinvoke $r6.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r5.<de.ecspride.MultiHandlers1: void onCreate(android.os.Bundle)>($r6);
+        $r6 = null;
+
+     label10:
+        virtualinvoke $r5.<de.ecspride.MultiHandlers1: void onResume()>();
+
+     label11:
+        $r7 = new de.ecspride.MyLocationListener2;
+        specialinvoke $r7.<de.ecspride.MyLocationListener2: void <init>(de.ecspride.IDataProvider)>($r5);
+        if $i0 == 13 goto label12;
+
+        $r8 = null;
+        $r9 = new android.location.Location;
+        specialinvoke $r9.<android.location.Location: void <init>(android.location.Location)>($r8);
+        virtualinvoke $r7.<de.ecspride.MyLocationListener2: void onLocationChanged(android.location.Location)>($r9);
+        $r9 = null;
+
+     label12:
+        if $i0 == 14 goto label11;
+
+        if $i0 == 15 goto label11;
+
+        if $i0 == 16 goto label13;
+
+        if $i0 == 17 goto label10;
+
+        if $i0 == 18 goto label9;
+
+     label13:
+        if $i0 == 19 goto label15;
+
+        if $i0 == 20 goto label14;
+
+        if $i0 == 21 goto label9;
+
+     label14:
+        if $i0 == 22 goto label10;
+
+     label15:
+        if $i0 == 23 goto label16;
+
+     label16:
+        if $i0 == 24 goto label0;
+
+        return;
+    }
+
+Warning: java.lang.ref.Finalizer is a phantom class!
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+[Spark] Pointer Assignment Graph in 0.0 seconds.
+[Spark] Type masks in 0.0 seconds.
+[Spark] Pointer Graph simplified in 0.0 seconds.
+[Spark] Propagation in 2.2 seconds.
+[Spark] Solution found in 2.2 seconds.
+Running incremental callback analysis for 2 components...
+Incremental callback analysis done.
+Transforming dummyMainClass... 
+Transforming de.ecspride.MultiHandlers2... 
+Transforming de.ecspride.MultiHandlers1... 
+Found 6 callback methods for 2 components
+Entry point calculation done.
+Created a SourceSinkManager with 127 sources, 61 sinks, and 6 callback methods.
+Using 'android/android-17/android.jar' as android.jar
+Warning: java.lang.ref.Finalizer is a phantom class!
+de.ecspride.MultiHandlers2
+	<de.ecspride.MultiHandlers2: void onCreate(android.os.Bundle)>
+	<de.ecspride.MultiHandlers2: void onResume()>
+	<de.ecspride.MyLocationListener1: void onLocationChanged(android.location.Location)>
+de.ecspride.MultiHandlers1
+	<de.ecspride.MultiHandlers1: void onCreate(android.os.Bundle)>
+	<de.ecspride.MultiHandlers1: void onResume()>
+	<de.ecspride.MyLocationListener2: void onLocationChanged(android.location.Location)>
+[main] WARN soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Ran into a constructor generation loop for class android.location.Location, substituting with null...
+[main] WARN soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Cannot create valid constructor for de.ecspride.IDataProvider, because it is an interface and cannot substitute with subclass
+[main] WARN soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Ran into a constructor generation loop for class android.location.Location, substituting with null...
+[main] WARN soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Ran into a constructor generation loop for class android.location.Location, substituting with null...
+[main] WARN soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Ran into a constructor generation loop for class android.location.Location, substituting with null...
+[main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
+    public static void dummyMainMethod()
+    {
+        int $i0;
+        de.ecspride.MultiHandlers2 $r0;
+        android.os.Bundle $r1, $r9;
+        de.ecspride.MyLocationListener1 $r2, $r13;
+        android.location.Location $r3, $r4, $r6, $r7, $r11, $r12, $r14, $r15;
+        de.ecspride.MyLocationListener2 $r5, $r10;
+        de.ecspride.MultiHandlers1 $r8;
+
+        $i0 = 0;
+
+     label0:
+        $r0 = new de.ecspride.MultiHandlers2;
+        specialinvoke $r0.<de.ecspride.MultiHandlers2: void <init>()>();
+        if $i0 == 0 goto label8;
+
+     label1:
+        $r1 = new android.os.Bundle;
+        specialinvoke $r1.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r0.<de.ecspride.MultiHandlers2: void onCreate(android.os.Bundle)>($r1);
+        $r1 = null;
+
+     label2:
+        virtualinvoke $r0.<de.ecspride.MultiHandlers2: void onResume()>();
+
+     label3:
+        $r2 = new de.ecspride.MyLocationListener1;
+        specialinvoke $r2.<de.ecspride.MyLocationListener1: void <init>(de.ecspride.IDataProvider)>($r0);
+        if $i0 == 1 goto label4;
+
+        $r3 = null;
+        $r4 = new android.location.Location;
+        specialinvoke $r4.<android.location.Location: void <init>(android.location.Location)>($r3);
+        virtualinvoke $r2.<de.ecspride.MyLocationListener1: void onLocationChanged(android.location.Location)>($r4);
+        $r4 = null;
+
+     label4:
+        if $i0 == 2 goto label3;
+
+        if $i0 == 3 goto label3;
+
+        if $i0 == 4 goto label5;
+
+        if $i0 == 5 goto label2;
+
+        if $i0 == 6 goto label1;
+
+     label5:
+        if $i0 == 7 goto label7;
+
+        if $i0 == 8 goto label6;
+
+        if $i0 == 9 goto label1;
+
+     label6:
+        if $i0 == 10 goto label2;
+
+     label7:
+        if $i0 == 11 goto label8;
+
+     label8:
+        $r5 = new de.ecspride.MyLocationListener2;
+        specialinvoke $r5.<de.ecspride.MyLocationListener2: void <init>(de.ecspride.IDataProvider)>(null);
+        if $i0 == 12 goto label11;
+
+     label9:
+        if $i0 == 13 goto label10;
+
+        $r6 = null;
+        $r7 = new android.location.Location;
+        specialinvoke $r7.<android.location.Location: void <init>(android.location.Location)>($r6);
+        virtualinvoke $r5.<de.ecspride.MyLocationListener2: void onLocationChanged(android.location.Location)>($r7);
+        $r7 = null;
+
+     label10:
+        if $i0 == 14 goto label9;
+
+     label11:
+        $r8 = new de.ecspride.MultiHandlers1;
+        specialinvoke $r8.<de.ecspride.MultiHandlers1: void <init>()>();
+        if $i0 == 15 goto label19;
+
+     label12:
+        $r9 = new android.os.Bundle;
+        specialinvoke $r9.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r8.<de.ecspride.MultiHandlers1: void onCreate(android.os.Bundle)>($r9);
+        $r9 = null;
+
+     label13:
+        virtualinvoke $r8.<de.ecspride.MultiHandlers1: void onResume()>();
+
+     label14:
+        $r10 = new de.ecspride.MyLocationListener2;
+        specialinvoke $r10.<de.ecspride.MyLocationListener2: void <init>(de.ecspride.IDataProvider)>($r8);
+        if $i0 == 16 goto label15;
+
+        $r11 = null;
+        $r12 = new android.location.Location;
+        specialinvoke $r12.<android.location.Location: void <init>(android.location.Location)>($r11);
+        virtualinvoke $r10.<de.ecspride.MyLocationListener2: void onLocationChanged(android.location.Location)>($r12);
+        $r12 = null;
+
+     label15:
+        if $i0 == 17 goto label14;
+
+        if $i0 == 18 goto label14;
+
+        if $i0 == 19 goto label16;
+
+        if $i0 == 20 goto label13;
+
+        if $i0 == 21 goto label12;
+
+     label16:
+        if $i0 == 22 goto label18;
+
+        if $i0 == 23 goto label17;
+
+        if $i0 == 24 goto label12;
+
+     label17:
+        if $i0 == 25 goto label13;
+
+     label18:
+        if $i0 == 26 goto label19;
+
+     label19:
+        $r13 = new de.ecspride.MyLocationListener1;
+        specialinvoke $r13.<de.ecspride.MyLocationListener1: void <init>(de.ecspride.IDataProvider)>(null);
+        if $i0 == 27 goto label22;
+
+     label20:
+        if $i0 == 28 goto label21;
+
+        $r14 = null;
+        $r15 = new android.location.Location;
+        specialinvoke $r15.<android.location.Location: void <init>(android.location.Location)>($r14);
+        virtualinvoke $r13.<de.ecspride.MyLocationListener1: void onLocationChanged(android.location.Location)>($r15);
+        $r15 = null;
+
+     label21:
+        if $i0 == 29 goto label20;
+
+     label22:
+        if $i0 == 30 goto label0;
+
+        return;
+    }
+
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+Total methods: 39586
+Initially reachable methods: 4
+Classes with at least one reachable method: 4
+[Spark] Pointer Assignment Graph in 0.0 seconds.
+Total types: 5786
+[Spark] Type masks in 0.0 seconds.
+VarNodes: 29
+FieldRefNodes: 1
+AllocNodes: 17
+Cleaning up graph for merged nodes
+Done cleaning up graph for merged nodes
+[Spark] Pointer Graph simplified in 0.0 seconds.
+Worklist has 17 nodes.
+Now handling field references
+Worklist has 65 nodes.
+Now handling field references
+Worklist has 2 nodes.
+Now handling field references
+[Spark] Propagation in 1.4 seconds.
+[Spark] Solution found in 4.0 seconds.
+[Spark] Number of reachable methods: 494
+Total time to finish: 38.38
+=================================================
+# edges = 23
+=================================================
+
+elapsed time: 40.83s

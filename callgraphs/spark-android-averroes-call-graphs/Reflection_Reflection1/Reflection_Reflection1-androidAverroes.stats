@@ -1,0 +1,30 @@
+...
+running Spark with Averroes for Reflection_Reflection1
+Loading properties...
+Generating the call graph for Reflection_Reflection1.apk
+droidbench/Reflection_Reflection1.apk
+Using 'benchmarks-averroes/android/Reflection_Reflection1-placeholder-lib.jar' as android.jar
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+Total methods: 3895
+Initially reachable methods: 135
+Classes with at least one reachable method: 135
+[Spark] Pointer Assignment Graph in 1.1 seconds.
+Total types: 738
+[Spark] Type masks in 0.0 seconds.
+VarNodes: 506
+FieldRefNodes: 3
+AllocNodes: 488
+Cleaning up graph for merged nodes
+Done cleaning up graph for merged nodes
+[Spark] Pointer Graph simplified in 0.0 seconds.
+Worklist has 489 nodes.
+Now handling field references
+[Spark] Propagation in 1.6 seconds.
+[Spark] Solution found in 2.0 seconds.
+[Spark] Number of reachable methods: 664
+Total time to finish: 6.37
+=================================================
+# edges = 12
+=================================================
+
+elapsed time: 8.62s
