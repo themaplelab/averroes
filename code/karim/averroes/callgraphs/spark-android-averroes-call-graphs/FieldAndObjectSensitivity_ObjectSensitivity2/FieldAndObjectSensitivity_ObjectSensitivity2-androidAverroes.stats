@@ -1,0 +1,30 @@
+...
+running Spark with Averroes for FieldAndObjectSensitivity_ObjectSensitivity2
+Loading properties...
+Generating the call graph for FieldAndObjectSensitivity_ObjectSensitivity2.apk
+droidbench/FieldAndObjectSensitivity_ObjectSensitivity2.apk
+Using 'benchmarks-averroes/android/FieldAndObjectSensitivity_ObjectSensitivity2-placeholder-lib.jar' as android.jar
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+Total methods: 3460
+Initially reachable methods: 127
+Classes with at least one reachable method: 127
+[Spark] Pointer Assignment Graph in 1.0 seconds.
+Total types: 668
+[Spark] Type masks in 0.0 seconds.
+VarNodes: 451
+FieldRefNodes: 2
+AllocNodes: 436
+Cleaning up graph for merged nodes
+Done cleaning up graph for merged nodes
+[Spark] Pointer Graph simplified in 0.0 seconds.
+Worklist has 436 nodes.
+Now handling field references
+[Spark] Propagation in 1.2 seconds.
+[Spark] Solution found in 1.5 seconds.
+[Spark] Number of reachable methods: 597
+Total time to finish: 5.76
+=================================================
+# edges = 10
+=================================================
+
+elapsed time: 7.97s

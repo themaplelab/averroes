@@ -1,0 +1,211 @@
+...
+running Spark for GeneralJava_Exceptions4
+Loading properties...
+Generating the call graph for an Android apk.
+[main] INFO soot.jimple.infoflow.android.SetupApplication - ARSC file parsing took 0.019980195 seconds
+Using 'android/android-17/android.jar' as android.jar
+[main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
+    public static void dummyMainMethod()
+    {
+        int $i0;
+        de.ecspride.Exceptions4 $r0;
+        android.os.Bundle $r1;
+
+        $i0 = 0;
+
+     label0:
+        $r0 = new de.ecspride.Exceptions4;
+        specialinvoke $r0.<de.ecspride.Exceptions4: void <init>()>();
+        if $i0 == 0 goto label6;
+
+     label1:
+        $r1 = new android.os.Bundle;
+        specialinvoke $r1.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r0.<de.ecspride.Exceptions4: void onCreate(android.os.Bundle)>($r1);
+        $r1 = null;
+
+     label2:
+        if $i0 == 1 goto label3;
+
+        if $i0 == 2 goto label2;
+
+        if $i0 == 3 goto label1;
+
+     label3:
+        if $i0 == 4 goto label5;
+
+        if $i0 == 5 goto label4;
+
+        if $i0 == 6 goto label1;
+
+     label4:
+        if $i0 == 7 goto label2;
+
+     label5:
+        if $i0 == 8 goto label6;
+
+     label6:
+        if $i0 == 9 goto label0;
+
+        return;
+    }
+
+Warning: java.lang.ref.Finalizer is a phantom class!
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+[Spark] Pointer Assignment Graph in 0.2 seconds.
+[Spark] Type masks in 0.0 seconds.
+[Spark] Pointer Graph simplified in 0.0 seconds.
+[Spark] Propagation in 4.1 seconds.
+[Spark] Solution found in 4.2 seconds.
+Callback analysis done.
+Warning: TextView is a phantom class!
+Warning: de.ecspride.TextView is a phantom class!
+Warning: android.view.TextView is a phantom class!
+Found 0 layout controls in file res/layout/activity_exceptions4.xml
+Transforming dummyMainClass... 
+Transforming de.ecspride.Exceptions4... 
+Using 'android/android-17/android.jar' as android.jar
+[main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
+    public static void dummyMainMethod()
+    {
+        int $i0;
+        de.ecspride.Exceptions4 $r0;
+        android.os.Bundle $r1;
+
+        $i0 = 0;
+
+     label0:
+        $r0 = new de.ecspride.Exceptions4;
+        specialinvoke $r0.<de.ecspride.Exceptions4: void <init>()>();
+        if $i0 == 0 goto label6;
+
+     label1:
+        $r1 = new android.os.Bundle;
+        specialinvoke $r1.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r0.<de.ecspride.Exceptions4: void onCreate(android.os.Bundle)>($r1);
+        $r1 = null;
+
+     label2:
+        if $i0 == 1 goto label2;
+
+        if $i0 == 2 goto label3;
+
+        if $i0 == 3 goto label2;
+
+        if $i0 == 4 goto label1;
+
+     label3:
+        if $i0 == 5 goto label5;
+
+        if $i0 == 6 goto label4;
+
+        if $i0 == 7 goto label1;
+
+     label4:
+        if $i0 == 8 goto label2;
+
+     label5:
+        if $i0 == 9 goto label6;
+
+     label6:
+        if $i0 == 10 goto label0;
+
+        return;
+    }
+
+Warning: java.lang.ref.Finalizer is a phantom class!
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+[Spark] Pointer Assignment Graph in 0.0 seconds.
+[Spark] Type masks in 0.0 seconds.
+[Spark] Pointer Graph simplified in 0.0 seconds.
+[Spark] Propagation in 2.3 seconds.
+[Spark] Solution found in 2.3 seconds.
+Running incremental callback analysis for 1 components...
+Incremental callback analysis done.
+Transforming dummyMainClass... 
+Transforming de.ecspride.Exceptions4... 
+Found 1 callback methods for 1 components
+Entry point calculation done.
+Created a SourceSinkManager with 127 sources, 61 sinks, and 1 callback methods.
+Using 'android/android-17/android.jar' as android.jar
+Warning: java.lang.ref.Finalizer is a phantom class!
+de.ecspride.Exceptions4
+	<de.ecspride.Exceptions4: void onCreate(android.os.Bundle)>
+[main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
+    public static void dummyMainMethod()
+    {
+        int $i0;
+        de.ecspride.Exceptions4 $r0;
+        android.os.Bundle $r1;
+
+        $i0 = 0;
+
+     label0:
+        $r0 = new de.ecspride.Exceptions4;
+        specialinvoke $r0.<de.ecspride.Exceptions4: void <init>()>();
+        if $i0 == 0 goto label6;
+
+     label1:
+        $r1 = new android.os.Bundle;
+        specialinvoke $r1.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r0.<de.ecspride.Exceptions4: void onCreate(android.os.Bundle)>($r1);
+        $r1 = null;
+
+     label2:
+        if $i0 == 1 goto label2;
+
+        if $i0 == 2 goto label3;
+
+        if $i0 == 3 goto label2;
+
+        if $i0 == 4 goto label1;
+
+     label3:
+        if $i0 == 5 goto label5;
+
+        if $i0 == 6 goto label4;
+
+        if $i0 == 7 goto label1;
+
+     label4:
+        if $i0 == 8 goto label2;
+
+     label5:
+        if $i0 == 9 goto label6;
+
+     label6:
+        if $i0 == 10 goto label0;
+
+        return;
+    }
+
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+Total methods: 40606
+Initially reachable methods: 3
+Classes with at least one reachable method: 3
+[Spark] Pointer Assignment Graph in 0.0 seconds.
+Total types: 5926
+[Spark] Type masks in 0.0 seconds.
+VarNodes: 13
+FieldRefNodes: 1
+AllocNodes: 6
+Cleaning up graph for merged nodes
+Done cleaning up graph for merged nodes
+[Spark] Pointer Graph simplified in 0.0 seconds.
+Worklist has 6 nodes.
+Now handling field references
+Worklist has 8 nodes.
+Now handling field references
+Worklist has 55 nodes.
+Now handling field references
+Worklist has 2 nodes.
+Now handling field references
+[Spark] Propagation in 1.4 seconds.
+[Spark] Solution found in 3.9 seconds.
+[Spark] Number of reachable methods: 491
+Total time to finish: 38.55
+=================================================
+# edges = 4
+=================================================
+
+elapsed time: 40.98s

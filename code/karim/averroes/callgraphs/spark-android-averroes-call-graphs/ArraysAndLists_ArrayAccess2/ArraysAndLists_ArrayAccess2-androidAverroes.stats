@@ -1,0 +1,32 @@
+...
+running Spark with Averroes for ArraysAndLists_ArrayAccess2
+Loading properties...
+Generating the call graph for ArraysAndLists_ArrayAccess2.apk
+droidbench/ArraysAndLists_ArrayAccess2.apk
+Using 'benchmarks-averroes/android/ArraysAndLists_ArrayAccess2-placeholder-lib.jar' as android.jar
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+Total methods: 3460
+Initially reachable methods: 127
+Classes with at least one reachable method: 127
+[Spark] Pointer Assignment Graph in 1.1 seconds.
+Total types: 667
+[Spark] Type masks in 0.0 seconds.
+VarNodes: 450
+FieldRefNodes: 2
+AllocNodes: 435
+Cleaning up graph for merged nodes
+Done cleaning up graph for merged nodes
+[Spark] Pointer Graph simplified in 0.0 seconds.
+Worklist has 435 nodes.
+Now handling field references
+Worklist has 1 nodes.
+Now handling field references
+[Spark] Propagation in 1.2 seconds.
+[Spark] Solution found in 1.6 seconds.
+[Spark] Number of reachable methods: 597
+Total time to finish: 5.74
+=================================================
+# edges = 8
+=================================================
+
+elapsed time: 7.96s

@@ -4,6 +4,8 @@ set -e
 
 benchmark=$1
 props=averroes.properties
+program=$(basename $benchmark)
+apk=droidbench/${benchmark}.apk
 
 function timing()
 {
@@ -13,11 +15,8 @@ function timing()
 
 date
 
-mkdir -p benchmarks-averroes/android
-
 echo "running ${benchmark}"
-program=$(basename $benchmark)
-apk=droidbench/${benchmark}.apk
+mkdir -p benchmarks-averroes/android
   
 # 1. create the averroes properties file
 touch ${props}

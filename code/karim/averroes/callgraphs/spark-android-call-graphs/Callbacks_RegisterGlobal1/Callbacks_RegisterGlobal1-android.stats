@@ -1,0 +1,478 @@
+...
+running Spark for Callbacks_RegisterGlobal1
+Loading properties...
+Generating the call graph for an Android apk.
+[main] INFO soot.jimple.infoflow.android.SetupApplication - ARSC file parsing took 0.020139781 seconds
+Using 'android/android-17/android.jar' as android.jar
+[main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
+    public static void dummyMainMethod()
+    {
+        int $i0;
+        de.ecspride.MyApplication $r0;
+        de.ecspride.MainActivity $r1;
+        android.os.Bundle $r2, $r3, $r4, $r5;
+
+        $i0 = 0;
+        $r0 = new de.ecspride.MyApplication;
+        specialinvoke $r0.<de.ecspride.MyApplication: void <init>()>();
+        virtualinvoke $r0.<de.ecspride.MyApplication: void onCreate()>();
+
+     label0:
+        $r1 = new de.ecspride.MainActivity;
+        specialinvoke $r1.<de.ecspride.MainActivity: void <init>()>();
+        if $i0 == 0 goto label7;
+
+     label1:
+        $r2 = new android.os.Bundle;
+        specialinvoke $r2.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r1.<de.ecspride.MainActivity: void onCreate(android.os.Bundle)>($r2);
+        $r2 = null;
+
+     label2:
+        virtualinvoke $r1.<de.ecspride.MainActivity: void onStart()>();
+        $r3 = new android.os.Bundle;
+        specialinvoke $r3.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r1.<de.ecspride.MainActivity: void onRestoreInstanceState(android.os.Bundle)>($r3);
+        $r3 = null;
+        $r4 = new android.os.Bundle;
+        specialinvoke $r4.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r1.<de.ecspride.MainActivity: void onPostCreate(android.os.Bundle)>($r4);
+        $r4 = null;
+
+     label3:
+        virtualinvoke $r1.<de.ecspride.MainActivity: void onPause()>();
+        $r5 = new android.os.Bundle;
+        specialinvoke $r5.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r1.<de.ecspride.MainActivity: void onSaveInstanceState(android.os.Bundle)>($r5);
+        $r5 = null;
+        if $i0 == 1 goto label4;
+
+        if $i0 == 2 goto label3;
+
+        if $i0 == 3 goto label1;
+
+     label4:
+        if $i0 == 4 goto label6;
+
+        if $i0 == 5 goto label5;
+
+        if $i0 == 6 goto label1;
+
+     label5:
+        if $i0 == 7 goto label2;
+
+     label6:
+        if $i0 == 8 goto label7;
+
+     label7:
+        if $i0 == 9 goto label7;
+
+        if $i0 == 10 goto label0;
+
+        virtualinvoke $r0.<de.ecspride.MyApplication: void onTerminate()>();
+        return;
+    }
+
+Warning: java.lang.ref.Finalizer is a phantom class!
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+[Spark] Pointer Assignment Graph in 0.3 seconds.
+[Spark] Type masks in 0.0 seconds.
+[Spark] Pointer Graph simplified in 0.0 seconds.
+[Spark] Propagation in 4.7 seconds.
+[Spark] Solution found in 4.7 seconds.
+Callback analysis done.
+Warning: TextView is a phantom class!
+Warning: de.ecspride.TextView is a phantom class!
+Warning: android.view.TextView is a phantom class!
+Found 0 layout controls in file res/layout/activity_main.xml
+Transforming dummyMainClass... 
+Transforming de.ecspride.MyApplication... 
+Transforming de.ecspride.MainActivity... 
+Using 'android/android-17/android.jar' as android.jar
+[main] WARN soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Cannot create valid constructor for android.view.Menu, because it is an interface and cannot substitute with subclass
+[main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
+    public static void dummyMainMethod()
+    {
+        int $i0;
+        de.ecspride.MyApplication $r0;
+        de.ecspride.MyApplication$ApplicationCallbacks $r1;
+        de.ecspride.MainActivity $r2;
+        android.os.Bundle $r3, $r4, $r5, $r6, $r7;
+        boolean $z0;
+
+        $i0 = 0;
+        $r0 = new de.ecspride.MyApplication;
+        specialinvoke $r0.<de.ecspride.MyApplication: void <init>()>();
+
+     label0:
+        if $i0 == 0 goto label1;
+
+     label1:
+        if $i0 == 1 goto label2;
+
+        $r1 = new de.ecspride.MyApplication$ApplicationCallbacks;
+        specialinvoke $r1.<de.ecspride.MyApplication$ApplicationCallbacks: void <init>(de.ecspride.MyApplication)>($r0);
+
+     label2:
+        if $i0 == 2 goto label3;
+
+     label3:
+        if $i0 == 3 goto label4;
+
+     label4:
+        if $i0 == 4 goto label5;
+
+     label5:
+        if $i0 == 5 goto label0;
+
+        virtualinvoke $r0.<de.ecspride.MyApplication: void onCreate()>();
+
+     label6:
+        $r2 = new de.ecspride.MainActivity;
+        specialinvoke $r2.<de.ecspride.MainActivity: void <init>()>();
+        if $i0 == 6 goto label22;
+
+     label7:
+        $r3 = new android.os.Bundle;
+        specialinvoke $r3.<android.os.Bundle: void <init>()>();
+
+     label8:
+        virtualinvoke $r2.<de.ecspride.MainActivity: void onCreate(android.os.Bundle)>($r3);
+        $r3 = null;
+
+     label9:
+        if $i0 == 7 goto label10;
+
+        $r4 = new android.os.Bundle;
+        specialinvoke $r4.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r1.<de.ecspride.MyApplication$ApplicationCallbacks: void onActivityCreated(android.app.Activity,android.os.Bundle)>($r2, $r4);
+        $r2 = null;
+        $r4 = null;
+
+     label10:
+        if $i0 == 8 goto label9;
+
+        if $i0 == 9 goto label8;
+
+     label11:
+        virtualinvoke $r2.<de.ecspride.MainActivity: void onStart()>();
+
+     label12:
+        if $i0 == 10 goto label13;
+
+        virtualinvoke $r1.<de.ecspride.MyApplication$ApplicationCallbacks: void onActivityStarted(android.app.Activity)>($r2);
+        $r2 = null;
+
+     label13:
+        if $i0 == 11 goto label12;
+
+        if $i0 == 12 goto label11;
+
+        $r5 = new android.os.Bundle;
+        specialinvoke $r5.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r2.<de.ecspride.MainActivity: void onRestoreInstanceState(android.os.Bundle)>($r5);
+        $r5 = null;
+        $r6 = new android.os.Bundle;
+        specialinvoke $r6.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r2.<de.ecspride.MainActivity: void onPostCreate(android.os.Bundle)>($r6);
+        $r6 = null;
+
+     label14:
+        if $i0 == 13 goto label15;
+
+        $z0 = virtualinvoke $r2.<de.ecspride.MainActivity: boolean onCreateOptionsMenu(android.view.Menu)>(null);
+
+     label15:
+        if $i0 == 14 goto label14;
+
+        if $i0 == 15 goto label14;
+
+     label16:
+        virtualinvoke $r2.<de.ecspride.MainActivity: void onPause()>();
+
+     label17:
+        if $i0 == 16 goto label18;
+
+        virtualinvoke $r1.<de.ecspride.MyApplication$ApplicationCallbacks: void onActivityPaused(android.app.Activity)>($r2);
+        $r2 = null;
+
+     label18:
+        if $i0 == 17 goto label17;
+
+        if $i0 == 18 goto label16;
+
+        $r7 = new android.os.Bundle;
+        specialinvoke $r7.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r2.<de.ecspride.MainActivity: void onSaveInstanceState(android.os.Bundle)>($r7);
+        $r7 = null;
+        if $i0 == 19 goto label19;
+
+        if $i0 == 20 goto label14;
+
+        if $i0 == 21 goto label7;
+
+     label19:
+        if $i0 == 22 goto label21;
+
+        if $i0 == 23 goto label20;
+
+        if $i0 == 24 goto label7;
+
+     label20:
+        if $i0 == 25 goto label11;
+
+     label21:
+        if $i0 == 26 goto label22;
+
+     label22:
+        if $i0 == 27 goto label22;
+
+        if $i0 == 28 goto label6;
+
+        virtualinvoke $r0.<de.ecspride.MyApplication: void onTerminate()>();
+        return;
+    }
+
+Warning: java.lang.ref.Finalizer is a phantom class!
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+[Spark] Pointer Assignment Graph in 0.0 seconds.
+[Spark] Type masks in 0.0 seconds.
+[Spark] Pointer Graph simplified in 0.0 seconds.
+[Spark] Propagation in 2.6 seconds.
+[Spark] Solution found in 2.6 seconds.
+Running incremental callback analysis for 2 components...
+Incremental callback analysis done.
+Transforming dummyMainClass... 
+Transforming de.ecspride.MyApplication... 
+Transforming de.ecspride.MainActivity... 
+Found 12 callback methods for 2 components
+Entry point calculation done.
+Created a SourceSinkManager with 127 sources, 61 sinks, and 12 callback methods.
+Using 'android/android-17/android.jar' as android.jar
+Warning: java.lang.ref.Finalizer is a phantom class!
+de.ecspride.MyApplication
+	<de.ecspride.MyApplication: void onCreate()>
+	<de.ecspride.MyApplication$ApplicationCallbacks: void onActivityCreated(android.app.Activity,android.os.Bundle)>
+	<de.ecspride.MyApplication: void onTerminate()>
+	<de.ecspride.MyApplication$ApplicationCallbacks: void onActivityStarted(android.app.Activity)>
+	<de.ecspride.MyApplication$ApplicationCallbacks: void onActivityPaused(android.app.Activity)>
+de.ecspride.MainActivity
+	<de.ecspride.MainActivity: boolean onCreateOptionsMenu(android.view.Menu)>
+	<de.ecspride.MainActivity: void onStart()>
+	<de.ecspride.MainActivity: void onRestoreInstanceState(android.os.Bundle)>
+	<de.ecspride.MainActivity: void onPostCreate(android.os.Bundle)>
+	<de.ecspride.MainActivity: void onPause()>
+	<de.ecspride.MainActivity: void onSaveInstanceState(android.os.Bundle)>
+	<de.ecspride.MainActivity: void onCreate(android.os.Bundle)>
+[main] WARN soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Cannot create valid constructor for android.view.Menu, because it is an interface and cannot substitute with subclass
+[main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
+    public static void dummyMainMethod()
+    {
+        int $i0;
+        de.ecspride.MyApplication $r0;
+        de.ecspride.MyApplication$ApplicationCallbacks $r1;
+        android.app.Activity $r2, $r3, $r4;
+        android.os.Bundle $r5, $r7, $r8, $r9, $r10, $r11;
+        de.ecspride.MainActivity $r6;
+        boolean $z0;
+
+        $i0 = 0;
+        $r0 = new de.ecspride.MyApplication;
+        specialinvoke $r0.<de.ecspride.MyApplication: void <init>()>();
+
+     label0:
+        if $i0 == 0 goto label1;
+
+     label1:
+        if $i0 == 1 goto label2;
+
+        $r1 = new de.ecspride.MyApplication$ApplicationCallbacks;
+        specialinvoke $r1.<de.ecspride.MyApplication$ApplicationCallbacks: void <init>(de.ecspride.MyApplication)>($r0);
+
+     label2:
+        if $i0 == 2 goto label3;
+
+     label3:
+        if $i0 == 3 goto label4;
+
+     label4:
+        if $i0 == 4 goto label5;
+
+     label5:
+        if $i0 == 5 goto label0;
+
+        virtualinvoke $r0.<de.ecspride.MyApplication: void onCreate()>();
+
+     label6:
+        if $i0 == 6 goto label11;
+
+     label7:
+        if $i0 == 7 goto label8;
+
+        $r2 = new android.app.Activity;
+        specialinvoke $r2.<android.app.Activity: void <init>()>();
+        virtualinvoke $r1.<de.ecspride.MyApplication$ApplicationCallbacks: void onActivityStarted(android.app.Activity)>($r2);
+        $r2 = null;
+
+     label8:
+        if $i0 == 8 goto label7;
+
+        if $i0 == 9 goto label9;
+
+        $r3 = new android.app.Activity;
+        specialinvoke $r3.<android.app.Activity: void <init>()>();
+        virtualinvoke $r1.<de.ecspride.MyApplication$ApplicationCallbacks: void onActivityPaused(android.app.Activity)>($r3);
+        $r3 = null;
+
+     label9:
+        if $i0 == 10 goto label7;
+
+        if $i0 == 11 goto label10;
+
+        $r4 = new android.app.Activity;
+        specialinvoke $r4.<android.app.Activity: void <init>()>();
+        $r5 = new android.os.Bundle;
+        specialinvoke $r5.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r1.<de.ecspride.MyApplication$ApplicationCallbacks: void onActivityCreated(android.app.Activity,android.os.Bundle)>($r4, $r5);
+        $r4 = null;
+        $r5 = null;
+
+     label10:
+        if $i0 == 12 goto label7;
+
+     label11:
+        $r6 = new de.ecspride.MainActivity;
+        specialinvoke $r6.<de.ecspride.MainActivity: void <init>()>();
+        if $i0 == 13 goto label27;
+
+     label12:
+        $r7 = new android.os.Bundle;
+        specialinvoke $r7.<android.os.Bundle: void <init>()>();
+
+     label13:
+        virtualinvoke $r6.<de.ecspride.MainActivity: void onCreate(android.os.Bundle)>($r7);
+        $r7 = null;
+
+     label14:
+        if $i0 == 14 goto label15;
+
+        $r8 = new android.os.Bundle;
+        specialinvoke $r8.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r1.<de.ecspride.MyApplication$ApplicationCallbacks: void onActivityCreated(android.app.Activity,android.os.Bundle)>($r6, $r8);
+        $r6 = null;
+        $r8 = null;
+
+     label15:
+        if $i0 == 15 goto label14;
+
+        if $i0 == 16 goto label13;
+
+     label16:
+        virtualinvoke $r6.<de.ecspride.MainActivity: void onStart()>();
+
+     label17:
+        if $i0 == 17 goto label18;
+
+        virtualinvoke $r1.<de.ecspride.MyApplication$ApplicationCallbacks: void onActivityStarted(android.app.Activity)>($r6);
+        $r6 = null;
+
+     label18:
+        if $i0 == 18 goto label17;
+
+        if $i0 == 19 goto label16;
+
+        $r9 = new android.os.Bundle;
+        specialinvoke $r9.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r6.<de.ecspride.MainActivity: void onRestoreInstanceState(android.os.Bundle)>($r9);
+        $r9 = null;
+        $r10 = new android.os.Bundle;
+        specialinvoke $r10.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r6.<de.ecspride.MainActivity: void onPostCreate(android.os.Bundle)>($r10);
+        $r10 = null;
+
+     label19:
+        if $i0 == 20 goto label20;
+
+        $z0 = virtualinvoke $r6.<de.ecspride.MainActivity: boolean onCreateOptionsMenu(android.view.Menu)>(null);
+
+     label20:
+        if $i0 == 21 goto label19;
+
+        if $i0 == 22 goto label19;
+
+     label21:
+        virtualinvoke $r6.<de.ecspride.MainActivity: void onPause()>();
+
+     label22:
+        if $i0 == 23 goto label23;
+
+        virtualinvoke $r1.<de.ecspride.MyApplication$ApplicationCallbacks: void onActivityPaused(android.app.Activity)>($r6);
+        $r6 = null;
+
+     label23:
+        if $i0 == 24 goto label22;
+
+        if $i0 == 25 goto label21;
+
+        $r11 = new android.os.Bundle;
+        specialinvoke $r11.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r6.<de.ecspride.MainActivity: void onSaveInstanceState(android.os.Bundle)>($r11);
+        $r11 = null;
+        if $i0 == 26 goto label24;
+
+        if $i0 == 27 goto label19;
+
+        if $i0 == 28 goto label12;
+
+     label24:
+        if $i0 == 29 goto label26;
+
+        if $i0 == 30 goto label25;
+
+        if $i0 == 31 goto label12;
+
+     label25:
+        if $i0 == 32 goto label16;
+
+     label26:
+        if $i0 == 33 goto label27;
+
+     label27:
+        if $i0 == 34 goto label27;
+
+        if $i0 == 35 goto label6;
+
+        virtualinvoke $r0.<de.ecspride.MyApplication: void onTerminate()>();
+        return;
+    }
+
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+Total methods: 40623
+Initially reachable methods: 3
+Classes with at least one reachable method: 3
+[Spark] Pointer Assignment Graph in 0.0 seconds.
+Total types: 5928
+[Spark] Type masks in 0.0 seconds.
+VarNodes: 23
+FieldRefNodes: 1
+AllocNodes: 16
+Cleaning up graph for merged nodes
+Done cleaning up graph for merged nodes
+[Spark] Pointer Graph simplified in 0.0 seconds.
+Worklist has 16 nodes.
+Now handling field references
+Worklist has 28 nodes.
+Now handling field references
+Worklist has 70 nodes.
+Now handling field references
+Worklist has 2 nodes.
+Now handling field references
+[Spark] Propagation in 1.8 seconds.
+[Spark] Solution found in 4.4 seconds.
+[Spark] Number of reachable methods: 586
+Total time to finish: 39.52
+=================================================
+# edges = 31
+=================================================
+
+elapsed time: 41.93s

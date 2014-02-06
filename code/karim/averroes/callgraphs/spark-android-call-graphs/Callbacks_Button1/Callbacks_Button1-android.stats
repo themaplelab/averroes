@@ -1,0 +1,236 @@
+...
+running Spark for Callbacks_Button1
+Loading properties...
+Generating the call graph for an Android apk.
+[main] INFO soot.jimple.infoflow.android.SetupApplication - ARSC file parsing took 0.019348579 seconds
+Using 'android/android-17/android.jar' as android.jar
+[main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
+    public static void dummyMainMethod()
+    {
+        int $i0;
+        de.ecspride.Button1 $r0;
+        android.os.Bundle $r1;
+
+        $i0 = 0;
+
+     label0:
+        $r0 = new de.ecspride.Button1;
+        specialinvoke $r0.<de.ecspride.Button1: void <init>()>();
+        if $i0 == 0 goto label6;
+
+     label1:
+        $r1 = new android.os.Bundle;
+        specialinvoke $r1.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r0.<de.ecspride.Button1: void onCreate(android.os.Bundle)>($r1);
+        $r1 = null;
+
+     label2:
+        if $i0 == 1 goto label3;
+
+        if $i0 == 2 goto label2;
+
+        if $i0 == 3 goto label1;
+
+     label3:
+        if $i0 == 4 goto label5;
+
+        if $i0 == 5 goto label4;
+
+        if $i0 == 6 goto label1;
+
+     label4:
+        if $i0 == 7 goto label2;
+
+     label5:
+        if $i0 == 8 goto label6;
+
+     label6:
+        if $i0 == 9 goto label0;
+
+        return;
+    }
+
+Warning: java.lang.ref.Finalizer is a phantom class!
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+[Spark] Pointer Assignment Graph in 0.3 seconds.
+[Spark] Type masks in 0.0 seconds.
+[Spark] Pointer Graph simplified in 0.0 seconds.
+[Spark] Propagation in 3.9 seconds.
+[Spark] Solution found in 3.9 seconds.
+Callback analysis done.
+Warning: Button is a phantom class!
+Warning: de.ecspride.Button is a phantom class!
+Warning: android.view.Button is a phantom class!
+Found 1 layout controls in file res/layout/activity_button1.xml
+Transforming dummyMainClass... 
+Transforming de.ecspride.Button1... 
+Using 'android/android-17/android.jar' as android.jar
+[main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
+    public static void dummyMainMethod()
+    {
+        int $i0;
+        de.ecspride.Button1 $r0;
+        android.os.Bundle $r1;
+
+        $i0 = 0;
+
+     label0:
+        $r0 = new de.ecspride.Button1;
+        specialinvoke $r0.<de.ecspride.Button1: void <init>()>();
+        if $i0 == 0 goto label7;
+
+     label1:
+        $r1 = new android.os.Bundle;
+        specialinvoke $r1.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r0.<de.ecspride.Button1: void onCreate(android.os.Bundle)>($r1);
+        $r1 = null;
+
+     label2:
+        if $i0 == 1 goto label3;
+
+        staticinvoke <de.ecspride.Button1: void <clinit>()>();
+
+     label3:
+        if $i0 == 2 goto label2;
+
+        if $i0 == 3 goto label2;
+
+        if $i0 == 4 goto label4;
+
+        if $i0 == 5 goto label2;
+
+        if $i0 == 6 goto label1;
+
+     label4:
+        if $i0 == 7 goto label6;
+
+        if $i0 == 8 goto label5;
+
+        if $i0 == 9 goto label1;
+
+     label5:
+        if $i0 == 10 goto label2;
+
+     label6:
+        if $i0 == 11 goto label7;
+
+     label7:
+        if $i0 == 12 goto label0;
+
+        return;
+    }
+
+Warning: java.lang.ref.Finalizer is a phantom class!
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+[Spark] Pointer Assignment Graph in 0.0 seconds.
+[Spark] Type masks in 0.0 seconds.
+[Spark] Pointer Graph simplified in 0.0 seconds.
+[Spark] Propagation in 2.1 seconds.
+[Spark] Solution found in 2.1 seconds.
+Running incremental callback analysis for 1 components...
+Incremental callback analysis done.
+Transforming dummyMainClass... 
+Transforming de.ecspride.Button1... 
+Found 3 callback methods for 1 components
+Entry point calculation done.
+Created a SourceSinkManager with 127 sources, 61 sinks, and 3 callback methods.
+Using 'android/android-17/android.jar' as android.jar
+Warning: java.lang.ref.Finalizer is a phantom class!
+de.ecspride.Button1
+	<de.ecspride.Button1: void sendMessage(android.view.View)>
+	<de.ecspride.Button1: void onCreate(android.os.Bundle)>
+	<de.ecspride.Button1: void <clinit>()>
+[main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
+    public static void dummyMainMethod()
+    {
+        int $i0;
+        de.ecspride.Button1 $r0;
+        android.os.Bundle $r1;
+        android.view.View $r2;
+
+        $i0 = 0;
+
+     label0:
+        $r0 = new de.ecspride.Button1;
+        specialinvoke $r0.<de.ecspride.Button1: void <init>()>();
+        if $i0 == 0 goto label8;
+
+     label1:
+        $r1 = new android.os.Bundle;
+        specialinvoke $r1.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r0.<de.ecspride.Button1: void onCreate(android.os.Bundle)>($r1);
+        $r1 = null;
+
+     label2:
+        if $i0 == 1 goto label3;
+
+        staticinvoke <de.ecspride.Button1: void <clinit>()>();
+
+     label3:
+        if $i0 == 2 goto label4;
+
+        $r2 = new android.view.View;
+        specialinvoke $r2.<android.view.View: void <init>()>();
+        virtualinvoke $r0.<de.ecspride.Button1: void sendMessage(android.view.View)>($r2);
+        $r2 = null;
+
+     label4:
+        if $i0 == 3 goto label2;
+
+        if $i0 == 4 goto label2;
+
+        if $i0 == 5 goto label5;
+
+        if $i0 == 6 goto label2;
+
+        if $i0 == 7 goto label1;
+
+     label5:
+        if $i0 == 8 goto label7;
+
+        if $i0 == 9 goto label6;
+
+        if $i0 == 10 goto label1;
+
+     label6:
+        if $i0 == 11 goto label2;
+
+     label7:
+        if $i0 == 12 goto label8;
+
+     label8:
+        if $i0 == 13 goto label0;
+
+        return;
+    }
+
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+Total methods: 40220
+Initially reachable methods: 8
+Classes with at least one reachable method: 7
+[Spark] Pointer Assignment Graph in 0.3 seconds.
+Total types: 5866
+[Spark] Type masks in 0.0 seconds.
+VarNodes: 624
+FieldRefNodes: 35
+AllocNodes: 258
+Cleaning up graph for merged nodes
+Done cleaning up graph for merged nodes
+[Spark] Pointer Graph simplified in 0.0 seconds.
+Worklist has 258 nodes.
+Now handling field references
+Worklist has 32 nodes.
+Now handling field references
+Worklist has 55 nodes.
+Now handling field references
+Worklist has 2 nodes.
+Now handling field references
+[Spark] Propagation in 1.1 seconds.
+[Spark] Solution found in 4.2 seconds.
+[Spark] Number of reachable methods: 575
+Total time to finish: 40.55
+=================================================
+# edges = 6
+=================================================
+
+elapsed time: 42.96s

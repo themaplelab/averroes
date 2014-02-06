@@ -1,0 +1,148 @@
+...
+running Spark for Lifecycle_BroadcastReceiverLifecycle1
+Loading properties...
+Generating the call graph for an Android apk.
+[main] INFO soot.jimple.infoflow.android.SetupApplication - ARSC file parsing took 0.018900979 seconds
+Using 'android/android-17/android.jar' as android.jar
+[main] WARN soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Cannot create valid constructor for android.content.Context, because it is abstract and cannot substitute with subclass
+[main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
+    public static void dummyMainMethod()
+    {
+        int $i0;
+        de.ecspride.TestReceiver $r0;
+        android.content.Intent $r1;
+
+        $i0 = 0;
+
+     label0:
+        $r0 = new de.ecspride.TestReceiver;
+        specialinvoke $r0.<de.ecspride.TestReceiver: void <init>()>();
+        if $i0 == 0 goto label2;
+
+        $r1 = new android.content.Intent;
+        specialinvoke $r1.<android.content.Intent: void <init>()>();
+
+     label1:
+        virtualinvoke $r0.<de.ecspride.TestReceiver: void onReceive(android.content.Context,android.content.Intent)>(null, $r1);
+        $r1 = null;
+        if $i0 == 1 goto label1;
+
+     label2:
+        if $i0 == 2 goto label0;
+
+        return;
+    }
+
+Warning: java.lang.ref.Finalizer is a phantom class!
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+[Spark] Pointer Assignment Graph in 0.1 seconds.
+[Spark] Type masks in 0.0 seconds.
+[Spark] Pointer Graph simplified in 0.0 seconds.
+[Spark] Propagation in 1.1 seconds.
+[Spark] Solution found in 1.1 seconds.
+Callback analysis done.
+Transforming dummyMainClass... 
+Transforming de.ecspride.TestReceiver... 
+Using 'android/android-17/android.jar' as android.jar
+[main] WARN soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Cannot create valid constructor for android.content.Context, because it is abstract and cannot substitute with subclass
+[main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
+    public static void dummyMainMethod()
+    {
+        int $i0;
+        de.ecspride.TestReceiver $r0;
+        android.content.Intent $r1;
+
+        $i0 = 0;
+
+     label0:
+        $r0 = new de.ecspride.TestReceiver;
+        specialinvoke $r0.<de.ecspride.TestReceiver: void <init>()>();
+        if $i0 == 0 goto label2;
+
+        $r1 = new android.content.Intent;
+        specialinvoke $r1.<android.content.Intent: void <init>()>();
+
+     label1:
+        virtualinvoke $r0.<de.ecspride.TestReceiver: void onReceive(android.content.Context,android.content.Intent)>(null, $r1);
+        $r1 = null;
+        if $i0 == 1 goto label1;
+
+     label2:
+        if $i0 == 2 goto label0;
+
+        return;
+    }
+
+Warning: java.lang.ref.Finalizer is a phantom class!
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+[Spark] Pointer Assignment Graph in 0.0 seconds.
+[Spark] Type masks in 0.0 seconds.
+[Spark] Pointer Graph simplified in 0.0 seconds.
+[Spark] Propagation in 0.4 seconds.
+[Spark] Solution found in 0.4 seconds.
+Running incremental callback analysis for 1 components...
+Incremental callback analysis done.
+Transforming dummyMainClass... 
+Transforming de.ecspride.TestReceiver... 
+Found 1 callback methods for 1 components
+Entry point calculation done.
+Created a SourceSinkManager with 127 sources, 61 sinks, and 1 callback methods.
+Using 'android/android-17/android.jar' as android.jar
+Warning: java.lang.ref.Finalizer is a phantom class!
+de.ecspride.TestReceiver
+	<de.ecspride.TestReceiver: void onReceive(android.content.Context,android.content.Intent)>
+[main] WARN soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Cannot create valid constructor for android.content.Context, because it is abstract and cannot substitute with subclass
+[main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
+    public static void dummyMainMethod()
+    {
+        int $i0;
+        de.ecspride.TestReceiver $r0;
+        android.content.Intent $r1;
+
+        $i0 = 0;
+
+     label0:
+        $r0 = new de.ecspride.TestReceiver;
+        specialinvoke $r0.<de.ecspride.TestReceiver: void <init>()>();
+        if $i0 == 0 goto label2;
+
+        $r1 = new android.content.Intent;
+        specialinvoke $r1.<android.content.Intent: void <init>()>();
+
+     label1:
+        virtualinvoke $r0.<de.ecspride.TestReceiver: void onReceive(android.content.Context,android.content.Intent)>(null, $r1);
+        $r1 = null;
+        if $i0 == 1 goto label1;
+
+     label2:
+        if $i0 == 2 goto label0;
+
+        return;
+    }
+
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+Total methods: 40215
+Initially reachable methods: 2
+Classes with at least one reachable method: 2
+[Spark] Pointer Assignment Graph in 0.0 seconds.
+Total types: 5862
+[Spark] Type masks in 0.0 seconds.
+VarNodes: 4
+FieldRefNodes: 0
+AllocNodes: 3
+Cleaning up graph for merged nodes
+Done cleaning up graph for merged nodes
+[Spark] Pointer Graph simplified in 0.0 seconds.
+Worklist has 3 nodes.
+Now handling field references
+Worklist has 2 nodes.
+Now handling field references
+[Spark] Propagation in 0.3 seconds.
+[Spark] Solution found in 2.7 seconds.
+[Spark] Number of reachable methods: 167
+Total time to finish: 30.93
+=================================================
+# edges = 4
+=================================================
+
+elapsed time: 33.29s

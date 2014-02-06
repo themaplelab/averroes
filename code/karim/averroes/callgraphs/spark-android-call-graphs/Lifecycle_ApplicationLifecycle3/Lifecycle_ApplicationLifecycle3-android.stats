@@ -1,0 +1,417 @@
+...
+running Spark for Lifecycle_ApplicationLifecycle3
+Loading properties...
+Generating the call graph for an Android apk.
+[main] INFO soot.jimple.infoflow.android.SetupApplication - ARSC file parsing took 0.020082324 seconds
+Using 'android/android-17/android.jar' as android.jar
+[main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
+    public static void dummyMainMethod()
+    {
+        int $i0;
+        de.ecspride.ContentProvider $r0;
+        boolean $z0;
+        de.ecspride.ApplicationLifecyle3 $r1;
+        de.ecspride.MainActivity $r2;
+        android.os.Bundle $r3;
+
+        $i0 = 0;
+
+     label0:
+        $r0 = new de.ecspride.ContentProvider;
+        specialinvoke $r0.<de.ecspride.ContentProvider: void <init>()>();
+        if $i0 == 0 goto label1;
+
+        $z0 = virtualinvoke $r0.<de.ecspride.ContentProvider: boolean onCreate()>();
+
+     label1:
+        if $i0 == 1 goto label0;
+
+        $r1 = new de.ecspride.ApplicationLifecyle3;
+        specialinvoke $r1.<de.ecspride.ApplicationLifecyle3: void <init>()>();
+        virtualinvoke $r1.<de.ecspride.ApplicationLifecyle3: void onCreate()>();
+
+     label2:
+        if $i0 == 2 goto label3;
+
+     label3:
+        $r2 = new de.ecspride.MainActivity;
+        specialinvoke $r2.<de.ecspride.MainActivity: void <init>()>();
+        if $i0 == 3 goto label9;
+
+     label4:
+        $r3 = new android.os.Bundle;
+        specialinvoke $r3.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r2.<de.ecspride.MainActivity: void onCreate(android.os.Bundle)>($r3);
+        $r3 = null;
+
+     label5:
+        if $i0 == 4 goto label6;
+
+        if $i0 == 5 goto label5;
+
+        if $i0 == 6 goto label4;
+
+     label6:
+        if $i0 == 7 goto label8;
+
+        if $i0 == 8 goto label7;
+
+        if $i0 == 9 goto label4;
+
+     label7:
+        if $i0 == 10 goto label5;
+
+     label8:
+        if $i0 == 11 goto label9;
+
+     label9:
+        if $i0 == 12 goto label9;
+
+        if $i0 == 13 goto label2;
+
+        return;
+    }
+
+Warning: java.lang.ref.Finalizer is a phantom class!
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+[Spark] Pointer Assignment Graph in 0.2 seconds.
+[Spark] Type masks in 0.0 seconds.
+[Spark] Pointer Graph simplified in 0.0 seconds.
+[Spark] Propagation in 4.8 seconds.
+[Spark] Solution found in 4.8 seconds.
+Callback analysis done.
+Warning: TextView is a phantom class!
+Warning: de.ecspride.applicationlifecycle3.TextView is a phantom class!
+Warning: android.view.TextView is a phantom class!
+Found 0 layout controls in file res/layout/activity_main.xml
+Transforming dummyMainClass... 
+Transforming de.ecspride.ContentProvider... 
+Transforming de.ecspride.ApplicationLifecyle3... 
+Transforming de.ecspride.MainActivity... 
+Using 'android/android-17/android.jar' as android.jar
+[main] WARN soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Cannot create valid constructor for android.net.Uri, because it is abstract and cannot substitute with subclass
+[main] WARN soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Cannot create valid constructor for android.view.Menu, because it is an interface and cannot substitute with subclass
+[main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
+    public static void dummyMainMethod()
+    {
+        int $i0, $i1, $i2;
+        de.ecspride.ContentProvider $r0;
+        boolean $z0, $z1;
+        de.ecspride.ApplicationLifecyle3 $r1;
+        java.lang.String[] $r2, $r3, $r7, $r10;
+        android.database.Cursor $r4;
+        android.content.ContentValues $r5, $r9;
+        android.net.Uri $r6;
+        java.lang.String $r8;
+        de.ecspride.MainActivity $r11;
+        android.os.Bundle $r12;
+
+        $i0 = 0;
+
+     label0:
+        $r0 = new de.ecspride.ContentProvider;
+        specialinvoke $r0.<de.ecspride.ContentProvider: void <init>()>();
+        if $i0 == 0 goto label1;
+
+        $z0 = virtualinvoke $r0.<de.ecspride.ContentProvider: boolean onCreate()>();
+
+     label1:
+        if $i0 == 1 goto label0;
+
+        $r1 = new de.ecspride.ApplicationLifecyle3;
+        specialinvoke $r1.<de.ecspride.ApplicationLifecyle3: void <init>()>();
+
+     label2:
+        if $i0 == 2 goto label3;
+
+     label3:
+        if $i0 == 3 goto label2;
+
+        virtualinvoke $r1.<de.ecspride.ApplicationLifecyle3: void onCreate()>();
+
+     label4:
+        if $i0 == 4 goto label11;
+
+     label5:
+        if $i0 == 5 goto label6;
+
+        $r2 = newarray (java.lang.String)[1];
+        $r2[19] = "";
+        $r3 = newarray (java.lang.String)[1];
+        $r3[19] = "";
+        $r4 = virtualinvoke $r0.<de.ecspride.ContentProvider: android.database.Cursor query(android.net.Uri,java.lang.String[],java.lang.String,java.lang.String[],java.lang.String)>(null, $r2, "", $r3, "");
+
+     label6:
+        if $i0 == 6 goto label7;
+
+        $r5 = new android.content.ContentValues;
+        specialinvoke $r5.<android.content.ContentValues: void <init>()>();
+        $r6 = virtualinvoke $r0.<de.ecspride.ContentProvider: android.net.Uri insert(android.net.Uri,android.content.ContentValues)>(null, $r5);
+        $r5 = null;
+
+     label7:
+        if $i0 == 7 goto label8;
+
+        $r7 = newarray (java.lang.String)[1];
+        $r7[19] = "";
+        $i1 = virtualinvoke $r0.<de.ecspride.ContentProvider: int delete(android.net.Uri,java.lang.String,java.lang.String[])>(null, "", $r7);
+
+     label8:
+        if $i0 == 8 goto label9;
+
+        $r8 = virtualinvoke $r0.<de.ecspride.ContentProvider: java.lang.String getType(android.net.Uri)>(null);
+
+     label9:
+        if $i0 == 9 goto label10;
+
+        $r9 = new android.content.ContentValues;
+        specialinvoke $r9.<android.content.ContentValues: void <init>()>();
+        $r10 = newarray (java.lang.String)[1];
+        $r10[19] = "";
+        $i2 = virtualinvoke $r0.<de.ecspride.ContentProvider: int update(android.net.Uri,android.content.ContentValues,java.lang.String,java.lang.String[])>(null, $r9, "", $r10);
+        $r9 = null;
+
+     label10:
+        if $i0 == 10 goto label5;
+
+     label11:
+        $r11 = new de.ecspride.MainActivity;
+        specialinvoke $r11.<de.ecspride.MainActivity: void <init>()>();
+        if $i0 == 11 goto label18;
+
+     label12:
+        $r12 = new android.os.Bundle;
+        specialinvoke $r12.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r11.<de.ecspride.MainActivity: void onCreate(android.os.Bundle)>($r12);
+        $r12 = null;
+
+     label13:
+        if $i0 == 12 goto label14;
+
+        $z1 = virtualinvoke $r11.<de.ecspride.MainActivity: boolean onCreateOptionsMenu(android.view.Menu)>(null);
+
+     label14:
+        if $i0 == 13 goto label13;
+
+        if $i0 == 14 goto label13;
+
+        if $i0 == 15 goto label15;
+
+        if $i0 == 16 goto label13;
+
+        if $i0 == 17 goto label12;
+
+     label15:
+        if $i0 == 18 goto label17;
+
+        if $i0 == 19 goto label16;
+
+        if $i0 == 20 goto label12;
+
+     label16:
+        if $i0 == 21 goto label13;
+
+     label17:
+        if $i0 == 22 goto label18;
+
+     label18:
+        if $i0 == 23 goto label18;
+
+        if $i0 == 24 goto label4;
+
+        return;
+    }
+
+Warning: java.lang.ref.Finalizer is a phantom class!
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+[Spark] Pointer Assignment Graph in 0.0 seconds.
+[Spark] Type masks in 0.0 seconds.
+[Spark] Pointer Graph simplified in 0.0 seconds.
+[Spark] Propagation in 2.7 seconds.
+[Spark] Solution found in 2.7 seconds.
+Running incremental callback analysis for 3 components...
+Incremental callback analysis done.
+Transforming dummyMainClass... 
+Transforming de.ecspride.ContentProvider... 
+Transforming de.ecspride.ApplicationLifecyle3... 
+Transforming de.ecspride.MainActivity... 
+Found 9 callback methods for 3 components
+Entry point calculation done.
+Created a SourceSinkManager with 127 sources, 61 sinks, and 9 callback methods.
+Using 'android/android-17/android.jar' as android.jar
+Warning: java.lang.ref.Finalizer is a phantom class!
+de.ecspride.ContentProvider
+	<de.ecspride.ContentProvider: java.lang.String getType(android.net.Uri)>
+	<de.ecspride.ContentProvider: int delete(android.net.Uri,java.lang.String,java.lang.String[])>
+	<de.ecspride.ContentProvider: android.net.Uri insert(android.net.Uri,android.content.ContentValues)>
+	<de.ecspride.ContentProvider: android.database.Cursor query(android.net.Uri,java.lang.String[],java.lang.String,java.lang.String[],java.lang.String)>
+	<de.ecspride.ContentProvider: int update(android.net.Uri,android.content.ContentValues,java.lang.String,java.lang.String[])>
+	<de.ecspride.ContentProvider: boolean onCreate()>
+de.ecspride.ApplicationLifecyle3
+	<de.ecspride.ApplicationLifecyle3: void onCreate()>
+de.ecspride.MainActivity
+	<de.ecspride.MainActivity: boolean onCreateOptionsMenu(android.view.Menu)>
+	<de.ecspride.MainActivity: void onCreate(android.os.Bundle)>
+[main] WARN soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Cannot create valid constructor for android.net.Uri, because it is abstract and cannot substitute with subclass
+[main] WARN soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Cannot create valid constructor for android.view.Menu, because it is an interface and cannot substitute with subclass
+[main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
+    public static void dummyMainMethod()
+    {
+        int $i0, $i1, $i2;
+        de.ecspride.ContentProvider $r0;
+        boolean $z0, $z1;
+        de.ecspride.ApplicationLifecyle3 $r1;
+        java.lang.String[] $r2, $r3, $r4, $r8;
+        android.database.Cursor $r5;
+        java.lang.String $r6;
+        android.content.ContentValues $r7, $r9;
+        android.net.Uri $r10;
+        de.ecspride.MainActivity $r11;
+        android.os.Bundle $r12;
+
+        $i0 = 0;
+
+     label0:
+        $r0 = new de.ecspride.ContentProvider;
+        specialinvoke $r0.<de.ecspride.ContentProvider: void <init>()>();
+        if $i0 == 0 goto label1;
+
+        $z0 = virtualinvoke $r0.<de.ecspride.ContentProvider: boolean onCreate()>();
+
+     label1:
+        if $i0 == 1 goto label0;
+
+        $r1 = new de.ecspride.ApplicationLifecyle3;
+        specialinvoke $r1.<de.ecspride.ApplicationLifecyle3: void <init>()>();
+
+     label2:
+        if $i0 == 2 goto label3;
+
+     label3:
+        if $i0 == 3 goto label2;
+
+        virtualinvoke $r1.<de.ecspride.ApplicationLifecyle3: void onCreate()>();
+
+     label4:
+        if $i0 == 4 goto label11;
+
+     label5:
+        if $i0 == 5 goto label6;
+
+        $r2 = newarray (java.lang.String)[1];
+        $r2[19] = "";
+        $i1 = virtualinvoke $r0.<de.ecspride.ContentProvider: int delete(android.net.Uri,java.lang.String,java.lang.String[])>(null, "", $r2);
+
+     label6:
+        if $i0 == 6 goto label7;
+
+        $r3 = newarray (java.lang.String)[1];
+        $r3[19] = "";
+        $r4 = newarray (java.lang.String)[1];
+        $r4[19] = "";
+        $r5 = virtualinvoke $r0.<de.ecspride.ContentProvider: android.database.Cursor query(android.net.Uri,java.lang.String[],java.lang.String,java.lang.String[],java.lang.String)>(null, $r3, "", $r4, "");
+
+     label7:
+        if $i0 == 7 goto label8;
+
+        $r6 = virtualinvoke $r0.<de.ecspride.ContentProvider: java.lang.String getType(android.net.Uri)>(null);
+
+     label8:
+        if $i0 == 8 goto label9;
+
+        $r7 = new android.content.ContentValues;
+        specialinvoke $r7.<android.content.ContentValues: void <init>()>();
+        $r8 = newarray (java.lang.String)[1];
+        $r8[19] = "";
+        $i2 = virtualinvoke $r0.<de.ecspride.ContentProvider: int update(android.net.Uri,android.content.ContentValues,java.lang.String,java.lang.String[])>(null, $r7, "", $r8);
+        $r7 = null;
+
+     label9:
+        if $i0 == 9 goto label10;
+
+        $r9 = new android.content.ContentValues;
+        specialinvoke $r9.<android.content.ContentValues: void <init>()>();
+        $r10 = virtualinvoke $r0.<de.ecspride.ContentProvider: android.net.Uri insert(android.net.Uri,android.content.ContentValues)>(null, $r9);
+        $r9 = null;
+
+     label10:
+        if $i0 == 10 goto label5;
+
+     label11:
+        $r11 = new de.ecspride.MainActivity;
+        specialinvoke $r11.<de.ecspride.MainActivity: void <init>()>();
+        if $i0 == 11 goto label18;
+
+     label12:
+        $r12 = new android.os.Bundle;
+        specialinvoke $r12.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r11.<de.ecspride.MainActivity: void onCreate(android.os.Bundle)>($r12);
+        $r12 = null;
+
+     label13:
+        if $i0 == 12 goto label14;
+
+        $z1 = virtualinvoke $r11.<de.ecspride.MainActivity: boolean onCreateOptionsMenu(android.view.Menu)>(null);
+
+     label14:
+        if $i0 == 13 goto label13;
+
+        if $i0 == 14 goto label13;
+
+        if $i0 == 15 goto label15;
+
+        if $i0 == 16 goto label13;
+
+        if $i0 == 17 goto label12;
+
+     label15:
+        if $i0 == 18 goto label17;
+
+        if $i0 == 19 goto label16;
+
+        if $i0 == 20 goto label12;
+
+     label16:
+        if $i0 == 21 goto label13;
+
+     label17:
+        if $i0 == 22 goto label18;
+
+     label18:
+        if $i0 == 23 goto label18;
+
+        if $i0 == 24 goto label4;
+
+        return;
+    }
+
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+Total methods: 40616
+Initially reachable methods: 5
+Classes with at least one reachable method: 5
+[Spark] Pointer Assignment Graph in 0.0 seconds.
+Total types: 5928
+[Spark] Type masks in 0.0 seconds.
+VarNodes: 30
+FieldRefNodes: 5
+AllocNodes: 18
+Cleaning up graph for merged nodes
+Done cleaning up graph for merged nodes
+[Spark] Pointer Graph simplified in 0.0 seconds.
+Worklist has 18 nodes.
+Now handling field references
+Worklist has 18 nodes.
+Now handling field references
+Worklist has 60 nodes.
+Now handling field references
+Worklist has 2 nodes.
+Now handling field references
+[Spark] Propagation in 1.6 seconds.
+[Spark] Solution found in 4.1 seconds.
+[Spark] Number of reachable methods: 552
+Total time to finish: 40.15
+=================================================
+# edges = 19
+=================================================
+
+elapsed time: 42.55s

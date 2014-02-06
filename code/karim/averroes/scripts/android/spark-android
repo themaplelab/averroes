@@ -1,0 +1,34 @@
+#! /usr/bin/env bash
+
+set -e
+
+benchmark=$1
+props=averroes.properties
+outputdir=callgraphs/spark-android-call-graphs/${benchmark}
+apk=droidbench/${benchmark}.apk
+
+echo "running Spark for ${benchmark}"
+
+# 0. create the averroes properties file
+touch ${props}
+echo "main_class = " > ${props}
+echo "android_path = android" >> ${props}
+echo "output_dir = output" >> ${props}
+echo "apk_location = ${apk}" >> ${props}
+if test "${benchmark}" = "AndroidSpecific_Obfuscation1"; then
+  echo "application_includes = de.ecspride.**:android.telephony.TelephonyManager" >> ${props}
+else
+  echo "application_includes = de.ecspride.**" >> ${props}
+fi
+
+# 1. make some dirs
+mkdir -p ${outputdir}/
+
+# 2. run spark-android.jar
+jar uf spark-android.jar ${props}
+java -verbose:gc -Xloggc:${outputdir}/${benchmark}-gc.stats -jar spark-android.jar $benchmark
+
+# 3. copy the call graph
+cp output/android.txt.gzip ${outputdir}/android.txt.gzip
+
+echo ""

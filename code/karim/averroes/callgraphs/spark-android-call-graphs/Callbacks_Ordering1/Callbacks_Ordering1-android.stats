@@ -1,0 +1,283 @@
+...
+running Spark for Callbacks_Ordering1
+Loading properties...
+Generating the call graph for an Android apk.
+[main] INFO soot.jimple.infoflow.android.SetupApplication - ARSC file parsing took 0.020033233 seconds
+Using 'android/android-17/android.jar' as android.jar
+[main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
+    public static void dummyMainMethod()
+    {
+        int $i0;
+        de.ecspride.MainActivity $r0;
+        android.os.Bundle $r1;
+
+        $i0 = 0;
+
+     label0:
+        $r0 = new de.ecspride.MainActivity;
+        specialinvoke $r0.<de.ecspride.MainActivity: void <init>()>();
+        if $i0 == 0 goto label6;
+
+     label1:
+        $r1 = new android.os.Bundle;
+        specialinvoke $r1.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r0.<de.ecspride.MainActivity: void onCreate(android.os.Bundle)>($r1);
+        $r1 = null;
+
+     label2:
+        if $i0 == 1 goto label3;
+
+        if $i0 == 2 goto label2;
+
+        if $i0 == 3 goto label1;
+
+     label3:
+        virtualinvoke $r0.<de.ecspride.MainActivity: void onStop()>();
+        if $i0 == 4 goto label5;
+
+        if $i0 == 5 goto label4;
+
+        if $i0 == 6 goto label1;
+
+     label4:
+        if $i0 == 7 goto label2;
+
+     label5:
+        if $i0 == 8 goto label6;
+
+     label6:
+        if $i0 == 9 goto label0;
+
+        return;
+    }
+
+Warning: java.lang.ref.Finalizer is a phantom class!
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+[Spark] Pointer Assignment Graph in 0.2 seconds.
+[Spark] Type masks in 0.0 seconds.
+[Spark] Pointer Graph simplified in 0.0 seconds.
+[Spark] Propagation in 4.2 seconds.
+[Spark] Solution found in 4.2 seconds.
+Callback analysis done.
+Warning: TextView is a phantom class!
+Warning: de.ecspride.TextView is a phantom class!
+Warning: android.view.TextView is a phantom class!
+Found 0 layout controls in file res/layout/activity_main.xml
+Transforming dummyMainClass... 
+Transforming de.ecspride.MainActivity... 
+Using 'android/android-17/android.jar' as android.jar
+[main] WARN soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Cannot create valid constructor for android.view.Menu, because it is an interface and cannot substitute with subclass
+[main] WARN soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Ran into a constructor generation loop for class android.location.Location, substituting with null...
+[main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
+    public static void dummyMainMethod()
+    {
+        int $i0;
+        de.ecspride.MainActivity $r0;
+        android.os.Bundle $r1;
+        boolean $z0;
+        de.ecspride.MainActivity$1 $r2;
+        android.location.Location $r3, $r4;
+
+        $i0 = 0;
+
+     label0:
+        $r0 = new de.ecspride.MainActivity;
+        specialinvoke $r0.<de.ecspride.MainActivity: void <init>()>();
+        if $i0 == 0 goto label8;
+
+     label1:
+        $r1 = new android.os.Bundle;
+        specialinvoke $r1.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r0.<de.ecspride.MainActivity: void onCreate(android.os.Bundle)>($r1);
+        $r1 = null;
+
+     label2:
+        if $i0 == 1 goto label3;
+
+        $z0 = virtualinvoke $r0.<de.ecspride.MainActivity: boolean onCreateOptionsMenu(android.view.Menu)>(null);
+
+     label3:
+        $r2 = new de.ecspride.MainActivity$1;
+        specialinvoke $r2.<de.ecspride.MainActivity$1: void <init>(de.ecspride.MainActivity)>($r0);
+        if $i0 == 2 goto label4;
+
+        $r3 = null;
+        $r4 = new android.location.Location;
+        specialinvoke $r4.<android.location.Location: void <init>(android.location.Location)>($r3);
+        virtualinvoke $r2.<de.ecspride.MainActivity$1: void onLocationChanged(android.location.Location)>($r4);
+        $r4 = null;
+
+     label4:
+        if $i0 == 3 goto label2;
+
+        if $i0 == 4 goto label2;
+
+        if $i0 == 5 goto label5;
+
+        if $i0 == 6 goto label2;
+
+        if $i0 == 7 goto label1;
+
+     label5:
+        virtualinvoke $r0.<de.ecspride.MainActivity: void onStop()>();
+        if $i0 == 8 goto label7;
+
+        if $i0 == 9 goto label6;
+
+        if $i0 == 10 goto label1;
+
+     label6:
+        if $i0 == 11 goto label2;
+
+     label7:
+        if $i0 == 12 goto label8;
+
+     label8:
+        if $i0 == 13 goto label0;
+
+        return;
+    }
+
+Warning: java.lang.ref.Finalizer is a phantom class!
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+[Spark] Pointer Assignment Graph in 0.0 seconds.
+[Spark] Type masks in 0.0 seconds.
+[Spark] Pointer Graph simplified in 0.0 seconds.
+[Spark] Propagation in 2.3 seconds.
+[Spark] Solution found in 2.3 seconds.
+Running incremental callback analysis for 1 components...
+Incremental callback analysis done.
+Transforming dummyMainClass... 
+Transforming de.ecspride.MainActivity... 
+Found 4 callback methods for 1 components
+Entry point calculation done.
+Created a SourceSinkManager with 127 sources, 61 sinks, and 4 callback methods.
+Using 'android/android-17/android.jar' as android.jar
+Warning: java.lang.ref.Finalizer is a phantom class!
+de.ecspride.MainActivity
+	<de.ecspride.MainActivity: boolean onCreateOptionsMenu(android.view.Menu)>
+	<de.ecspride.MainActivity$1: void onLocationChanged(android.location.Location)>
+	<de.ecspride.MainActivity: void onStop()>
+	<de.ecspride.MainActivity: void onCreate(android.os.Bundle)>
+[main] WARN soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Ran into a constructor generation loop for class android.location.Location, substituting with null...
+[main] WARN soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Ran into a constructor generation loop for class android.location.Location, substituting with null...
+[main] WARN soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Cannot create valid constructor for android.view.Menu, because it is an interface and cannot substitute with subclass
+[main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
+    public static void dummyMainMethod()
+    {
+        int $i0;
+        de.ecspride.MainActivity $r0, $r4;
+        de.ecspride.MainActivity$1 $r1, $r6;
+        android.location.Location $r2, $r3, $r7, $r8;
+        android.os.Bundle $r5;
+        boolean $z0;
+
+        $i0 = 0;
+
+     label0:
+        $r0 = new de.ecspride.MainActivity;
+        specialinvoke $r0.<de.ecspride.MainActivity: void <init>()>();
+        $r1 = new de.ecspride.MainActivity$1;
+        specialinvoke $r1.<de.ecspride.MainActivity$1: void <init>(de.ecspride.MainActivity)>($r0);
+        if $i0 == 0 goto label3;
+
+     label1:
+        if $i0 == 1 goto label2;
+
+        $r2 = null;
+        $r3 = new android.location.Location;
+        specialinvoke $r3.<android.location.Location: void <init>(android.location.Location)>($r2);
+        virtualinvoke $r1.<de.ecspride.MainActivity$1: void onLocationChanged(android.location.Location)>($r3);
+        $r3 = null;
+
+     label2:
+        if $i0 == 2 goto label1;
+
+     label3:
+        $r4 = new de.ecspride.MainActivity;
+        specialinvoke $r4.<de.ecspride.MainActivity: void <init>()>();
+        if $i0 == 3 goto label11;
+
+     label4:
+        $r5 = new android.os.Bundle;
+        specialinvoke $r5.<android.os.Bundle: void <init>()>();
+        virtualinvoke $r4.<de.ecspride.MainActivity: void onCreate(android.os.Bundle)>($r5);
+        $r5 = null;
+
+     label5:
+        $r6 = new de.ecspride.MainActivity$1;
+        specialinvoke $r6.<de.ecspride.MainActivity$1: void <init>(de.ecspride.MainActivity)>($r4);
+        if $i0 == 4 goto label6;
+
+        $r7 = null;
+        $r8 = new android.location.Location;
+        specialinvoke $r8.<android.location.Location: void <init>(android.location.Location)>($r7);
+        virtualinvoke $r6.<de.ecspride.MainActivity$1: void onLocationChanged(android.location.Location)>($r8);
+        $r8 = null;
+
+     label6:
+        if $i0 == 5 goto label7;
+
+        $z0 = virtualinvoke $r4.<de.ecspride.MainActivity: boolean onCreateOptionsMenu(android.view.Menu)>(null);
+
+     label7:
+        if $i0 == 6 goto label5;
+
+        if $i0 == 7 goto label5;
+
+        if $i0 == 8 goto label8;
+
+        if $i0 == 9 goto label5;
+
+        if $i0 == 10 goto label4;
+
+     label8:
+        virtualinvoke $r4.<de.ecspride.MainActivity: void onStop()>();
+        if $i0 == 11 goto label10;
+
+        if $i0 == 12 goto label9;
+
+        if $i0 == 13 goto label4;
+
+     label9:
+        if $i0 == 14 goto label5;
+
+     label10:
+        if $i0 == 15 goto label11;
+
+     label11:
+        if $i0 == 16 goto label0;
+
+        return;
+    }
+
+[Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
+Total methods: 39577
+Initially reachable methods: 4
+Classes with at least one reachable method: 4
+[Spark] Pointer Assignment Graph in 0.0 seconds.
+Total types: 5783
+[Spark] Type masks in 0.0 seconds.
+VarNodes: 22
+FieldRefNodes: 1
+AllocNodes: 12
+Cleaning up graph for merged nodes
+Done cleaning up graph for merged nodes
+[Spark] Pointer Graph simplified in 0.0 seconds.
+Worklist has 12 nodes.
+Now handling field references
+Worklist has 22 nodes.
+Now handling field references
+Worklist has 60 nodes.
+Now handling field references
+Worklist has 2 nodes.
+Now handling field references
+[Spark] Propagation in 1.5 seconds.
+[Spark] Solution found in 3.9 seconds.
+[Spark] Number of reachable methods: 529
+Total time to finish: 36.62
+=================================================
+# edges = 13
+=================================================
+
+elapsed time: 39.04s
