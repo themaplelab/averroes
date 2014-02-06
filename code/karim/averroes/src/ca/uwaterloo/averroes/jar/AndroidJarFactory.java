@@ -1,9 +1,7 @@
 package ca.uwaterloo.averroes.jar;
 
-import java.io.File;
 import java.util.Set;
 
-import soot.DexClassProvider;
 import soot.G;
 import soot.Scene;
 import soot.SootClass;
