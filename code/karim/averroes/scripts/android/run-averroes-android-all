@@ -17,7 +17,7 @@ mkdir -p benchmarks-averroes/android
 
 while read benchmark
 do
-./run-averroes-android ${benchmark}
+  ./run-averroes-android ${benchmark}
 done < ${droidbench}
 
 date

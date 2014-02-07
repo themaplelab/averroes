@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+cg_super=$1
+cg_sub=$2
+
+diff=$(java -cp probe.jar probe.CallGraphDiff ${cg_super} ${cg_sub})
+
+# entry points
+entry=$(echo "$diff" | grep 'Missing entry points')
+entry_tokens=( $entry )
+entry_count=${entry_tokens[${#entry_tokens[@]} - 1]}
+if test "${entry_count}" != "1"; then
+	echo "missing entry points"
+	exit -1
+fi
+
+# edges
+edges=$(echo "$diff" | grep 'Missing call edges')
+edges_tokens=( $edges )
+edges_count=${edges_tokens[${#edges_tokens[@]} - 1]}
+if test "${edges_count}" != "0"; then
+	echo "missing call edges"
+	exit -1
+fi
+
+# reachables
+reach=$(echo "$diff" | grep 'Number of reachable methods missing')
+reach_tokens=( $reach )
+reach_count=${reach_tokens[${#reach_tokens[@]} - 1]}
+if test "${reach_count}" != "1"; then
+	echo "missing reachable methods"
+	exit -1
+fi
