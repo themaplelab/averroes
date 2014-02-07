@@ -91,7 +91,7 @@ public class JarFile {
 				+ System.getProperty("path.separator") + AverroesProperties.getApkJarLocation()));
 		Repository.setRepository(rep);
 
-		 System.out.println("rep classpath: " + Repository.getRepository().getClassPath()); // TODO
+		// System.out.println("rep classpath: " + Repository.getRepository().getClassPath()); // TODO
 
 		// Now add all those class files in the crafted JAR file to the BCEL repository.
 		for (String classFile : classFiles) {

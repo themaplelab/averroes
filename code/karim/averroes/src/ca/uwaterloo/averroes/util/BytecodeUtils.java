@@ -6,6 +6,8 @@ import java.util.List;
 import soot.ResolutionFailedException;
 import soot.Scene;
 import soot.SootClass;
+import soot.SootField;
+import soot.SootFieldRef;
 import soot.SootMethod;
 import soot.SootMethodRef;
 import soot.Type;
@@ -35,6 +37,10 @@ public class BytecodeUtils {
 		return types[types.length - 1];
 	}
 
+	public static Type getFieldType(String fieldDescriptor) {
+		return Util.v().jimpleTypeOfFieldDescriptor(fieldDescriptor);
+	}
+
 	/**
 	 * Resolve the given bits of a method signature to the corresponding SootMethod from the Soot Scene.
 	 * 
@@ -43,7 +49,7 @@ public class BytecodeUtils {
 	 * @param methodDescriptor
 	 * @return
 	 */
-	public static SootMethod asSootMethod(String className, String methodName, String methodDescriptor) {
+	public static SootMethod makeSootMethod(String className, String methodName, String methodDescriptor) {
 		SootClass cls = Scene.v().getSootClass(className);
 
 		List<Type> parameterTypes = getParameterTypes(methodDescriptor);
@@ -68,5 +74,27 @@ public class BytecodeUtils {
 		method = methodRef.resolve();
 
 		return method;
+	}
+
+	public static SootField makeSootField(String className, String fieldName, String fieldDescriptor) {
+		SootClass cls = Scene.v().getSootClass(className);
+		Type fieldType = getFieldType(fieldDescriptor);
+
+		// Get the field ref and resolve it to a Soot field
+		SootFieldRef fieldRef = Scene.v().makeFieldRef(cls, fieldName, fieldType, false);
+		SootField field;
+
+		/*
+		 * We have to do this ugly code. Try first and see if the field is not static. If it is static, then create a
+		 * new fieldRef in the catch and resolve it again with isStatic = true.
+		 */
+		try {
+			field = fieldRef.resolve();
+		} catch (ResolutionFailedException e) {
+			fieldRef = Scene.v().makeFieldRef(cls, fieldName, fieldType, true);
+		}
+		field = fieldRef.resolve();
+
+		return field;
 	}
 }
