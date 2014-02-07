@@ -158,7 +158,7 @@ public class AverroesApplicationConstantPool {
 							.getNameAndTypeIndex()];
 					String methodName = ((CONSTANT_Utf8_info) (constantPool[i.name_index])).convert();
 					String methodDescriptor = ((CONSTANT_Utf8_info) (constantPool[i.descriptor_index])).convert();
-					SootMethod method = BytecodeUtils.asSootMethod(className, methodName, methodDescriptor);
+					SootMethod method = BytecodeUtils.makeSootMethod(className, methodName, methodDescriptor);
 
 					// If the resolved method is in the library, add it to the result
 					if (hierarchy.isLibraryMethod(method)) {
@@ -265,7 +265,7 @@ public class AverroesApplicationConstantPool {
 	private void findLibraryMethodsInApplicationConstantPool() {
 		libraryMethods = new HashSet<SootMethod>();
 
-		// If we're processing an android apk, process the global string constant pool
+		// If we're processing an android apk, process the global method constant pool
 		if (Options.v().src_prec() == Options.src_prec_apk) {
 			libraryMethods.addAll(findLibraryMethodsInAndroidApplicationConstantPool());
 		} else {
@@ -367,6 +367,31 @@ public class AverroesApplicationConstantPool {
 	}
 
 	/**
+	 * Search the android string constant pool for application class names.
+	 * 
+	 * @return
+	 */
+	private Set<SootField> findLibraryFieldsInAndroidApplicationConstantPool() {
+		Set<SootField> result = new HashSet<SootField>();
+		try {
+			DexBackedDexFile dex = DexFileFactory.loadDexFile(AverroesProperties.getApkLocation(), 17);
+			int fieldCount = dex.readSmallUint(HeaderItem.FIELD_COUNT_OFFSET);
+			for (int i = 0; i < fieldCount; i++) {
+				SootField field = DexUtils.asSootField(dex, i);
+
+				// If the resolved field is in the library, add it to the result
+				if (hierarchy.isLibraryField(field)) {
+					result.add(field);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return result;
+	}
+
+	/**
 	 * Get all the library fields referenced from the constant pool of application classes.
 	 * 
 	 * @return
@@ -374,9 +399,9 @@ public class AverroesApplicationConstantPool {
 	private void findLibraryFieldsInApplicationConstantPool() {
 		libraryFields = new HashSet<SootField>();
 
-		// If we're processing an android apk, process the global string constant pool
+		// If we're processing an android apk, process the global field constant pool
 		if (Options.v().src_prec() == Options.src_prec_apk) {
-			// nothing
+			libraryFields.addAll(findLibraryFieldsInAndroidApplicationConstantPool());
 		} else {
 			// Add the library methods that appear in the constant pool of application classes
 			for (SootClass applicationClass : hierarchy.getApplicationClasses()) {
