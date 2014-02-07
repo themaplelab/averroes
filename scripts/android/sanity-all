@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# the droidbench programs
+droidbench="droidbench-apks.txt"
+
+
+date
+
+echo "asserting subset sanity checks ..."
+
+while read benchmark
+do
+  ./sanity ${benchmark}
+done < ${droidbench}
+
+date
