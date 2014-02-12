@@ -2,7 +2,6 @@
 running Spark with Averroes for AndroidNonspecific_Loop1
 Loading properties...
 Generating the call graph for AndroidNonspecific_Loop1.apk
-droidbench/AndroidNonspecific_Loop1.apk
 Using 'benchmarks-averroes/android/AndroidNonspecific_Loop1-placeholder-lib.jar' as android.jar
 [Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
 Total methods: 3461
@@ -11,7 +10,7 @@ Classes with at least one reachable method: 127
 [Spark] Pointer Assignment Graph in 1.1 seconds.
 Total types: 667
 [Spark] Type masks in 0.0 seconds.
-VarNodes: 450
+VarNodes: 568
 FieldRefNodes: 2
 AllocNodes: 435
 Cleaning up graph for merged nodes
@@ -19,12 +18,12 @@ Done cleaning up graph for merged nodes
 [Spark] Pointer Graph simplified in 0.0 seconds.
 Worklist has 435 nodes.
 Now handling field references
-[Spark] Propagation in 1.2 seconds.
-[Spark] Solution found in 1.5 seconds.
+[Spark] Propagation in 1.4 seconds.
+[Spark] Solution found in 1.7 seconds.
 [Spark] Number of reachable methods: 602
-Total time to finish: 5.6
+Total time to finish: 6.08
 =================================================
 # edges = 7
 =================================================
 
-elapsed time: 7.84s
+elapsed time: 8.50s

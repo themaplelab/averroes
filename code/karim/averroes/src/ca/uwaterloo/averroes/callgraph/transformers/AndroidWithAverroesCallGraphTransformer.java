@@ -45,8 +45,8 @@ public class AndroidWithAverroesCallGraphTransformer {
 		Options.v().set_soot_classpath(AverroesProperties.getAndroidAverroesClassPath(benchmark));
 		Options.v().set_src_prec(Options.src_prec_apk);
 		Options.v().set_force_android_jar(FileUtils.androidPlaceholderLibraryJarFile(benchmark));
-		
-		Options.v().set_verbose(true);
+
+		// Options.v().set_verbose(true);
 
 		// Load the necessary classes
 		Scene.v().loadNecessaryClasses();

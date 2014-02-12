@@ -24,7 +24,6 @@ public enum Transformer {
 		return options;
 	}
 
-	@SuppressWarnings("unchecked")
 	private static Map<String, String> chaOptions() {
 		Map<String, String> opts = new HashMap<String, String>(PhaseOptions.v().getPhaseOptions("cg.cha"));
 		opts.put("enabled", "true");
@@ -32,7 +31,6 @@ public enum Transformer {
 		return opts;
 	}
 
-	@SuppressWarnings("unchecked")
 	private static Map<String, String> sparkOptions() {
 		Map<String, String> opts = new HashMap<String, String>(PhaseOptions.v().getPhaseOptions("cg.spark"));
 		opts.put("enabled", "true");

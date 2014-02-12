@@ -1,0 +1,40 @@
+Wed Feb 12 10:48:49 EST 2014
+running FieldAndObjectSensitivity_FieldSensitivity1
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 6.61 seconds.
+# application classes: 11
+# library classes: 1014
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 11
+# initial library classes: 545
+# initial library methods: 9973
+# initial library fields: 4613
+# referenced library methods: 3068
+# referenced library fields: 724
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6398
+# removed library fields: 4118
+# final library methods: 3710
+# final library fields: 495
+
+Generating extra library classes ...
+# generated library classes: 32
+# generated library methods: 84
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 5.74 seconds.
+Placeholder library JAR file verified in 2.4 seconds.
+Total time (without verification) is 12.35 seconds.
+Total time (with verification) is 14.75 seconds.
+Elapsed time: 15.19 seconds.
+elapsed time: 15.55s
+

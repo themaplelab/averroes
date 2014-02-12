@@ -2,16 +2,15 @@
 running Spark with Averroes for ImplicitFlows_ImplicitFlow3
 Loading properties...
 Generating the call graph for ImplicitFlows_ImplicitFlow3.apk
-droidbench/ImplicitFlows_ImplicitFlow3.apk
 Using 'benchmarks-averroes/android/ImplicitFlows_ImplicitFlow3-placeholder-lib.jar' as android.jar
 [Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
 Total methods: 3482
 Initially reachable methods: 125
 Classes with at least one reachable method: 125
-[Spark] Pointer Assignment Graph in 1.0 seconds.
+[Spark] Pointer Assignment Graph in 1.1 seconds.
 Total types: 678
 [Spark] Type masks in 0.0 seconds.
-VarNodes: 457
+VarNodes: 575
 FieldRefNodes: 2
 AllocNodes: 440
 Cleaning up graph for merged nodes
@@ -19,12 +18,12 @@ Done cleaning up graph for merged nodes
 [Spark] Pointer Graph simplified in 0.0 seconds.
 Worklist has 440 nodes.
 Now handling field references
-[Spark] Propagation in 1.2 seconds.
-[Spark] Solution found in 1.6 seconds.
+[Spark] Propagation in 1.4 seconds.
+[Spark] Solution found in 1.8 seconds.
 [Spark] Number of reachable methods: 598
-Total time to finish: 5.76
+Total time to finish: 6.15
 =================================================
 # edges = 13
 =================================================
 
-elapsed time: 8.07s
+elapsed time: 8.46s

@@ -12,12 +12,13 @@ function timing()
 }
 
 date
-
-mkdir -p benchmarks-averroes/android
+outputdir=benchmarks-averroes/android
+mkdir -p ${outputdir}
 
 while read benchmark
 do
-  ./run-averroes-android ${benchmark}
+  echo "generating placeholder library for ${benchmark} ..."
+  ./run-averroes-android ${benchmark} > ${outputdir}/${benchmark}.stats
 done < ${droidbench}
 
 date

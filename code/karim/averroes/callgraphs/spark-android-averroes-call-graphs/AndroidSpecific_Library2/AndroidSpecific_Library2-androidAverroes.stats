@@ -2,16 +2,15 @@
 running Spark with Averroes for AndroidSpecific_Library2
 Loading properties...
 Generating the call graph for AndroidSpecific_Library2.apk
-droidbench/AndroidSpecific_Library2.apk
 Using 'benchmarks-averroes/android/AndroidSpecific_Library2-placeholder-lib.jar' as android.jar
 [Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
 Total methods: 3893
 Initially reachable methods: 135
 Classes with at least one reachable method: 135
-[Spark] Pointer Assignment Graph in 1.0 seconds.
+[Spark] Pointer Assignment Graph in 1.1 seconds.
 Total types: 737
 [Spark] Type masks in 0.0 seconds.
-VarNodes: 506
+VarNodes: 636
 FieldRefNodes: 3
 AllocNodes: 488
 Cleaning up graph for merged nodes
@@ -19,12 +18,12 @@ Done cleaning up graph for merged nodes
 [Spark] Pointer Graph simplified in 0.0 seconds.
 Worklist has 489 nodes.
 Now handling field references
-[Spark] Propagation in 1.5 seconds.
-[Spark] Solution found in 1.9 seconds.
+[Spark] Propagation in 2.0 seconds.
+[Spark] Solution found in 2.4 seconds.
 [Spark] Number of reachable methods: 661
-Total time to finish: 6.28
+Total time to finish: 6.98
 =================================================
 # edges = 14
 =================================================
 
-elapsed time: 8.63s
+elapsed time: 9.22s

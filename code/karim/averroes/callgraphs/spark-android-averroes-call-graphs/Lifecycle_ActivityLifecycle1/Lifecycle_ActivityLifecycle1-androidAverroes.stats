@@ -2,7 +2,6 @@
 running Spark with Averroes for Lifecycle_ActivityLifecycle1
 Loading properties...
 Generating the call graph for Lifecycle_ActivityLifecycle1.apk
-droidbench/Lifecycle_ActivityLifecycle1.apk
 Using 'benchmarks-averroes/android/Lifecycle_ActivityLifecycle1-placeholder-lib.jar' as android.jar
 [Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
 Total methods: 3477
@@ -11,7 +10,7 @@ Classes with at least one reachable method: 130
 [Spark] Pointer Assignment Graph in 1.1 seconds.
 Total types: 671
 [Spark] Type masks in 0.0 seconds.
-VarNodes: 454
+VarNodes: 572
 FieldRefNodes: 2
 AllocNodes: 437
 Cleaning up graph for merged nodes
@@ -19,12 +18,12 @@ Done cleaning up graph for merged nodes
 [Spark] Pointer Graph simplified in 0.0 seconds.
 Worklist has 438 nodes.
 Now handling field references
-[Spark] Propagation in 1.3 seconds.
-[Spark] Solution found in 1.6 seconds.
+[Spark] Propagation in 1.5 seconds.
+[Spark] Solution found in 1.9 seconds.
 [Spark] Number of reachable methods: 610
-Total time to finish: 5.93
+Total time to finish: 6.44
 =================================================
 # edges = 11
 =================================================
 
-elapsed time: 8.99s
+elapsed time: 8.83s

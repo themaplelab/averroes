@@ -1,0 +1,40 @@
+Wed Feb 12 10:54:31 EST 2014
+running ImplicitFlows_ImplicitFlow3
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 4.75 seconds.
+# application classes: 13
+# library classes: 1010
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 13
+# initial library classes: 550
+# initial library methods: 10017
+# initial library fields: 4548
+# referenced library methods: 3068
+# referenced library fields: 724
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6435
+# removed library fields: 4053
+# final library methods: 3718
+# final library fields: 495
+
+Generating extra library classes ...
+# generated library classes: 35
+# generated library methods: 93
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 5.44 seconds.
+Placeholder library JAR file verified in 1.95 seconds.
+Total time (without verification) is 10.19 seconds.
+Total time (with verification) is 12.14 seconds.
+Elapsed time: 12.49 seconds.
+elapsed time: 12.75s
+

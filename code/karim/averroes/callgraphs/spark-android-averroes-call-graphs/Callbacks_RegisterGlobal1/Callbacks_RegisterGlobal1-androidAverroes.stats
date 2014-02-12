@@ -2,7 +2,6 @@
 running Spark with Averroes for Callbacks_RegisterGlobal1
 Loading properties...
 Generating the call graph for Callbacks_RegisterGlobal1.apk
-droidbench/Callbacks_RegisterGlobal1.apk
 Using 'benchmarks-averroes/android/Callbacks_RegisterGlobal1-placeholder-lib.jar' as android.jar
 [Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
 Total methods: 3922
@@ -11,7 +10,7 @@ Classes with at least one reachable method: 135
 [Spark] Pointer Assignment Graph in 1.1 seconds.
 Total types: 741
 [Spark] Type masks in 0.0 seconds.
-VarNodes: 515
+VarNodes: 645
 FieldRefNodes: 3
 AllocNodes: 491
 Cleaning up graph for merged nodes
@@ -19,14 +18,14 @@ Done cleaning up graph for merged nodes
 [Spark] Pointer Graph simplified in 0.0 seconds.
 Worklist has 492 nodes.
 Now handling field references
-Worklist has 1 nodes.
+Worklist has 2 nodes.
 Now handling field references
-[Spark] Propagation in 1.6 seconds.
-[Spark] Solution found in 1.9 seconds.
+[Spark] Propagation in 1.9 seconds.
+[Spark] Solution found in 2.3 seconds.
 [Spark] Number of reachable methods: 697
-Total time to finish: 6.22
+Total time to finish: 6.93
 =================================================
 # edges = 38
 =================================================
 
-elapsed time: 8.46s
+elapsed time: 9.24s
