@@ -1,0 +1,84 @@
+Fri Feb  7 15:08:27 EST 2014
+asserting subset sanity checks ...
+AndroidNonspecific_Loop1 ... success
+AndroidNonspecific_Loop2 ... success
+AndroidNonspecific_SourceCodeSpecific1 ... success
+AndroidNonspecific_StaticInitialization1 ... success
+AndroidNonspecific_UnreachableCode ... success
+AndroidSpecific_DirectLeak1 ... success
+AndroidSpecific_InactiveActivity ... success
+AndroidSpecific_Library2 ... success
+AndroidSpecific_LogNoLeak ... success
+AndroidSpecific_Obfuscation1 ... success
+AndroidSpecific_PrivateDataLeak1 ... missing call edges
+success
+AndroidSpecific_PrivateDataLeak2 ... success
+AndroidSpecific_PrivateDataLeak3 ... success
+ArraysAndLists_ArrayAccess1 ... success
+ArraysAndLists_ArrayAccess2 ... success
+ArraysAndLists_HashMapAccess1 ... success
+ArraysAndLists_ListAccess1 ... success
+Callbacks_AnonymousClass1 ... missing call edges
+success
+Callbacks_Button1 ... missing call edges
+success
+Callbacks_Button2 ... missing call edges
+success
+Callbacks_Button3 ... success
+Callbacks_LocationLeak1 ... missing call edges
+success
+Callbacks_LocationLeak2 ... success
+Callbacks_LocationLeak3 ... success
+Callbacks_MethodOverride1 ... success
+Callbacks_MultiHandlers1 ... success
+Callbacks_Ordering1 ... missing call edges
+success
+Callbacks_RegisterGlobal1 ... success
+Callbacks_RegisterGlobal2 ... missing call edges
+success
+Callbacks_Unregister1 ... missing call edges
+success
+FieldAndObjectSensitivity_FieldSensitivity1 ... success
+FieldAndObjectSensitivity_FieldSensitivity2 ... success
+FieldAndObjectSensitivity_FieldSensitivity3 ... success
+FieldAndObjectSensitivity_FieldSensitivity4 ... success
+FieldAndObjectSensitivity_InheritedObjects1 ... success
+FieldAndObjectSensitivity_ObjectSensitivity1 ... success
+FieldAndObjectSensitivity_ObjectSensitivity2 ... success
+GeneralJava_Exceptions1 ... success
+GeneralJava_Exceptions2 ... success
+GeneralJava_Exceptions3 ... success
+GeneralJava_Exceptions4 ... success
+GeneralJava_Loop1 ... success
+GeneralJava_Loop2 ... success
+GeneralJava_SourceCodeSpecific1 ... success
+GeneralJava_StaticInitialization1 ... success
+GeneralJava_UnreachableCode ... success
+GeneralJava_VirtualDispatch1 ... missing call edges
+success
+ImplicitFlows_ImplicitFlow1 ... missing entry points
+success
+ImplicitFlows_ImplicitFlow2 ... missing call edges
+success
+ImplicitFlows_ImplicitFlow3 ... missing call edges
+success
+ImplicitFlows_ImplicitFlow4 ... missing call edges
+success
+InterAppCommunication_ActivityCommunication1 ... success
+InterAppCommunication_IntentSink1 ... success
+InterAppCommunication_IntentSink2 ... missing call edges
+success
+Lifecycle_ActivityLifecycle1 ... success
+Lifecycle_ActivityLifecycle2 ... success
+Lifecycle_ActivityLifecycle3 ... success
+Lifecycle_ActivityLifecycle4 ... success
+Lifecycle_ApplicationLifecycle1 ... success
+Lifecycle_ApplicationLifecycle2 ... success
+Lifecycle_ApplicationLifecycle3 ... success
+Lifecycle_BroadcastReceiverLifecycle1 ... success
+Lifecycle_ServiceLifecycle1 ... success
+Reflection_Reflection1 ... success
+Reflection_Reflection2 ... success
+Reflection_Reflection3 ... success
+Reflection_Reflection4 ... success
+Fri Feb  7 15:08:36 EST 2014
