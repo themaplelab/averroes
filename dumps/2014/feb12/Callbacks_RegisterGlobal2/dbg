@@ -1,0 +1,4 @@
+===========================================================================
+Missing call edges in callgraphs/spark-android-averroes-call-graphs/Callbacks_RegisterGlobal2/androidAverroes.txt.gzip: 1
+===========================================================================
+unknown: -1 :: ca.uwaterloo.averroes.Library: blob() ===> de.ecspride.MyApplication$1: <init>(Lde/ecspride/MyApplication;)
