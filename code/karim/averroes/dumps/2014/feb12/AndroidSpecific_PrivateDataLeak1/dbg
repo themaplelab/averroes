@@ -1,0 +1,9 @@
+===========================================================================
+Missing call edges in callgraphs/spark-android-averroes-call-graphs/AndroidSpecific_PrivateDataLeak1/androidAverroes.txt.gzip: 1
+===========================================================================
+unknown: -1 :: ca.uwaterloo.averroes.Library: blob() ===> de.ecspride.PrivateDateLeakage: sendMessage(Landroid/view/View;)
+
+
+This method is reachable in spark because it's called from <dummyMainClass: void dummyMainMethod()>. This means
+that our analysis is more precise in this regard.
+

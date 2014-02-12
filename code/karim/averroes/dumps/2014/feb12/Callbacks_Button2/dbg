@@ -1,0 +1,6 @@
+===========================================================================
+Missing call edges in callgraphs/spark-android-averroes-call-graphs/Callbacks_Button2/androidAverroes.txt.gzip: 3
+===========================================================================
+unknown: -1 :: ca.uwaterloo.averroes.Library: blob() ===> de.ecspride.Button2: clickOnButton3(Landroid/view/View;)
+unknown: -1 :: ca.uwaterloo.averroes.Library: blob() ===> de.ecspride.Button2$1: <init>(Lde/ecspride/Button2;)
+unknown: -1 :: ca.uwaterloo.averroes.Library: blob() ===> de.ecspride.Button2$2: <init>(Lde/ecspride/Button2;)
