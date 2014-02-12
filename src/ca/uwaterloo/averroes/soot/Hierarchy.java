@@ -1788,7 +1788,7 @@ public class Hierarchy {
 				toRemove.add(method);
 			} else {
 				cleanupLibraryMethodExceptions(method);
-				cleanupLibraryMethodTags(method); // TODO
+				cleanupLibraryMethodTags(method);
 				makeNotNative(method);
 			}
 		}
@@ -1868,6 +1868,8 @@ public class Hierarchy {
 		for (SootField field : libraryClass.getFields()) {
 			if (isLibraryFieldRemovable(field)) {
 				toRemove.add(field);
+			} else {
+				cleanupLibraryFieldTags(field);
 			}
 		}
 
@@ -1878,6 +1880,23 @@ public class Hierarchy {
 			// Update the field counts
 			removedLibraryFieldCount++;
 			libraryFieldCount--;
+		}
+	}
+	
+	/**
+	 * Cleanup the tag list of a library field. There's no need for tags/annotations in a placeholder library.
+	 * 
+	 * @param libraryfield
+	 */
+	private void cleanupLibraryFieldTags(SootField libraryfield) {
+		Set<String> toRemove = new HashSet<String>();
+		for (Tag tag : libraryfield.getTags()) {
+			toRemove.add(tag.getName());
+		}
+
+		// Remove the exceptions the proper way.
+		for (String tag : toRemove) {
+			libraryfield.removeTag(tag);
 		}
 	}
 

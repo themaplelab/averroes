@@ -2,7 +2,6 @@
 running Spark with Averroes for Callbacks_Ordering1
 Loading properties...
 Generating the call graph for Callbacks_Ordering1.apk
-droidbench/Callbacks_Ordering1.apk
 Using 'benchmarks-averroes/android/Callbacks_Ordering1-placeholder-lib.jar' as android.jar
 [Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
 Total methods: 3890
@@ -11,7 +10,7 @@ Classes with at least one reachable method: 135
 [Spark] Pointer Assignment Graph in 1.1 seconds.
 Total types: 742
 [Spark] Type masks in 0.0 seconds.
-VarNodes: 514
+VarNodes: 644
 FieldRefNodes: 3
 AllocNodes: 490
 Cleaning up graph for merged nodes
@@ -19,12 +18,12 @@ Done cleaning up graph for merged nodes
 [Spark] Pointer Graph simplified in 0.0 seconds.
 Worklist has 491 nodes.
 Now handling field references
-[Spark] Propagation in 1.8 seconds.
-[Spark] Solution found in 2.2 seconds.
+[Spark] Propagation in 2.0 seconds.
+[Spark] Solution found in 2.4 seconds.
 [Spark] Number of reachable methods: 679
-Total time to finish: 6.62
+Total time to finish: 6.85
 =================================================
 # edges = 18
 =================================================
 
-elapsed time: 8.91s
+elapsed time: 9.10s

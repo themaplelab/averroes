@@ -1,0 +1,40 @@
+Wed Feb 12 10:45:40 EST 2014
+running Callbacks_Button3
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 6.72 seconds.
+# application classes: 13
+# library classes: 1071
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 13
+# initial library classes: 605
+# initial library methods: 10604
+# initial library fields: 4879
+# referenced library methods: 3451
+# referenced library fields: 805
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6596
+# removed library fields: 4358
+# final library methods: 4172
+# final library fields: 521
+
+Generating extra library classes ...
+# generated library classes: 36
+# generated library methods: 100
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 6.74 seconds.
+Placeholder library JAR file verified in 2.59 seconds.
+Total time (without verification) is 13.46 seconds.
+Total time (with verification) is 16.05 seconds.
+Elapsed time: 16.49 seconds.
+elapsed time: 16.85s
+

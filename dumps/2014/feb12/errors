@@ -7,7 +7,6 @@ Callbacks_Ordering1 ... missing call edges
 Callbacks_RegisterGlobal2 ... missing call edges
 Callbacks_Unregister1 ... missing call edges
 GeneralJava_VirtualDispatch1 ... missing call edges
-ImplicitFlows_ImplicitFlow1 ... missing entry points
 ImplicitFlows_ImplicitFlow2 ... missing call edges
 ImplicitFlows_ImplicitFlow3 ... missing call edges
 ImplicitFlows_ImplicitFlow4 ... missing call edges

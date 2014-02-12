@@ -2,16 +2,15 @@
 running Spark with Averroes for Callbacks_MultiHandlers1
 Loading properties...
 Generating the call graph for Callbacks_MultiHandlers1.apk
-droidbench/Callbacks_MultiHandlers1.apk
 Using 'benchmarks-averroes/android/Callbacks_MultiHandlers1-placeholder-lib.jar' as android.jar
 [Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
 Total methods: 3910
 Initially reachable methods: 134
 Classes with at least one reachable method: 134
-[Spark] Pointer Assignment Graph in 1.1 seconds.
+[Spark] Pointer Assignment Graph in 1.2 seconds.
 Total types: 742
 [Spark] Type masks in 0.0 seconds.
-VarNodes: 515
+VarNodes: 645
 FieldRefNodes: 3
 AllocNodes: 491
 Cleaning up graph for merged nodes
@@ -19,12 +18,12 @@ Done cleaning up graph for merged nodes
 [Spark] Pointer Graph simplified in 0.0 seconds.
 Worklist has 492 nodes.
 Now handling field references
-[Spark] Propagation in 1.7 seconds.
-[Spark] Solution found in 2.1 seconds.
+[Spark] Propagation in 2.0 seconds.
+[Spark] Solution found in 2.3 seconds.
 [Spark] Number of reachable methods: 684
-Total time to finish: 6.52
+Total time to finish: 6.8
 =================================================
 # edges = 34
 =================================================
 
-elapsed time: 8.84s
+elapsed time: 9.19s

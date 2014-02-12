@@ -1,0 +1,40 @@
+Wed Feb 12 10:42:57 EST 2014
+running AndroidSpecific_PrivateDataLeak2
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 6.27 seconds.
+# application classes: 10
+# library classes: 1007
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 10
+# initial library classes: 547
+# initial library methods: 9931
+# initial library fields: 4545
+# referenced library methods: 3066
+# referenced library fields: 724
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6360
+# removed library fields: 4050
+# final library methods: 3707
+# final library fields: 495
+
+Generating extra library classes ...
+# generated library classes: 35
+# generated library methods: 93
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 5.95 seconds.
+Placeholder library JAR file verified in 2.46 seconds.
+Total time (without verification) is 12.22 seconds.
+Total time (with verification) is 14.68 seconds.
+Elapsed time: 15.12 seconds.
+elapsed time: 15.43s
+

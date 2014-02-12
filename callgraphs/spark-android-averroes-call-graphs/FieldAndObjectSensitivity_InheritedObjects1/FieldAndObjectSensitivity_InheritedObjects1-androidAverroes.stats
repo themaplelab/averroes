@@ -2,16 +2,15 @@
 running Spark with Averroes for FieldAndObjectSensitivity_InheritedObjects1
 Loading properties...
 Generating the call graph for FieldAndObjectSensitivity_InheritedObjects1.apk
-droidbench/FieldAndObjectSensitivity_InheritedObjects1.apk
 Using 'benchmarks-averroes/android/FieldAndObjectSensitivity_InheritedObjects1-placeholder-lib.jar' as android.jar
 [Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
 Total methods: 3464
 Initially reachable methods: 127
 Classes with at least one reachable method: 127
-[Spark] Pointer Assignment Graph in 1.0 seconds.
+[Spark] Pointer Assignment Graph in 1.1 seconds.
 Total types: 670
 [Spark] Type masks in 0.0 seconds.
-VarNodes: 452
+VarNodes: 570
 FieldRefNodes: 2
 AllocNodes: 437
 Cleaning up graph for merged nodes
@@ -21,12 +20,12 @@ Worklist has 437 nodes.
 Now handling field references
 Worklist has 1 nodes.
 Now handling field references
-[Spark] Propagation in 1.2 seconds.
-[Spark] Solution found in 1.6 seconds.
+[Spark] Propagation in 1.4 seconds.
+[Spark] Solution found in 1.8 seconds.
 [Spark] Number of reachable methods: 600
-Total time to finish: 5.85
+Total time to finish: 6.31
 =================================================
 # edges = 15
 =================================================
 
-elapsed time: 8.13s
+elapsed time: 8.63s

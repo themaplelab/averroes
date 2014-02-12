@@ -1,0 +1,40 @@
+Wed Feb 12 10:42:19 EST 2014
+running AndroidSpecific_Obfuscation1
+...
+Loading properties...
+
+Loading classes ...
+Using 'android/android-17/android.jar' as android.jar
+Soot loaded the input classes in 6.46 seconds.
+# application classes: 12
+# library classes: 1064
+
+Creating the class hierarchy for the placeholder library ...
+# initial application classes: 12
+# initial library classes: 603
+# initial library methods: 10543
+# initial library fields: 4823
+# referenced library methods: 3449
+# referenced library fields: 805
+
+Cleaning up the class hierarchy ...
+# removed library methods: 6543
+# removed library fields: 4302
+# final library methods: 4163
+# final library fields: 521
+
+Generating extra library classes ...
+# generated library classes: 36
+# generated library methods: 100
+
+Creating the skeleton for Averroes's main library class ...
+Creating the Android dummy main class ...
+Generating the method bodies for the placeholder library classes ...
+Generating empty basic library classes required by Soot ...
+Placeholder library classes created and validated in 7.34 seconds.
+Placeholder library JAR file verified in 2.54 seconds.
+Total time (without verification) is 13.8 seconds.
+Total time (with verification) is 16.34 seconds.
+Elapsed time: 16.78 seconds.
+elapsed time: 17.09s
+

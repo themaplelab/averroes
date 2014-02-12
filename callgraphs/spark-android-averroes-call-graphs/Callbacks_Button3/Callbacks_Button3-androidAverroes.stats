@@ -2,7 +2,6 @@
 running Spark with Averroes for Callbacks_Button3
 Loading properties...
 Generating the call graph for Callbacks_Button3.apk
-droidbench/Callbacks_Button3.apk
 Using 'benchmarks-averroes/android/Callbacks_Button3-placeholder-lib.jar' as android.jar
 [Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
 Total methods: 3899
@@ -11,7 +10,7 @@ Classes with at least one reachable method: 135
 [Spark] Pointer Assignment Graph in 1.1 seconds.
 Total types: 739
 [Spark] Type masks in 0.0 seconds.
-VarNodes: 514
+VarNodes: 644
 FieldRefNodes: 3
 AllocNodes: 490
 Cleaning up graph for merged nodes
@@ -19,14 +18,12 @@ Done cleaning up graph for merged nodes
 [Spark] Pointer Graph simplified in 0.0 seconds.
 Worklist has 491 nodes.
 Now handling field references
-Worklist has 1 nodes.
-Now handling field references
-[Spark] Propagation in 1.6 seconds.
-[Spark] Solution found in 1.9 seconds.
+[Spark] Propagation in 1.9 seconds.
+[Spark] Solution found in 2.2 seconds.
 [Spark] Number of reachable methods: 668
-Total time to finish: 6.21
+Total time to finish: 6.78
 =================================================
 # edges = 19
 =================================================
 
-elapsed time: 8.49s
+elapsed time: 8.99s

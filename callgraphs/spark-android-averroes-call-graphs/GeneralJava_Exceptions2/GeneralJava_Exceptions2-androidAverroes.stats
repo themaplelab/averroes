@@ -2,16 +2,15 @@
 running Spark with Averroes for GeneralJava_Exceptions2
 Loading properties...
 Generating the call graph for GeneralJava_Exceptions2.apk
-droidbench/GeneralJava_Exceptions2.apk
 Using 'benchmarks-averroes/android/GeneralJava_Exceptions2-placeholder-lib.jar' as android.jar
 [Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
 Total methods: 3889
 Initially reachable methods: 135
 Classes with at least one reachable method: 135
-[Spark] Pointer Assignment Graph in 1.1 seconds.
+[Spark] Pointer Assignment Graph in 1.2 seconds.
 Total types: 736
 [Spark] Type masks in 0.0 seconds.
-VarNodes: 503
+VarNodes: 633
 FieldRefNodes: 3
 AllocNodes: 487
 Cleaning up graph for merged nodes
@@ -19,12 +18,12 @@ Done cleaning up graph for merged nodes
 [Spark] Pointer Graph simplified in 0.0 seconds.
 Worklist has 488 nodes.
 Now handling field references
-[Spark] Propagation in 1.5 seconds.
-[Spark] Solution found in 1.9 seconds.
+[Spark] Propagation in 1.9 seconds.
+[Spark] Solution found in 2.4 seconds.
 [Spark] Number of reachable methods: 656
-Total time to finish: 6.12
+Total time to finish: 7.05
 =================================================
 # edges = 7
 =================================================
 
-elapsed time: 8.46s
+elapsed time: 9.42s
