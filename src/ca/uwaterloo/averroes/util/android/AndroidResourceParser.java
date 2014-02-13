@@ -2,6 +2,7 @@ package ca.uwaterloo.averroes.util.android;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.HashSet;
 import java.util.Set;
 
 import pxb.android.axml.AxmlReader;
@@ -12,13 +13,29 @@ import soot.jimple.infoflow.android.resources.IResourceHandler;
 
 public class AndroidResourceParser extends AbstractResourceParser {
 
+	private String fileName;
+	private Set<String> onClickMethodNames;
+
+	public AndroidResourceParser(String fileName) {
+		this.fileName = fileName;
+		onClickMethodNames = new HashSet<String>();
+		parse();
+	}
+
 	/**
-	 * Parses all layout XML files in the given APK file and loads the IDs of the user controls in it.
+	 * Get the names of methods that handle onClick events.
 	 * 
-	 * @param fileName
-	 *            The APK file in which to look for user controls
+	 * @return
 	 */
-	public void parse(final String fileName) {
+	public Set<String> getOnClickMethodNames() {
+		return onClickMethodNames;
+	}
+
+	/**
+	 * Parse the android XML resource files in the given APK file, to collect the names of onClick handlers. This is
+	 * later used to determine which method could potentially be called back from the placeholder lirbary.
+	 */
+	private void parse() {
 		handleAndroidResourceFiles(fileName, null, new IResourceHandler() {
 			@Override
 			public void handleResourceFile(final String fileName, Set<String> fileNameFilter, InputStream stream) {
@@ -80,7 +97,7 @@ public class AndroidResourceParser extends AbstractResourceParser {
 			String tname = name.trim();
 			if (isActionListener(tname) && type == AxmlVisitor.TYPE_STRING && obj instanceof String) {
 				String strData = ((String) obj).trim();
-				System.out.println(strData);
+				onClickMethodNames.add(strData);
 			}
 
 			super.attr(ns, name, resourceId, type, obj);

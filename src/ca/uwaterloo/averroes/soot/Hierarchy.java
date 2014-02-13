@@ -617,6 +617,7 @@ public class Hierarchy {
 
 	/**
 	 * Get the String[] type.
+	 * 
 	 * @return
 	 */
 	public Type getStringArrayType() {
@@ -625,6 +626,7 @@ public class Hierarchy {
 
 	/**
 	 * Get the parameters of the standard main method.
+	 * 
 	 * @return
 	 */
 	public List<Type> getMainParams() {
@@ -1437,6 +1439,23 @@ public class Hierarchy {
 		return librarySuperMethodsOfApplicationMethods;
 	}
 
+	public Set<SootMethod> getOnClickApplicationMethods() {
+		Set<SootMethod> result = new HashSet<SootMethod>();
+
+		for (SootClass cls : getApplicationClasses()) {
+			for (String methodName : AverroesProperties.getAndroidResourceParser().getOnClickMethodNames()) {
+				if (cls.declaresMethod(Names.getOnClickSubSig(methodName))) {
+					SootMethod onClick = cls.getMethod(Names.getOnClickSubSig(methodName));
+					if(onClick.isPublic()) { // the onClick handler has to be a public method
+						result.add(onClick);
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+
 	/**
 	 * Check if the given method is a library method referenced by the application.
 	 * 
@@ -1882,7 +1901,7 @@ public class Hierarchy {
 			libraryFieldCount--;
 		}
 	}
-	
+
 	/**
 	 * Cleanup the tag list of a library field. There's no need for tags/annotations in a placeholder library.
 	 * 

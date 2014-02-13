@@ -31,7 +31,6 @@ import ca.uwaterloo.averroes.util.DexUtils;
  * 
  */
 public class AverroesApplicationConstantPool {
-
 	private Set<SootClass> applicationClasses;
 	private Set<SootMethod> libraryMethods;
 	private Set<SootField> libraryFields;
