@@ -12,6 +12,7 @@ import ca.uwaterloo.averroes.soot.Hierarchy;
 import ca.uwaterloo.averroes.util.DexUtils;
 import ca.uwaterloo.averroes.util.MathUtils;
 import ca.uwaterloo.averroes.util.TimeUtils;
+import ca.uwaterloo.averroes.util.android.AndroidResourceParser;
 import ca.uwaterloo.averroes.util.io.FileUtils;
 
 /**
@@ -53,6 +54,11 @@ public class AndroidJarFactory {
 			Options.v().set_src_prec(Options.src_prec_apk);
 			Options.v().set_android_jars(AverroesProperties.getAndroidPath());
 			Options.v().set_validate(true);
+
+			// TODO
+			AndroidResourceParser parser = new AndroidResourceParser();
+			parser.parse(AverroesProperties.getApkLocation());
+			System.exit(0);
 
 			// Load the necessary classes
 			TimeUtils.reset();

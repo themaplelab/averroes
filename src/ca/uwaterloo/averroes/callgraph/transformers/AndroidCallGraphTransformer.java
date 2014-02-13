@@ -41,15 +41,16 @@ public class AndroidCallGraphTransformer {
 
 		List<String> entryPoints = new ArrayList<String>();
 
-		for (String key : app.getEntryPointCreator().getCallbackFunctions().keySet()) {
-			System.out.println(key);
-			for (String m : app.getEntryPointCreator().getCallbackFunctions().get(key)) {
-				System.out.println("\t" + m);
-				entryPoints.add(m);
-			}
-		}
+		// for (String key : app.getEntryPointCreator().getCallbackFunctions().keySet()) {
+		// System.out.println(key);
+		// for (String m : app.getEntryPointCreator().getCallbackFunctions().get(key)) {
+		// System.out.println("\t" + m);
+		// entryPoints.add(m);
+		// }
+		// }
 
 		SootMethod dummyMain = app.getEntryPointCreator().createDummyMain(entryPoints);
+		System.out.println(dummyMain.getActiveBody());
 		Scene.v().setEntryPoints(Collections.singletonList(dummyMain));
 
 		// Run the Spark transformer
@@ -64,6 +65,10 @@ public class AndroidCallGraphTransformer {
 			soot.jimple.toolkits.callgraph.Edge e = it.next();
 			if (e.isExplicit() || e.kind().equals(Kind.NEWINSTANCE)) {
 				probecg.edges().add(new probe.CallEdge(probeMethod(e.src()), probeMethod(e.tgt())));
+
+				if (e.tgt().getName().equals("sendMessage")) {
+					System.out.println(e.src() + " ===> " + e.tgt());
+				}
 			}
 		}
 
