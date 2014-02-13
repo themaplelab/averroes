@@ -6,6 +6,7 @@ import soot.util.NumberedString;
 public class Names {
 	public static final String AVERROES_LIBRARY_CLASS = "ca.uwaterloo.averroes.Library";
 	public static final String ANDROID_DUMMY_MAIN_CLASS = "ca.uwaterloo.averroes.AndroidDummyMainClass";
+	public static final String ANDROID_VIEW = "android.view.View";
 	public static final String BLOB = "blob";
 	public static final String LIBRARY_POINTS_TO = "libraryPointsTo";
 	public static final String LIBRARY_POINTS_TO_FIELD_SIGNATURE = "<" + AVERROES_LIBRARY_CLASS + ": java.lang.Object "
@@ -35,4 +36,7 @@ public class Names {
 	public static final NumberedString DEFAULT_CONSTRUCTOR_SIG = Scene.v().getSubSigNumberer()
 			.findOrAdd("void <init>()");
 
+	public static String getOnClickSubSig(String methodName) {
+		return "void " + methodName + "(" + ANDROID_VIEW + ")";
+	}
 }

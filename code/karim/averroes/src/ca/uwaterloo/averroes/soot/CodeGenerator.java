@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -428,9 +429,15 @@ public class CodeGenerator {
 	 * @return
 	 */
 	public Set<SootMethod> getAllMethodsToCallReflectively() {
-		Set<SootMethod> result = new HashSet<SootMethod>();
+		LinkedHashSet<SootMethod> result = new LinkedHashSet<SootMethod>();
 		result.addAll(Hierarchy.v().getLibrarySuperMethodsOfApplicationMethods());
 		result.addAll(getTamiFlexApplicationMethodInvokes());
+
+		// Get those methods specified in the apk resource xml files that handle onClick events.
+		if (Options.v().src_prec() == Options.src_prec_apk) {
+			result.addAll(Hierarchy.v().getOnClickApplicationMethods());
+		}
+		
 		return result;
 	}
 

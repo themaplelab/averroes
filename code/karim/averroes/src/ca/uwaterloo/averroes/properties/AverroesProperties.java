@@ -24,6 +24,7 @@ import soot.options.Options;
 import ca.uwaterloo.averroes.exceptions.Assertions;
 import ca.uwaterloo.averroes.exceptions.AverroesException;
 import ca.uwaterloo.averroes.soot.Names;
+import ca.uwaterloo.averroes.util.android.AndroidResourceParser;
 import ca.uwaterloo.averroes.util.io.FileUtils;
 
 /**
@@ -55,8 +56,9 @@ public final class AverroesProperties {
 	private static List<String> dynamicClasses = null;
 	private static boolean isDisableReflection = false;
 
-	private static ProcessManifest processManifest = null;
 	private static boolean isProcessingAndroidApk = false;
+	private static ProcessManifest processManifest = null;
+	private static AndroidResourceParser parser = null;
 
 	/**
 	 * Load the properties file at the first access of this class.
@@ -83,6 +85,7 @@ public final class AverroesProperties {
 			// If we're processing an apk, process its manifest
 			if (Options.v().src_prec() == Options.src_prec_apk) {
 				processAndroidManifest();
+				parseAndroidResources();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -123,6 +126,13 @@ public final class AverroesProperties {
 	private static void processAndroidManifest() {
 		processManifest = new ProcessManifest();
 		processManifest.loadManifestFile(getApkLocation());
+	}
+
+	/**
+	 * Parse the android binary xml resource files.
+	 */
+	private static void parseAndroidResources() {
+		parser = new AndroidResourceParser(getApkLocation());
 	}
 
 	/**
@@ -229,15 +239,28 @@ public final class AverroesProperties {
 	}
 
 	/**
-	 * Get the manifest of the underlying android apk. Otherwise, throw an exception if not processing an android apk;
+	 * Get the manifest of the underlying android apk. Otherwise, throw an exception if not processing an android apk.
 	 * 
 	 * @return
 	 */
 	public static ProcessManifest getAndroidManifest() {
 		if (processManifest == null) {
-			throw new RuntimeException("Oops! No android apk found.");
+			throw new RuntimeException("Oops! Not processing an android apk.");
 		}
 		return processManifest;
+	}
+
+	/**
+	 * Get the resources parser of the underlying android apk. Otherwise, throw an exception if not processing an
+	 * android apk.
+	 * 
+	 * @return
+	 */
+	public static AndroidResourceParser getAndroidResourceParser() {
+		if (parser == null) {
+			throw new RuntimeException("Oops! Not processing an android apk.");
+		}
+		return parser;
 	}
 
 	/**
