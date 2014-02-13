@@ -229,6 +229,18 @@ public final class AverroesProperties {
 	}
 
 	/**
+	 * Get the manifest of the underlying android apk. Otherwise, throw an exception if not processing an android apk;
+	 * 
+	 * @return
+	 */
+	public static ProcessManifest getAndroidManifest() {
+		if (processManifest == null) {
+			throw new RuntimeException("Oops! No android apk found.");
+		}
+		return processManifest;
+	}
+
+	/**
 	 * Get the {@value #LIBRARY_JAR_FILES} property. That is a list of the library JAR files separated by
 	 * {@link File#pathSeparator}.
 	 * 
