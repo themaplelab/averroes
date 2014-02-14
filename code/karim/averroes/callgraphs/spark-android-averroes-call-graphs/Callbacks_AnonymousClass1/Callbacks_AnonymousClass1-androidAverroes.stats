@@ -7,7 +7,7 @@ Using 'benchmarks-averroes/android/Callbacks_AnonymousClass1-placeholder-lib.jar
 Total methods: 3478
 Initially reachable methods: 126
 Classes with at least one reachable method: 126
-[Spark] Pointer Assignment Graph in 1.1 seconds.
+[Spark] Pointer Assignment Graph in 1.9 seconds.
 Total types: 671
 [Spark] Type masks in 0.0 seconds.
 VarNodes: 576
@@ -18,12 +18,12 @@ Done cleaning up graph for merged nodes
 [Spark] Pointer Graph simplified in 0.0 seconds.
 Worklist has 437 nodes.
 Now handling field references
-[Spark] Propagation in 1.4 seconds.
-[Spark] Solution found in 1.8 seconds.
+[Spark] Propagation in 2.6 seconds.
+[Spark] Solution found in 2.9 seconds.
 [Spark] Number of reachable methods: 619
-Total time to finish: 5.98
+Total time to finish: 8.87
 =================================================
 # edges = 18
 =================================================
 
-elapsed time: 8.35s
+elapsed time: 11.43s

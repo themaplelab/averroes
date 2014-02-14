@@ -7,7 +7,7 @@ Using 'benchmarks-averroes/android/AndroidSpecific_Obfuscation1-placeholder-lib.
 Total methods: 3889
 Initially reachable methods: 134
 Classes with at least one reachable method: 134
-[Spark] Pointer Assignment Graph in 1.1 seconds.
+[Spark] Pointer Assignment Graph in 1.9 seconds.
 Total types: 736
 [Spark] Type masks in 0.0 seconds.
 VarNodes: 635
@@ -18,12 +18,12 @@ Done cleaning up graph for merged nodes
 [Spark] Pointer Graph simplified in 0.0 seconds.
 Worklist has 488 nodes.
 Now handling field references
-[Spark] Propagation in 2.4 seconds.
-[Spark] Solution found in 2.8 seconds.
+[Spark] Propagation in 3.0 seconds.
+[Spark] Solution found in 3.3 seconds.
 [Spark] Number of reachable methods: 658
-Total time to finish: 7.34
+Total time to finish: 9.37
 =================================================
 # edges = 12
 =================================================
 
-elapsed time: 9.61s
+elapsed time: 11.91s

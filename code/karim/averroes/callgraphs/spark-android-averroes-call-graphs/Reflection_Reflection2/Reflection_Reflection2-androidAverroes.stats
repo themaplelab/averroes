@@ -7,7 +7,7 @@ Using 'benchmarks-averroes/android/Reflection_Reflection2-placeholder-lib.jar' a
 Total methods: 3895
 Initially reachable methods: 135
 Classes with at least one reachable method: 135
-[Spark] Pointer Assignment Graph in 1.1 seconds.
+[Spark] Pointer Assignment Graph in 2.0 seconds.
 Total types: 738
 [Spark] Type masks in 0.0 seconds.
 VarNodes: 636
@@ -18,12 +18,12 @@ Done cleaning up graph for merged nodes
 [Spark] Pointer Graph simplified in 0.0 seconds.
 Worklist has 489 nodes.
 Now handling field references
-[Spark] Propagation in 2.3 seconds.
-[Spark] Solution found in 2.7 seconds.
+[Spark] Propagation in 2.7 seconds.
+[Spark] Solution found in 3.1 seconds.
 [Spark] Number of reachable methods: 665
-Total time to finish: 7.11
+Total time to finish: 9.29
 =================================================
 # edges = 13
 =================================================
 
-elapsed time: 9.38s
+elapsed time: 11.97s

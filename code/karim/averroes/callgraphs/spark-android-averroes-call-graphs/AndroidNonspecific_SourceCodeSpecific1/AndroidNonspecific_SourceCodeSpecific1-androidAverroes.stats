@@ -7,7 +7,7 @@ Using 'benchmarks-averroes/android/AndroidNonspecific_SourceCodeSpecific1-placeh
 Total methods: 3472
 Initially reachable methods: 127
 Classes with at least one reachable method: 127
-[Spark] Pointer Assignment Graph in 1.1 seconds.
+[Spark] Pointer Assignment Graph in 1.9 seconds.
 Total types: 668
 [Spark] Type masks in 0.0 seconds.
 VarNodes: 568
@@ -18,12 +18,12 @@ Done cleaning up graph for merged nodes
 [Spark] Pointer Graph simplified in 0.0 seconds.
 Worklist has 435 nodes.
 Now handling field references
-[Spark] Propagation in 1.4 seconds.
-[Spark] Solution found in 1.7 seconds.
+[Spark] Propagation in 2.4 seconds.
+[Spark] Solution found in 2.8 seconds.
 [Spark] Number of reachable methods: 602
-Total time to finish: 6.14
+Total time to finish: 8.67
 =================================================
 # edges = 9
 =================================================
 
-elapsed time: 8.53s
+elapsed time: 11.33s

@@ -7,10 +7,10 @@ Using 'benchmarks-averroes/android/InterAppCommunication_IntentSink2-placeholder
 Total methods: 3470
 Initially reachable methods: 126
 Classes with at least one reachable method: 126
-[Spark] Pointer Assignment Graph in 1.1 seconds.
+[Spark] Pointer Assignment Graph in 2.0 seconds.
 Total types: 673
 [Spark] Type masks in 0.0 seconds.
-VarNodes: 571
+VarNodes: 575
 FieldRefNodes: 2
 AllocNodes: 438
 Cleaning up graph for merged nodes
@@ -18,12 +18,12 @@ Done cleaning up graph for merged nodes
 [Spark] Pointer Graph simplified in 0.0 seconds.
 Worklist has 438 nodes.
 Now handling field references
-[Spark] Propagation in 1.4 seconds.
-[Spark] Solution found in 1.7 seconds.
-[Spark] Number of reachable methods: 594
-Total time to finish: 5.86
+[Spark] Propagation in 2.3 seconds.
+[Spark] Solution found in 2.6 seconds.
+[Spark] Number of reachable methods: 603
+Total time to finish: 8.64
 =================================================
-# edges = 7
+# edges = 9
 =================================================
 
-elapsed time: 8.16s
+elapsed time: 11.19s

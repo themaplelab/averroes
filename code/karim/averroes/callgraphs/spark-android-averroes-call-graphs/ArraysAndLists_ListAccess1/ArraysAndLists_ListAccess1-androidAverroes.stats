@@ -7,7 +7,7 @@ Using 'benchmarks-averroes/android/ArraysAndLists_ListAccess1-placeholder-lib.ja
 Total methods: 3469
 Initially reachable methods: 127
 Classes with at least one reachable method: 127
-[Spark] Pointer Assignment Graph in 1.1 seconds.
+[Spark] Pointer Assignment Graph in 1.9 seconds.
 Total types: 670
 [Spark] Type masks in 0.0 seconds.
 VarNodes: 569
@@ -18,12 +18,12 @@ Done cleaning up graph for merged nodes
 [Spark] Pointer Graph simplified in 0.0 seconds.
 Worklist has 436 nodes.
 Now handling field references
-[Spark] Propagation in 1.4 seconds.
-[Spark] Solution found in 1.7 seconds.
+[Spark] Propagation in 2.3 seconds.
+[Spark] Solution found in 2.6 seconds.
 [Spark] Number of reachable methods: 600
-Total time to finish: 5.94
+Total time to finish: 8.55
 =================================================
 # edges = 7
 =================================================
 
-elapsed time: 8.31s
+elapsed time: 11.19s

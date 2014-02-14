@@ -2,7 +2,7 @@
 running Spark for Callbacks_LocationLeak1
 Loading properties...
 Generating the call graph for an Android apk.
-[main] INFO soot.jimple.infoflow.android.SetupApplication - ARSC file parsing took 0.019235962 seconds
+[main] INFO soot.jimple.infoflow.android.SetupApplication - ARSC file parsing took 0.031511632 seconds
 Using 'android/android-17/android.jar' as android.jar
 [main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
     public static void dummyMainMethod()
@@ -53,11 +53,11 @@ Using 'android/android-17/android.jar' as android.jar
 
 Warning: java.lang.ref.Finalizer is a phantom class!
 [Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
-[Spark] Pointer Assignment Graph in 0.2 seconds.
-[Spark] Type masks in 0.0 seconds.
+[Spark] Pointer Assignment Graph in 0.5 seconds.
+[Spark] Type masks in 0.1 seconds.
 [Spark] Pointer Graph simplified in 0.0 seconds.
-[Spark] Propagation in 5.0 seconds.
-[Spark] Solution found in 5.0 seconds.
+[Spark] Propagation in 7.9 seconds.
+[Spark] Solution found in 7.9 seconds.
 Callback analysis done.
 Found 0 layout controls in file res/layout/activity_location_leak1.xml
 Transforming dummyMainClass... 
@@ -137,8 +137,8 @@ Warning: java.lang.ref.Finalizer is a phantom class!
 [Spark] Pointer Assignment Graph in 0.0 seconds.
 [Spark] Type masks in 0.0 seconds.
 [Spark] Pointer Graph simplified in 0.0 seconds.
-[Spark] Propagation in 3.5 seconds.
-[Spark] Solution found in 3.5 seconds.
+[Spark] Propagation in 2.7 seconds.
+[Spark] Solution found in 2.7 seconds.
 Running incremental callback analysis for 1 components...
 Incremental callback analysis done.
 Transforming dummyMainClass... 
@@ -264,12 +264,12 @@ Worklist has 55 nodes.
 Now handling field references
 Worklist has 2 nodes.
 Now handling field references
-[Spark] Propagation in 1.6 seconds.
-[Spark] Solution found in 4.2 seconds.
+[Spark] Propagation in 1.7 seconds.
+[Spark] Solution found in 2.3 seconds.
 [Spark] Number of reachable methods: 555
-Total time to finish: 40.54
+Total time to finish: 37.39
 =================================================
-# edges = 14
+# edges = 15
 =================================================
 
-elapsed time: 42.97s
+elapsed time: 40.11s

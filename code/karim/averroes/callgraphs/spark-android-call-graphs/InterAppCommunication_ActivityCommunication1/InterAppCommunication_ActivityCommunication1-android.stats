@@ -2,7 +2,7 @@
 running Spark for InterAppCommunication_ActivityCommunication1
 Loading properties...
 Generating the call graph for an Android apk.
-[main] INFO soot.jimple.infoflow.android.SetupApplication - ARSC file parsing took 0.019399653 seconds
+[main] INFO soot.jimple.infoflow.android.SetupApplication - ARSC file parsing took 0.059177624 seconds
 Using 'android/android-17/android.jar' as android.jar
 [main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
     public static void dummyMainMethod()
@@ -84,11 +84,11 @@ Using 'android/android-17/android.jar' as android.jar
 
 Warning: java.lang.ref.Finalizer is a phantom class!
 [Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
-[Spark] Pointer Assignment Graph in 0.2 seconds.
-[Spark] Type masks in 0.0 seconds.
+[Spark] Pointer Assignment Graph in 0.6 seconds.
+[Spark] Type masks in 0.1 seconds.
 [Spark] Pointer Graph simplified in 0.0 seconds.
-[Spark] Propagation in 4.0 seconds.
-[Spark] Solution found in 4.0 seconds.
+[Spark] Propagation in 6.8 seconds.
+[Spark] Solution found in 6.8 seconds.
 Callback analysis done.
 Warning: TextView is a phantom class!
 Warning: de.ecspride.TextView is a phantom class!
@@ -186,8 +186,8 @@ Warning: java.lang.ref.Finalizer is a phantom class!
 [Spark] Pointer Assignment Graph in 0.0 seconds.
 [Spark] Type masks in 0.0 seconds.
 [Spark] Pointer Graph simplified in 0.0 seconds.
-[Spark] Propagation in 2.2 seconds.
-[Spark] Solution found in 2.2 seconds.
+[Spark] Propagation in 2.6 seconds.
+[Spark] Solution found in 2.6 seconds.
 Running incremental callback analysis for 2 components...
 Incremental callback analysis done.
 Transforming dummyMainClass... 
@@ -303,12 +303,12 @@ Worklist has 61 nodes.
 Now handling field references
 Worklist has 2 nodes.
 Now handling field references
-[Spark] Propagation in 1.4 seconds.
-[Spark] Solution found in 3.9 seconds.
+[Spark] Propagation in 2.1 seconds.
+[Spark] Solution found in 2.7 seconds.
 [Spark] Number of reachable methods: 493
-Total time to finish: 37.41
+Total time to finish: 37.65
 =================================================
-# edges = 8
+# edges = 9
 =================================================
 
-elapsed time: 39.83s
+elapsed time: 40.36s

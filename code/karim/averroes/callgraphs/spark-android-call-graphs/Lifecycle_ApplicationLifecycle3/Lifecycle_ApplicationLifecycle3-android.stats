@@ -2,7 +2,7 @@
 running Spark for Lifecycle_ApplicationLifecycle3
 Loading properties...
 Generating the call graph for an Android apk.
-[main] INFO soot.jimple.infoflow.android.SetupApplication - ARSC file parsing took 0.020082324 seconds
+[main] INFO soot.jimple.infoflow.android.SetupApplication - ARSC file parsing took 0.035276895 seconds
 Using 'android/android-17/android.jar' as android.jar
 [main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
     public static void dummyMainMethod()
@@ -74,11 +74,11 @@ Using 'android/android-17/android.jar' as android.jar
 
 Warning: java.lang.ref.Finalizer is a phantom class!
 [Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
-[Spark] Pointer Assignment Graph in 0.2 seconds.
+[Spark] Pointer Assignment Graph in 0.3 seconds.
 [Spark] Type masks in 0.0 seconds.
 [Spark] Pointer Graph simplified in 0.0 seconds.
-[Spark] Propagation in 4.8 seconds.
-[Spark] Solution found in 4.8 seconds.
+[Spark] Propagation in 7.4 seconds.
+[Spark] Solution found in 7.4 seconds.
 Callback analysis done.
 Warning: TextView is a phantom class!
 Warning: de.ecspride.applicationlifecycle3.TextView is a phantom class!
@@ -98,11 +98,11 @@ Using 'android/android-17/android.jar' as android.jar
         de.ecspride.ContentProvider $r0;
         boolean $z0, $z1;
         de.ecspride.ApplicationLifecyle3 $r1;
-        java.lang.String[] $r2, $r3, $r7, $r10;
-        android.database.Cursor $r4;
-        android.content.ContentValues $r5, $r9;
-        android.net.Uri $r6;
+        java.lang.String[] $r2, $r4, $r5, $r6;
+        android.content.ContentValues $r3, $r9;
+        android.database.Cursor $r7;
         java.lang.String $r8;
+        android.net.Uri $r10;
         de.ecspride.MainActivity $r11;
         android.os.Bundle $r12;
 
@@ -137,24 +137,26 @@ Using 'android/android-17/android.jar' as android.jar
 
         $r2 = newarray (java.lang.String)[1];
         $r2[19] = "";
-        $r3 = newarray (java.lang.String)[1];
-        $r3[19] = "";
-        $r4 = virtualinvoke $r0.<de.ecspride.ContentProvider: android.database.Cursor query(android.net.Uri,java.lang.String[],java.lang.String,java.lang.String[],java.lang.String)>(null, $r2, "", $r3, "");
+        $i1 = virtualinvoke $r0.<de.ecspride.ContentProvider: int delete(android.net.Uri,java.lang.String,java.lang.String[])>(null, "", $r2);
 
      label6:
         if $i0 == 6 goto label7;
 
-        $r5 = new android.content.ContentValues;
-        specialinvoke $r5.<android.content.ContentValues: void <init>()>();
-        $r6 = virtualinvoke $r0.<de.ecspride.ContentProvider: android.net.Uri insert(android.net.Uri,android.content.ContentValues)>(null, $r5);
-        $r5 = null;
+        $r3 = new android.content.ContentValues;
+        specialinvoke $r3.<android.content.ContentValues: void <init>()>();
+        $r4 = newarray (java.lang.String)[1];
+        $r4[19] = "";
+        $i2 = virtualinvoke $r0.<de.ecspride.ContentProvider: int update(android.net.Uri,android.content.ContentValues,java.lang.String,java.lang.String[])>(null, $r3, "", $r4);
+        $r3 = null;
 
      label7:
         if $i0 == 7 goto label8;
 
-        $r7 = newarray (java.lang.String)[1];
-        $r7[19] = "";
-        $i1 = virtualinvoke $r0.<de.ecspride.ContentProvider: int delete(android.net.Uri,java.lang.String,java.lang.String[])>(null, "", $r7);
+        $r5 = newarray (java.lang.String)[1];
+        $r5[19] = "";
+        $r6 = newarray (java.lang.String)[1];
+        $r6[19] = "";
+        $r7 = virtualinvoke $r0.<de.ecspride.ContentProvider: android.database.Cursor query(android.net.Uri,java.lang.String[],java.lang.String,java.lang.String[],java.lang.String)>(null, $r5, "", $r6, "");
 
      label8:
         if $i0 == 8 goto label9;
@@ -166,9 +168,7 @@ Using 'android/android-17/android.jar' as android.jar
 
         $r9 = new android.content.ContentValues;
         specialinvoke $r9.<android.content.ContentValues: void <init>()>();
-        $r10 = newarray (java.lang.String)[1];
-        $r10[19] = "";
-        $i2 = virtualinvoke $r0.<de.ecspride.ContentProvider: int update(android.net.Uri,android.content.ContentValues,java.lang.String,java.lang.String[])>(null, $r9, "", $r10);
+        $r10 = virtualinvoke $r0.<de.ecspride.ContentProvider: android.net.Uri insert(android.net.Uri,android.content.ContentValues)>(null, $r9);
         $r9 = null;
 
      label10:
@@ -227,8 +227,8 @@ Warning: java.lang.ref.Finalizer is a phantom class!
 [Spark] Pointer Assignment Graph in 0.0 seconds.
 [Spark] Type masks in 0.0 seconds.
 [Spark] Pointer Graph simplified in 0.0 seconds.
-[Spark] Propagation in 2.7 seconds.
-[Spark] Solution found in 2.7 seconds.
+[Spark] Propagation in 3.1 seconds.
+[Spark] Solution found in 3.1 seconds.
 Running incremental callback analysis for 3 components...
 Incremental callback analysis done.
 Transforming dummyMainClass... 
@@ -261,10 +261,10 @@ de.ecspride.MainActivity
         de.ecspride.ContentProvider $r0;
         boolean $z0, $z1;
         de.ecspride.ApplicationLifecyle3 $r1;
-        java.lang.String[] $r2, $r3, $r4, $r8;
-        android.database.Cursor $r5;
-        java.lang.String $r6;
-        android.content.ContentValues $r7, $r9;
+        java.lang.String[] $r2, $r5, $r6, $r7;
+        java.lang.String $r3;
+        android.content.ContentValues $r4, $r9;
+        android.database.Cursor $r8;
         android.net.Uri $r10;
         de.ecspride.MainActivity $r11;
         android.os.Bundle $r12;
@@ -305,26 +305,26 @@ de.ecspride.MainActivity
      label6:
         if $i0 == 6 goto label7;
 
-        $r3 = newarray (java.lang.String)[1];
-        $r3[19] = "";
-        $r4 = newarray (java.lang.String)[1];
-        $r4[19] = "";
-        $r5 = virtualinvoke $r0.<de.ecspride.ContentProvider: android.database.Cursor query(android.net.Uri,java.lang.String[],java.lang.String,java.lang.String[],java.lang.String)>(null, $r3, "", $r4, "");
+        $r3 = virtualinvoke $r0.<de.ecspride.ContentProvider: java.lang.String getType(android.net.Uri)>(null);
 
      label7:
         if $i0 == 7 goto label8;
 
-        $r6 = virtualinvoke $r0.<de.ecspride.ContentProvider: java.lang.String getType(android.net.Uri)>(null);
+        $r4 = new android.content.ContentValues;
+        specialinvoke $r4.<android.content.ContentValues: void <init>()>();
+        $r5 = newarray (java.lang.String)[1];
+        $r5[19] = "";
+        $i2 = virtualinvoke $r0.<de.ecspride.ContentProvider: int update(android.net.Uri,android.content.ContentValues,java.lang.String,java.lang.String[])>(null, $r4, "", $r5);
+        $r4 = null;
 
      label8:
         if $i0 == 8 goto label9;
 
-        $r7 = new android.content.ContentValues;
-        specialinvoke $r7.<android.content.ContentValues: void <init>()>();
-        $r8 = newarray (java.lang.String)[1];
-        $r8[19] = "";
-        $i2 = virtualinvoke $r0.<de.ecspride.ContentProvider: int update(android.net.Uri,android.content.ContentValues,java.lang.String,java.lang.String[])>(null, $r7, "", $r8);
-        $r7 = null;
+        $r6 = newarray (java.lang.String)[1];
+        $r6[19] = "";
+        $r7 = newarray (java.lang.String)[1];
+        $r7[19] = "";
+        $r8 = virtualinvoke $r0.<de.ecspride.ContentProvider: android.database.Cursor query(android.net.Uri,java.lang.String[],java.lang.String,java.lang.String[],java.lang.String)>(null, $r6, "", $r7, "");
 
      label9:
         if $i0 == 9 goto label10;
@@ -406,12 +406,12 @@ Worklist has 60 nodes.
 Now handling field references
 Worklist has 2 nodes.
 Now handling field references
-[Spark] Propagation in 1.6 seconds.
-[Spark] Solution found in 4.1 seconds.
+[Spark] Propagation in 1.9 seconds.
+[Spark] Solution found in 2.6 seconds.
 [Spark] Number of reachable methods: 552
-Total time to finish: 40.15
+Total time to finish: 40.27
 =================================================
-# edges = 19
+# edges = 20
 =================================================
 
-elapsed time: 42.55s
+elapsed time: 42.99s

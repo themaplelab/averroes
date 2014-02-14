@@ -2,7 +2,7 @@
 running Spark for Callbacks_RegisterGlobal1
 Loading properties...
 Generating the call graph for an Android apk.
-[main] INFO soot.jimple.infoflow.android.SetupApplication - ARSC file parsing took 0.020139781 seconds
+[main] INFO soot.jimple.infoflow.android.SetupApplication - ARSC file parsing took 0.032610016 seconds
 Using 'android/android-17/android.jar' as android.jar
 [main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
     public static void dummyMainMethod()
@@ -78,8 +78,8 @@ Warning: java.lang.ref.Finalizer is a phantom class!
 [Spark] Pointer Assignment Graph in 0.3 seconds.
 [Spark] Type masks in 0.0 seconds.
 [Spark] Pointer Graph simplified in 0.0 seconds.
-[Spark] Propagation in 4.7 seconds.
-[Spark] Solution found in 4.7 seconds.
+[Spark] Propagation in 6.8 seconds.
+[Spark] Solution found in 6.8 seconds.
 Callback analysis done.
 Warning: TextView is a phantom class!
 Warning: de.ecspride.TextView is a phantom class!
@@ -238,8 +238,8 @@ Warning: java.lang.ref.Finalizer is a phantom class!
 [Spark] Pointer Assignment Graph in 0.0 seconds.
 [Spark] Type masks in 0.0 seconds.
 [Spark] Pointer Graph simplified in 0.0 seconds.
-[Spark] Propagation in 2.6 seconds.
-[Spark] Solution found in 2.6 seconds.
+[Spark] Propagation in 3.2 seconds.
+[Spark] Solution found in 3.2 seconds.
 Running incremental callback analysis for 2 components...
 Incremental callback analysis done.
 Transforming dummyMainClass... 
@@ -467,12 +467,12 @@ Worklist has 70 nodes.
 Now handling field references
 Worklist has 2 nodes.
 Now handling field references
-[Spark] Propagation in 1.8 seconds.
-[Spark] Solution found in 4.4 seconds.
+[Spark] Propagation in 2.0 seconds.
+[Spark] Solution found in 2.7 seconds.
 [Spark] Number of reachable methods: 586
-Total time to finish: 39.52
+Total time to finish: 40.29
 =================================================
-# edges = 31
+# edges = 32
 =================================================
 
-elapsed time: 41.93s
+elapsed time: 43.09s

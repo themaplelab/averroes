@@ -7,10 +7,10 @@ Using 'benchmarks-averroes/android/AndroidSpecific_PrivateDataLeak1-placeholder-
 Total methods: 3474
 Initially reachable methods: 126
 Classes with at least one reachable method: 126
-[Spark] Pointer Assignment Graph in 1.1 seconds.
+[Spark] Pointer Assignment Graph in 1.9 seconds.
 Total types: 669
 [Spark] Type masks in 0.0 seconds.
-VarNodes: 572
+VarNodes: 576
 FieldRefNodes: 2
 AllocNodes: 437
 Cleaning up graph for merged nodes
@@ -18,12 +18,14 @@ Done cleaning up graph for merged nodes
 [Spark] Pointer Graph simplified in 0.0 seconds.
 Worklist has 437 nodes.
 Now handling field references
-[Spark] Propagation in 1.4 seconds.
-[Spark] Solution found in 1.7 seconds.
-[Spark] Number of reachable methods: 597
-Total time to finish: 5.9
+Worklist has 2 nodes.
+Now handling field references
+[Spark] Propagation in 2.5 seconds.
+[Spark] Solution found in 2.8 seconds.
+[Spark] Number of reachable methods: 612
+Total time to finish: 8.81
 =================================================
-# edges = 15
+# edges = 22
 =================================================
 
-elapsed time: 8.34s
+elapsed time: 11.67s

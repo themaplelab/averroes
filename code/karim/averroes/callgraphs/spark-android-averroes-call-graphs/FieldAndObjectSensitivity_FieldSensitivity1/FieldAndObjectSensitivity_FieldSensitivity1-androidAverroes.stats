@@ -7,7 +7,7 @@ Using 'benchmarks-averroes/android/FieldAndObjectSensitivity_FieldSensitivity1-p
 Total methods: 3466
 Initially reachable methods: 127
 Classes with at least one reachable method: 127
-[Spark] Pointer Assignment Graph in 1.1 seconds.
+[Spark] Pointer Assignment Graph in 1.9 seconds.
 Total types: 668
 [Spark] Type masks in 0.0 seconds.
 VarNodes: 569
@@ -18,12 +18,12 @@ Done cleaning up graph for merged nodes
 [Spark] Pointer Graph simplified in 0.0 seconds.
 Worklist has 436 nodes.
 Now handling field references
-[Spark] Propagation in 1.4 seconds.
-[Spark] Solution found in 1.8 seconds.
+[Spark] Propagation in 2.3 seconds.
+[Spark] Solution found in 2.6 seconds.
 [Spark] Number of reachable methods: 601
-Total time to finish: 6.17
+Total time to finish: 8.47
 =================================================
 # edges = 16
 =================================================
 
-elapsed time: 8.54s
+elapsed time: 11.15s
