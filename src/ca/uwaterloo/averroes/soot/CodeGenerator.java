@@ -366,7 +366,7 @@ public class CodeGenerator {
 		// statement, and the return type is void.
 		// body.insertReturnStmt();
 
-		System.out.println(doItAllBody.getJimpleBody());
+		// System.out.println(doItAllBody.getJimpleBody());
 
 		// Finally validate the Jimple body
 		doItAllBody.validate();
@@ -437,7 +437,7 @@ public class CodeGenerator {
 		if (Options.v().src_prec() == Options.src_prec_apk) {
 			result.addAll(Hierarchy.v().getOnClickApplicationMethods());
 		}
-		
+
 		return result;
 	}
 
