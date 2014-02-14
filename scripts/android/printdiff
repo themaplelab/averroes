@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+benchmark=$1
+cg_android=callgraphs/spark-android-call-graphs/${benchmark}/android.txt.gzip
+cg_android_averroes=callgraphs/spark-android-averroes-call-graphs/${benchmark}/androidAverroes.txt.gzip
+
+# diff call graphs
+java -cp probe.jar probe.CallGraphDiff -m ${cg_android} ${cg_android_averroes}

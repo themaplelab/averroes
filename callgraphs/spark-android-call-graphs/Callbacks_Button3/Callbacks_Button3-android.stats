@@ -2,7 +2,7 @@
 running Spark for Callbacks_Button3
 Loading properties...
 Generating the call graph for an Android apk.
-[main] INFO soot.jimple.infoflow.android.SetupApplication - ARSC file parsing took 0.020177266 seconds
+[main] INFO soot.jimple.infoflow.android.SetupApplication - ARSC file parsing took 0.033001011 seconds
 Using 'android/android-17/android.jar' as android.jar
 [main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
     public static void dummyMainMethod()
@@ -52,11 +52,11 @@ Using 'android/android-17/android.jar' as android.jar
 
 Warning: java.lang.ref.Finalizer is a phantom class!
 [Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
-[Spark] Pointer Assignment Graph in 0.1 seconds.
+[Spark] Pointer Assignment Graph in 0.3 seconds.
 [Spark] Type masks in 0.0 seconds.
 [Spark] Pointer Graph simplified in 0.0 seconds.
-[Spark] Propagation in 4.9 seconds.
-[Spark] Solution found in 4.9 seconds.
+[Spark] Propagation in 7.6 seconds.
+[Spark] Solution found in 7.6 seconds.
 Callback analysis done.
 Warning: TextView is a phantom class!
 Warning: de.ecspride.TextView is a phantom class!
@@ -77,9 +77,9 @@ Using 'android/android-17/android.jar' as android.jar
         int $i0;
         de.ecspride.MainActivity $r0;
         android.os.Bundle $r1;
+        boolean $z0;
         de.ecspride.Button1Listener $r2;
         android.view.View $r3;
-        boolean $z0;
 
         $i0 = 0;
 
@@ -95,19 +95,19 @@ Using 'android/android-17/android.jar' as android.jar
         $r1 = null;
 
      label2:
+        if $i0 == 1 goto label3;
+
+        $z0 = virtualinvoke $r0.<de.ecspride.MainActivity: boolean onCreateOptionsMenu(android.view.Menu)>(null);
+
+     label3:
         $r2 = new de.ecspride.Button1Listener;
         specialinvoke $r2.<de.ecspride.Button1Listener: void <init>(de.ecspride.MainActivity)>($r0);
-        if $i0 == 1 goto label3;
+        if $i0 == 2 goto label4;
 
         $r3 = new android.view.View;
         specialinvoke $r3.<android.view.View: void <init>()>();
         virtualinvoke $r2.<de.ecspride.Button1Listener: void onClick(android.view.View)>($r3);
         $r3 = null;
-
-     label3:
-        if $i0 == 2 goto label4;
-
-        $z0 = virtualinvoke $r0.<de.ecspride.MainActivity: boolean onCreateOptionsMenu(android.view.Menu)>(null);
 
      label4:
         if $i0 == 3 goto label2;
@@ -144,8 +144,8 @@ Warning: java.lang.ref.Finalizer is a phantom class!
 [Spark] Pointer Assignment Graph in 0.4 seconds.
 [Spark] Type masks in 0.0 seconds.
 [Spark] Pointer Graph simplified in 0.0 seconds.
-[Spark] Propagation in 2.9 seconds.
-[Spark] Solution found in 2.9 seconds.
+[Spark] Propagation in 4.2 seconds.
+[Spark] Solution found in 4.2 seconds.
 Running incremental callback analysis for 1 components...
 Incremental callback analysis done.
 Transforming dummyMainClass... 
@@ -158,9 +158,9 @@ Using 'android/android-17/android.jar' as android.jar
         int $i0;
         de.ecspride.MainActivity $r0;
         android.os.Bundle $r1;
-        boolean $z0;
         de.ecspride.Button2Listener $r2;
         android.view.View $r3, $r5;
+        boolean $z0;
         de.ecspride.Button1Listener $r4;
 
         $i0 = 0;
@@ -177,19 +177,19 @@ Using 'android/android-17/android.jar' as android.jar
         $r1 = null;
 
      label2:
-        if $i0 == 1 goto label3;
-
-        $z0 = virtualinvoke $r0.<de.ecspride.MainActivity: boolean onCreateOptionsMenu(android.view.Menu)>(null);
-
-     label3:
         $r2 = new de.ecspride.Button2Listener;
         specialinvoke $r2.<de.ecspride.Button2Listener: void <init>(de.ecspride.MainActivity)>($r0);
-        if $i0 == 2 goto label4;
+        if $i0 == 1 goto label3;
 
         $r3 = new android.view.View;
         specialinvoke $r3.<android.view.View: void <init>()>();
         virtualinvoke $r2.<de.ecspride.Button2Listener: void onClick(android.view.View)>($r3);
         $r3 = null;
+
+     label3:
+        if $i0 == 2 goto label4;
+
+        $z0 = virtualinvoke $r0.<de.ecspride.MainActivity: boolean onCreateOptionsMenu(android.view.Menu)>(null);
 
      label4:
         $r4 = new de.ecspride.Button1Listener;
@@ -236,8 +236,8 @@ Warning: java.lang.ref.Finalizer is a phantom class!
 [Spark] Pointer Assignment Graph in 0.3 seconds.
 [Spark] Type masks in 0.0 seconds.
 [Spark] Pointer Graph simplified in 0.0 seconds.
-[Spark] Propagation in 1.4 seconds.
-[Spark] Solution found in 1.4 seconds.
+[Spark] Propagation in 1.5 seconds.
+[Spark] Solution found in 1.5 seconds.
 Running incremental callback analysis for 0 components...
 Incremental callback analysis done.
 Transforming dummyMainClass... 
@@ -258,9 +258,9 @@ de.ecspride.MainActivity
     {
         int $i0;
         de.ecspride.MainActivity $r0, $r3, $r6;
-        de.ecspride.Button2Listener $r1, $r8;
+        de.ecspride.Button2Listener $r1, $r10;
         android.view.View $r2, $r5, $r9, $r11;
-        de.ecspride.Button1Listener $r4, $r10;
+        de.ecspride.Button1Listener $r4, $r8;
         android.os.Bundle $r7;
         boolean $z0;
 
@@ -314,29 +314,29 @@ de.ecspride.MainActivity
         $r7 = null;
 
      label8:
-        $r8 = new de.ecspride.Button2Listener;
-        specialinvoke $r8.<de.ecspride.Button2Listener: void <init>(de.ecspride.MainActivity)>($r6);
+        $r8 = new de.ecspride.Button1Listener;
+        specialinvoke $r8.<de.ecspride.Button1Listener: void <init>(de.ecspride.MainActivity)>($r6);
         if $i0 == 7 goto label9;
 
         $r9 = new android.view.View;
         specialinvoke $r9.<android.view.View: void <init>()>();
-        virtualinvoke $r8.<de.ecspride.Button2Listener: void onClick(android.view.View)>($r9);
+        virtualinvoke $r8.<de.ecspride.Button1Listener: void onClick(android.view.View)>($r9);
         $r9 = null;
 
      label9:
-        $r10 = new de.ecspride.Button1Listener;
-        specialinvoke $r10.<de.ecspride.Button1Listener: void <init>(de.ecspride.MainActivity)>($r6);
         if $i0 == 8 goto label10;
+
+        $z0 = virtualinvoke $r6.<de.ecspride.MainActivity: boolean onCreateOptionsMenu(android.view.Menu)>(null);
+
+     label10:
+        $r10 = new de.ecspride.Button2Listener;
+        specialinvoke $r10.<de.ecspride.Button2Listener: void <init>(de.ecspride.MainActivity)>($r6);
+        if $i0 == 9 goto label11;
 
         $r11 = new android.view.View;
         specialinvoke $r11.<android.view.View: void <init>()>();
-        virtualinvoke $r10.<de.ecspride.Button1Listener: void onClick(android.view.View)>($r11);
+        virtualinvoke $r10.<de.ecspride.Button2Listener: void onClick(android.view.View)>($r11);
         $r11 = null;
-
-     label10:
-        if $i0 == 9 goto label11;
-
-        $z0 = virtualinvoke $r6.<de.ecspride.MainActivity: boolean onCreateOptionsMenu(android.view.Menu)>(null);
 
      label11:
         if $i0 == 10 goto label8;
@@ -389,12 +389,12 @@ Worklist has 60 nodes.
 Now handling field references
 Worklist has 2 nodes.
 Now handling field references
-[Spark] Propagation in 1.0 seconds.
-[Spark] Solution found in 3.9 seconds.
+[Spark] Propagation in 1.1 seconds.
+[Spark] Solution found in 1.8 seconds.
 [Spark] Number of reachable methods: 578
-Total time to finish: 46.39
+Total time to finish: 46.74
 =================================================
-# edges = 16
+# edges = 17
 =================================================
 
-elapsed time: 48.84s
+elapsed time: 49.48s

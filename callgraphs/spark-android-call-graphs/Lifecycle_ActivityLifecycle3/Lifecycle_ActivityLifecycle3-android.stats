@@ -2,7 +2,7 @@
 running Spark for Lifecycle_ActivityLifecycle3
 Loading properties...
 Generating the call graph for an Android apk.
-[main] INFO soot.jimple.infoflow.android.SetupApplication - ARSC file parsing took 0.019222909 seconds
+[main] INFO soot.jimple.infoflow.android.SetupApplication - ARSC file parsing took 0.03282426 seconds
 Using 'android/android-17/android.jar' as android.jar
 [main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
     public static void dummyMainMethod()
@@ -62,11 +62,11 @@ Using 'android/android-17/android.jar' as android.jar
 
 Warning: java.lang.ref.Finalizer is a phantom class!
 [Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
-[Spark] Pointer Assignment Graph in 0.2 seconds.
+[Spark] Pointer Assignment Graph in 0.4 seconds.
 [Spark] Type masks in 0.0 seconds.
 [Spark] Pointer Graph simplified in 0.0 seconds.
-[Spark] Propagation in 4.2 seconds.
-[Spark] Solution found in 4.2 seconds.
+[Spark] Propagation in 7.9 seconds.
+[Spark] Solution found in 7.9 seconds.
 Callback analysis done.
 Found 0 layout controls in file res/layout/activity_main.xml
 Transforming dummyMainClass... 
@@ -135,8 +135,8 @@ Warning: java.lang.ref.Finalizer is a phantom class!
 [Spark] Pointer Assignment Graph in 0.0 seconds.
 [Spark] Type masks in 0.0 seconds.
 [Spark] Pointer Graph simplified in 0.0 seconds.
-[Spark] Propagation in 2.3 seconds.
-[Spark] Solution found in 2.3 seconds.
+[Spark] Propagation in 2.9 seconds.
+[Spark] Solution found in 2.9 seconds.
 Running incremental callback analysis for 1 components...
 Incremental callback analysis done.
 Transforming dummyMainClass... 
@@ -229,12 +229,12 @@ Worklist has 55 nodes.
 Now handling field references
 Worklist has 2 nodes.
 Now handling field references
-[Spark] Propagation in 1.6 seconds.
-[Spark] Solution found in 4.0 seconds.
+[Spark] Propagation in 1.8 seconds.
+[Spark] Solution found in 2.4 seconds.
 [Spark] Number of reachable methods: 493
-Total time to finish: 38.23
+Total time to finish: 38.89
 =================================================
-# edges = 8
+# edges = 9
 =================================================
 
-elapsed time: 40.66s
+elapsed time: 41.64s

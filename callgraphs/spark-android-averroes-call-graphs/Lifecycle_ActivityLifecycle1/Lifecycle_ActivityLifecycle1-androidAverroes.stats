@@ -7,7 +7,7 @@ Using 'benchmarks-averroes/android/Lifecycle_ActivityLifecycle1-placeholder-lib.
 Total methods: 3477
 Initially reachable methods: 130
 Classes with at least one reachable method: 130
-[Spark] Pointer Assignment Graph in 1.1 seconds.
+[Spark] Pointer Assignment Graph in 2.0 seconds.
 Total types: 671
 [Spark] Type masks in 0.0 seconds.
 VarNodes: 572
@@ -18,12 +18,12 @@ Done cleaning up graph for merged nodes
 [Spark] Pointer Graph simplified in 0.0 seconds.
 Worklist has 438 nodes.
 Now handling field references
-[Spark] Propagation in 1.5 seconds.
-[Spark] Solution found in 1.9 seconds.
+[Spark] Propagation in 2.1 seconds.
+[Spark] Solution found in 2.5 seconds.
 [Spark] Number of reachable methods: 610
-Total time to finish: 6.44
+Total time to finish: 8.5
 =================================================
 # edges = 11
 =================================================
 
-elapsed time: 8.83s
+elapsed time: 11.14s

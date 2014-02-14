@@ -7,10 +7,10 @@ Using 'benchmarks-averroes/android/ImplicitFlows_ImplicitFlow3-placeholder-lib.j
 Total methods: 3482
 Initially reachable methods: 125
 Classes with at least one reachable method: 125
-[Spark] Pointer Assignment Graph in 1.1 seconds.
+[Spark] Pointer Assignment Graph in 1.9 seconds.
 Total types: 678
 [Spark] Type masks in 0.0 seconds.
-VarNodes: 575
+VarNodes: 577
 FieldRefNodes: 2
 AllocNodes: 440
 Cleaning up graph for merged nodes
@@ -18,12 +18,12 @@ Done cleaning up graph for merged nodes
 [Spark] Pointer Graph simplified in 0.0 seconds.
 Worklist has 440 nodes.
 Now handling field references
-[Spark] Propagation in 1.4 seconds.
-[Spark] Solution found in 1.8 seconds.
-[Spark] Number of reachable methods: 598
-Total time to finish: 6.15
+[Spark] Propagation in 2.4 seconds.
+[Spark] Solution found in 2.7 seconds.
+[Spark] Number of reachable methods: 605
+Total time to finish: 8.67
 =================================================
-# edges = 13
+# edges = 21
 =================================================
 
-elapsed time: 8.46s
+elapsed time: 11.46s

@@ -2,7 +2,7 @@
 running Spark for Lifecycle_ServiceLifecycle1
 Loading properties...
 Generating the call graph for an Android apk.
-[main] INFO soot.jimple.infoflow.android.SetupApplication - ARSC file parsing took 0.018901349 seconds
+[main] INFO soot.jimple.infoflow.android.SetupApplication - ARSC file parsing took 0.030638866 seconds
 Using 'android/android-17/android.jar' as android.jar
 [main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
     public static void dummyMainMethod()
@@ -39,11 +39,11 @@ Using 'android/android-17/android.jar' as android.jar
 
 Warning: java.lang.ref.Finalizer is a phantom class!
 [Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
-[Spark] Pointer Assignment Graph in 0.1 seconds.
-[Spark] Type masks in 0.0 seconds.
+[Spark] Pointer Assignment Graph in 0.4 seconds.
+[Spark] Type masks in 0.1 seconds.
 [Spark] Pointer Graph simplified in 0.0 seconds.
-[Spark] Propagation in 0.0 seconds.
-[Spark] Solution found in 0.0 seconds.
+[Spark] Propagation in 0.1 seconds.
+[Spark] Solution found in 0.1 seconds.
 Callback analysis done.
 Transforming dummyMainClass... 
 Transforming de.ecspride.MainService... 
@@ -183,12 +183,12 @@ Worklist has 4 nodes.
 Now handling field references
 Worklist has 2 nodes.
 Now handling field references
-[Spark] Propagation in 1.2 seconds.
-[Spark] Solution found in 3.6 seconds.
+[Spark] Propagation in 0.7 seconds.
+[Spark] Solution found in 2.0 seconds.
 [Spark] Number of reachable methods: 172
-Total time to finish: 31.66
+Total time to finish: 26.74
 =================================================
-# edges = 7
+# edges = 8
 =================================================
 
-elapsed time: 34.01s
+elapsed time: 29.40s

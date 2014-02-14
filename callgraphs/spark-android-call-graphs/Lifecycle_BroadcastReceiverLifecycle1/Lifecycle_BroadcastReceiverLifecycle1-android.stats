@@ -2,7 +2,7 @@
 running Spark for Lifecycle_BroadcastReceiverLifecycle1
 Loading properties...
 Generating the call graph for an Android apk.
-[main] INFO soot.jimple.infoflow.android.SetupApplication - ARSC file parsing took 0.018900979 seconds
+[main] INFO soot.jimple.infoflow.android.SetupApplication - ARSC file parsing took 0.030811104 seconds
 Using 'android/android-17/android.jar' as android.jar
 [main] WARN soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Cannot create valid constructor for android.content.Context, because it is abstract and cannot substitute with subclass
 [main] INFO soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator - Generated main method:
@@ -35,11 +35,11 @@ Using 'android/android-17/android.jar' as android.jar
 
 Warning: java.lang.ref.Finalizer is a phantom class!
 [Call Graph] For information on where the call graph may be incomplete, use the verbose option to the cg phase.
-[Spark] Pointer Assignment Graph in 0.1 seconds.
-[Spark] Type masks in 0.0 seconds.
+[Spark] Pointer Assignment Graph in 0.5 seconds.
+[Spark] Type masks in 0.1 seconds.
 [Spark] Pointer Graph simplified in 0.0 seconds.
-[Spark] Propagation in 1.1 seconds.
-[Spark] Solution found in 1.1 seconds.
+[Spark] Propagation in 2.0 seconds.
+[Spark] Solution found in 2.0 seconds.
 Callback analysis done.
 Transforming dummyMainClass... 
 Transforming de.ecspride.TestReceiver... 
@@ -78,8 +78,8 @@ Warning: java.lang.ref.Finalizer is a phantom class!
 [Spark] Pointer Assignment Graph in 0.0 seconds.
 [Spark] Type masks in 0.0 seconds.
 [Spark] Pointer Graph simplified in 0.0 seconds.
-[Spark] Propagation in 0.4 seconds.
-[Spark] Solution found in 0.4 seconds.
+[Spark] Propagation in 1.3 seconds.
+[Spark] Solution found in 1.3 seconds.
 Running incremental callback analysis for 1 components...
 Incremental callback analysis done.
 Transforming dummyMainClass... 
@@ -137,12 +137,12 @@ Worklist has 3 nodes.
 Now handling field references
 Worklist has 2 nodes.
 Now handling field references
-[Spark] Propagation in 0.3 seconds.
-[Spark] Solution found in 2.7 seconds.
+[Spark] Propagation in 0.5 seconds.
+[Spark] Solution found in 2.1 seconds.
 [Spark] Number of reachable methods: 167
-Total time to finish: 30.93
+Total time to finish: 30.72
 =================================================
-# edges = 4
+# edges = 5
 =================================================
 
-elapsed time: 33.29s
+elapsed time: 33.38s

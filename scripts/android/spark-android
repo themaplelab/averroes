@@ -11,14 +11,14 @@ echo "running Spark for ${benchmark}"
 
 # 0. create the averroes properties file
 touch ${props}
-echo "main_class = " > ${props}
+echo "main_class = dummyMainClass" > ${props}
 echo "android_path = android" >> ${props}
 echo "output_dir = output" >> ${props}
 echo "apk_location = ${apk}" >> ${props}
 if test "${benchmark}" = "AndroidSpecific_Obfuscation1"; then
-  echo "application_includes = de.ecspride.**:android.telephony.TelephonyManager" >> ${props}
+  echo "application_includes = dummyMainClass:de.ecspride.**:android.telephony.TelephonyManager" >> ${props}
 else
-  echo "application_includes = de.ecspride.**" >> ${props}
+  echo "application_includes = dummyMainClass:de.ecspride.**" >> ${props}
 fi
 
 # 1. make some dirs
