@@ -3,12 +3,6 @@
 # the droidbench programs
 droidbench="droidbench-apks.txt"
 
-function timing()
-{
-	echo "..."
-	/usr/bin/time -f "elapsed time: %es" $* 2>&1
-}
-
 date
 
 mkdir -p benchmarks-averroes/android
@@ -22,7 +16,7 @@ do
   mkdir -p ${outputdir}/
   
   # 2. run the script
-  timing ./spark-android ${benchmark} > ${outputdir}/${benchmark}-android.stats
+  ./spark-android ${benchmark} > ${outputdir}/${benchmark}-android.stats
 done < ${droidbench}
 
 date

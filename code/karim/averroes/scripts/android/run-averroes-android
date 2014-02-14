@@ -7,12 +7,6 @@ props=averroes.properties
 program=$(basename $benchmark)
 apk=droidbench/${benchmark}.apk
 
-function timing()
-{
-	echo "..."
-	/usr/bin/time -f "elapsed time: %es" $* 2>&1
-}
-
 date
 
 echo "running ${benchmark}"
@@ -32,7 +26,7 @@ fi
 
 # 2. run Averroes
 jar uf averroes-android.jar ${props}
-timing java -jar averroes-android.jar -disable-reflection
+java -jar averroes-android.jar -disable-reflection
 
 # 3. copy the output JARs
 cp output/placeholderLibrary.jar benchmarks-averroes/android/${benchmark}-placeholder-lib.jar

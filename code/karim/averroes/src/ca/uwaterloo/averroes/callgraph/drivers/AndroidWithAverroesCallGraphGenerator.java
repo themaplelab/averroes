@@ -21,8 +21,10 @@ public class AndroidWithAverroesCallGraphGenerator {
 
 	public static void main(String[] args) {
 		try {
+			// Find the total execution time, instead of depending on the Unix time command
+			TimeUtils.splitStart();
 			TimeUtils.reset();
-			
+
 			if (args.length != 1) {
 				usage();
 				throw new AverroesException("AndroidAverroes expects exactly 1 argument.");
@@ -43,6 +45,9 @@ public class AndroidWithAverroesCallGraphGenerator {
 			System.out.println("=================================================");
 			System.out.println("# edges = " + android.edges().size());
 			System.out.println("=================================================");
+			
+			double total = TimeUtils.elapsedSplitTime();
+			System.out.println("Elapsed time: " + total + " seconds.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(1);
