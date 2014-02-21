@@ -306,17 +306,45 @@ public final class AverroesProperties {
 	 * @return
 	 */
 	public static String getAndroidAppClassPath() {
-		return getApkLocation() + File.pathSeparator + defaultAndroidJar(); // Scene.v().getAndroidJarPath(getAndroidPath(),
-																			// getApkLocation());
+		// Scene.v().getAndroidJarPath(getAndroidPath(), getApkLocation());
+		return getApkLocation() + File.pathSeparator + defaultAndroidJar() + File.pathSeparator + defaultGoogleAPIs();
 	}
 
 	/**
-	 * The default android jar to use is the one from android-17.
+	 * The default API to use.
+	 * 
+	 * @return
+	 */
+	public static String defaultAndroidAPI() {
+		return "android-19";
+	}
+	
+	/**
+	 * The path to the default android sdk.
+	 * 
+	 * @return
+	 */
+	public static String defaultAndroidPath() {
+		return getAndroidPath() + File.separator + defaultAndroidAPI();
+	}
+	
+	/**
+	 * The default android jar to use.
 	 * 
 	 * @return
 	 */
 	public static String defaultAndroidJar() {
-		return getAndroidPath() + File.separator + "android-17" + File.separator + "android.jar";
+		return defaultAndroidPath() + File.separator + "android.jar";
+	}
+
+	/**
+	 * The default Google APIS add-ons that could be used by an android app.
+	 * 
+	 * @return
+	 */
+	public static String defaultGoogleAPIs() {
+		return defaultAndroidPath() + File.separator + "effects.jar" + File.pathSeparator + defaultAndroidPath()
+				+ File.separator + "maps.jar" + File.pathSeparator + defaultAndroidPath() + File.separator + "usb.jar";
 	}
 
 	/**
