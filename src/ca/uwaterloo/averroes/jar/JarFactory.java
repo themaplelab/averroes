@@ -12,6 +12,7 @@ import ca.uwaterloo.averroes.properties.AverroesProperties;
 import ca.uwaterloo.averroes.soot.CodeGenerator;
 import ca.uwaterloo.averroes.soot.Hierarchy;
 import ca.uwaterloo.averroes.soot.SootSceneUtil;
+import ca.uwaterloo.averroes.soot.providers.JarFactoryClassProvider;
 import ca.uwaterloo.averroes.util.MathUtils;
 import ca.uwaterloo.averroes.util.TimeUtils;
 import ca.uwaterloo.averroes.util.io.FileUtils;

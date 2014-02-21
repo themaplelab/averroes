@@ -107,4 +107,15 @@ public class DexUtils {
 
 		return result;
 	}
+
+	/**
+	 * Get all the classes defined in the classes.dex of an android apk.
+	 * 
+	 * @param path
+	 * @return
+	 * @throws IOException
+	 */
+	public static Set<String> classesOfDex(String path) throws IOException {
+		return DexClassProvider.classesOfDex(new File(path));
+	}
 }
