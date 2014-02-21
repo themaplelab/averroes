@@ -1,4 +1,4 @@
-package ca.uwaterloo.averroes.jar;
+package ca.uwaterloo.averroes.soot.providers;
 
 import java.io.File;
 import java.io.IOException;

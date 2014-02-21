@@ -45,15 +45,16 @@ public class AndroidJarFactory {
 			FileUtils.createDirectory(AverroesProperties.getOutputDir());
 
 			// Get the application class names, i.e., all classes in the input android apk
-			Set<String> appClasses = DexUtils.applicationClassesOfDex(AverroesProperties.getApkLocation());
+			Set<String> appClasses = DexUtils.classesOfDex(AverroesProperties.getApkLocation());
 			Options.v().classes().addAll(appClasses);
 
 			// Set the soot classpath, android path, and validate jimple bodies.
-			System.out.println(AverroesProperties.getAndroidAppClassPath());
 			Options.v().set_soot_classpath(AverroesProperties.getAndroidAppClassPath());
 			Options.v().set_src_prec(Options.src_prec_apk);
 			Options.v().set_force_android_jar(AverroesProperties.defaultAndroidJar());
 			Options.v().set_validate(true);
+			
+			System.out.println(AverroesProperties.getAndroidAppClassPath());
 
 			// Load the necessary classes
 			TimeUtils.reset();

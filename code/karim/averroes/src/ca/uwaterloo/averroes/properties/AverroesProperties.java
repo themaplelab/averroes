@@ -24,6 +24,7 @@ import soot.options.Options;
 import ca.uwaterloo.averroes.exceptions.Assertions;
 import ca.uwaterloo.averroes.exceptions.AverroesException;
 import ca.uwaterloo.averroes.soot.Names;
+import ca.uwaterloo.averroes.util.DexUtils;
 import ca.uwaterloo.averroes.util.android.AndroidResourceParser;
 import ca.uwaterloo.averroes.util.io.FileUtils;
 
@@ -59,6 +60,7 @@ public final class AverroesProperties {
 	private static boolean isProcessingAndroidApk = false;
 	private static ProcessManifest processManifest = null;
 	private static AndroidResourceParser parser = null;
+	private static Set<String> classesOfDex = null;
 
 	/**
 	 * Load the properties file at the first access of this class.
@@ -130,8 +132,11 @@ public final class AverroesProperties {
 
 	/**
 	 * Parse the android binary xml resource files.
+	 * 
+	 * @throws IOException
 	 */
-	private static void parseAndroidResources() {
+	private static void parseAndroidResources() throws IOException {
+		classesOfDex = DexUtils.classesOfDex(AverroesProperties.getApkLocation());
 		parser = new AndroidResourceParser(getApkLocation());
 	}
 
@@ -264,6 +269,20 @@ public final class AverroesProperties {
 	}
 
 	/**
+	 * Get the classes defined in classes.dex of an android app.
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public static Set<String> classesOfDex() {
+		if (classesOfDex == null) {
+			throw new RuntimeException("Oops! Not processing an android apk.");
+		}
+
+		return classesOfDex;
+	}
+
+	/**
 	 * Get the {@value #LIBRARY_JAR_FILES} property. That is a list of the library JAR files separated by
 	 * {@link File#pathSeparator}.
 	 * 
@@ -307,7 +326,7 @@ public final class AverroesProperties {
 	 */
 	public static String getAndroidAppClassPath() {
 		// Scene.v().getAndroidJarPath(getAndroidPath(), getApkLocation());
-		return getApkLocation() + File.pathSeparator + defaultAndroidJar() + File.pathSeparator + defaultGoogleAPIs();
+		return FileUtils.composeClassPath(getApkLocation(), defaultAndroidJar(), defaultGoogleAPIs(), androidExtras());
 	}
 
 	/**
@@ -318,7 +337,7 @@ public final class AverroesProperties {
 	public static String defaultAndroidAPI() {
 		return "android-19";
 	}
-	
+
 	/**
 	 * The path to the default android sdk.
 	 * 
@@ -327,7 +346,16 @@ public final class AverroesProperties {
 	public static String defaultAndroidPath() {
 		return getAndroidPath() + File.separator + defaultAndroidAPI();
 	}
-	
+
+	/**
+	 * The path to extra libraries commonly used by android apps.
+	 * 
+	 * @return
+	 */
+	public static String getAndroidExtrasPath() {
+		return getAndroidPath() + File.separator + "extras";
+	}
+
 	/**
 	 * The default android jar to use.
 	 * 
@@ -343,8 +371,41 @@ public final class AverroesProperties {
 	 * @return
 	 */
 	public static String defaultGoogleAPIs() {
-		return defaultAndroidPath() + File.separator + "effects.jar" + File.pathSeparator + defaultAndroidPath()
-				+ File.separator + "maps.jar" + File.pathSeparator + defaultAndroidPath() + File.separator + "usb.jar";
+		return FileUtils.composeClassPath(pathToGoogleAPI("effects.jar"), pathToGoogleAPI("maps.jar"),
+				pathToGoogleAPI("usb.jar"));
+	}
+
+	/**
+	 * Get the path to a google android api.
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public static String pathToGoogleAPI(String name) {
+		return FileUtils.pathTo(defaultAndroidPath(), name);
+	}
+
+	/**
+	 * Get the classpath to the android extra libraries.
+	 * 
+	 * @return
+	 */
+	public static String androidExtras() {
+		return FileUtils.composeClassPath(pathToAndroidExtra("MMSDK.jar"),
+				pathToAndroidExtra("jackson-core-2.3.1.jar"), pathToAndroidExtra("jackson-databind-2.3.1.jar"),
+				pathToAndroidExtra("jackson-annotations-2.3.1.jar"), pathToAndroidExtra("InMobiAdNetwork-3.7.1.jar"),
+				pathToAndroidExtra("InMobiCommons-3.7.1.jar"), pathToAndroidExtra("JtAdTag-2.5.0.0-120327.jar"),
+				pathToAndroidExtra("mobclix.jar"));
+	}
+
+	/**
+	 * Get the path to an android extra library.
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public static String pathToAndroidExtra(String name) {
+		return FileUtils.pathTo(getAndroidExtrasPath(), name);
 	}
 
 	/**
@@ -529,29 +590,33 @@ public final class AverroesProperties {
 	 * @return
 	 */
 	public static boolean isApplicationClass(ProbeClass probeClass) {
-		for (String entry : getApplicationIncludes()) {
-			/*
-			 * 1. If the entry ends with .* then this means it's a package. 2. If the entry ends with .** then it's a
-			 * super package. 3. If the entry is **, then it's the default package. 4. Otherwise, it's the full class
-			 * name.
-			 */
-			if (entry.endsWith(".*")) {
-				String pkg = entry.replace(".*", "");
-				if (probeClass.pkg().equalsIgnoreCase(pkg)) {
+		if (Options.v().src_prec() == Options.src_prec_apk) {
+			return classesOfDex().contains(probeClass.toString());
+		} else {
+			for (String entry : getApplicationIncludes()) {
+				/*
+				 * 1. If the entry ends with .* then this means it's a package. 2. If the entry ends with .** then it's
+				 * a super package. 3. If the entry is **, then it's the default package. 4. Otherwise, it's the full
+				 * class name.
+				 */
+				if (entry.endsWith(".*")) {
+					String pkg = entry.replace(".*", "");
+					if (probeClass.pkg().equalsIgnoreCase(pkg)) {
+						return true;
+					}
+				} else if (entry.endsWith(".**")) {
+					String pkg = entry.replace("**", "");
+					if (probeClass.toString().startsWith(pkg)) {
+						return true;
+					}
+				} else if (entry.equalsIgnoreCase("**") && probeClass.pkg().isEmpty()) {
+					return true;
+				} else if (entry.equalsIgnoreCase(probeClass.toString())) {
 					return true;
 				}
-			} else if (entry.endsWith(".**")) {
-				String pkg = entry.replace("**", "");
-				if (probeClass.toString().startsWith(pkg)) {
-					return true;
-				}
-			} else if (entry.equalsIgnoreCase("**") && probeClass.pkg().isEmpty()) {
-				return true;
-			} else if (entry.equalsIgnoreCase(probeClass.toString())) {
-				return true;
 			}
+			return false;
 		}
-		return false;
 	}
 
 	/**

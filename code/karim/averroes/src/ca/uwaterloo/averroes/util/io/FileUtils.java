@@ -382,4 +382,32 @@ public class FileUtils {
 
 		return path;
 	}
+	
+	/**
+	 * Compose a path from the given arguments.
+	 * 
+	 * @param args
+	 * @return
+	 */
+	public static String composeClassPath(String... args) {
+		String path = "";
+
+		for (int i = 0; i < args.length - 1; i++) {
+			path = path + args[i] + File.pathSeparator;
+		}
+		path = path.concat(args[args.length - 1]);
+
+		return path;
+	}
+
+	/**
+	 * Get the path to a file given its parent directory and the filename.
+	 * 
+	 * @param parent
+	 * @param file
+	 * @return
+	 */
+	public static String pathTo(String parent, String file) {
+		return parent + File.separator + file;
+	}
 }
