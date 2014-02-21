@@ -1,0 +1,18 @@
+#! /usr/bin/env bash
+
+set -e
+
+# the googleplay apps
+googleplay="googleplay-apks.txt"
+
+date
+outputdir=benchmarks-averroes/googleplay
+mkdir -p ${outputdir}
+
+while read benchmark
+do
+  echo "generating placeholder library for ${benchmark} ..."
+  ./run-averroes-googleplay ${benchmark} > ${outputdir}/${benchmark}.stats
+done < ${googleplay}
+
+date

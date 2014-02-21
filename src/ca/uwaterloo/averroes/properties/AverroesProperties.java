@@ -306,7 +306,17 @@ public final class AverroesProperties {
 	 * @return
 	 */
 	public static String getAndroidAppClassPath() {
-		return getApkLocation() + File.pathSeparator + Scene.v().getAndroidJarPath(getAndroidPath(), getApkLocation());
+		return getApkLocation() + File.pathSeparator + defaultAndroidJar(); // Scene.v().getAndroidJarPath(getAndroidPath(),
+																			// getApkLocation());
+	}
+
+	/**
+	 * The default android jar to use is the one from android-17.
+	 * 
+	 * @return
+	 */
+	public static String defaultAndroidJar() {
+		return getAndroidPath() + File.separator + "android-17" + File.separator + "android.jar";
 	}
 
 	/**

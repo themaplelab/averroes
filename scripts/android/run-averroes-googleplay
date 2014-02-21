@@ -1,0 +1,30 @@
+#! /usr/bin/env bash
+
+set -e
+
+benchmark=$1
+props=averroes.properties
+program=$(basename $benchmark)
+apk=googleplay/${benchmark}.apk
+
+date
+
+echo "running ${benchmark}"
+mkdir -p benchmarks-averroes/googleplay
+  
+# 1. create the averroes properties file
+touch ${props}
+echo "main_class = ca.uwaterloo.averroes.AndroidDummyMainClass" > ${props}
+echo "android_path = android" >> ${props}
+echo "output_dir = output" >> ${props}
+echo "apk_location = ${apk}" >> ${props}
+echo "application_includes = ca.uwaterloo.averroes.AndroidDummyMainClass:${benchmark}.**" >> ${props}
+
+# 2. run Averroes
+jar uf averroes-android.jar ${props}
+java -jar averroes-android.jar -disable-reflection
+
+# 3. copy the output JARs
+cp output/placeholderLibrary.jar benchmarks-averroes/googleplay/${benchmark}-placeholder-lib.jar
+
+echo ""

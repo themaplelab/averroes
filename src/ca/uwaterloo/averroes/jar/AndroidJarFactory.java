@@ -51,9 +51,9 @@ public class AndroidJarFactory {
 			// Set the soot classpath, android path, and validate jimple bodies.
 			Options.v().set_soot_classpath(AverroesProperties.getAndroidAppClassPath());
 			Options.v().set_src_prec(Options.src_prec_apk);
-			Options.v().set_android_jars(AverroesProperties.getAndroidPath());
+			Options.v().set_force_android_jar(AverroesProperties.defaultAndroidJar());
 			Options.v().set_validate(true);
-			
+
 			// Load the necessary classes
 			TimeUtils.reset();
 			System.out.println("");
