@@ -395,7 +395,10 @@ public final class AverroesProperties {
 				pathToAndroidExtra("jackson-core-2.3.1.jar"), pathToAndroidExtra("jackson-databind-2.3.1.jar"),
 				pathToAndroidExtra("jackson-annotations-2.3.1.jar"), pathToAndroidExtra("InMobiAdNetwork-3.7.1.jar"),
 				pathToAndroidExtra("InMobiCommons-3.7.1.jar"), pathToAndroidExtra("JtAdTag-2.5.0.0-120327.jar"),
-				pathToAndroidExtra("mobclix.jar"));
+				pathToAndroidExtra("mobclix.jar"), pathToAndroidExtra("android-rome-feed-reader-1.0.0-r2.jar"),
+				pathToAndroidExtra("httpclient-4.3.2.jar"), pathToAndroidExtra("commons-httpclient-3.1.jar"),
+				pathToAndroidExtra("jackson-core-asl-1.9.13.jar"), pathToAndroidExtra("jackson-mapper-asl-1.9.13.jar"),
+				pathToAndroidExtra("simple-xml-2.7.1.jar"), pathToAndroidExtra("gson-2.2.4.jar"));
 	}
 
 	/**
