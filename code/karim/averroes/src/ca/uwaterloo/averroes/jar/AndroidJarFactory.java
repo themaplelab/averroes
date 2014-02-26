@@ -53,7 +53,7 @@ public class AndroidJarFactory {
 			Options.v().set_src_prec(Options.src_prec_apk);
 			Options.v().set_force_android_jar(AverroesProperties.defaultAndroidJar());
 			Options.v().set_validate(true);
-			
+
 			System.out.println(AverroesProperties.getAndroidAppClassPath());
 
 			// Load the necessary classes
@@ -67,6 +67,10 @@ public class AndroidJarFactory {
 			// Print some statistics
 			System.out.println("# application classes: " + Scene.v().getApplicationClasses().size());
 			System.out.println("# library classes: " + Scene.v().getLibraryClasses().size());
+
+			// String className = "com.flurry.sdk.kg$a";
+			// System.out.println(Scene.v().getSootClass(className).getFields());
+			// System.exit(0);
 
 			// Now let Averroes do its thing
 			// First, create the class hierarchy

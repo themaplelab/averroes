@@ -19,5 +19,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/probe"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/soot"/>
 	<classpathentry kind="lib" path="lib/axml-1.0.jar"/>
+	<classpathentry kind="lib" path="googleplay/com.turbochilli.unrollme.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

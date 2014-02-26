@@ -335,7 +335,7 @@ public final class AverroesProperties {
 	 * @return
 	 */
 	public static String defaultAndroidAPI() {
-		return "android-19";
+		return "android-17";
 	}
 
 	/**
@@ -398,7 +398,8 @@ public final class AverroesProperties {
 				pathToAndroidExtra("mobclix.jar"), pathToAndroidExtra("android-rome-feed-reader-1.0.0-r2.jar"),
 				pathToAndroidExtra("httpclient-4.3.2.jar"), pathToAndroidExtra("commons-httpclient-3.1.jar"),
 				pathToAndroidExtra("jackson-core-asl-1.9.13.jar"), pathToAndroidExtra("jackson-mapper-asl-1.9.13.jar"),
-				pathToAndroidExtra("simple-xml-2.7.1.jar"), pathToAndroidExtra("gson-2.2.4.jar"));
+				pathToAndroidExtra("simple-xml-2.7.1.jar"), pathToAndroidExtra("gson-2.2.4.jar"),
+				pathToAndroidExtra("jdom-1.1.3.jar"));
 	}
 
 	/**
