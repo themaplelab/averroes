@@ -116,7 +116,7 @@ public class AverroesApplicationConstantPool {
 	 * @param cls
 	 * @return
 	 */
-	private ClassFile getCoffiClass(SootClass cls) {
+	private static ClassFile getCoffiClass(SootClass cls) {
 		SootMethod anyMethod = cls.methodIterator().next();
 		CoffiMethodSource methodSource = (CoffiMethodSource) anyMethod.getSource();
 		return methodSource.coffiClass;
@@ -375,12 +375,18 @@ public class AverroesApplicationConstantPool {
 		try {
 			DexBackedDexFile dex = DexFileFactory.loadDexFile(AverroesProperties.getApkLocation(), 17);
 			int fieldCount = dex.readSmallUint(HeaderItem.FIELD_COUNT_OFFSET);
+			System.out.println(fieldCount);
 			for (int i = 0; i < fieldCount; i++) {
-				SootField field = DexUtils.asSootField(dex, i);
+				// NOTE: Some fields might not be resolved anyways and those need to be completely ignored.
+				try {
+					SootField field = DexUtils.asSootField(dex, i);
 
-				// If the resolved field is in the library, add it to the result
-				if (hierarchy.isLibraryField(field)) {
-					result.add(field);
+					// If the resolved field is in the library, add it to the result
+					if (hierarchy.isLibraryField(field)) {
+						result.add(field);
+					}
+				} catch (ResolutionFailedException e) {
+					// eat it up!
 				}
 			}
 		} catch (IOException e) {
