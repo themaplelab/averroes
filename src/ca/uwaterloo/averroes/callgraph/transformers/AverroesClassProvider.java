@@ -35,7 +35,7 @@ public class AverroesClassProvider implements ClassProvider {
 	private Set<String> applicationClassNames;
 	private Set<String> libraryClassNames;
 	private Map<String, Resource> classes;
-	
+
 	private String benchmark;
 
 	/**
@@ -45,7 +45,7 @@ public class AverroesClassProvider implements ClassProvider {
 		applicationClassNames = new HashSet<String>();
 		libraryClassNames = new HashSet<String>();
 		classes = new HashMap<String, Resource>();
-		
+
 		this.benchmark = benchmark;
 	}
 
@@ -207,7 +207,8 @@ public class AverroesClassProvider implements ClassProvider {
 			Resource resource = classes.get(className);
 			try {
 				InputStream stream = resource.open();
-				return new CoffiClassSource(className, stream, "", ""); // TODO: fix for nightly version
+				return new CoffiClassSource(className, stream); // TODO: use this for soot 2.5
+				// return new CoffiClassSource(className, stream, "", ""); // TODO: fix for nightly version
 			} catch (IOException exc) {
 				throw new RuntimeException(exc);
 			}

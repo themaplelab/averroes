@@ -203,8 +203,10 @@ public class JarFactoryClassProvider implements ClassProvider {
 			Resource resource = classes.get(className);
 			try {
 				InputStream stream = resource.open();
-				ZipEntryResource zer = (ZipEntryResource) resource;
-				return new CoffiClassSource(className, stream, zer.entry().getName(), zer.archive().getName());
+				// ZipEntryResource zer = (ZipEntryResource) resource; TODO: use for soot nightly build
+				return new CoffiClassSource(className, stream); // TODO: use for soot 2.5
+				// TODO: use for soot nightly build
+				// return new CoffiClassSource(className, stream, zer.entry().getName(), zer.archive().getName());
 			} catch (IOException exc) {
 				throw new RuntimeException(exc);
 			}

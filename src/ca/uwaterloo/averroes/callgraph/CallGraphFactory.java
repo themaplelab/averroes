@@ -79,6 +79,24 @@ public class CallGraphFactory {
 		CommandExecuter.runDoopAverroes(doopHome, benchmark);
 
 		// 2. Convert the Doop call graph
-		return DoopCallGraphConverter.convert(doopHome);
+		return DoopCallGraphConverter.convert(doopHome, CallGraphSource.DOOP_AVERROES);
+	}
+
+	/**
+	 * Generate the call graph for Doop.
+	 * 
+	 * @param doopHome
+	 * @param benchmark
+	 * @return
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
+	public static CallGraph generateDoopCallGraph(String doopHome, String benchmark) throws IOException,
+			InterruptedException {
+		// 1. Run doop's analysis
+		CommandExecuter.runDoop(doopHome, benchmark);
+
+		// 2. Convert the Doop call graph
+		return DoopCallGraphConverter.convert(doopHome, CallGraphSource.DOOP);
 	}
 }

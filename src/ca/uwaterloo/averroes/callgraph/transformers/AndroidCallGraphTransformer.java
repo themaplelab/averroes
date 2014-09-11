@@ -35,8 +35,8 @@ public class AndroidCallGraphTransformer {
 		Options.v().set_output_format(Options.output_format_none);
 		Options.v().set_whole_program(true);
 		Options.v().set_soot_classpath(AverroesProperties.getAndroidAppClassPath());
-		Options.v().set_src_prec(Options.src_prec_apk);
-		soot.options.Options.v().set_android_jars(AverroesProperties.getAndroidPath());
+//		Options.v().set_src_prec(Options.src_prec_apk); TODO: change back
+//		soot.options.Options.v().set_android_jars(AverroesProperties.getAndroidPath()); TODO: change back
 		Scene.v().loadNecessaryClasses();
 
 		List<String> entryPoints = new ArrayList<String>();

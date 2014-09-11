@@ -2,9 +2,7 @@ package ca.uwaterloo.averroes.callgraph.drivers;
 
 import ca.uwaterloo.averroes.callgraph.CallGraph;
 import ca.uwaterloo.averroes.callgraph.CallGraphFactory;
-import ca.uwaterloo.averroes.callgraph.gxl.GXLConverter;
 import ca.uwaterloo.averroes.callgraph.gxl.GXLWriter;
-import ca.uwaterloo.averroes.dot.Format;
 import ca.uwaterloo.averroes.properties.AverroesProperties;
 import ca.uwaterloo.averroes.util.TimeUtils;
 import ca.uwaterloo.averroes.util.io.FileUtils;
@@ -25,7 +23,6 @@ public class SparkCallGraphGenerator {
 			CallGraph spark = CallGraphFactory.generateSparkCallGraph();
 			System.out.println("Total time to finish: " + TimeUtils.elapsedTime());
 			new GXLWriter().write(spark, FileUtils.sparkCallGraphFile());
-			GXLConverter.probeGxl2Dot(FileUtils.sparkCallGraphFile(), Format.DOT);
 
 			// Print some statistics
 			System.out.println("=================================================");

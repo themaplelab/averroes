@@ -434,9 +434,9 @@ public class CodeGenerator {
 		result.addAll(getTamiFlexApplicationMethodInvokes());
 
 		// Get those methods specified in the apk resource xml files that handle onClick events.
-		if (Options.v().src_prec() == Options.src_prec_apk) {
-			result.addAll(Hierarchy.v().getOnClickApplicationMethods());
-		}
+//		if (Options.v().src_prec() == Options.src_prec_apk) {
+//			result.addAll(Hierarchy.v().getOnClickApplicationMethods());
+//		}
 
 		return result;
 	}

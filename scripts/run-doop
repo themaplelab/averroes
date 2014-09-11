@@ -1,0 +1,30 @@
+#! /usr/bin/env bash
+
+set -e
+
+benchmark=$1
+
+echo "running Doop for ${benchmark}"
+
+
+program=$(basename $benchmark)
+outputdir=callgraphs/doop-call-graphs/${benchmark}
+doop=${outputdir}/doop.tar.gz
+doopHome=/u/karim/workspace/doop
+
+# 1. make some dirs
+mkdir -p ${outputdir}/
+
+# 2. run doop.jar
+cp properties/${benchmark}.properties averroes.properties
+jar uf doop.jar averroes.properties
+java -jar doop.jar $doopHome $benchmark
+
+# 3. copy the call graph
+cp output/doop.gxl ${outputdir}/doop.gxl
+
+# 4. copy database
+echo "making the database of Doop available at ${doop} ..."
+tar -czf ${doop} ../doop/last-analysis/*
+
+echo ""

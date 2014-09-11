@@ -14,14 +14,14 @@ import ca.uwaterloo.averroes.util.io.FileUtils;
  * @author karim
  * 
  */
-public class DoopWithAverroesCallGraphGenerator {
+public class DoopCallGraphGenerator {
 
 	public static void main(String[] args) {
 		try {
 			TimeUtils.reset();
 			if (args.length != 2) {
 				usage();
-				throw new AverroesException("DoopAverroes expects exactly 2 argument.");
+				throw new AverroesException("Doop expects exactly 2 argument.");
 			}
 
 			// Process the arguments
@@ -29,9 +29,9 @@ public class DoopWithAverroesCallGraphGenerator {
 			String benchmark = args[1];
 
 			FileUtils.createDirectory(AverroesProperties.getOutputDir());
-			CallGraph doop = CallGraphFactory.generateDoopWithAverroesCallGraph(doopHome, benchmark);
+			CallGraph doop = CallGraphFactory.generateDoopCallGraph(doopHome, benchmark);
 			System.out.println("Total time to finish: " + TimeUtils.elapsedTime());
-			new GXLWriter().write(doop, FileUtils.doopAverroesCallGraphFile());
+			new GXLWriter().write(doop, FileUtils.doopCallGraphFile());
 
 			// Print some statistics
 			System.out.println("=================================================");
@@ -45,7 +45,7 @@ public class DoopWithAverroesCallGraphGenerator {
 
 	private static void usage() {
 		System.out.println("");
-		System.out.println("Usage: java -jar doopaverroes.jar <absolute_path_to_doop_home> <benchmark_name>");
+		System.out.println("Usage: java -jar doop.jar <absolute_path_to_doop_home> <benchmark_name>");
 		System.out.println("");
 	}
 }
