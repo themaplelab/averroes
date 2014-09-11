@@ -308,6 +308,15 @@ public class FileUtils {
 	public static String sparkCallGraphFile() {
 		return AverroesProperties.getOutputDir().concat(File.separator).concat("spark.gxl");
 	}
+	
+	/**
+	 * The path to the Doop call graph.
+	 * 
+	 * @return
+	 */
+	public static String doopCallGraphFile() {
+		return AverroesProperties.getOutputDir().concat(File.separator).concat("doop.gxl");
+	}
 
 	/**
 	 * The path to the Android call graph.
@@ -343,6 +352,15 @@ public class FileUtils {
 	 */
 	public static String doopAverroesRunExe(String doopHome) {
 		return doopHome.concat(File.separator).concat("alt-run-averroes");
+	}
+	
+	/**
+	 * The path to the Doop executable
+	 * 
+	 * @return
+	 */
+	public static String doopRunExe(String doopHome) {
+		return doopHome.concat(File.separator).concat("alt-run");
 	}
 
 	/* Some utility methods to get the names of comparison call graphs */

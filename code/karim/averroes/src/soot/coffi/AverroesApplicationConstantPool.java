@@ -16,7 +16,6 @@ import soot.SootField;
 import soot.SootFieldRef;
 import soot.SootMethod;
 import soot.Type;
-import soot.options.Options;
 import ca.uwaterloo.averroes.properties.AverroesProperties;
 import ca.uwaterloo.averroes.soot.Hierarchy;
 import ca.uwaterloo.averroes.util.BytecodeUtils;
@@ -179,14 +178,14 @@ public class AverroesApplicationConstantPool {
 		applicationClasses = new HashSet<SootClass>();
 
 		// If we're processing an android apk, process the global string constant pool
-		if (Options.v().src_prec() == Options.src_prec_apk) {
-			applicationClasses.addAll(findAndroidApplicationClassesReferencedByName());
-		} else {
-			// Add the classes whose name appear in the constant pool of application classes
-			for (SootClass applicationClass : hierarchy.getApplicationClasses()) {
-				applicationClasses.addAll(findApplicationClassesReferencedByName(applicationClass));
-			}
+		// if (Options.v().src_prec() == Options.src_prec_apk) {
+		// applicationClasses.addAll(findAndroidApplicationClassesReferencedByName());
+		// } else {
+		// Add the classes whose name appear in the constant pool of application classes
+		for (SootClass applicationClass : hierarchy.getApplicationClasses()) {
+			applicationClasses.addAll(findApplicationClassesReferencedByName(applicationClass));
 		}
+		// }
 	}
 
 	/**
@@ -265,14 +264,14 @@ public class AverroesApplicationConstantPool {
 		libraryMethods = new HashSet<SootMethod>();
 
 		// If we're processing an android apk, process the global method constant pool
-		if (Options.v().src_prec() == Options.src_prec_apk) {
-			libraryMethods.addAll(findLibraryMethodsInAndroidApplicationConstantPool());
-		} else {
-			// Add the library methods that appear in the constant pool of application classes
-			for (SootClass applicationClass : hierarchy.getApplicationClasses()) {
-				libraryMethods.addAll(findLibraryMethodsInConstantPool(applicationClass));
-			}
+		// if (Options.v().src_prec() == Options.src_prec_apk) {
+		// libraryMethods.addAll(findLibraryMethodsInAndroidApplicationConstantPool());
+		// } else {
+		// Add the library methods that appear in the constant pool of application classes
+		for (SootClass applicationClass : hierarchy.getApplicationClasses()) {
+			libraryMethods.addAll(findLibraryMethodsInConstantPool(applicationClass));
 		}
+		// }
 	}
 
 	/**
@@ -405,13 +404,13 @@ public class AverroesApplicationConstantPool {
 		libraryFields = new HashSet<SootField>();
 
 		// If we're processing an android apk, process the global field constant pool
-		if (Options.v().src_prec() == Options.src_prec_apk) {
-			libraryFields.addAll(findLibraryFieldsInAndroidApplicationConstantPool());
-		} else {
-			// Add the library methods that appear in the constant pool of application classes
-			for (SootClass applicationClass : hierarchy.getApplicationClasses()) {
-				libraryFields.addAll(findLibraryFieldsInConstantPool(applicationClass));
-			}
+		// if (Options.v().src_prec() == Options.src_prec_apk) {
+		// libraryFields.addAll(findLibraryFieldsInAndroidApplicationConstantPool());
+		// } else {
+		// Add the library methods that appear in the constant pool of application classes
+		for (SootClass applicationClass : hierarchy.getApplicationClasses()) {
+			libraryFields.addAll(findLibraryFieldsInConstantPool(applicationClass));
 		}
+		// }
 	}
 }

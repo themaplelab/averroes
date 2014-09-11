@@ -24,7 +24,6 @@ import soot.jimple.spark.SparkTransformer;
 import soot.options.Options;
 import ca.uwaterloo.averroes.properties.AverroesProperties;
 import ca.uwaterloo.averroes.util.DexUtils;
-import ca.uwaterloo.averroes.util.io.FileUtils;
 
 public class AndroidWithAverroesCallGraphTransformer {
 	public static CallGraph run(String benchmark) throws IOException {
@@ -43,8 +42,8 @@ public class AndroidWithAverroesCallGraphTransformer {
 		Options.v().set_whole_program(true);
 		Options.v().set_full_resolver(true);
 		Options.v().set_soot_classpath(AverroesProperties.getAndroidAverroesClassPath(benchmark));
-		Options.v().set_src_prec(Options.src_prec_apk);
-		Options.v().set_force_android_jar(FileUtils.androidPlaceholderLibraryJarFile(benchmark));
+//		Options.v().set_src_prec(Options.src_prec_apk); TODO: change back
+//		Options.v().set_force_android_jar(FileUtils.androidPlaceholderLibraryJarFile(benchmark)); TODO: change back
 
 		// Options.v().set_verbose(true);
 

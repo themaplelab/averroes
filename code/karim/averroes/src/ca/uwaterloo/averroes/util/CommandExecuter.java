@@ -37,5 +37,18 @@ public class CommandExecuter {
 				FileUtils.organizedApplicationJarFile(benchmark), FileUtils.placeholderLibraryJarFile(benchmark) };
 		return run(cmdArray);
 	}
+	
+	/**
+	 * Run the executable for Doop running with Averroes.
+	 * 
+	 * @return
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
+	public static boolean runDoop(String doopHome, String benchmark) throws IOException, InterruptedException {
+		String[] cmdArray = { FileUtils.doopRunExe(doopHome), "1.4", AverroesProperties.getMainClass(),
+				FileUtils.organizedApplicationJarFile(benchmark), FileUtils.organizedLibraryJarFile(benchmark) };
+		return run(cmdArray);
+	}
 
 }

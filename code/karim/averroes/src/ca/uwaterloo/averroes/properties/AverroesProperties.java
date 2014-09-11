@@ -20,11 +20,9 @@ import soot.SootClass;
 import soot.SootMethod;
 import soot.Type;
 import soot.jimple.infoflow.android.manifest.ProcessManifest;
-import soot.options.Options;
 import ca.uwaterloo.averroes.exceptions.Assertions;
 import ca.uwaterloo.averroes.exceptions.AverroesException;
 import ca.uwaterloo.averroes.soot.Names;
-import ca.uwaterloo.averroes.util.DexUtils;
 import ca.uwaterloo.averroes.util.android.AndroidResourceParser;
 import ca.uwaterloo.averroes.util.io.FileUtils;
 
@@ -85,10 +83,10 @@ public final class AverroesProperties {
 			properties = loadPropertiesFromFile(AverroesProperties.class.getClassLoader(), PROPERTY_FILENAME);
 
 			// If we're processing an apk, process its manifest
-			if (Options.v().src_prec() == Options.src_prec_apk) {
-				processAndroidManifest();
-				parseAndroidResources();
-			}
+//			if (Options.v().src_prec() == Options.src_prec_apk) {
+//				processAndroidManifest();
+//				parseAndroidResources();
+//			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new AverroesException("Unable to load Averroes properties.", e);
@@ -122,23 +120,23 @@ public final class AverroesProperties {
 		return result;
 	}
 
-	/**
-	 * Load the android manifest of the specified apk.
-	 */
-	private static void processAndroidManifest() {
-		processManifest = new ProcessManifest();
-		processManifest.loadManifestFile(getApkLocation());
-	}
+//	/**
+//	 * Load the android manifest of the specified apk.
+//	 */
+//	private static void processAndroidManifest() {
+//		processManifest = new ProcessManifest();
+//		processManifest.loadManifestFile(getApkLocation());
+//	}
 
-	/**
-	 * Parse the android binary xml resource files.
-	 * 
-	 * @throws IOException
-	 */
-	private static void parseAndroidResources() throws IOException {
-		classesOfDex = DexUtils.classesOfDex(AverroesProperties.getApkLocation());
-		parser = new AndroidResourceParser(getApkLocation());
-	}
+//	/**
+//	 * Parse the android binary xml resource files.
+//	 * 
+//	 * @throws IOException
+//	 */
+//	private static void parseAndroidResources() throws IOException {
+//		classesOfDex = DexUtils.classesOfDex(AverroesProperties.getApkLocation());
+//		parser = new AndroidResourceParser(getApkLocation());
+//	}
 
 	/**
 	 * Process the input arguments of Averroes.
@@ -326,7 +324,7 @@ public final class AverroesProperties {
 	 */
 	public static String getAndroidAppClassPath() {
 		// Scene.v().getAndroidJarPath(getAndroidPath(), getApkLocation());
-		return FileUtils.composeClassPath(getApkLocation(), defaultAndroidJar(), defaultGoogleAPIs(), androidExtras());
+		return FileUtils.composeClassPath(getApkLocation(), defaultAndroidJar(), defaultGoogleAPIs());//, androidExtras());
 	}
 
 	/**
@@ -545,9 +543,9 @@ public final class AverroesProperties {
 	 * @return
 	 */
 	public static boolean isAndroidRClassOrInnerClass(ProbeClass probeClass) {
-		if (Options.v().src_prec() != Options.src_prec_apk) {
-			throw new RuntimeException("Oops. Checking for Android R class, but we are not processing an apk.");
-		}
+//		if (Options.v().src_prec() != Options.src_prec_apk) {
+//			throw new RuntimeException("Oops. Checking for Android R class, but we are not processing an apk.");
+//		}
 
 		if (probeClass.pkg().equalsIgnoreCase(processManifest.getPackageName())) {
 			return probeClass.name().equalsIgnoreCase(Names.ANDROID_R)
@@ -594,9 +592,9 @@ public final class AverroesProperties {
 	 * @return
 	 */
 	public static boolean isApplicationClass(ProbeClass probeClass) {
-		if (Options.v().src_prec() == Options.src_prec_apk) {
-			return classesOfDex().contains(probeClass.toString());
-		} else {
+//		if (Options.v().src_prec() == Options.src_prec_apk) {
+//			return classesOfDex().contains(probeClass.toString());
+//		} else {
 			for (String entry : getApplicationIncludes()) {
 				/*
 				 * 1. If the entry ends with .* then this means it's a package. 2. If the entry ends with .** then it's
@@ -620,7 +618,7 @@ public final class AverroesProperties {
 				}
 			}
 			return false;
-		}
+//		}
 	}
 
 	/**

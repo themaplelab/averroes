@@ -20,8 +20,8 @@ public class DoopCallGraphConverter {
 	 * @return
 	 * @throws IOException
 	 */
-	public static CallGraph convert(String doopHome) throws IOException {
-		CallGraph graph = new CallGraph(CallGraphSource.DOOP_AVERROES);
+	public static CallGraph convert(String doopHome, CallGraphSource source) throws IOException {
+		CallGraph graph = new CallGraph(source);
 		IRelation edges = ResultImporter.getDoopCallGraphEdges(doopHome);
 		IRelation entryPoints = ResultImporter.getDoopEntryPoints(doopHome);
 
