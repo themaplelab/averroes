@@ -37,6 +37,7 @@ public class AverroesClassProvider implements ClassProvider {
 	private Map<String, Resource> classes;
 
 	private String benchmark;
+	private boolean isAve;
 
 	/**
 	 * Construct a new class provider.
@@ -47,6 +48,19 @@ public class AverroesClassProvider implements ClassProvider {
 		classes = new HashMap<String, Resource>();
 
 		this.benchmark = benchmark;
+		isAve = true;
+	}
+	
+	/**
+	 * Construct a new class provider.
+	 */
+	public AverroesClassProvider(String benchmark, boolean isAve) {
+		applicationClassNames = new HashSet<String>();
+		libraryClassNames = new HashSet<String>();
+		classes = new HashMap<String, Resource>();
+
+		this.benchmark = benchmark;
+		this.isAve = isAve;
 	}
 
 	/**
@@ -195,7 +209,8 @@ public class AverroesClassProvider implements ClassProvider {
 	 * @throws IOException
 	 */
 	private List<String> addLibraryArchive() throws IOException {
-		return addArchive(FileUtils.placeholderLibraryJarFile(benchmark), false);
+		if(isAve) return addArchive(FileUtils.placeholderLibraryJarFile(benchmark), false);
+		else return addArchive(FileUtils.organizedLibraryJarFile(benchmark), false);
 	}
 
 	/**

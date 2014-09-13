@@ -54,7 +54,7 @@ public class AndroidCallGraphTransformer {
 		Scene.v().setEntryPoints(Collections.singletonList(dummyMain));
 
 		// Run the Spark transformer
-		SparkTransformer.v().transform("", Transformer.SPARK.options());
+		SparkTransformer.v().transform("", Transformer.sparkOptions(false));
 
 		// Retrieve the call graph edges
 		CallGraph probecg = new CallGraph();

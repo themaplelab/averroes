@@ -5,37 +5,21 @@ import java.util.Map;
 
 import soot.PhaseOptions;
 
-public enum Transformer {
-	CHA("class hierarchy analysis", chaOptions()), SPARK("spark", sparkOptions());
 
-	private String transformer;
-	private Map<String, String> options;
-
-	private Transformer(String format, Map<String, String> options) {
-		this.transformer = format;
-		this.options = options;
-	}
-
-	public String format() {
-		return transformer;
-	}
-
-	public Map<String, String> options() {
-		return options;
-	}
-
-	private static Map<String, String> chaOptions() {
+public class Transformer {
+	
+	public static Map<String, String> chaOptions() {
 		Map<String, String> opts = new HashMap<String, String>(PhaseOptions.v().getPhaseOptions("cg.cha"));
 		opts.put("enabled", "true");
 		opts.put("verbose", "true");
 		return opts;
 	}
 
-	private static Map<String, String> sparkOptions() {
+	public static Map<String, String> sparkOptions(boolean isAve) {
 		Map<String, String> opts = new HashMap<String, String>(PhaseOptions.v().getPhaseOptions("cg.spark"));
 		opts.put("enabled", "true");
 		opts.put("verbose", "true");
-		opts.put("simulate-natives", "false"); // TODO
+		if(isAve) opts.put("simulate-natives", "false"); // this should only be false for SparkAve
 		opts.put("force-gc", "true");
 		// opts.put("ignore-types", "true");
 		return opts;

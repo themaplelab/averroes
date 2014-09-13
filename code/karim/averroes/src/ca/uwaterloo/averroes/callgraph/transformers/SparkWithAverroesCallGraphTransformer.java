@@ -54,7 +54,7 @@ public class SparkWithAverroesCallGraphTransformer {
 		Scene.v().setEntryPoints(entryPoints());
 
 		// Run the Spark transformer
-		SparkTransformer.v().transform("", Transformer.SPARK.options());
+		SparkTransformer.v().transform("", Transformer.sparkOptions(true));
 
 		// Retrieve the call graph edges
 		probe.CallGraph probecg = new probe.CallGraph();
