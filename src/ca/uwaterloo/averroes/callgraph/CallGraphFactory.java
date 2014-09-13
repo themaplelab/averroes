@@ -37,8 +37,9 @@ public class CallGraphFactory {
 	 * @return
 	 * @throws IOException
 	 */
-	public static CallGraph generateSparkCallGraph() throws IOException {
-		probe.CallGraph spark = new SparkCallGraphTransformer().getProbeCallGraph();
+	public static CallGraph generateSparkCallGraph(String benchmark) throws IOException {
+		probe.CallGraph spark = new SparkCallGraphTransformer(benchmark).getProbeCallGraph();
+		System.out.println("size of original spark is: " + spark.edges().size());
 		return SootCallGraphConverter.convert(spark);
 	}
 

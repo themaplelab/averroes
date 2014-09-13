@@ -48,6 +48,7 @@ public class CommandExecuter {
 	public static boolean runDoop(String doopHome, String benchmark) throws IOException, InterruptedException {
 		String[] cmdArray = { FileUtils.doopRunExe(doopHome), "1.4", AverroesProperties.getMainClass(),
 				FileUtils.organizedApplicationJarFile(benchmark), FileUtils.organizedLibraryJarFile(benchmark) };
+				//AverroesProperties.getInputJarFilesForSpark().trim(), AverroesProperties.getLibraryClassPath().trim() };
 		return run(cmdArray);
 	}
 
