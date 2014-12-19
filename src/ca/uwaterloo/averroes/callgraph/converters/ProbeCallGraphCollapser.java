@@ -4,6 +4,7 @@ import probe.CallEdge;
 import probe.CallGraph;
 import probe.ObjectManager;
 import probe.ProbeMethod;
+import ca.uwaterloo.averroes.callgraph.CallGraphSource;
 import ca.uwaterloo.averroes.properties.AverroesProperties;
 import ca.uwaterloo.averroes.soot.Names;
 
@@ -50,6 +51,40 @@ public class ProbeCallGraphCollapser {
 					result.edges().add(new CallEdge(src, LIBRARY_BLOB));
 				} else if (!isSrcApp && isDstApp) {
 					result.edges().add(new CallEdge(LIBRARY_BLOB, dst));
+				}
+			}
+		}
+
+		return result;
+	}
+	
+	public static ca.uwaterloo.averroes.callgraph.CallGraph collapse(CallGraph probeCallGraph, CallGraphSource source) {
+		ca.uwaterloo.averroes.callgraph.CallGraph result = new ca.uwaterloo.averroes.callgraph.CallGraph(source);
+
+		// Getting the entry points
+		result.entryPoints().addAll(probeCallGraph.entryPoints());
+
+		// Getting the correct placement for each edge
+		// Note: If both src and dst of an edge are in the library, ignore it.
+		for (CallEdge edge : probeCallGraph.edges()) {
+			ProbeMethod src = edge.src();
+			ProbeMethod dst = edge.dst();
+
+			/*
+			 * We don't care about the following edges (primarily used for converting dynamic call graphs) 1) edges to
+			 * <clinit> methods 2) edges to java.lang.ClassLoader: loadClassInternal(Ljava/lang/String;) 3) edges to
+			 * java.lang.ClassLoader: checkPackageAccess(Ljava/lang/Class;Ljava/security /ProtectionDomain;)
+			 */
+			if (!isClinit(dst) && !isLoadClassInternal(dst) && !isCheckPackageAccess(dst)) {
+				boolean isSrcApp = AverroesProperties.isApplicationMethod(src);
+				boolean isDstApp = AverroesProperties.isApplicationMethod(dst);
+
+				if (isSrcApp && isDstApp) {
+					result.appToAppEdges().add(edge);
+				} else if (isSrcApp && !isDstApp) {
+					result.appToLibEdges().add(src);
+				} else if (!isSrcApp && isDstApp) {
+					result.libToAppEdges().add(dst);
 				}
 			}
 		}
