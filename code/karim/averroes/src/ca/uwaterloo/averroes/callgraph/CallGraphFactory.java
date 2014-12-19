@@ -1,5 +1,6 @@
 package ca.uwaterloo.averroes.callgraph;
 
+import java.io.File;
 import java.io.IOException;
 
 import ca.uwaterloo.averroes.callgraph.converters.DoopCallGraphConverter;
@@ -9,7 +10,24 @@ import ca.uwaterloo.averroes.callgraph.transformers.AndroidCallGraphTransformer;
 import ca.uwaterloo.averroes.callgraph.transformers.AndroidWithAverroesCallGraphTransformer;
 import ca.uwaterloo.averroes.callgraph.transformers.SparkCallGraphTransformer;
 import ca.uwaterloo.averroes.callgraph.transformers.SparkWithAverroesCallGraphTransformer;
+import ca.uwaterloo.averroes.properties.AverroesProperties;
 import ca.uwaterloo.averroes.util.CommandExecuter;
+import ca.uwaterloo.averroes.util.io.FileUtils;
+import ca.uwaterloo.cgstudy.util.ProbeUtils;
+
+import com.ibm.wala.core.tests.callGraph.CallGraphTestUtil;
+import com.ibm.wala.ipa.callgraph.AnalysisCache;
+import com.ibm.wala.ipa.callgraph.AnalysisOptions;
+import com.ibm.wala.ipa.callgraph.AnalysisOptions.ReflectionOptions;
+import com.ibm.wala.ipa.callgraph.AnalysisScope;
+import com.ibm.wala.ipa.callgraph.CallGraphBuilderCancelException;
+import com.ibm.wala.ipa.callgraph.Entrypoint;
+import com.ibm.wala.ipa.callgraph.impl.BasicCallGraph;
+import com.ibm.wala.ipa.callgraph.impl.Util;
+import com.ibm.wala.ipa.callgraph.propagation.SSAPropagationCallGraphBuilder;
+import com.ibm.wala.ipa.cha.ClassHierarchy;
+import com.ibm.wala.ipa.cha.ClassHierarchyException;
+import com.ibm.wala.util.config.AnalysisScopeReader;
 
 /**
  * A factory that generates call graphs for some tools.
@@ -99,5 +117,69 @@ public class CallGraphFactory {
 
 		// 2. Convert the Doop call graph
 		return DoopCallGraphConverter.convert(doopHome, CallGraphSource.DOOP);
+	}
+	
+	/**
+	 * Generate the call graph for WalaAverroes.
+	 * 
+	 * @param benchmark
+	 * @return
+	 * @throws IOException
+	 * @throws InterruptedException
+	 * @throws ClassHierarchyException 
+	 * @throws CallGraphBuilderCancelException 
+	 * @throws IllegalArgumentException 
+	 */
+	public static CallGraph generateWalaWithAverroesCallGraph(String benchmark) throws IOException,
+			InterruptedException, ClassHierarchyException, IllegalArgumentException, CallGraphBuilderCancelException {
+		// 1. build the call graph
+		String classpath = FileUtils.composeClassPath(FileUtils.organizedApplicationJarFile(benchmark), FileUtils.placeholderLibraryJarFile(benchmark));
+		String exclusionFile = CallGraphFactory.class.getClassLoader().getResource(CallGraphTestUtil.REGRESSION_EXCLUSIONS).getPath();
+		
+		AnalysisScope scope = AnalysisScopeReader.makeJavaBinaryAnalysisScope(classpath, new File(exclusionFile));
+		ClassHierarchy cha = ClassHierarchy.make(scope);
+		Iterable<Entrypoint> entrypoints = Util.makeMainEntrypoints(scope, cha, "L" + AverroesProperties.getMainClass().replaceAll("\\.", "/"));
+		
+		AnalysisOptions options = new AnalysisOptions(scope, entrypoints);
+		options.setReflectionOptions(ReflectionOptions.ONE_FLOW_TO_CASTS_NO_METHOD_INVOKE);
+		
+		SSAPropagationCallGraphBuilder builder = Util.makeZeroCFABuilder(options, new AnalysisCache(), cha, scope, null, null);
+		BasicCallGraph<?> cg = (BasicCallGraph<?>) builder.makeCallGraph(options, null);
+
+		// 2. Convert the WalaAverroes call graph
+		probe.CallGraph wala = ProbeUtils.getProbeCallGraph(cg);
+	    return ProbeCallGraphCollapser.collapse(wala, CallGraphSource.WALA_AVERROES);
+	}
+
+	/**
+	 * Generate the call graph for Wala.
+	 * 
+	 * @param benchmark
+	 * @return
+	 * @throws IOException
+	 * @throws InterruptedException
+	 * @throws ClassHierarchyException 
+	 * @throws CallGraphBuilderCancelException 
+	 * @throws IllegalArgumentException 
+	 */
+	public static CallGraph generateWalaCallGraph(String benchmark) throws IOException,
+			InterruptedException, ClassHierarchyException, IllegalArgumentException, CallGraphBuilderCancelException {
+		// 1. build the call graph
+		String classpath = FileUtils.composeClassPath(FileUtils.organizedApplicationJarFile(benchmark), FileUtils.organizedLibraryJarFile(benchmark));
+		String exclusionFile = CallGraphFactory.class.getClassLoader().getResource(CallGraphTestUtil.REGRESSION_EXCLUSIONS).getPath();
+		
+		AnalysisScope scope = AnalysisScopeReader.makeJavaBinaryAnalysisScope(classpath, new File(exclusionFile));
+		ClassHierarchy cha = ClassHierarchy.make(scope);
+		Iterable<Entrypoint> entrypoints = Util.makeMainEntrypoints(scope, cha, "L" + AverroesProperties.getMainClass().replaceAll("\\.", "/"));
+		
+		AnalysisOptions options = new AnalysisOptions(scope, entrypoints);
+		options.setReflectionOptions(ReflectionOptions.ONE_FLOW_TO_CASTS_NO_METHOD_INVOKE);
+		
+		SSAPropagationCallGraphBuilder builder = Util.makeZeroCFABuilder(options, new AnalysisCache(), cha, scope, null, null);
+		BasicCallGraph<?> cg = (BasicCallGraph<?>) builder.makeCallGraph(options, null);
+
+		// 2. Convert the Wala call graph
+		probe.CallGraph wala = ProbeUtils.getProbeCallGraph(cg);
+	    return ProbeCallGraphCollapser.collapse(wala, CallGraphSource.WALA);
 	}
 }

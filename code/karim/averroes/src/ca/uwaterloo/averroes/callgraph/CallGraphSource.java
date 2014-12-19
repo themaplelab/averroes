@@ -5,9 +5,11 @@ public enum CallGraphSource {
 	CGC("cgc"),
 	DOOP("doop"),
 	SPARK("spark"),
+	WALA("wala"),
 	DYNAMIC("dynamic"),
 	AVERROES("averroes"),
 	SPARK_AVERROES("sparkAverroes"),
+	WALA_AVERROES("walaAverroes"),
 	DOOP_AVERROES("doopAverroes");
 	
 	private String source;
