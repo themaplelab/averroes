@@ -22,11 +22,12 @@ import ca.uwaterloo.averroes.util.io.Resource;
 import ca.uwaterloo.averroes.util.io.ZipEntryResource;
 
 /**
- * This class provider adds the Java classes from the application JAR to the list of application classes, and Java
- * classes from the placeholder library JAR to the list of library classes.
+ * This class provider adds the Java classes from the application JAR to the
+ * list of application classes, and Java classes from the placeholder library
+ * JAR to the list of library classes.
  * 
- * This class provider adds a class once. Any consequent additions will throw an exception because each class should be
- * encountered only once.
+ * This class provider adds a class once. Any consequent additions will throw an
+ * exception because each class should be encountered only once.
  * 
  * @author karim
  */
@@ -50,7 +51,7 @@ public class AverroesClassProvider implements ClassProvider {
 		this.benchmark = benchmark;
 		isAve = true;
 	}
-	
+
 	/**
 	 * Construct a new class provider.
 	 */
@@ -91,7 +92,8 @@ public class AverroesClassProvider implements ClassProvider {
 	}
 
 	/**
-	 * Add the organized application and library archives specified in the properties file.
+	 * Add the organized application and library archives specified in the
+	 * properties file.
 	 * 
 	 * @throws IOException
 	 */
@@ -103,7 +105,8 @@ public class AverroesClassProvider implements ClassProvider {
 	}
 
 	/**
-	 * Add a class file in a zip/jar archive. Returns the class name of the class that was added.
+	 * Add a class file in a zip/jar archive. Returns the class name of the
+	 * class that was added.
 	 * 
 	 * @param archive
 	 * @param entry
@@ -111,8 +114,10 @@ public class AverroesClassProvider implements ClassProvider {
 	 * @return
 	 * @throws IOException
 	 */
-	public String addClass(ZipFile archive, ZipEntry entry, boolean fromApplicationArchive) throws IOException {
-		return addClass(entry.getName(), new ZipEntryResource(archive, entry), fromApplicationArchive);
+	public String addClass(ZipFile archive, ZipEntry entry,
+			boolean fromApplicationArchive) throws IOException {
+		return addClass(entry.getName(), new ZipEntryResource(archive, entry),
+				fromApplicationArchive);
 	}
 
 	/**
@@ -124,7 +129,8 @@ public class AverroesClassProvider implements ClassProvider {
 	 * @return
 	 * @throws IOException
 	 */
-	public String addClass(String path, Resource resource, boolean fromApplicationArchive) throws IOException {
+	public String addClass(String path, Resource resource,
+			boolean fromApplicationArchive) throws IOException {
 		ClassFile c = new ClassFile(path);
 
 		InputStream stream = null;
@@ -140,8 +146,10 @@ public class AverroesClassProvider implements ClassProvider {
 		String className = c.toString().replace('/', '.');
 
 		if (classes.containsKey(className)) {
-			// This means we encountered another copy of the class later on the path, this should never happen!
-			throw new RuntimeException("class " + className + " has already been added to this class provider.");
+			// This means we encountered another copy of the class later on the
+			// path, this should never happen!
+			throw new RuntimeException("class " + className
+					+ " has already been added to this class provider.");
 		} else {
 			if (fromApplicationArchive) {
 				applicationClassNames.add(className);
@@ -162,9 +170,11 @@ public class AverroesClassProvider implements ClassProvider {
 	 * @return
 	 * @throws IOException
 	 */
-	public List<String> addArchive(File file, boolean isApplication) throws IOException {
-		System.out.println("Adding " + (isApplication ? "application" : "placeholder library") + " archive: "
-				+ file.getAbsolutePath());
+	public List<String> addArchive(File file, boolean isApplication)
+			throws IOException {
+		System.out.println("Adding "
+				+ (isApplication ? "application" : "placeholder library")
+				+ " archive: " + file.getAbsolutePath());
 		List<String> result = new ArrayList<String>();
 
 		ZipFile archive = new ZipFile(file);
@@ -188,7 +198,8 @@ public class AverroesClassProvider implements ClassProvider {
 	 * @return
 	 * @throws IOException
 	 */
-	public List<String> addArchive(String file, boolean isApplication) throws IOException {
+	public List<String> addArchive(String file, boolean isApplication)
+			throws IOException {
 		return addArchive(new File(file), isApplication);
 	}
 
@@ -199,7 +210,8 @@ public class AverroesClassProvider implements ClassProvider {
 	 * @throws IOException
 	 */
 	private List<String> addApplicationArchive() throws IOException {
-		return addArchive(FileUtils.organizedApplicationJarFile(benchmark), true);
+		return addArchive(FileUtils.organizedApplicationJarFile(benchmark),
+				true);
 	}
 
 	/**
@@ -209,12 +221,17 @@ public class AverroesClassProvider implements ClassProvider {
 	 * @throws IOException
 	 */
 	private List<String> addLibraryArchive() throws IOException {
-		if(isAve) return addArchive(FileUtils.placeholderLibraryJarFile(benchmark), false);
-		else return addArchive(FileUtils.organizedLibraryJarFile(benchmark), false);
+		if (isAve)
+			return addArchive(FileUtils.placeholderLibraryJarFile(benchmark),
+					false);
+		else
+			return addArchive(FileUtils.organizedLibraryJarFile(benchmark),
+					false);
 	}
 
 	/**
-	 * Find the class for the given className. This method is invoked by {@link soot.SourceLocator}.
+	 * Find the class for the given className. This method is invoked by
+	 * {@link soot.SourceLocator}.
 	 */
 	@Override
 	public ClassSource find(String className) {
@@ -222,8 +239,12 @@ public class AverroesClassProvider implements ClassProvider {
 			Resource resource = classes.get(className);
 			try {
 				InputStream stream = resource.open();
-				return new CoffiClassSource(className, stream); // TODO: use this for soot 2.5
-				// return new CoffiClassSource(className, stream, "", ""); // TODO: fix for nightly version
+				// return new CoffiClassSource(className, stream); // TODO: use this for soot 2.5
+				return new CoffiClassSource(className, stream, "", ""); // TODO:
+																		// fix
+																		// for
+																		// nightly
+																		// version
 			} catch (IOException exc) {
 				throw new RuntimeException(exc);
 			}

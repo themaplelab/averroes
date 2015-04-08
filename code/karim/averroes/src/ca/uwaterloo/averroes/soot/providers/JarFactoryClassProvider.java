@@ -22,11 +22,12 @@ import ca.uwaterloo.averroes.util.io.Resource;
 import ca.uwaterloo.averroes.util.io.ZipEntryResource;
 
 /**
- * This class provider adds the Java classes from the application JAR to the list of application classes, and Java
- * classes from the library JAR to the list of library classes.
+ * This class provider adds the Java classes from the application JAR to the
+ * list of application classes, and Java classes from the library JAR to the
+ * list of library classes.
  * 
- * This class provider adds a class once. Any consequent additions will throw an exception because each class should be
- * encountered only once.
+ * This class provider adds a class once. Any consequent additions will throw an
+ * exception because each class should be encountered only once.
  * 
  * @author karim
  */
@@ -73,7 +74,8 @@ public class JarFactoryClassProvider implements ClassProvider {
 	}
 
 	/**
-	 * Add the organized application and library archives specified in the properties file.
+	 * Add the organized application and library archives specified in the
+	 * properties file.
 	 * 
 	 * @throws IOException
 	 */
@@ -85,7 +87,8 @@ public class JarFactoryClassProvider implements ClassProvider {
 	}
 
 	/**
-	 * Add a class file in a zip/jar archive. Returns the class name of the class that was added.
+	 * Add a class file in a zip/jar archive. Returns the class name of the
+	 * class that was added.
 	 * 
 	 * @param archive
 	 * @param entry
@@ -93,8 +96,10 @@ public class JarFactoryClassProvider implements ClassProvider {
 	 * @return
 	 * @throws IOException
 	 */
-	public String addClass(ZipFile archive, ZipEntry entry, boolean fromApplicationArchive) throws IOException {
-		return addClass(entry.getName(), new ZipEntryResource(archive, entry), fromApplicationArchive);
+	public String addClass(ZipFile archive, ZipEntry entry,
+			boolean fromApplicationArchive) throws IOException {
+		return addClass(entry.getName(), new ZipEntryResource(archive, entry),
+				fromApplicationArchive);
 	}
 
 	/**
@@ -106,7 +111,8 @@ public class JarFactoryClassProvider implements ClassProvider {
 	 * @return
 	 * @throws IOException
 	 */
-	public String addClass(String path, Resource resource, boolean fromApplicationArchive) throws IOException {
+	public String addClass(String path, Resource resource,
+			boolean fromApplicationArchive) throws IOException {
 		ClassFile c = new ClassFile(path);
 
 		InputStream stream = null;
@@ -122,8 +128,10 @@ public class JarFactoryClassProvider implements ClassProvider {
 		String className = c.toString().replace('/', '.');
 
 		if (classes.containsKey(className)) {
-			// This means we encountered another copy of the class later on the path, this should never happen!
-			throw new RuntimeException("class " + className + " has already been added to this class provider.");
+			// This means we encountered another copy of the class later on the
+			// path, this should never happen!
+			throw new RuntimeException("class " + className
+					+ " has already been added to this class provider.");
 		} else {
 			if (fromApplicationArchive) {
 				applicationClassNames.add(className);
@@ -144,8 +152,10 @@ public class JarFactoryClassProvider implements ClassProvider {
 	 * @return
 	 * @throws IOException
 	 */
-	public List<String> addArchive(File file, boolean isApplication) throws IOException {
-		System.out.println("Adding " + (isApplication ? "application" : "library") + " archive: "
+	public List<String> addArchive(File file, boolean isApplication)
+			throws IOException {
+		System.out.println("Adding "
+				+ (isApplication ? "application" : "library") + " archive: "
 				+ file.getAbsolutePath());
 		List<String> result = new ArrayList<String>();
 
@@ -170,7 +180,8 @@ public class JarFactoryClassProvider implements ClassProvider {
 	 * @return
 	 * @throws IOException
 	 */
-	public List<String> addArchive(String file, boolean isApplication) throws IOException {
+	public List<String> addArchive(String file, boolean isApplication)
+			throws IOException {
 		return addArchive(new File(file), isApplication);
 	}
 
@@ -195,7 +206,8 @@ public class JarFactoryClassProvider implements ClassProvider {
 	}
 
 	/**
-	 * Find the class for the given className. This method is invoked by {@link soot.SourceLocator}.
+	 * Find the class for the given className. This method is invoked by
+	 * {@link soot.SourceLocator}.
 	 */
 	@Override
 	public ClassSource find(String className) {
@@ -203,10 +215,15 @@ public class JarFactoryClassProvider implements ClassProvider {
 			Resource resource = classes.get(className);
 			try {
 				InputStream stream = resource.open();
-				// ZipEntryResource zer = (ZipEntryResource) resource; TODO: use for soot nightly build
-				return new CoffiClassSource(className, stream); // TODO: use for soot 2.5
+				ZipEntryResource zer = (ZipEntryResource) resource; // TODO: use
+																	// for soot
+																	// nightly
+																	// build
+				// return new CoffiClassSource(className, stream); // TODO: use
+				// for soot 2.5
 				// TODO: use for soot nightly build
-				// return new CoffiClassSource(className, stream, zer.entry().getName(), zer.archive().getName());
+				return new CoffiClassSource(className, stream, zer.entry()
+						.getName(), zer.archive().getName());
 			} catch (IOException exc) {
 				throw new RuntimeException(exc);
 			}
