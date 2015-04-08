@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.xmlpull.v1.XmlPullParserException;
+
 import probe.CallGraph;
 import probe.ObjectManager;
 import probe.ProbeClass;
@@ -21,7 +23,7 @@ import ca.uwaterloo.averroes.properties.AverroesProperties;
 
 public class AndroidCallGraphTransformer {
 	// @SuppressWarnings("unchecked")
-	public CallGraph run() throws IOException {
+	public CallGraph run() throws IOException, XmlPullParserException {
 		System.out.println("Generating the call graph for an Android apk.");
 
 		// Stuff from infoflow-android
@@ -49,7 +51,9 @@ public class AndroidCallGraphTransformer {
 		// }
 		// }
 
-		SootMethod dummyMain = app.getEntryPointCreator().createDummyMain(entryPoints);
+		app.getEntryPointCreator().setSubstituteCallParams(true);
+		app.getEntryPointCreator().setSubstituteClasses(entryPoints);
+		SootMethod dummyMain = app.getEntryPointCreator().createDummyMain();
 		System.out.println(dummyMain.getActiveBody());
 		Scene.v().setEntryPoints(Collections.singletonList(dummyMain));
 

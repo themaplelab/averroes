@@ -3,6 +3,8 @@ package ca.uwaterloo.averroes.callgraph;
 import java.io.File;
 import java.io.IOException;
 
+import org.xmlpull.v1.XmlPullParserException;
+
 import ca.uwaterloo.averroes.callgraph.converters.DoopCallGraphConverter;
 import ca.uwaterloo.averroes.callgraph.converters.ProbeCallGraphCollapser;
 import ca.uwaterloo.averroes.callgraph.converters.SootCallGraphConverter;
@@ -66,8 +68,9 @@ public class CallGraphFactory {
 	 * 
 	 * @return
 	 * @throws IOException
+	 * @throws XmlPullParserException 
 	 */
-	public static probe.CallGraph generateAndroidCallGraph() throws IOException {
+	public static probe.CallGraph generateAndroidCallGraph() throws IOException, XmlPullParserException {
 		probe.CallGraph android = new AndroidCallGraphTransformer().run();
 		return ProbeCallGraphCollapser.collapse(android);
 	}
