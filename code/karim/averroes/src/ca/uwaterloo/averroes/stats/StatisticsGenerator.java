@@ -18,6 +18,8 @@ public class StatisticsGenerator {
 		String doopAverroesFile = "callgraphs/doop-averroes-call-graphs/" + benchmark + "/doopAverroes.gxl";
 		String sparkFile = "callgraphs/spark-call-graphs/" + benchmark + "/spark.gxl";
 		String sparkAverroesFile = "callgraphs/spark-averroes-call-graphs/" + benchmark + "/sparkAverroes.gxl";
+		String walaFile = "callgraphs/wala-call-graphs/" + benchmark + "/wala.gxl";
+		String walaAverroesFile = "callgraphs/wala-averroes-call-graphs/" + benchmark + "/walaAverroes.gxl";
 		String dynamicFile = "callgraphs/dynamic-call-graphs/" + benchmark + "/dynamic.gxl";
 
 		try {
@@ -32,6 +34,10 @@ public class StatisticsGenerator {
 			CallGraph spark = new GXLReader().readCallGraph(new FileInputStream(sparkFile), CallGraphSource.SPARK);
 			CallGraph sparkAverroes = new GXLReader().readCallGraph(new FileInputStream(sparkAverroesFile),
 					CallGraphSource.SPARK_AVERROES);
+			
+			CallGraph wala = new GXLReader().readCallGraph(new FileInputStream(walaFile), CallGraphSource.WALA);
+			CallGraph walaAverroes = new GXLReader().readCallGraph(new FileInputStream(walaAverroesFile),
+					CallGraphSource.WALA_AVERROES);
 
 			CallGraph dyn = new GXLReader().readCallGraph(new FileInputStream(dynamicFile), CallGraphSource.DYNAMIC);
 
@@ -40,14 +46,18 @@ public class StatisticsGenerator {
 			Statistics dyn_SparkAverroes = dyn.diffCallGraphs(sparkAverroes);
 			Statistics dyn_Doop = dyn.diffCallGraphs(doop);
 			Statistics dyn_DoopAverroes = dyn.diffCallGraphs(doopAverroes);
+			Statistics dyn_Wala = dyn.diffCallGraphs(wala);
+			Statistics dyn_WalaAverroes = dyn.diffCallGraphs(walaAverroes);
 
 			// Adjust the unsoundness in the original call graph for Doop and Spark
 			doop = doop.union(dyn);
 			spark = spark.union(dyn);
+			wala = wala.union(dyn);
 
 			// Soundness and Precision w.r.t. original call graphs
 			Statistics spark_SparkAverroes = spark.diffCallGraphs(sparkAverroes);
 			Statistics doop_DoopAverroes = doop.diffCallGraphs(doopAverroes);
+			Statistics wala_WalaAverroes = wala.diffCallGraphs(walaAverroes);
 
 			// Soundness and Precision of DoopAve w.r.t CGC call graph
 			Statistics cgc_DoopAverroes = cgc.diffCallGraphs(doopAverroes);
@@ -58,6 +68,8 @@ public class StatisticsGenerator {
 			System.out.println("SparkAverroes: " + sparkAverroes.appToAppEdges().size());
 			System.out.println("Doop: " + doop.appToAppEdges().size());
 			System.out.println("DoopAverroes: " + doopAverroes.appToAppEdges().size());
+			System.out.println("Wala: " + wala.appToAppEdges().size());
+			System.out.println("WalaAverroes: " + walaAverroes.appToAppEdges().size());
 			System.out.println("");
 
 			System.out.println("Library Call Graph Edges");
@@ -66,6 +78,8 @@ public class StatisticsGenerator {
 			System.out.println("SparkAverroes: " + sparkAverroes.appToLibEdges().size());
 			System.out.println("Doop: " + doop.appToLibEdges().size());
 			System.out.println("DoopAverroes: " + doopAverroes.appToLibEdges().size());
+			System.out.println("Wala: " + wala.appToLibEdges().size());
+			System.out.println("WalaAverroes: " + walaAverroes.appToLibEdges().size());
 			System.out.println("");
 
 			System.out.println("Library Call Back Edges");
@@ -74,6 +88,8 @@ public class StatisticsGenerator {
 			System.out.println("SparkAverroes: " + sparkAverroes.libToAppEdges().size());
 			System.out.println("Doop: " + doop.libToAppEdges().size());
 			System.out.println("DoopAverroes: " + doopAverroes.libToAppEdges().size());
+			System.out.println("Wala: " + wala.libToAppEdges().size());
+			System.out.println("WalaAverroes: " + walaAverroes.libToAppEdges().size());
 			System.out.println("");
 
 			System.out.println("");
@@ -84,10 +100,14 @@ public class StatisticsGenerator {
 			System.out.println("Dyn - SparkAverroes: " + dyn_SparkAverroes.getMissing().appToAppEdges().size());
 			System.out.println("Dyn - Doop: " + dyn_Doop.getMissing().appToAppEdges().size());
 			System.out.println("Dyn - DoopAverroes: " + dyn_DoopAverroes.getMissing().appToAppEdges().size());
+			System.out.println("Dyn - Wala: " + dyn_Wala.getMissing().appToAppEdges().size());
+			System.out.println("Dyn - WalaAverroes: " + dyn_WalaAverroes.getMissing().appToAppEdges().size());
 			System.out.println("Spark - SparkAverroes: " + spark_SparkAverroes.getMissing().appToAppEdges().size());
 			System.out.println("Doop - DoopAverroes: " + doop_DoopAverroes.getMissing().appToAppEdges().size());
+			System.out.println("Wala - WalaAverroes: " + wala_WalaAverroes.getMissing().appToAppEdges().size());
 			System.out.println("SparkAverroes - Spark: " + spark_SparkAverroes.getExtra().appToAppEdges().size());
 			System.out.println("DoopAverroes - Doop: " + doop_DoopAverroes.getExtra().appToAppEdges().size());
+			System.out.println("WalaAverroes - Wala: " + wala_WalaAverroes.getExtra().appToAppEdges().size());
 			System.out.println("Cgc - DoopAverroes: " + cgc_DoopAverroes.getMissing().appToAppEdges().size());
 			System.out.println("DoopAverroes - Cgc: " + cgc_DoopAverroes.getExtra().appToAppEdges().size());
 			System.out.println("");
@@ -98,10 +118,14 @@ public class StatisticsGenerator {
 			System.out.println("Dyn - SparkAverroes: " + dyn_SparkAverroes.getMissing().appToLibEdges().size());
 			System.out.println("Dyn - Doop: " + dyn_Doop.getMissing().appToLibEdges().size());
 			System.out.println("Dyn - DoopAverroes: " + dyn_DoopAverroes.getMissing().appToLibEdges().size());
+			System.out.println("Dyn - Wala: " + dyn_Wala.getMissing().appToLibEdges().size());
+			System.out.println("Dyn - WalaAverroes: " + dyn_WalaAverroes.getMissing().appToLibEdges().size());
 			System.out.println("Spark - SparkAverroes: " + spark_SparkAverroes.getMissing().appToLibEdges().size());
 			System.out.println("Doop - DoopAverroes: " + doop_DoopAverroes.getMissing().appToLibEdges().size());
+			System.out.println("Wala - WalaAverroes: " + wala_WalaAverroes.getMissing().appToLibEdges().size());
 			System.out.println("SparkAverroes - Spark: " + spark_SparkAverroes.getExtra().appToLibEdges().size());
 			System.out.println("DoopAverroes - Doop: " + doop_DoopAverroes.getExtra().appToLibEdges().size());
+			System.out.println("WalaAverroes - Wala: " + wala_WalaAverroes.getExtra().appToLibEdges().size());
 			System.out.println("Cgc - DoopAverroes: " + cgc_DoopAverroes.getMissing().appToLibEdges().size());
 			System.out.println("DoopAverroes - Cgc: " + cgc_DoopAverroes.getExtra().appToLibEdges().size());
 			System.out.println("");
@@ -112,10 +136,14 @@ public class StatisticsGenerator {
 			System.out.println("Dyn - SparkAverroes: " + dyn_SparkAverroes.getMissing().libToAppEdges().size());
 			System.out.println("Dyn - Doop: " + dyn_Doop.getMissing().libToAppEdges().size());
 			System.out.println("Dyn - DoopAverroes: " + dyn_DoopAverroes.getMissing().libToAppEdges().size());
+			System.out.println("Dyn - Wala: " + dyn_Wala.getMissing().libToAppEdges().size());
+			System.out.println("Dyn - WalaAverroes: " + dyn_WalaAverroes.getMissing().libToAppEdges().size());
 			System.out.println("Spark - SparkAverroes: " + spark_SparkAverroes.getMissing().libToAppEdges().size());
 			System.out.println("Doop - DoopAverroes: " + doop_DoopAverroes.getMissing().libToAppEdges().size());
+			System.out.println("Wala - WalaAverroes: " + wala_WalaAverroes.getMissing().libToAppEdges().size());
 			System.out.println("SparkAverroes - Spark: " + spark_SparkAverroes.getExtra().libToAppEdges().size());
 			System.out.println("DoopAverroes - Doop: " + doop_DoopAverroes.getExtra().libToAppEdges().size());
+			System.out.println("WalaAverroes - Wala: " + wala_WalaAverroes.getExtra().libToAppEdges().size());
 			System.out.println("Cgc - DoopAverroes: " + cgc_DoopAverroes.getMissing().libToAppEdges().size());
 			System.out.println("DoopAverroes - Cgc: " + cgc_DoopAverroes.getExtra().libToAppEdges().size());
 			System.out.println("");
@@ -137,6 +165,11 @@ public class StatisticsGenerator {
 			System.out.println("DoopAverroes - Cgc");
 			System.out.println("-----------");
 			cgc_DoopAverroes.getExtra().printFrequencies();
+			System.out.println("");
+			
+			System.out.println("WalaAverroes - Wala");
+			System.out.println("----------");
+			wala_WalaAverroes.getExtra().printFrequencies();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
