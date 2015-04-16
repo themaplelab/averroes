@@ -14,6 +14,7 @@ import ca.uwaterloo.averroes.callgraph.transformers.SparkCallGraphTransformer;
 import ca.uwaterloo.averroes.callgraph.transformers.SparkWithAverroesCallGraphTransformer;
 import ca.uwaterloo.averroes.properties.AverroesProperties;
 import ca.uwaterloo.averroes.util.CommandExecuter;
+import ca.uwaterloo.averroes.util.TimeUtils;
 import ca.uwaterloo.averroes.util.io.FileUtils;
 import ca.uwaterloo.cgstudy.util.ProbeUtils;
 
@@ -147,7 +148,10 @@ public class CallGraphFactory {
 		options.setReflectionOptions(ReflectionOptions.ONE_FLOW_TO_CASTS_NO_METHOD_INVOKE);
 		
 		SSAPropagationCallGraphBuilder builder = Util.makeZeroCFABuilder(options, new AnalysisCache(), cha, scope, null, null);
+		
+		TimeUtils.splitStart();
 		BasicCallGraph<?> cg = (BasicCallGraph<?>) builder.makeCallGraph(options, null);
+		System.out.println("[Wala] Solution found in " + TimeUtils.elapsedSplitTime() + " seconds.");
 
 		// 2. Convert the WalaAverroes call graph
 		probe.CallGraph wala = ProbeUtils.getProbeCallGraph(cg);
@@ -179,7 +183,10 @@ public class CallGraphFactory {
 		options.setReflectionOptions(ReflectionOptions.ONE_FLOW_TO_CASTS_NO_METHOD_INVOKE);
 		
 		SSAPropagationCallGraphBuilder builder = Util.makeZeroCFABuilder(options, new AnalysisCache(), cha, scope, null, null);
+		
+		TimeUtils.splitStart();
 		BasicCallGraph<?> cg = (BasicCallGraph<?>) builder.makeCallGraph(options, null);
+		System.out.println("[Wala] Solution found in " + TimeUtils.elapsedSplitTime() + " seconds.");
 
 		// 2. Convert the Wala call graph
 		probe.CallGraph wala = ProbeUtils.getProbeCallGraph(cg);
