@@ -64,6 +64,7 @@ public class StatisticsGenerator {
 
 			System.out.println("Call Graph Edges");
 			System.out.println("================");
+			System.out.println("Dynamic: " + dyn.appToAppEdges().size());
 			System.out.println("Spark: " + spark.appToAppEdges().size());
 			System.out.println("SparkAverroes: " + sparkAverroes.appToAppEdges().size());
 			System.out.println("Doop: " + doop.appToAppEdges().size());
@@ -74,6 +75,7 @@ public class StatisticsGenerator {
 
 			System.out.println("Library Call Graph Edges");
 			System.out.println("========================");
+			System.out.println("Dynamic: " + dyn.appToLibEdges().size());
 			System.out.println("Spark: " + spark.appToLibEdges().size());
 			System.out.println("SparkAverroes: " + sparkAverroes.appToLibEdges().size());
 			System.out.println("Doop: " + doop.appToLibEdges().size());
@@ -84,6 +86,7 @@ public class StatisticsGenerator {
 
 			System.out.println("Library Call Back Edges");
 			System.out.println("=======================");
+			System.out.println("Dynamic: " + dyn.libToAppEdges().size());
 			System.out.println("Spark: " + spark.libToAppEdges().size());
 			System.out.println("SparkAverroes: " + sparkAverroes.libToAppEdges().size());
 			System.out.println("Doop: " + doop.libToAppEdges().size());
