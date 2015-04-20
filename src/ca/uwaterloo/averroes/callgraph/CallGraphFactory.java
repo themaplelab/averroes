@@ -16,7 +16,7 @@ import ca.uwaterloo.averroes.properties.AverroesProperties;
 import ca.uwaterloo.averroes.util.CommandExecuter;
 import ca.uwaterloo.averroes.util.TimeUtils;
 import ca.uwaterloo.averroes.util.io.FileUtils;
-import ca.uwaterloo.cgstudy.util.ProbeUtils;
+import ca.uwaterloo.averroes.util.ProbeUtils;
 
 import com.ibm.wala.core.tests.callGraph.CallGraphTestUtil;
 import com.ibm.wala.ipa.callgraph.AnalysisCache;
@@ -134,10 +134,11 @@ public class CallGraphFactory {
 	 * @throws CallGraphBuilderCancelException 
 	 * @throws IllegalArgumentException 
 	 */
-	public static CallGraph generateWalaWithAverroesCallGraph(String benchmark) throws IOException,
+	public static CallGraph generateWalaCallGraph(String benchmark, boolean isAve) throws IOException,
 			InterruptedException, ClassHierarchyException, IllegalArgumentException, CallGraphBuilderCancelException {
 		// 1. build the call graph
-		String classpath = FileUtils.composeClassPath(FileUtils.organizedApplicationJarFile(benchmark), FileUtils.placeholderLibraryJarFile(benchmark));
+		String classpath = FileUtils.composeClassPath(FileUtils.organizedApplicationJarFile(benchmark), 
+				isAve ? FileUtils.placeholderLibraryJarFile(benchmark) : FileUtils.organizedLibraryJarFile(benchmark));
 		String exclusionFile = CallGraphFactory.class.getClassLoader().getResource(CallGraphTestUtil.REGRESSION_EXCLUSIONS).getPath();
 		
 		AnalysisScope scope = AnalysisScopeReader.makeJavaBinaryAnalysisScope(classpath, new File(exclusionFile));
@@ -145,51 +146,16 @@ public class CallGraphFactory {
 		Iterable<Entrypoint> entrypoints = Util.makeMainEntrypoints(scope, cha, "L" + AverroesProperties.getMainClass().replaceAll("\\.", "/"));
 		
 		AnalysisOptions options = new AnalysisOptions(scope, entrypoints);
-		options.setReflectionOptions(ReflectionOptions.ONE_FLOW_TO_CASTS_NO_METHOD_INVOKE);
+		options.setReflectionOptions(isAve ? ReflectionOptions.NONE : ReflectionOptions.MULTI_FLOW_TO_CASTS_APPLICATION_GET_METHOD);
 		
-		SSAPropagationCallGraphBuilder builder = Util.makeZeroCFABuilder(options, new AnalysisCache(), cha, scope, null, null);
-		
-		TimeUtils.splitStart();
-		BasicCallGraph<?> cg = (BasicCallGraph<?>) builder.makeCallGraph(options, null);
-		System.out.println("[Wala] Solution found in " + TimeUtils.elapsedSplitTime() + " seconds.");
-
-		// 2. Convert the WalaAverroes call graph
-		probe.CallGraph wala = ProbeUtils.getProbeCallGraph(cg);
-	    return ProbeCallGraphCollapser.collapse(wala, CallGraphSource.WALA_AVERROES);
-	}
-
-	/**
-	 * Generate the call graph for Wala.
-	 * 
-	 * @param benchmark
-	 * @return
-	 * @throws IOException
-	 * @throws InterruptedException
-	 * @throws ClassHierarchyException 
-	 * @throws CallGraphBuilderCancelException 
-	 * @throws IllegalArgumentException 
-	 */
-	public static CallGraph generateWalaCallGraph(String benchmark) throws IOException,
-			InterruptedException, ClassHierarchyException, IllegalArgumentException, CallGraphBuilderCancelException {
-		// 1. build the call graph
-		String classpath = FileUtils.composeClassPath(FileUtils.organizedApplicationJarFile(benchmark), FileUtils.organizedLibraryJarFile(benchmark));
-		String exclusionFile = CallGraphFactory.class.getClassLoader().getResource(CallGraphTestUtil.REGRESSION_EXCLUSIONS).getPath();
-		
-		AnalysisScope scope = AnalysisScopeReader.makeJavaBinaryAnalysisScope(classpath, new File(exclusionFile));
-		ClassHierarchy cha = ClassHierarchy.make(scope);
-		Iterable<Entrypoint> entrypoints = Util.makeMainEntrypoints(scope, cha, "L" + AverroesProperties.getMainClass().replaceAll("\\.", "/"));
-		
-		AnalysisOptions options = new AnalysisOptions(scope, entrypoints);
-		options.setReflectionOptions(ReflectionOptions.ONE_FLOW_TO_CASTS_NO_METHOD_INVOKE);
-		
-		SSAPropagationCallGraphBuilder builder = Util.makeZeroCFABuilder(options, new AnalysisCache(), cha, scope, null, null);
+		SSAPropagationCallGraphBuilder builder = Util.makeZeroOneCFABuilder(options, new AnalysisCache(), cha, scope, null, null);
 		
 		TimeUtils.splitStart();
 		BasicCallGraph<?> cg = (BasicCallGraph<?>) builder.makeCallGraph(options, null);
 		System.out.println("[Wala] Solution found in " + TimeUtils.elapsedSplitTime() + " seconds.");
 
-		// 2. Convert the Wala call graph
+		// 2. Convert the Wala call graph to probe and collapse it
 		probe.CallGraph wala = ProbeUtils.getProbeCallGraph(cg);
-	    return ProbeCallGraphCollapser.collapse(wala, CallGraphSource.WALA);
+	    return ProbeCallGraphCollapser.collapse(wala, isAve ? CallGraphSource.WALA_AVERROES : CallGraphSource.WALA);
 	}
 }
