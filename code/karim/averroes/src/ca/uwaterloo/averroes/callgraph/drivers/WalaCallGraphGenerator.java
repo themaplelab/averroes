@@ -29,7 +29,7 @@ public class WalaCallGraphGenerator {
 			String benchmark = args[0];
 			
 			FileUtils.createDirectory(AverroesProperties.getOutputDir());
-			CallGraph wala = CallGraphFactory.generateWalaCallGraph(benchmark);
+			CallGraph wala = CallGraphFactory.generateWalaCallGraph(benchmark, false);
 			System.out.println("Total time to finish: " + TimeUtils.elapsedTime());
 			new GXLWriter().write(wala, FileUtils.walaCallGraphFile());
 

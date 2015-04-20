@@ -20,6 +20,9 @@
 	<classpathentry kind="lib" path="lib/guava-15.0.jar"/>
 	<classpathentry kind="lib" path="lib/axml-1.0.jar"/>
 	<classpathentry kind="lib" path="googleplay/com.turbochilli.unrollme.jar"/>
-	<classpathentry kind="lib" path="lib/wala-static.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/com.ibm.wala.core"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/com.ibm.wala.core.tests"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/com.ibm.wala.shrike"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/com.ibm.wala.util"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
