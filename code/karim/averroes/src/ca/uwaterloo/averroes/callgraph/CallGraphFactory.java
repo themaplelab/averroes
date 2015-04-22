@@ -134,7 +134,7 @@ public class CallGraphFactory {
 	 * @throws CallGraphBuilderCancelException 
 	 * @throws IllegalArgumentException 
 	 */
-	public static CallGraph generateWalaCallGraph(String benchmark, boolean isAve) throws IOException,
+	public static probe.CallGraph generateWalaCallGraph(String benchmark, boolean isAve) throws IOException,
 			InterruptedException, ClassHierarchyException, IllegalArgumentException, CallGraphBuilderCancelException {
 		// 1. build the call graph
 		String classpath = FileUtils.composeClassPath(FileUtils.organizedApplicationJarFile(benchmark), 
@@ -155,7 +155,8 @@ public class CallGraphFactory {
 		System.out.println("[Wala] Solution found in " + TimeUtils.elapsedSplitTime() + " seconds.");
 
 		// 2. Convert the Wala call graph to probe and collapse it
-		probe.CallGraph wala = ProbeUtils.getProbeCallGraph(cg);
-	    return ProbeCallGraphCollapser.collapse(wala, isAve ? CallGraphSource.WALA_AVERROES : CallGraphSource.WALA);
+		return ProbeUtils.getProbeCallGraph(cg);
+		// probe.CallGraph wala = ProbeUtils.getProbeCallGraph(cg);
+	    // return ProbeCallGraphCollapser.collapse(wala, isAve ? CallGraphSource.WALA_AVERROES : CallGraphSource.WALA);
 	}
 }

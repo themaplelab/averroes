@@ -1,15 +1,24 @@
 package ca.uwaterloo.averroes.callgraph.converters;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.zip.GZIPOutputStream;
+
 import probe.CallEdge;
 import probe.CallGraph;
 import probe.ObjectManager;
 import probe.ProbeMethod;
+import probe.TextWriter;
 import ca.uwaterloo.averroes.callgraph.CallGraphSource;
+import ca.uwaterloo.averroes.callgraph.gxl.GXLReader;
 import ca.uwaterloo.averroes.properties.AverroesProperties;
 import ca.uwaterloo.averroes.soot.Names;
 
 /**
- * A converter that transforms a probe call graph to an application-only call graph.
+ * A converter that transforms a probe call graph to an application-only call
+ * graph.
  * 
  * @author karim
  * 
@@ -37,9 +46,13 @@ public class ProbeCallGraphCollapser {
 			ProbeMethod dst = edge.dst();
 
 			/*
-			 * We don't care about the following edges (primarily used for converting dynamic call graphs) 1) edges to
-			 * <clinit> methods 2) edges to java.lang.ClassLoader: loadClassInternal(Ljava/lang/String;) 3) edges to
-			 * java.lang.ClassLoader: checkPackageAccess(Ljava/lang/Class;Ljava/security /ProtectionDomain;)
+			 * We don't care about the following edges (primarily used for
+			 * converting dynamic call graphs) 1) edges to <clinit> methods 2)
+			 * edges to java.lang.ClassLoader:
+			 * loadClassInternal(Ljava/lang/String;) 3) edges to
+			 * java.lang.ClassLoader:
+			 * checkPackageAccess(Ljava/lang/Class;Ljava/security
+			 * /ProtectionDomain;)
 			 */
 			if (!isClinit(dst) && !isLoadClassInternal(dst) && !isCheckPackageAccess(dst)) {
 				boolean isSrcApp = AverroesProperties.isApplicationMethod(src);
@@ -57,7 +70,27 @@ public class ProbeCallGraphCollapser {
 
 		return result;
 	}
-	
+
+	/**
+	 * Convert from the Averroes probe format to the standard probe format.
+	 * 
+	 * @param aveCallGraph
+	 * @return
+	 */
+	public static CallGraph collapse(ca.uwaterloo.averroes.callgraph.CallGraph aveCallGraph) {
+		CallGraph result = new CallGraph();
+
+		// Add the entry points
+		aveCallGraph.entryPoints().forEach(entry -> result.entryPoints().add(entry));
+
+		// Add the edges appropriately
+		aveCallGraph.appToAppEdges().forEach(edge -> result.edges().add(edge));
+		aveCallGraph.appToLibEdges().forEach(src -> result.edges().add(new CallEdge(src, LIBRARY_BLOB)));
+		aveCallGraph.libToAppEdges().forEach(dst -> result.edges().add(new CallEdge(LIBRARY_BLOB, dst)));
+
+		return result;
+	}
+
 	public static ca.uwaterloo.averroes.callgraph.CallGraph collapse(CallGraph probeCallGraph, CallGraphSource source) {
 		ca.uwaterloo.averroes.callgraph.CallGraph result = new ca.uwaterloo.averroes.callgraph.CallGraph(source);
 
@@ -71,9 +104,13 @@ public class ProbeCallGraphCollapser {
 			ProbeMethod dst = edge.dst();
 
 			/*
-			 * We don't care about the following edges (primarily used for converting dynamic call graphs) 1) edges to
-			 * <clinit> methods 2) edges to java.lang.ClassLoader: loadClassInternal(Ljava/lang/String;) 3) edges to
-			 * java.lang.ClassLoader: checkPackageAccess(Ljava/lang/Class;Ljava/security /ProtectionDomain;)
+			 * We don't care about the following edges (primarily used for
+			 * converting dynamic call graphs) 1) edges to <clinit> methods 2)
+			 * edges to java.lang.ClassLoader:
+			 * loadClassInternal(Ljava/lang/String;) 3) edges to
+			 * java.lang.ClassLoader:
+			 * checkPackageAccess(Ljava/lang/Class;Ljava/security
+			 * /ProtectionDomain;)
 			 */
 			if (!isClinit(dst) && !isLoadClassInternal(dst) && !isCheckPackageAccess(dst)) {
 				boolean isSrcApp = AverroesProperties.isApplicationMethod(src);
@@ -103,5 +140,21 @@ public class ProbeCallGraphCollapser {
 	public static boolean isCheckPackageAccess(ProbeMethod method) {
 		return method.toString().equalsIgnoreCase(
 				"java.lang.ClassLoader: checkPackageAccess(Ljava/lang/Class;Ljava/security/ProtectionDomain;)");
+	}
+
+	public static void main(String[] args) {
+		try {
+			ca.uwaterloo.averroes.callgraph.CallGraph aveCallGraph = new GXLReader().readCallGraph(new FileInputStream(
+					args[0]), CallGraphSource.DUMMY);
+			CallGraph probe = collapse(aveCallGraph);
+			new TextWriter().write(probe,
+					new GZIPOutputStream(new FileOutputStream(args[0].replace(".gxl", ".txt.gzip"))));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
