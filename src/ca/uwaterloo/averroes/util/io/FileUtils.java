@@ -328,6 +328,24 @@ public class FileUtils {
 	}
 	
 	/**
+	 * The path to the WalaAverroes call graph.
+	 * 
+	 * @return
+	 */
+	public static String walaAverroesCallGraphGzipFile() {
+		return AverroesProperties.getOutputDir().concat(File.separator).concat("walaAverroes.txt.gzip");
+	}
+
+	/**
+	 * The path to the Wala call graph.
+	 * 
+	 * @return
+	 */
+	public static String walaCallGraphGzipFile() {
+		return AverroesProperties.getOutputDir().concat(File.separator).concat("wala.txt.gzip");
+	}
+	
+	/**
 	 * The path to the Doop call graph.
 	 * 
 	 * @return
