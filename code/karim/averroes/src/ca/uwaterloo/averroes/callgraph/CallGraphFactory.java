@@ -1,7 +1,10 @@
 package ca.uwaterloo.averroes.callgraph;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.jar.JarFile;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -14,23 +17,32 @@ import ca.uwaterloo.averroes.callgraph.transformers.SparkCallGraphTransformer;
 import ca.uwaterloo.averroes.callgraph.transformers.SparkWithAverroesCallGraphTransformer;
 import ca.uwaterloo.averroes.properties.AverroesProperties;
 import ca.uwaterloo.averroes.util.CommandExecuter;
+import ca.uwaterloo.averroes.util.ProbeUtils;
 import ca.uwaterloo.averroes.util.TimeUtils;
 import ca.uwaterloo.averroes.util.io.FileUtils;
-import ca.uwaterloo.averroes.util.ProbeUtils;
 
+import com.ibm.wala.classLoader.JarFileModule;
 import com.ibm.wala.core.tests.callGraph.CallGraphTestUtil;
 import com.ibm.wala.ipa.callgraph.AnalysisCache;
 import com.ibm.wala.ipa.callgraph.AnalysisOptions;
 import com.ibm.wala.ipa.callgraph.AnalysisOptions.ReflectionOptions;
 import com.ibm.wala.ipa.callgraph.AnalysisScope;
 import com.ibm.wala.ipa.callgraph.CallGraphBuilderCancelException;
+import com.ibm.wala.ipa.callgraph.ContextSelector;
 import com.ibm.wala.ipa.callgraph.Entrypoint;
 import com.ibm.wala.ipa.callgraph.impl.BasicCallGraph;
 import com.ibm.wala.ipa.callgraph.impl.Util;
+import com.ibm.wala.ipa.callgraph.propagation.SSAContextInterpreter;
 import com.ibm.wala.ipa.callgraph.propagation.SSAPropagationCallGraphBuilder;
+import com.ibm.wala.ipa.callgraph.propagation.cfa.ZeroXCFABuilder;
+import com.ibm.wala.ipa.callgraph.propagation.cfa.ZeroXInstanceKeys;
 import com.ibm.wala.ipa.cha.ClassHierarchy;
 import com.ibm.wala.ipa.cha.ClassHierarchyException;
+import com.ibm.wala.ipa.cha.IClassHierarchy;
+import com.ibm.wala.types.ClassLoaderReference;
 import com.ibm.wala.util.config.AnalysisScopeReader;
+import com.ibm.wala.util.config.FileOfClasses;
+import com.ibm.wala.util.io.FileProvider;
 
 /**
  * A factory that generates call graphs for some tools.
@@ -69,7 +81,7 @@ public class CallGraphFactory {
 	 * 
 	 * @return
 	 * @throws IOException
-	 * @throws XmlPullParserException 
+	 * @throws XmlPullParserException
 	 */
 	public static probe.CallGraph generateAndroidCallGraph() throws IOException, XmlPullParserException {
 		probe.CallGraph android = new AndroidCallGraphTransformer().run();
@@ -77,7 +89,8 @@ public class CallGraphFactory {
 	}
 
 	/**
-	 * Generate the call graph for an Android apk using the Averroes placeholder library.
+	 * Generate the call graph for an Android apk using the Averroes placeholder
+	 * library.
 	 * 
 	 * @return
 	 * @throws IOException
@@ -122,7 +135,7 @@ public class CallGraphFactory {
 		// 2. Convert the Doop call graph
 		return DoopCallGraphConverter.convert(doopHome, CallGraphSource.DOOP);
 	}
-	
+
 	/**
 	 * Generate the call graph for WalaAverroes.
 	 * 
@@ -130,25 +143,31 @@ public class CallGraphFactory {
 	 * @return
 	 * @throws IOException
 	 * @throws InterruptedException
-	 * @throws ClassHierarchyException 
-	 * @throws CallGraphBuilderCancelException 
-	 * @throws IllegalArgumentException 
+	 * @throws ClassHierarchyException
+	 * @throws CallGraphBuilderCancelException
+	 * @throws IllegalArgumentException
 	 */
 	public static probe.CallGraph generateWalaCallGraph(String benchmark, boolean isAve) throws IOException,
 			InterruptedException, ClassHierarchyException, IllegalArgumentException, CallGraphBuilderCancelException {
 		// 1. build the call graph
-		String classpath = FileUtils.composeClassPath(FileUtils.organizedApplicationJarFile(benchmark), 
+		String classpath = FileUtils.composeClassPath(FileUtils.organizedApplicationJarFile(benchmark),
 				isAve ? FileUtils.placeholderLibraryJarFile(benchmark) : FileUtils.organizedLibraryJarFile(benchmark));
-		String exclusionFile = CallGraphFactory.class.getClassLoader().getResource(CallGraphTestUtil.REGRESSION_EXCLUSIONS).getPath();
-		
-		AnalysisScope scope = AnalysisScopeReader.makeJavaBinaryAnalysisScope(classpath, new File(exclusionFile));
+		String exclusionFile = CallGraphFactory.class.getClassLoader()
+				.getResource(CallGraphTestUtil.REGRESSION_EXCLUSIONS).getPath();
+
+		AnalysisScope scope = isAve ? makeAverroesAnalysisScope(FileUtils.organizedApplicationJarFile(benchmark),
+				FileUtils.placeholderLibraryJarFile(benchmark), exclusionFile) : AnalysisScopeReader
+				.makeJavaBinaryAnalysisScope(classpath, new File(exclusionFile));
 		ClassHierarchy cha = ClassHierarchy.make(scope);
-		Iterable<Entrypoint> entrypoints = Util.makeMainEntrypoints(scope, cha, "L" + AverroesProperties.getMainClass().replaceAll("\\.", "/"));
-		
+		Iterable<Entrypoint> entrypoints = Util.makeMainEntrypoints(scope, cha, "L"
+				+ AverroesProperties.getMainClass().replaceAll("\\.", "/"));
+
 		AnalysisOptions options = new AnalysisOptions(scope, entrypoints);
-		options.setReflectionOptions(isAve ? ReflectionOptions.NONE : ReflectionOptions.MULTI_FLOW_TO_CASTS_APPLICATION_GET_METHOD);
-		
-		SSAPropagationCallGraphBuilder builder = Util.makeZeroOneCFABuilder(options, new AnalysisCache(), cha, scope, null, null);
+		options.setReflectionOptions(isAve ? ReflectionOptions.NONE
+				: ReflectionOptions.MULTI_FLOW_TO_CASTS_APPLICATION_GET_METHOD);
+
+		SSAPropagationCallGraphBuilder builder = isAve ? makeZeroOneCFABuilder(options, new AnalysisCache(), cha,
+				scope, null, null) : Util.makeZeroOneCFABuilder(options, new AnalysisCache(), cha, scope, null, null);
 		
 		TimeUtils.splitStart();
 		BasicCallGraph<?> cg = (BasicCallGraph<?>) builder.makeCallGraph(options, null);
@@ -157,6 +176,41 @@ public class CallGraphFactory {
 		// 2. Convert the Wala call graph to probe and collapse it
 		return ProbeUtils.getProbeCallGraph(cg);
 		// probe.CallGraph wala = ProbeUtils.getProbeCallGraph(cg);
-	    // return ProbeCallGraphCollapser.collapse(wala, isAve ? CallGraphSource.WALA_AVERROES : CallGraphSource.WALA);
+		// return ProbeCallGraphCollapser.collapse(wala, isAve ?
+		// CallGraphSource.WALA_AVERROES : CallGraphSource.WALA);
+	}
+
+	public static SSAPropagationCallGraphBuilder makeZeroOneCFABuilder(AnalysisOptions options, AnalysisCache cache,
+			IClassHierarchy cha, AnalysisScope scope, ContextSelector customSelector,
+			SSAContextInterpreter customInterpreter) {
+
+		if (options == null) {
+			throw new IllegalArgumentException("options is null");
+		}
+		Util.addDefaultSelectors(options, cha);
+
+		return ZeroXCFABuilder.make(cha, options, cache, customSelector, customInterpreter,
+				ZeroXInstanceKeys.ALLOCATIONS | ZeroXInstanceKeys.SMUSH_MANY
+						| ZeroXInstanceKeys.SMUSH_PRIMITIVE_HOLDERS | ZeroXInstanceKeys.SMUSH_STRINGS
+						| ZeroXInstanceKeys.SMUSH_THROWABLES);
+	}
+
+	public static AnalysisScope makeAverroesAnalysisScope(String app, String averroesLib, String exclusions)
+			throws IOException {
+		AnalysisScope scope = AnalysisScope.createJavaAnalysisScope();
+
+		// Exclusion file
+		File exclusionsFile = new File(exclusions);
+		InputStream fs = exclusionsFile.exists() ? new FileInputStream(exclusionsFile) : FileProvider.class
+				.getClassLoader().getResourceAsStream(exclusionsFile.getName());
+		scope.setExclusions(new FileOfClasses(fs));
+
+		// Averroes library
+		scope.addToScope(ClassLoaderReference.Primordial, new JarFileModule(new JarFile(new File(averroesLib))));
+
+		// Application JAR
+		scope.addToScope(ClassLoaderReference.Application, new JarFileModule(new JarFile(new File(app))));
+
+		return scope;
 	}
 }
