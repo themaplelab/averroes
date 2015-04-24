@@ -275,12 +275,18 @@ public class ProbeUtils {
 			// Ignore edges from fakeRootNode, they have already been added as
 			// entry points.
 			// Also ignore edges from fakeWorldClinit
+//			if(node.getMethod().getName().toString().equals("doItAll")) {
+//				System.out.println(node.getIR() + "\n\n");
+//			}
 			if (!node.equals(root) && !node.equals(clinit)) {
 				Iterator<CGNode> successors = walaCallGraph.getSuccNodes(node);
 				ProbeMethod src = ProbeUtils.probeMethod(node);
 
 				while (successors.hasNext()) {
 					CGNode succ = successors.next();
+//					if(node.getMethod().getName().toString().equals("doItAll")) {
+//						System.out.println(succ);
+//					}
 					ProbeMethod dst = ProbeUtils.probeMethod(succ);
 					probeGraph.edges().add(new CallEdge(src, dst));
 				}
