@@ -19,6 +19,7 @@ import soot.ArrayType;
 import soot.Local;
 import soot.Modifier;
 import soot.RefLikeType;
+import soot.RefType;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
@@ -38,7 +39,8 @@ import ca.uwaterloo.averroes.tamiflex.TamiFlexFactsDatabase;
 import ca.uwaterloo.averroes.util.io.FileUtils;
 
 /**
- * The master-mind of Averroes. That's where the magic of generating code for library classes happen.
+ * The master-mind of Averroes. That's where the magic of generating code for
+ * library classes happen.
  * 
  * @author karim
  * 
@@ -54,6 +56,7 @@ public class CodeGenerator {
 	private int generatedClassCount;
 
 	private SootClass averroesLibraryClass = null;
+	private SootClass averroesAbstractLibraryClass = null;
 	private AverroesJimpleBody doItAllBody = null;
 	private SootClass androidDummyMainClass = null;
 
@@ -126,13 +129,22 @@ public class CodeGenerator {
 	}
 
 	/**
+	 * Get the Averroes abstract library class
+	 * 
+	 * @return
+	 */
+	public SootClass getAverroesAbstractLibraryClass() {
+		return averroesAbstractLibraryClass;
+	}
+
+	/**
 	 * Get the doItAll method.
 	 * 
 	 * @return
 	 */
-	public SootMethod getAverroesDoItAll() {
-		return averroesLibraryClass.getMethod(Hierarchy
-				.signatureToSubsignature(Names.AVERROES_DO_IT_ALL_METHOD_SIGNATURE));
+	public SootMethod getAverroesAbstractDoItAll() {
+		return averroesAbstractLibraryClass.getMethod(Hierarchy
+				.signatureToSubsignature(Names.AVERROES_ABSTRACT_DO_IT_ALL_METHOD_SIGNATURE));
 	}
 
 	/**
@@ -141,8 +153,8 @@ public class CodeGenerator {
 	 * @return
 	 */
 	public SootField getAverroesLibraryPointsTo() {
-		return averroesLibraryClass
-				.getField(Hierarchy.signatureToSubsignature(Names.LIBRARY_POINTS_TO_FIELD_SIGNATURE));
+		return averroesAbstractLibraryClass.getField(Hierarchy
+				.signatureToSubsignature(Names.LIBRARY_POINTS_TO_FIELD_SIGNATURE));
 	}
 
 	/**
@@ -151,14 +163,25 @@ public class CodeGenerator {
 	 * @return
 	 */
 	public SootField getAverroesFinalizePointsTo() {
-		return averroesLibraryClass.getField(Hierarchy
+		return averroesAbstractLibraryClass.getField(Hierarchy
 				.signatureToSubsignature(Names.FINALIZE_POINTS_TO_FIELD_SIGNATURE));
 	}
 
 	/**
-	 * Create a dummy main class for an android app. This basically is a class that contains one method: the main
-	 * method, which calls the Library.doItAll() method. This class will be part of the placeholderLibrary.jar for
-	 * convenience. It can then be used as the main_class for, in fact, any android app, either using the Soot call
+	 * Get the instance field.
+	 * 
+	 * @return
+	 */
+	public SootField getAverroesInstanceField() {
+		return averroesAbstractLibraryClass.getField(Hierarchy.signatureToSubsignature(Names.INSTANCE_FIELD_SIGNATURE));
+	}
+
+	/**
+	 * Create a dummy main class for an android app. This basically is a class
+	 * that contains one method: the main method, which calls the
+	 * Library.doItAll() method. This class will be part of the
+	 * placeholderLibrary.jar for convenience. It can then be used as the
+	 * main_class for, in fact, any android app, either using the Soot call
 	 * graph generator or any other tool.
 	 * 
 	 * @throws IOException
@@ -179,7 +202,7 @@ public class CodeGenerator {
 			JimpleBody b = Jimple.v().newBody(main);
 			main.setActiveBody(b);
 			b.insertIdentityStmts();
-			b.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(getAverroesDoItAll().makeRef())));
+			b.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(getAverroesAbstractDoItAll().makeRef())));
 			b.getUnits().addLast(Jimple.v().newReturnVoidStmt());
 
 			// Validate the Jimple body
@@ -197,21 +220,46 @@ public class CodeGenerator {
 	 * @throws IOException
 	 */
 	public void createAverroesLibraryClass() throws IOException {
+		// Create the abstract library class (specifically to be compatible with
+		// WALA/Java).
+		// This class represents the interface of the AverroesLibraryClass and
+		// will be part of the primordial library that is added to WALA.
+		if (averroesAbstractLibraryClass == null) {
+			// Create the class
+			averroesAbstractLibraryClass = new SootClass(Names.AVERROES_ABSTRACT_LIBRARY_CLASS, Modifier.PUBLIC);
+			averroesAbstractLibraryClass.setSuperclass(Hierarchy.v().getJavaLangObject());
+
+			// Create the constructor that calls the JavaLangObject constructor
+			createAverroesAbstractLibraryInit();
+
+			// Create the LPT field, FIN field, and instance field
+			createAverroesAbstractLibraryFields();
+
+			// Create the abstract doItAll method
+			createAverroesAbstractLibraryDoItAll();
+
+			// Write the class file to disk
+			writeLibraryClassFile(averroesAbstractLibraryClass);
+		}
+
+		// Now create the AverroesLibraryClass which basically implements the
+		// doItAll method and assigns itself to AbstractLibrary.instance
+		// This class could then be treated as part of the application, which
+		// leads to (in the future) just regenerating this class instead of
+		// regenerating the whole placeholder library
 		if (averroesLibraryClass == null) {
 			// Create the class
 			averroesLibraryClass = new SootClass(Names.AVERROES_LIBRARY_CLASS, Modifier.PUBLIC);
-			averroesLibraryClass.setSuperclass(Hierarchy.v().getJavaLangObject());
+			averroesLibraryClass.setSuperclass(averroesAbstractLibraryClass);
 
-			// Create the LPT field
-			SootField libraryPointsTo = new SootField(Names.LIBRARY_POINTS_TO, Hierarchy.v().getJavaLangObject()
-					.getType(), Modifier.PUBLIC | Modifier.STATIC);
-			SootField finalizePointsTo = new SootField(Names.FINALIZE_POINTS_TO, Hierarchy.v().getJavaLangObject()
-					.getType(), Modifier.PUBLIC | Modifier.STATIC);
-			averroesLibraryClass.addField(libraryPointsTo);
-			averroesLibraryClass.addField(finalizePointsTo);
+			// Add a default empty constructor
+			createAverroesLibraryInit();
+
+			// Create its static initalizer
+			createAverroesLibraryClinit();
 
 			// Create the dotItAll method
-			createAverroesDoItAll();
+			createAverroesLibraryDoItAll();
 
 			// Write the class file to disk
 			writeLibraryClassFile(averroesLibraryClass);
@@ -262,9 +310,11 @@ public class CodeGenerator {
 	}
 
 	/**
-	 * Create the Jimple body for the given library method. If it's a constructor, then we need to initialize all the
-	 * fields in the class with objects compatible from the LPT. If it's the static initializer, then we need to
-	 * initialize all the static fields of the class with objects compatible from the LPT. method.
+	 * Create the Jimple body for the given library method. If it's a
+	 * constructor, then we need to initialize all the fields in the class with
+	 * objects compatible from the LPT. If it's the static initializer, then we
+	 * need to initialize all the static fields of the class with objects
+	 * compatible from the LPT. method.
 	 * 
 	 * @param method
 	 * 
@@ -303,7 +353,8 @@ public class CodeGenerator {
 	}
 
 	/**
-	 * Initialize the code generator by creating the concrete implementation classes.
+	 * Initialize the code generator by creating the concrete implementation
+	 * classes.
 	 */
 	private void initialize() {
 		implementLibraryInterfacesNotImplementedInLibrary();
@@ -321,7 +372,8 @@ public class CodeGenerator {
 	}
 
 	/**
-	 * Create a concrete library subclass for any abstract library class that is not implemented in the library.
+	 * Create a concrete library subclass for any abstract library class that is
+	 * not implemented in the library.
 	 */
 	private void implementAbstractLibraryClassesNotImplementedInLibrary() {
 		for (SootClass cls : Hierarchy.v().getAbstractLibraryClassesNotImplementedInLibrary()) {
@@ -331,10 +383,111 @@ public class CodeGenerator {
 	}
 
 	/**
-	 * Create the doItAll method for the Averroes library class. It includes creating objects, calling methods, writing
-	 * to array elements, throwing exceptions and all the stuff that the library could do.
+	 * Create the default constructor for the Averroes library class.
 	 */
-	private void createAverroesDoItAll() {
+	private void createAverroesAbstractLibraryInit() {
+		SootMethod init = Hierarchy.getNewDefaultConstructor();
+
+		JimpleBody body = Jimple.v().newBody(init);
+		init.setActiveBody(body);
+		averroesAbstractLibraryClass.addMethod(init);
+
+		// Call superclass constructor
+		body.insertIdentityStmts();
+		body.getUnits().add(
+				Jimple.v().newInvokeStmt(
+						Jimple.v().newSpecialInvokeExpr(body.getThisLocal(),
+								Hierarchy.getDefaultConstructor(Hierarchy.v().getJavaLangObject()).makeRef(),
+								Collections.<Value> emptyList())));
+
+		// Add return statement
+		body.getUnits().addLast(Jimple.v().newReturnVoidStmt());
+
+		// Finally validate the Jimple body
+		body.validate();
+	}
+
+	/**
+	 * Add the main 3 fields to the AverroesAbstractLibrary class.
+	 */
+	private void createAverroesAbstractLibraryFields() {
+		SootField libraryPointsTo = new SootField(Names.LIBRARY_POINTS_TO, Hierarchy.v().getJavaLangObject().getType(),
+				Modifier.PUBLIC | Modifier.STATIC);
+		SootField finalizePointsTo = new SootField(Names.FINALIZE_POINTS_TO, Hierarchy.v().getJavaLangObject()
+				.getType(), Modifier.PUBLIC | Modifier.STATIC);
+		SootField instance = new SootField(Names.INSTANCE, averroesAbstractLibraryClass.getType(), Modifier.PUBLIC
+				| Modifier.STATIC);
+		averroesAbstractLibraryClass.addField(libraryPointsTo);
+		averroesAbstractLibraryClass.addField(finalizePointsTo);
+		averroesAbstractLibraryClass.addField(instance);
+	}
+
+	/**
+	 * Add the abstract doItAll method to the AverroesAbstractLibrary class.
+	 */
+	private void createAverroesAbstractLibraryDoItAll() {
+		SootMethod doItAll = new SootMethod(Names.AVERROES_DO_IT_ALL_METHOD_NAME, Collections.<Type> emptyList(),
+				VoidType.v(), Modifier.PUBLIC | Modifier.ABSTRACT);
+		averroesAbstractLibraryClass.addMethod(doItAll);
+	}
+
+	/**
+	 * Create the static initializer for the Averroes library class.
+	 */
+	private void createAverroesLibraryInit() {
+		SootMethod init = Hierarchy.getNewDefaultConstructor();
+
+		JimpleBody body = Jimple.v().newBody(init);
+		init.setActiveBody(body);
+		averroesLibraryClass.addMethod(init);
+
+		// Call superclass constructor
+		body.insertIdentityStmts();
+		body.getUnits().add(
+				Jimple.v().newInvokeStmt(
+						Jimple.v().newSpecialInvokeExpr(body.getThisLocal(),
+								Hierarchy.getDefaultConstructor(averroesAbstractLibraryClass).makeRef(),
+								Collections.<Value> emptyList())));
+
+		// Add return statement
+		body.getUnits().addLast(Jimple.v().newReturnVoidStmt());
+
+		// Finally validate the Jimple body
+		body.validate();
+	}
+
+	/**
+	 * Create the default constructor for the Averroes library class.
+	 */
+	private void createAverroesLibraryClinit() {
+		SootMethod clinit = new SootMethod(SootMethod.staticInitializerName, Collections.<Type> emptyList(),
+				VoidType.v(), Modifier.PUBLIC | Modifier.STATIC);
+
+		AverroesJimpleBody body = new AverroesJimpleBody(clinit);
+		averroesLibraryClass.addMethod(clinit);
+
+		// Create instance and call the constructor
+		Local instance = body.insertNewStatement(RefType.v(averroesLibraryClass));
+		body.insertSpecialInvokeStatement(instance, averroesLibraryClass.getMethod(Names.DEFAULT_CONSTRUCTOR_SIG));
+
+		// Now assign this instance to AverroesAbstractLibrary.instance
+		body.storeStaticField(CodeGenerator.v().getAverroesInstanceField(), instance);
+
+		// Add return statement
+		body.insertReturnStmt();
+
+		// System.out.println(clinitBody.getJimpleBody());
+
+		// Finally validate the Jimple body
+		body.validate();
+	}
+
+	/**
+	 * Create the doItAll method for the Averroes library class. It includes
+	 * creating objects, calling methods, writing to array elements, throwing
+	 * exceptions and all the stuff that the library could do.
+	 */
+	private void createAverroesLibraryDoItAll() {
 		SootMethod doItAll = new SootMethod(Names.AVERROES_DO_IT_ALL_METHOD_NAME, Collections.<Type> emptyList(),
 				VoidType.v(), Modifier.PUBLIC | Modifier.STATIC);
 
@@ -347,7 +500,8 @@ public class CodeGenerator {
 		// Call finalize on all the objects in FPT
 		callFinalize();
 
-		// Call all the application methods that the library could call reflectively
+		// Call all the application methods that the library could call
+		// reflectively
 		callApplicationMethodsReflectively();
 
 		// Handle array indices: cast lpt to object[] then assign it lpt
@@ -358,11 +512,13 @@ public class CodeGenerator {
 			createObjectsFromApplicationClassNames();
 		}
 
-		// Now we need to throw all the exceptions the library has access to (via lpt)
+		// Now we need to throw all the exceptions the library has access to
+		// (via lpt)
 		throwThrowables();
 
 		// Add return statement
-		// NOTE: We should ignore the return statement in this method as the last statement will be the "throw"
+		// NOTE: We should ignore the return statement in this method as the
+		// last statement will be the "throw"
 		// statement, and the return type is void.
 		// body.insertReturnStmt();
 
@@ -405,7 +561,8 @@ public class CodeGenerator {
 				invokeExpr = Jimple.v().newVirtualInvokeExpr(base, methodRef, args);
 			}
 
-			// Assign the return of the call to the return variable only if it holds an object.
+			// Assign the return of the call to the return variable only if it
+			// holds an object.
 			// If not, then just call the method.
 			if (toCall.getReturnType() instanceof RefLikeType) {
 				Local ret = doItAllBody.newLocal(toCall.getReturnType());
@@ -416,7 +573,8 @@ public class CodeGenerator {
 			}
 		}
 
-		// Assign the return values from all those methods only if there were any return variables of type RefLikeType
+		// Assign the return values from all those methods only if there were
+		// any return variables of type RefLikeType
 		for (Local ret : doItAllBody.getInvokeReturnVariables()) {
 			doItAllBody.storeLibraryPointsToField(ret);
 		}
@@ -424,7 +582,8 @@ public class CodeGenerator {
 	}
 
 	/**
-	 * Retrieve all the methods that the library could call back through reflection.
+	 * Retrieve all the methods that the library could call back through
+	 * reflection.
 	 * 
 	 * @return
 	 */
@@ -433,10 +592,11 @@ public class CodeGenerator {
 		result.addAll(Hierarchy.v().getLibrarySuperMethodsOfApplicationMethods());
 		result.addAll(getTamiFlexApplicationMethodInvokes());
 
-		// Get those methods specified in the apk resource xml files that handle onClick events.
-//		if (Options.v().src_prec() == Options.src_prec_apk) {
-//			result.addAll(Hierarchy.v().getOnClickApplicationMethods());
-//		}
+		// Get those methods specified in the apk resource xml files that handle
+		// onClick events.
+		// if (Options.v().src_prec() == Options.src_prec_apk) {
+		// result.addAll(Hierarchy.v().getOnClickApplicationMethods());
+		// }
 
 		return result;
 	}
@@ -452,7 +612,8 @@ public class CodeGenerator {
 	}
 
 	/**
-	 * Create objects for application classes if the library knows their name constants.
+	 * Create objects for application classes if the library knows their name
+	 * constants.
 	 */
 	private void createObjectsFromApplicationClassNames() {
 		SootMethod forName = Hierarchy.v().getMethod(Names.FOR_NAME_SIG);
@@ -467,8 +628,9 @@ public class CodeGenerator {
 	}
 
 	/**
-	 * Throw any throwable object pointed to by the LPT. NOTE: the throw statement has to be right before the return
-	 * statement of the method, otherwise the method is invalid (Soot).
+	 * Throw any throwable object pointed to by the LPT. NOTE: the throw
+	 * statement has to be right before the return statement of the method,
+	 * otherwise the method is invalid (Soot).
 	 */
 	private void throwThrowables() {
 		Local throwables = (Local) doItAllBody.getCompatibleValue(Hierarchy.v().getJavaLangThrowable().getType());
@@ -480,26 +642,30 @@ public class CodeGenerator {
 	 * 
 	 */
 	private void createObjects() {
-		// 1. The library can point to any concrete (i.e., not an interface nor abstract) library class
+		// 1. The library can point to any concrete (i.e., not an interface nor
+		// abstract) library class
 		for (SootClass cls : getConcreteLibraryClasses()) {
 			doItAllBody.createObjectOfType(cls);
 		}
 
-		// 2. Convert any use of application class name string constants to explicit instantiations.
+		// 2. Convert any use of application class name string constants to
+		// explicit instantiations.
 		for (SootClass cls : Hierarchy.v().getApplicationConstantPool().getApplicationClasses()) {
 			if (!Hierarchy.isAbstractClass(cls) && !cls.isInterface()) {
 				doItAllBody.createObjectOfType(cls);
 			}
 		}
 
-		// 3. The library can create application objects through Class.newInstance
+		// 3. The library can create application objects through
+		// Class.newInstance
 		if (!AverroesProperties.isDisableReflection()) {
 			for (SootClass cls : getTamiFlexApplicationClassNewInstance()) {
 				doItAllBody.createObjectOfType(cls);
 			}
 		}
 
-		// 4. The library can create application objects through Constructor.newInstance
+		// 4. The library can create application objects through
+		// Constructor.newInstance
 		if (!AverroesProperties.isDisableReflection()) {
 			for (SootMethod init : getTamiFlexApplicationConstructorNewInstance()) {
 				doItAllBody.createObjectByCallingConstructor(init);
@@ -511,7 +677,8 @@ public class CodeGenerator {
 			doItAllBody.createObjectOfType(type);
 		}
 
-		// 6. The library could possibly create application objects whose class names are passed to it through
+		// 6. The library could possibly create application objects whose class
+		// names are passed to it through
 		// calls to Class.forName
 		if (!AverroesProperties.isDisableReflection()) {
 			for (SootClass cls : getTamiFlexApplicationClassForName()) {
@@ -539,8 +706,9 @@ public class CodeGenerator {
 	}
 
 	/**
-	 * Get a set of all the concrete library classes. This include the original concrete library classes, in addition to
-	 * the concrete implementation classes generated by this code generator.
+	 * Get a set of all the concrete library classes. This include the original
+	 * concrete library classes, in addition to the concrete implementation
+	 * classes generated by this code generator.
 	 * 
 	 * @return
 	 */
@@ -553,8 +721,9 @@ public class CodeGenerator {
 	}
 
 	/**
-	 * Get a set of all the library classes. This include the original library classes, in addition to the concrete
-	 * implementation classes generated by this code generator.
+	 * Get a set of all the library classes. This include the original library
+	 * classes, in addition to the concrete implementation classes generated by
+	 * this code generator.
 	 * 
 	 * @return
 	 */
@@ -567,7 +736,8 @@ public class CodeGenerator {
 	}
 
 	/**
-	 * Find all the application methods that TamiFlex found out they could be called reflectively.
+	 * Find all the application methods that TamiFlex found out they could be
+	 * called reflectively.
 	 * 
 	 * @return
 	 */
@@ -584,7 +754,8 @@ public class CodeGenerator {
 	}
 
 	/**
-	 * Find all the application classes that might be reflectively created through Class.forName.
+	 * Find all the application classes that might be reflectively created
+	 * through Class.forName.
 	 * 
 	 * @return
 	 */
@@ -601,7 +772,8 @@ public class CodeGenerator {
 	}
 
 	/**
-	 * Get all the application array types that the library can create objects for.
+	 * Get all the application array types that the library can create objects
+	 * for.
 	 * 
 	 * @return
 	 */
@@ -619,7 +791,8 @@ public class CodeGenerator {
 	}
 
 	/**
-	 * Find all the application classes that could be reflectively created through Class.newInstance.
+	 * Find all the application classes that could be reflectively created
+	 * through Class.newInstance.
 	 * 
 	 * @return
 	 */
@@ -636,8 +809,8 @@ public class CodeGenerator {
 	}
 
 	/**
-	 * Find all the constructors that could be reflectively used to create application classes through
-	 * Constructor.newInstance.
+	 * Find all the constructors that could be reflectively used to create
+	 * application classes through Constructor.newInstance.
 	 * 
 	 * @return
 	 */
@@ -678,7 +851,8 @@ public class CodeGenerator {
 		// Now add a default constructor
 		addDefaultConstructorToGeneratedClass(cls);
 
-		// Set the resolving level to SIGNATURES and set this class to be a library class.
+		// Set the resolving level to SIGNATURES and set this class to be a
+		// library class.
 		// cls.setResolvingLevel(SootClass.SIGNATURES);
 		// cls.setLibraryClass();
 
@@ -703,10 +877,12 @@ public class CodeGenerator {
 		// Add the class to the Soot scene
 		// Scene.v().addClass(cls);
 
-		// Make the given Soot interface a direct superinterface of the crafted class.
+		// Make the given Soot interface a direct superinterface of the crafted
+		// class.
 		cls.addInterface(iface);
 
-		// Now we need to implement the methods in all the superinterfaces of the newly crafted class.
+		// Now we need to implement the methods in all the superinterfaces of
+		// the newly crafted class.
 		// The body of these methods will be created later.
 		for (SootMethod method : getSuperinterfacesMethods(iface)) {
 			addMethodToGeneratedClass(cls, getConcreteMethod(method));
@@ -715,7 +891,8 @@ public class CodeGenerator {
 		// Now add a default constructor.
 		addDefaultConstructorToGeneratedClass(cls);
 
-		// Set the resolving level to SIGNATURES and set this class to be a library class.
+		// Set the resolving level to SIGNATURES and set this class to be a
+		// library class.
 		// cls.setResolvingLevel(SootClass.SIGNATURES);
 		// cls.setLibraryClass();
 
@@ -726,8 +903,8 @@ public class CodeGenerator {
 	}
 
 	/**
-	 * Get all the non-repeated methods in the superinterfaces (i.e., non-repeated as in don't have the same
-	 * subsignature.
+	 * Get all the non-repeated methods in the superinterfaces (i.e.,
+	 * non-repeated as in don't have the same subsignature.
 	 * 
 	 * @param iface
 	 * @return
@@ -747,8 +924,9 @@ public class CodeGenerator {
 	}
 
 	/**
-	 * Get the concrete version of an abstract method. This way Averroes will create a method body for it. This is
-	 * important for implementing interface methods, and extending abstract classes.
+	 * Get the concrete version of an abstract method. This way Averroes will
+	 * create a method body for it. This is important for implementing interface
+	 * methods, and extending abstract classes.
 	 * 
 	 * @param libraryMethod
 	 * @return

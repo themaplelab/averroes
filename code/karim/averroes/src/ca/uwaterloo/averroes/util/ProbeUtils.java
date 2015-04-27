@@ -276,6 +276,8 @@ public class ProbeUtils {
 			// entry points.
 			// Also ignore edges from fakeWorldClinit
 //			if(node.getMethod().getName().toString().equals("doItAll")) {
+//			System.out.println("====================");
+//			System.out.println(node);
 //				System.out.println(node.getIR() + "\n\n");
 //			}
 			if (!node.equals(root) && !node.equals(clinit)) {

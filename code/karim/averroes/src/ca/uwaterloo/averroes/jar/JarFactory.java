@@ -114,7 +114,7 @@ public class JarFactory {
 			System.out.println("");
 			System.out.println("Creating the skeleton for Averroes's main library class ...");
 			CodeGenerator.v().createAverroesLibraryClass();
-
+			
 			// Create method bodies to the library classes
 			System.out.println("Generating the method bodies for the placeholder library classes ...");
 			CodeGenerator.v().createLibraryMethodBodies();
