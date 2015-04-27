@@ -41,6 +41,7 @@ public class AverroesJimpleBody {
 	private JimpleBody body;
 	private Local lpt;
 	private Local fpt;
+	private Local instance;
 	private Set<Local> invokeReturnVariables;
 	private LocalVariableNumberer numberer;
 	private Map<Type, Local> lptCastToType;
@@ -54,6 +55,7 @@ public class AverroesJimpleBody {
 		createBasicJimpleBody(method);
 		lpt = null;
 		fpt = null;
+		instance = null;
 		invokeReturnVariables = new HashSet<Local>();
 		numberer = new LocalVariableNumberer();
 		lptCastToType = new HashMap<Type, Local>();
@@ -107,8 +109,7 @@ public class AverroesJimpleBody {
 	 * Insert an invocation to the doItAll Library method.
 	 */
 	private void insertInvocationStmtToDoItAll() {
-		SootMethod toCall = CodeGenerator.v().getAverroesDoItAll();
-		body.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(toCall.makeRef())));
+		insertVirtualInvokeStatement(getInstance(), CodeGenerator.v().getAverroesAbstractDoItAll());
 	}
 
 	/**
@@ -345,6 +346,19 @@ public class AverroesJimpleBody {
 
 		return fpt;
 	}
+	
+	/**
+	 * Get the local variable that represents the Instance. It also loads the Instance field if it's not loaded already.
+	 * 
+	 * @return
+	 */
+	public Local getInstance() {
+		if (!hasInstance()) {
+			loadInstanceField();
+		}
+
+		return instance;
+	}
 
 	/**
 	 * Get the local variables that represent the return variables of the method invokes in the underlying Jimple body.
@@ -372,6 +386,15 @@ public class AverroesJimpleBody {
 	public boolean hasFpt() {
 		return fpt != null;
 	}
+	
+	/**
+	 * Check if this method has a local variable that holds the Instance.
+	 * 
+	 * @return
+	 */
+	public boolean hasInstance() {
+		return instance != null;
+	}
 
 	/**
 	 * Construct a grammar chunk to load the given static field and assign it to a new temporary local variable.
@@ -380,7 +403,7 @@ public class AverroesJimpleBody {
 	 * @return
 	 */
 	public Local loadStaticField(SootField field) {
-		Local tmp = newLocal(CodeGenerator.v().getHierarchy().getJavaLangObject().getType());
+		Local tmp = newLocal(field.getType());
 		body.getUnits().add(Jimple.v().newAssignStmt(tmp, Jimple.v().newStaticFieldRef(field.makeRef())));
 		return tmp;
 	}
@@ -397,6 +420,13 @@ public class AverroesJimpleBody {
 	 */
 	private void loadFinalizePointsToField() {
 		fpt = loadStaticField(CodeGenerator.v().getAverroesFinalizePointsTo());
+	}
+	
+	/**
+	 * Load the global Instance static field.
+	 */
+	private void loadInstanceField() {
+		instance = loadStaticField(CodeGenerator.v().getAverroesInstanceField());
 	}
 
 	/**

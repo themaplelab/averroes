@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
 import java.util.jar.JarFile;
 
 import org.xmlpull.v1.XmlPullParserException;
@@ -31,6 +32,7 @@ import com.ibm.wala.ipa.callgraph.CallGraphBuilderCancelException;
 import com.ibm.wala.ipa.callgraph.ContextSelector;
 import com.ibm.wala.ipa.callgraph.Entrypoint;
 import com.ibm.wala.ipa.callgraph.impl.BasicCallGraph;
+import com.ibm.wala.ipa.callgraph.impl.DefaultEntrypoint;
 import com.ibm.wala.ipa.callgraph.impl.Util;
 import com.ibm.wala.ipa.callgraph.propagation.SSAContextInterpreter;
 import com.ibm.wala.ipa.callgraph.propagation.SSAPropagationCallGraphBuilder;
@@ -41,9 +43,15 @@ import com.ibm.wala.ipa.cha.ClassHierarchyException;
 import com.ibm.wala.ipa.cha.IClassHierarchy;
 import com.ibm.wala.shrikeCT.InvalidClassFileException;
 import com.ibm.wala.types.ClassLoaderReference;
+import com.ibm.wala.types.Descriptor;
+import com.ibm.wala.types.MethodReference;
+import com.ibm.wala.types.TypeName;
+import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.config.AnalysisScopeReader;
 import com.ibm.wala.util.config.FileOfClasses;
+import com.ibm.wala.util.debug.Assertions;
 import com.ibm.wala.util.io.FileProvider;
+import com.ibm.wala.util.strings.Atom;
 
 /**
  * A factory that generates call graphs for some tools.
@@ -147,22 +155,26 @@ public class CallGraphFactory {
 	 * @throws ClassHierarchyException
 	 * @throws CallGraphBuilderCancelException
 	 * @throws IllegalArgumentException
-	 * @throws InvalidClassFileException 
+	 * @throws InvalidClassFileException
 	 */
 	public static probe.CallGraph generateWalaCallGraph(String benchmark, boolean isAve) throws IOException,
-			InterruptedException, ClassHierarchyException, IllegalArgumentException, CallGraphBuilderCancelException, InvalidClassFileException {
+			InterruptedException, ClassHierarchyException, IllegalArgumentException, CallGraphBuilderCancelException,
+			InvalidClassFileException {
 		// 1. build the call graph
 		String classpath = FileUtils.composeClassPath(FileUtils.organizedApplicationJarFile(benchmark),
 				isAve ? FileUtils.placeholderLibraryJarFile(benchmark) : FileUtils.organizedLibraryJarFile(benchmark));
+
 		String exclusionFile = CallGraphFactory.class.getClassLoader()
 				.getResource(CallGraphTestUtil.REGRESSION_EXCLUSIONS).getPath();
 
 		AnalysisScope scope = isAve ? makeAverroesAnalysisScope(FileUtils.organizedApplicationJarFile(benchmark),
 				FileUtils.placeholderLibraryJarFile(benchmark), exclusionFile) : AnalysisScopeReader
 				.makeJavaBinaryAnalysisScope(classpath, new File(exclusionFile));
+
 		ClassHierarchy cha = ClassHierarchy.make(scope);
-		Iterable<Entrypoint> entrypoints = Util.makeMainEntrypoints(scope, cha, "L"
-				+ AverroesProperties.getMainClass().replaceAll("\\.", "/"));
+
+		Iterable<Entrypoint> entrypoints = makeMainEntrypoints(scope.getApplicationLoader(), cha, new String[] { "L"
+				+ AverroesProperties.getMainClass().replaceAll("\\.", "/") }, isAve);
 
 		AnalysisOptions options = new AnalysisOptions(scope, entrypoints);
 		options.setReflectionOptions(isAve ? ReflectionOptions.NONE
@@ -170,7 +182,7 @@ public class CallGraphFactory {
 
 		SSAPropagationCallGraphBuilder builder = isAve ? makeZeroOneCFABuilder(options, new AnalysisCache(), cha,
 				scope, null, null) : Util.makeZeroOneCFABuilder(options, new AnalysisCache(), cha, scope, null, null);
-		
+
 		TimeUtils.splitStart();
 		BasicCallGraph<?> cg = (BasicCallGraph<?>) builder.makeCallGraph(options, null);
 		System.out.println("[Wala] Solution found in " + TimeUtils.elapsedSplitTime() + " seconds.");
@@ -208,34 +220,88 @@ public class CallGraphFactory {
 		scope.setExclusions(new FileOfClasses(fs));
 
 		// Averroes library
-		// Try adding all class files in AveLib to Primordial except for AverroesLibraryClass, add it to Application
-//		new JarFileModule(new JarFile(new File(averroesLib))).getEntries().forEachRemaining(
-//				m -> {
-//					try {
-//						if (m.isClassFile()
-//								&& m.getClassName().equals(Names.AVERROES_LIBRARY_CLASS.replaceAll("\\.", "/"))) {
-//							scope.addClassFileToScope(ClassLoaderReference.Application,
-//									((ClassFileModule) m.asModule()).getFile());
-//							System.out.println("Application: " + Names.AVERROES_LIBRARY_CLASS);
-//						} else if (m.isClassFile()) {
-//							scope.addClassFileToScope(ClassLoaderReference.Primordial,
-//									((ClassFileModule) m.asModule()).getFile());
-//							System.out.println("Primordial: " + m.getClassName());
-//						}
-//
-//					} catch (Exception e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//				});
-//		scope.addToScope(ClassLoaderReference.Application, new JarFileModule(new JarFile(new File(averroesLib.replace(".jar", "-bkp.jar")))));
-		scope.addToScope(ClassLoaderReference.Primordial, new JarFileModule(new JarFile(new File(averroesLib.replace(".jar", "-bkp.jar")))));
-//		scope.addToScope(ClassLoaderReference.Primordial, new JarFileModule(new JarFile(new File(averroesLib))));		
-//		scope.addClassFileToScope(ClassLoaderReference.Application, new File("benchmarks-averroes/dacapo/lusearch-placeholder-lib/ca/uwaterloo/averroes/Library.class"));
+		// Try adding all class files in AveLib to Primordial except for
+		// AverroesLibraryClass, add it to Application
+		// new JarFileModule(new JarFile(new
+		// File(averroesLib))).getEntries().forEachRemaining(
+		// m -> {
+		// try {
+		// if (m.isClassFile()
+		// &&
+		// m.getClassName().equals(Names.AVERROES_LIBRARY_CLASS.replaceAll("\\.",
+		// "/"))) {
+		// scope.addClassFileToScope(ClassLoaderReference.Application,
+		// ((ClassFileModule) m.asModule()).getFile());
+		// System.out.println("Application: " + Names.AVERROES_LIBRARY_CLASS);
+		// } else if (m.isClassFile()) {
+		// scope.addClassFileToScope(ClassLoaderReference.Primordial,
+		// ((ClassFileModule) m.asModule()).getFile());
+		// System.out.println("Primordial: " + m.getClassName());
+		// }
+		//
+		// } catch (Exception e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+		// });
+		// scope.addToScope(ClassLoaderReference.Application, new
+		// JarFileModule(new JarFile(new File(averroesLib.replace(".jar",
+		// "-bkp.jar")))));
+		// scope.addToScope(ClassLoaderReference.Primordial, new
+		// JarFileModule(new JarFile(new File(averroesLib.replace(".jar",
+		// "-bkp.jar")))));
+		scope.addToScope(ClassLoaderReference.Primordial, new JarFileModule(new JarFile(new File(averroesLib))));
+		scope.addClassFileToScope(ClassLoaderReference.Application, new File(
+				"benchmarks-averroes/dacapo/lusearch-placeholder-lib/ca/uwaterloo/averroes/Library.class"));
 
 		// Application JAR
 		scope.addToScope(ClassLoaderReference.Application, new JarFileModule(new JarFile(new File(app))));
 
 		return scope;
+	}
+
+	public static Iterable<Entrypoint> makeMainEntrypoints(final ClassLoaderReference loaderRef,
+			final IClassHierarchy cha, final String[] classNames, boolean isAve) throws IllegalArgumentException,
+			IllegalArgumentException, IllegalArgumentException {
+		return new Iterable<Entrypoint>() {
+			@Override
+			public Iterator<Entrypoint> iterator() {
+				final Atom mainMethod = Atom.findOrCreateAsciiAtom("main");
+
+				return new Iterator<Entrypoint>() {
+					private int index = 0;
+					private boolean clinitTaken = false;
+
+					@Override
+					public void remove() {
+						Assertions.UNREACHABLE();
+					}
+
+					@Override
+					public boolean hasNext() {
+						return index < classNames.length || !clinitTaken;
+					}
+
+					@Override
+					public Entrypoint next() {
+						if (index < classNames.length) {
+							TypeReference T = TypeReference.findOrCreate(loaderRef,
+									TypeName.string2TypeName(classNames[index++]));
+							MethodReference mainRef = MethodReference.findOrCreate(T, mainMethod,
+									Descriptor.findOrCreateUTF8("([Ljava/lang/String;)V"));
+							return new DefaultEntrypoint(mainRef, cha);
+						} else {
+							clinitTaken = true;
+							TypeReference T = TypeReference.findOrCreate(loaderRef,
+									TypeName.string2TypeName("Lca/uwaterloo/averroes/Library"));
+							MethodReference clinitRef = MethodReference.findOrCreate(T, MethodReference.clinitName,
+									MethodReference.clinitSelector.getDescriptor());
+							return new DefaultEntrypoint(clinitRef, cha);
+						}
+					}
+				};
+			}
+		};
+
 	}
 }
