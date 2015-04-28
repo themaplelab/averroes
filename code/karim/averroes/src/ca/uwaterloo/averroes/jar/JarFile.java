@@ -12,6 +12,7 @@ import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
+import java.util.stream.Collectors;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.ClassFormatException;
@@ -30,8 +31,8 @@ import ca.uwaterloo.averroes.soot.Names;
 import ca.uwaterloo.averroes.util.io.FileUtils;
 
 /**
- * A JAR file is a collection of class files. We use BCEL to verify that the generated JAR files conforms to the JVM
- * standards.
+ * A JAR file is a collection of class files. We use BCEL to verify that the
+ * generated JAR files conforms to the JVM standards.
  * 
  * @author karim
  * 
@@ -76,29 +77,74 @@ public class JarFile {
 	public void addGeneratedLibraryClassFiles() throws IOException {
 		Set<String> classFiles = new HashSet<String>();
 		String dir = FileUtils.libraryClassesOutputDirectory();
-		String jar = FileUtils.placeholderLibraryJarFile();
+		String placeholderJar = FileUtils.placeholderLibraryJarFile();
 
 		// Add the class files to the crafted JAR file.
 		for (String fileName : FileUtils.findFiles(dir, "class", "not found")) {
-			add(dir, new File(fileName));
-			classFiles.add(relativize(dir, fileName));
+			String className = relativize(dir, fileName);
+			if (!className.equals(Names.AVERROES_LIBRARY_CLASS.replaceAll("\\.", "/"))) {
+				add(dir, new File(fileName));
+				classFiles.add(className);
+			}
 		}
 		close();
 
 		// Set BCEL's repository class path.
-		SyntheticRepository rep = SyntheticRepository.getInstance(new ClassPath(jar
-				+ System.getProperty("path.separator") + FileUtils.organizedApplicationJarFile()));
+		SyntheticRepository rep = SyntheticRepository.getInstance(new ClassPath(placeholderJar + File.pathSeparator
+				+ FileUtils.organizedApplicationJarFile()));
 		Repository.setRepository(rep);
 
-		// System.out.println("rep classpath: " + Repository.getRepository().getClassPath()); // TODO
+		// System.out.println("rep classpath: " +
+		// Repository.getRepository().getClassPath()); // TODO
 
-		// Now add all those class files in the crafted JAR file to the BCEL repository.
+		// Now add all those class files in the crafted JAR file to the BCEL
+		// repository.
 		for (String classFile : classFiles) {
-			ClassParser parser = new ClassParser(jar, classFile);
+			ClassParser parser = new ClassParser(placeholderJar, classFile);
 			JavaClass cls = parser.parse();
 			bcelClasses.add(cls);
 			Repository.getRepository().storeClass(cls);
 		}
+	}
+
+	/**
+	 * Add the generated AverroesLibraryClass file to the Jar file.
+	 * 
+	 * @throws IOException
+	 */
+	public void addAverroesLibraryClassFile() throws IOException {
+		String dir = FileUtils.libraryClassesOutputDirectory();
+		// String fileName = dir + File.separator +
+		// Names.AVERROES_LIBRARY_CLASS.replaceAll("\\.", "/");
+		String fileName = FileUtils.findFiles(dir, "class", "not found").stream()
+				.filter(m -> m.endsWith(Names.AVERROES_LIBRARY_CLASS.replaceAll("\\.", "/") + ".class")).collect(Collectors.toList()).get(0);
+		String className = relativize(dir, fileName);
+		String placeholderJar = FileUtils.placeholderLibraryJarFile();
+		String averroesLibraryClassJar = FileUtils.placeholderLibraryJarFile();
+
+		// Add the class file to the separately crafted JAR file.
+		if (FileUtils.isValidFile(fileName)) {
+			add(dir, new File(fileName));
+		} else {
+			throw new IllegalStateException("cannot find " + Names.AVERROES_LIBRARY_CLASS + "\n"
+					+ "invalid path given: " + fileName);
+		}
+		close();
+
+		// Set BCEL's repository class path.
+		SyntheticRepository rep = SyntheticRepository.getInstance(new ClassPath(averroesLibraryClassJar
+				+ File.pathSeparator + placeholderJar + File.pathSeparator + FileUtils.organizedApplicationJarFile()));
+		Repository.setRepository(rep);
+
+		// System.out.println("rep classpath: " +
+		// Repository.getRepository().getClassPath()); // TODO
+
+		// Now add the class file in the crafted JAR file to the BCEL
+		// repository.
+		ClassParser parser = new ClassParser(averroesLibraryClassJar, className);
+		JavaClass cls = parser.parse();
+		bcelClasses.add(cls);
+		Repository.getRepository().storeClass(cls);
 	}
 
 	/**
@@ -168,7 +214,8 @@ public class JarFile {
 	}
 
 	/**
-	 * Add the file read from the source input stream with the given entry name to this JAR file.
+	 * Add the file read from the source input stream with the given entry name
+	 * to this JAR file.
 	 * 
 	 * @param source
 	 * @param entryName
@@ -209,7 +256,8 @@ public class JarFile {
 			Method[] methods = cls.getMethods();
 			for (int i = 0; i < methods.length; i++) {
 				VerificationResult vr;
-				// Do a pass 3a for the constructor of java.lang.Object because we are using an uninitialized "this".
+				// Do a pass 3a for the constructor of java.lang.Object because
+				// we are using an uninitialized "this".
 				if (cls.getClassName().equals(Names.JAVA_LANG_OBJECT)
 						&& methods[i].getName().equals(SootMethod.constructorName)) {
 					vr = verifier.doPass3a(i);

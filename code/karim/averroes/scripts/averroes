@@ -29,8 +29,9 @@ else
 fi
 
 # 2. copy the output JARs
-cp output/organizedApplication.jar benchmarks-averroes/${benchmark}-organized-app.jar
-cp output/organizedLibrary.jar benchmarks-averroes/${benchmark}-organized-lib.jar
-cp output/placeholderLibrary.jar benchmarks-averroes/${benchmark}-placeholder-lib.jar
+cp output/organized-app.jar benchmarks-averroes/${benchmark}-organized-app.jar
+cp output/organized-lib.jar benchmarks-averroes/${benchmark}-organized-lib.jar
+cp output/placeholder-lib.jar benchmarks-averroes/${benchmark}-placeholder-lib.jar
+cp output/averroes-lib-class.jar benchmarks-averroes/${benchmark}-averroes-lib-class.jar
 
 echo ""

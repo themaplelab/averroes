@@ -132,6 +132,9 @@ public class JarFactory {
 			JarFile librJarFile = new JarFile(FileUtils.placeholderLibraryJarFile());
 			librJarFile.addGeneratedLibraryClassFiles();
 			librJarFile.verify();
+			JarFile aveJarFile = new JarFile(FileUtils.averroesLibraryClassJarFile());
+			aveJarFile.addAverroesLibraryClassFile();
+			aveJarFile.verify();
 			double bcel = TimeUtils.elapsedTime();
 			System.out.println("Placeholder library JAR file verified in " + bcel + " seconds.");
 			System.out.println("Total time (without verification) is " + MathUtils.round(soot + averroes) + " seconds.");
