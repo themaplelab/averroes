@@ -233,7 +233,7 @@ public class FileUtils {
 	 * @return
 	 */
 	public static String placeholderLibraryJarFile() {
-		return AverroesProperties.getOutputDir().concat(File.separator).concat("placeholderLibrary.jar");
+		return AverroesProperties.getOutputDir().concat(File.separator).concat("placeholder-lib.jar");
 	}
 
 	/**
@@ -243,6 +243,24 @@ public class FileUtils {
 	 */
 	public static String placeholderLibraryJarFile(String benchmark) {
 		return composePath("benchmarks-averroes", benchmark + "-placeholder-lib.jar");
+	}
+	
+	/**
+	 * The path to the JAR file that contains the single file ca.uwaterloo.averroes.Library
+	 * 
+	 * @return
+	 */
+	public static String averroesLibraryClassJarFile() {
+		return AverroesProperties.getOutputDir().concat(File.separator).concat("averroes-lib-class.jar");
+	}
+
+	/**
+	 * The path to the JAR file that contains the single file ca.uwaterloo.averroes.Library
+	 * 
+	 * @return
+	 */
+	public static String averroesLibraryClassJarFile(String benchmark) {
+		return composePath("benchmarks-averroes", benchmark + "-averroes-lib-class.jar");
 	}
 
 	/**
@@ -261,7 +279,7 @@ public class FileUtils {
 	 * @return
 	 */
 	public static String organizedApplicationJarFile() {
-		return AverroesProperties.getOutputDir().concat(File.separator).concat("organizedApplication.jar");
+		return AverroesProperties.getOutputDir().concat(File.separator).concat("organized-app.jar");
 	}
 
 	/**
@@ -279,7 +297,7 @@ public class FileUtils {
 	 * @return
 	 */
 	public static String organizedLibraryJarFile() {
-		return AverroesProperties.getOutputDir().concat(File.separator).concat("organizedLibrary.jar");
+		return AverroesProperties.getOutputDir().concat(File.separator).concat("organized-lib.jar");
 	}
 
 	/**
