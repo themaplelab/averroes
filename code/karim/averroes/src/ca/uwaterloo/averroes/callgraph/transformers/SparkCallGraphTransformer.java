@@ -19,7 +19,6 @@ import soot.SootMethod;
 import soot.SourceLocator;
 import soot.jimple.spark.SparkTransformer;
 import soot.options.Options;
-import ca.uwaterloo.averroes.jar.JarOrganizer;
 import ca.uwaterloo.averroes.properties.AverroesProperties;
 
 public class SparkCallGraphTransformer {
