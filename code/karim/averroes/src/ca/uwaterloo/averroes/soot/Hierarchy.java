@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import soot.ArrayType;
 import soot.Modifier;
@@ -111,8 +112,10 @@ public class Hierarchy {
 	}
 
 	/**
-	 * Initialize the hierarchy with all the classes resolved at the level {@link ResolvingLevel.#SIGNATURES} from the
-	 * Soot scene. Averroes is only interested in those classes so it doesn't make sense to include any more classes.
+	 * Initialize the hierarchy with all the classes resolved at the level
+	 * {@link ResolvingLevel.#SIGNATURES} from the Soot scene. Averroes is only
+	 * interested in those classes so it doesn't make sense to include any more
+	 * classes.
 	 * 
 	 */
 	private Hierarchy() {
@@ -196,7 +199,8 @@ public class Hierarchy {
 	}
 
 	/**
-	 * Get the array types that appear as parameter types in library supermethods (i.e., overridden by the application).
+	 * Get the array types that appear as parameter types in library
+	 * supermethods (i.e., overridden by the application).
 	 * 
 	 * @return
 	 */
@@ -295,8 +299,9 @@ public class Hierarchy {
 	}
 
 	/**
-	 * Clean up the hierarchy from methods and fields not referenced by the application. In addition, add default
-	 * constructors to classes that don't have one. They will be used by Averroes to create objects in the doItAll
+	 * Clean up the hierarchy from methods and fields not referenced by the
+	 * application. In addition, add default constructors to classes that don't
+	 * have one. They will be used by Averroes to create objects in the doItAll
 	 * method.
 	 */
 	public void cleanupLibraryClasses() {
@@ -431,15 +436,17 @@ public class Hierarchy {
 	}
 
 	/**
-	 * Check if the method is native, then change it to be not native. This way Averroes will create a method body for
-	 * it. This is important because if such method has a RefLikeType return variable, we need its objects to be
+	 * Check if the method is native, then change it to be not native. This way
+	 * Averroes will create a method body for it. This is important because if
+	 * such method has a RefLikeType return variable, we need its objects to be
 	 * propagated to the LPT.
 	 * 
 	 * @param libraryMethod
 	 */
 	public static void makeNotNative(SootMethod libraryMethod) {
 		if (libraryMethod.isNative()) {
-			// This is a stupid workaround because Soot doesn't allow changing the modifiers of a library method
+			// This is a stupid workaround because Soot doesn't allow changing
+			// the modifiers of a library method
 			libraryMethod.getDeclaringClass().setApplicationClass();
 			libraryMethod.setModifiers(libraryMethod.getModifiers() & ~Modifier.NATIVE);
 			libraryMethod.getDeclaringClass().setLibraryClass();
@@ -447,14 +454,15 @@ public class Hierarchy {
 	}
 
 	/**
-	 * Check if the method is not public, make it public. Useful for Averroes to make public constructors for library
-	 * classes.
+	 * Check if the method is not public, make it public. Useful for Averroes to
+	 * make public constructors for library classes.
 	 * 
 	 * @param libraryMethod
 	 */
 	public static void makePublic(SootMethod libraryMethod) {
 		if (!libraryMethod.isPublic()) {
-			// This is a stupid workaround because Soot doesn't allow changing the modifiers of a library method
+			// This is a stupid workaround because Soot doesn't allow changing
+			// the modifiers of a library method
 			libraryMethod.getDeclaringClass().setApplicationClass();
 			libraryMethod.setModifiers(Modifier.PUBLIC);
 			libraryMethod.getDeclaringClass().setLibraryClass();
@@ -556,8 +564,8 @@ public class Hierarchy {
 	}
 
 	/**
-	 * Get the base type of Soot type. If the Soot type is an array type, it will return its base type. Otherwise, it
-	 * will return the type itself.
+	 * Get the base type of Soot type. If the Soot type is an array type, it
+	 * will return its base type. Otherwise, it will return the type itself.
 	 * 
 	 * @param type
 	 * @return
@@ -661,6 +669,18 @@ public class Hierarchy {
 	 */
 	public SootMethod getMethod(String methodSignature) {
 		return getClass(signatureToClass(methodSignature)).getMethod(signatureToSubsignature(methodSignature));
+	}
+
+	/**
+	 * Check if the given string is a valid substring of an application class
+	 * name.
+	 * 
+	 * @param str
+	 * @return list of application classes it matches
+	 */
+	public Set<SootClass> matchSubstrOfApplicationClass(String str) {
+		return nameToApplicationClass.keySet().stream().filter(k -> k.contains(str))
+				.map(k -> nameToApplicationClass.get(k)).collect(Collectors.toSet());
 	}
 
 	/**
@@ -784,7 +804,8 @@ public class Hierarchy {
 	}
 
 	/**
-	 * Find all the superclasses of the given class recursively. This also calculates the subclasses relation.
+	 * Find all the superclasses of the given class recursively. This also
+	 * calculates the subclasses relation.
 	 * 
 	 * @param cls
 	 * @return
@@ -811,7 +832,8 @@ public class Hierarchy {
 			for (SootClass superClass : result) {
 				getSubclassesOf(superClass).add(cls);
 
-				// Calculate the concrete subclasses relation if cls is concrete.
+				// Calculate the concrete subclasses relation if cls is
+				// concrete.
 				if (cls.isConcrete()) {
 					getConcreteSubclassesOf(superClass).add(cls);
 
@@ -984,7 +1006,8 @@ public class Hierarchy {
 			for (SootClass iface : result) {
 				getImplementersOf(iface).add(cls);
 
-				// Calculate the concrete implementersOf relation if cls is concrete
+				// Calculate the concrete implementersOf relation if cls is
+				// concrete
 				if (cls.isConcrete()) {
 					getConcreteImplementersOf(iface).add(cls);
 
@@ -1190,7 +1213,8 @@ public class Hierarchy {
 	}
 
 	/**
-	 * Get the set of methods overridden by the given method in its superclasses.
+	 * Get the set of methods overridden by the given method in its
+	 * superclasses.
 	 * 
 	 * @param method
 	 * @return
@@ -1202,7 +1226,8 @@ public class Hierarchy {
 
 				for (SootClass superClass : getSuperclassesOf(method.getDeclaringClass())) {
 					if (superClass.declaresMethod(method.getNumberedSubSignature())) {
-						// NOTE: Private methods are ignored in calculating supermethods from superclasses
+						// NOTE: Private methods are ignored in calculating
+						// supermethods from superclasses
 						SootMethod m = superClass.getMethod(method.getNumberedSubSignature());
 						if (!m.isPrivate()) {
 							result.add(m);
@@ -1304,8 +1329,8 @@ public class Hierarchy {
 	}
 
 	/**
-	 * Get the topmost supermethod in the overridden methods of superclasses. This method would be the one highest in
-	 * the hierarchy.
+	 * Get the topmost supermethod in the overridden methods of superclasses.
+	 * This method would be the one highest in the hierarchy.
 	 * 
 	 * @param method
 	 * @return
@@ -1329,8 +1354,8 @@ public class Hierarchy {
 	}
 
 	/**
-	 * Check if a method has a topmost supermethod in the overridden methods of superclasses. This method would be the
-	 * one highest in the hierarchy.
+	 * Check if a method has a topmost supermethod in the overridden methods of
+	 * superclasses. This method would be the one highest in the hierarchy.
 	 * 
 	 * @param method
 	 * @return
@@ -1340,9 +1365,10 @@ public class Hierarchy {
 	}
 
 	/**
-	 * Get the topmost supermethod in the overridden methods of superinterfaces. Get the overridden methods of
-	 * superinterfaces, remove the ones that have supermethods in this set, sort them alphabetically and return the
-	 * first one.
+	 * Get the topmost supermethod in the overridden methods of superinterfaces.
+	 * Get the overridden methods of superinterfaces, remove the ones that have
+	 * supermethods in this set, sort them alphabetically and return the first
+	 * one.
 	 * 
 	 * @param method
 	 * @return
@@ -1370,7 +1396,8 @@ public class Hierarchy {
 	}
 
 	/**
-	 * Check if a method has a topmost supermethod in the overridden methods of superinterfaces.
+	 * Check if a method has a topmost supermethod in the overridden methods of
+	 * superinterfaces.
 	 * 
 	 * @param method
 	 * @return
@@ -1402,7 +1429,8 @@ public class Hierarchy {
 	}
 
 	/**
-	 * Get the set of all library supermethods for the methods in the given class.
+	 * Get the set of all library supermethods for the methods in the given
+	 * class.
 	 * 
 	 * @param cls
 	 * @return
@@ -1418,7 +1446,8 @@ public class Hierarchy {
 					if (isLibraryMethod(topmostSuperMethod)) {
 						result.add(topmostSuperMethod);
 
-						// Get the array parameters in this topmost library super method.
+						// Get the array parameters in this topmost library
+						// super method.
 						libraryArrayTypeParameters.addAll(getArrayTypeParameters(topmostSuperMethod));
 					}
 				}
@@ -1446,7 +1475,8 @@ public class Hierarchy {
 			for (String methodName : AverroesProperties.getAndroidResourceParser().getOnClickMethodNames()) {
 				if (cls.declaresMethod(Names.getOnClickSubSig(methodName))) {
 					SootMethod onClick = cls.getMethod(Names.getOnClickSubSig(methodName));
-					if(onClick.isPublic()) { // the onClick handler has to be a public method
+					if (onClick.isPublic()) { // the onClick handler has to be a
+												// public method
 						result.add(onClick);
 					}
 				}
@@ -1457,7 +1487,8 @@ public class Hierarchy {
 	}
 
 	/**
-	 * Check if the given method is a library method referenced by the application.
+	 * Check if the given method is a library method referenced by the
+	 * application.
 	 * 
 	 * @param libraryMethod
 	 * @return
@@ -1521,8 +1552,9 @@ public class Hierarchy {
 	}
 
 	/**
-	 * Get the set of all abstract library classes not implemented in the library (i.e., library classes that have no
-	 * concrete subclasses in the library).
+	 * Get the set of all abstract library classes not implemented in the
+	 * library (i.e., library classes that have no concrete subclasses in the
+	 * library).
 	 * 
 	 * @return
 	 */
@@ -1531,8 +1563,9 @@ public class Hierarchy {
 	}
 
 	/**
-	 * Get the set of all library interfaces not implemented in the library (i.e., library interfaces that have no
-	 * concrete implementers in the library).
+	 * Get the set of all library interfaces not implemented in the library
+	 * (i.e., library interfaces that have no concrete implementers in the
+	 * library).
 	 * 
 	 * @return
 	 */
@@ -1553,7 +1586,8 @@ public class Hierarchy {
 	}
 
 	/**
-	 * Collect the class names and some class properties (e.g., abstract, interface).
+	 * Collect the class names and some class properties (e.g., abstract,
+	 * interface).
 	 */
 	private void collectClassNames() {
 		for (SootClass cls : classes) {
@@ -1571,7 +1605,8 @@ public class Hierarchy {
 				// Get the return array types of library methods
 				libraryArrayTypeReturns.addAll(getArrayTypeReturns(cls));
 
-				// Get the abstract library classes, interfaces, and concrete library classes
+				// Get the abstract library classes, interfaces, and concrete
+				// library classes
 				if (isAbstractClass(cls)) {
 					abstractLibraryClasses.add(cls);
 				} else if (cls.isInterface()) {
@@ -1586,8 +1621,8 @@ public class Hierarchy {
 	}
 
 	/**
-	 * Cleanup the library array type returns set from all those classes that will not be in the hierarchy when it's
-	 * built.
+	 * Cleanup the library array type returns set from all those classes that
+	 * will not be in the hierarchy when it's built.
 	 */
 	private void cleanupLibraryArrayTypeReturns() {
 		Set<ArrayType> toRemove = new HashSet<ArrayType>();
@@ -1704,7 +1739,8 @@ public class Hierarchy {
 	}
 
 	/**
-	 * Find all the library entities (methods and fields) that are referenced in the application constant pool.
+	 * Find all the library entities (methods and fields) that are referenced in
+	 * the application constant pool.
 	 */
 	private void findLibraryEntitiesReferencedInApplication() {
 		applicationConstantPool = new AverroesApplicationConstantPool(this);
@@ -1734,8 +1770,10 @@ public class Hierarchy {
 	}
 
 	/**
-	 * Purify the set of superinterfaces supermethods. That's remove methods whose declaring class has a superinterface
-	 * within this same set, then sort the set of methods alphabetically according to the name of the declaring class.
+	 * Purify the set of superinterfaces supermethods. That's remove methods
+	 * whose declaring class has a superinterface within this same set, then
+	 * sort the set of methods alphabetically according to the name of the
+	 * declaring class.
 	 * 
 	 * @param superMethods
 	 * @return
@@ -1753,7 +1791,8 @@ public class Hierarchy {
 	}
 
 	/**
-	 * Check if the given set of methods contain a method whose declaring class is a superinterface of the given class.
+	 * Check if the given set of methods contain a method whose declaring class
+	 * is a superinterface of the given class.
 	 * 
 	 * @param methods
 	 * @param cls
@@ -1770,7 +1809,8 @@ public class Hierarchy {
 	}
 
 	/**
-	 * Check if the given class is resolved at least at the level {@link ResolvingLevel.#SIGNATURES}.
+	 * Check if the given class is resolved at least at the level {@link
+	 * ResolvingLevel.#SIGNATURES}.
 	 * 
 	 * @param cls
 	 */
@@ -1782,8 +1822,9 @@ public class Hierarchy {
 	}
 
 	/**
-	 * Check that the given method can override other methods or not (i.e., it is not a constructor, not a static method
-	 * (including the static initializer), nor is it declared in java.lang.Object).
+	 * Check that the given method can override other methods or not (i.e., it
+	 * is not a constructor, not a static method (including the static
+	 * initializer), nor is it declared in java.lang.Object).
 	 * 
 	 * @param method
 	 * @return
@@ -1793,9 +1834,11 @@ public class Hierarchy {
 	}
 
 	/**
-	 * Cleanup a library class from any removable methods. A method is removable if it is not referenced by the
-	 * application and removing it will not mess up the class hierarchy. In addition, remove any exceptions that are not
-	 * referenced by the application. Finally, change any native method to be non-native.
+	 * Cleanup a library class from any removable methods. A method is removable
+	 * if it is not referenced by the application and removing it will not mess
+	 * up the class hierarchy. In addition, remove any exceptions that are not
+	 * referenced by the application. Finally, change any native method to be
+	 * non-native.
 	 * 
 	 * @param libraryClass
 	 */
@@ -1842,7 +1885,8 @@ public class Hierarchy {
 	}
 
 	/**
-	 * Cleanup the tag list of a library method. There's no need for tags/annotations in a placeholder library.
+	 * Cleanup the tag list of a library method. There's no need for
+	 * tags/annotations in a placeholder library.
 	 * 
 	 * @param libraryMethod
 	 */
@@ -1859,7 +1903,8 @@ public class Hierarchy {
 	}
 
 	/**
-	 * Cleanup the tag list of a library class. There's no need for tags/annotations in a placeholder library.
+	 * Cleanup the tag list of a library class. There's no need for
+	 * tags/annotations in a placeholder library.
 	 * 
 	 * @param libraryMethod
 	 */
@@ -1876,8 +1921,8 @@ public class Hierarchy {
 	}
 
 	/**
-	 * Cleanup a library class from any removable fields. A field is removable if it is not referenced by the
-	 * application.
+	 * Cleanup a library class from any removable fields. A field is removable
+	 * if it is not referenced by the application.
 	 * 
 	 * @param libraryClass
 	 */
@@ -1903,7 +1948,8 @@ public class Hierarchy {
 	}
 
 	/**
-	 * Cleanup the tag list of a library field. There's no need for tags/annotations in a placeholder library.
+	 * Cleanup the tag list of a library field. There's no need for
+	 * tags/annotations in a placeholder library.
 	 * 
 	 * @param libraryfield
 	 */
@@ -1940,8 +1986,8 @@ public class Hierarchy {
 	}
 
 	/**
-	 * Check if the it is safe to remove the given library method exception (i.e., if it is in the set of library
-	 * classes or not).
+	 * Check if the it is safe to remove the given library method exception
+	 * (i.e., if it is in the set of library classes or not).
 	 * 
 	 * @param exception
 	 * @return
@@ -1951,9 +1997,11 @@ public class Hierarchy {
 	}
 
 	/**
-	 * Check if it is safe to remove the given library field from its class. A field is safe to remove if its class is
-	 * not a library class in this hierarchy (depending on the resolution level SIGNATURES), or if it is a private field
-	 * or if it is not referenced in the application constant pool.
+	 * Check if it is safe to remove the given library field from its class. A
+	 * field is safe to remove if its class is not a library class in this
+	 * hierarchy (depending on the resolution level SIGNATURES), or if it is a
+	 * private field or if it is not referenced in the application constant
+	 * pool.
 	 * 
 	 * @param libraryField
 	 * @return
@@ -1964,7 +2012,8 @@ public class Hierarchy {
 	}
 
 	/**
-	 * Check if any parameter of this methods is removable (i.e., resolved at level less than SIGNATURES).
+	 * Check if any parameter of this methods is removable (i.e., resolved at
+	 * level less than SIGNATURES).
 	 * 
 	 * @param method
 	 * @return
@@ -1981,7 +2030,8 @@ public class Hierarchy {
 	}
 
 	/**
-	 * Check if the return type of a method is removable (i.e., resolved at level less than SIGNATURES).
+	 * Check if the return type of a method is removable (i.e., resolved at
+	 * level less than SIGNATURES).
 	 * 
 	 * @param method
 	 * @return

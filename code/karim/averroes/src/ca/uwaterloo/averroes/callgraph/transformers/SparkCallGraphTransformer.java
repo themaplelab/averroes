@@ -20,34 +20,38 @@ import soot.SourceLocator;
 import soot.jimple.spark.SparkTransformer;
 import soot.options.Options;
 import ca.uwaterloo.averroes.properties.AverroesProperties;
+import ca.uwaterloo.averroes.soot.Names;
 
 public class SparkCallGraphTransformer {
 	private AverroesClassProvider provider;
+	private boolean isAverroes;
 
-	public SparkCallGraphTransformer(String benchmark) {
-		provider = new AverroesClassProvider(benchmark, false);
+	public SparkCallGraphTransformer(String benchmark, boolean isAverroes) {
+		this.isAverroes = isAverroes;
+		provider = new AverroesClassProvider(benchmark, this.isAverroes);
 	}
 
 	public CallGraph getProbeCallGraph() throws IOException {
-		System.out.println("Generating the call graph from Spark.");
+		System.out.println("Generating the call graph from Spark" + (isAverroes ? "Averroes." : "."));
 
 		// Reset Soot
 		G.reset();
 		provider.prepare();
 
 		// Set some soot parameters
-		// Options.v().set_prepend_classpath(false);
-		// Options.v().set_soot_classpath(AverroesProperties.getClasspath(benchmark));
-		// Options.v().set_dynamic_class(AverroesProperties.getDynamicClasses());
-		// Options.v().classes().addAll(organizer.applicationClassNames());
-		// Options.v().set_main_class(AverroesProperties.getMainClass());
-		// Options.v().set_whole_program(true);
 		SourceLocator.v().setClassProviders(Collections.singletonList((ClassProvider) provider));
-		addCommonDynamicClasses(provider);
-		Options.v().set_dynamic_class(AverroesProperties.getDynamicClasses());
 		Options.v().classes().addAll(provider.getApplicationClassNames());
 		Options.v().set_main_class(AverroesProperties.getMainClass());
 		Options.v().set_whole_program(true);
+
+		// Dynamic classes are only relevant for the vanilla Spark
+		if (!isAverroes) {
+			addCommonDynamicClasses(provider);
+			Options.v().set_dynamic_class(AverroesProperties.getDynamicClasses());
+		} else {
+			// required since this class is not related to any other class now
+			Options.v().classes().add(Names.AVERROES_LIBRARY_CLASS);
+		}
 
 		// Load the necessary classes
 		Scene.v().loadNecessaryClasses();
@@ -57,7 +61,7 @@ public class SparkCallGraphTransformer {
 		Scene.v().setEntryPoints(entryPoints());
 
 		// Run the Spark transformer
-		SparkTransformer.v().transform("", Transformer.sparkOptions(false));
+		SparkTransformer.v().transform("", Transformer.sparkOptions(isAverroes));
 
 		// Retrieve the call graph edges
 		CallGraph probecg = new CallGraph();
@@ -78,15 +82,19 @@ public class SparkCallGraphTransformer {
 
 		return probecg;
 	}
-	
+
 	/**
-	 * The main method of the main class set in the Soot scene is the only entry point to the call graph.
+	 * The main method of the main class set in the Soot scene is the only entry
+	 * point to the call graph.
 	 * 
 	 * @return
 	 */
 	private List<SootMethod> entryPoints() {
 		List<SootMethod> result = new ArrayList<SootMethod>();
 		result.add(Scene.v().getMainMethod());
+		if (isAverroes) {
+			result.add(Scene.v().getMethod(Names.AVERROES_LIBRARY_CLINIT_METHOD_SIGNATURE));
+		}
 		return result;
 	}
 
@@ -101,9 +109,8 @@ public class SparkCallGraphTransformer {
 		ProbeClass cls = ObjectManager.v().getClass(sootClass.toString());
 		return ObjectManager.v().getMethod(cls, sootMethod.getName(), sootMethod.getBytecodeParms());
 	}
-	
-	public static void addCommonDynamicClass(ClassProvider provider,
-			String className) {
+
+	public static void addCommonDynamicClass(ClassProvider provider, String className) {
 		if (provider.find(className) != null) {
 			Scene.v().addBasicClass(className);
 		}

@@ -20,8 +20,8 @@ public class SootCallGraphConverter {
 	 * @param probeCallGraph
 	 * @return
 	 */
-	public static CallGraph convert(probe.CallGraph probeCallGraph) {
-		CallGraph callGraph = new CallGraph(CallGraphSource.SPARK_AVERROES);
+	public static CallGraph convert(probe.CallGraph probeCallGraph, CallGraphSource source) {
+		CallGraph callGraph = new CallGraph(source);
 
 		// Getting the entry points
 		callGraph.entryPoints().addAll(probeCallGraph.entryPoints());

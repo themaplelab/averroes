@@ -3,6 +3,7 @@ package soot.coffi;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.jf.dexlib2.DexFileFactory;
 import org.jf.dexlib2.dexbacked.DexBackedDexFile;
@@ -22,8 +23,9 @@ import ca.uwaterloo.averroes.util.BytecodeUtils;
 import ca.uwaterloo.averroes.util.DexUtils;
 
 /**
- * A class that holds the values of library methods and fields found in the constant pool of application classes. The
- * class is in this specific package name because it accesses some package-private classes (e.g.,
+ * A class that holds the values of library methods and fields found in the
+ * constant pool of application classes. The class is in this specific package
+ * name because it accesses some package-private classes (e.g.,
  * {@link CONSTANT_Fieldref_info}.
  * 
  * @author karim
@@ -36,9 +38,13 @@ public class AverroesApplicationConstantPool {
 
 	private Hierarchy hierarchy;
 
+	private static int count = 0;
+	private static Set<SootClass> classes = new HashSet<SootClass>();
+	private static Set<String> substrings = new HashSet<String>();
+
 	/**
-	 * Initialize this constant pool with all the library methods and fields in the constant pool of any application
-	 * class.
+	 * Initialize this constant pool with all the library methods and fields in
+	 * the constant pool of any application class.
 	 * 
 	 * @param hierarchy
 	 */
@@ -53,7 +59,8 @@ public class AverroesApplicationConstantPool {
 	}
 
 	/**
-	 * Get the set of library methods that appear in the constant pool of any application class.
+	 * Get the set of library methods that appear in the constant pool of any
+	 * application class.
 	 * 
 	 * @return
 	 */
@@ -62,7 +69,8 @@ public class AverroesApplicationConstantPool {
 	}
 
 	/**
-	 * Get the set of library fields that appear in the constant pool of any application class.
+	 * Get the set of library fields that appear in the constant pool of any
+	 * application class.
 	 * 
 	 * @return
 	 */
@@ -71,7 +79,8 @@ public class AverroesApplicationConstantPool {
 	}
 
 	/**
-	 * Get the set of classes that are referenced by name in the constant pool of any application class.
+	 * Get the set of classes that are referenced by name in the constant pool
+	 * of any application class.
 	 * 
 	 * @return
 	 */
@@ -80,7 +89,8 @@ public class AverroesApplicationConstantPool {
 	}
 
 	/**
-	 * Check if the given field is a library field referenced by the application.
+	 * Check if the given field is a library field referenced by the
+	 * application.
 	 * 
 	 * @param field
 	 * @return
@@ -90,7 +100,8 @@ public class AverroesApplicationConstantPool {
 	}
 
 	/**
-	 * Check if the given method is a library method referenced by the application.
+	 * Check if the given method is a library method referenced by the
+	 * application.
 	 * 
 	 * @param method
 	 * @return
@@ -109,8 +120,8 @@ public class AverroesApplicationConstantPool {
 	}
 
 	/**
-	 * Get the Coffi class corresponding to the given Soot class. From this coffi class, we can get the constant pool
-	 * and all the related info.
+	 * Get the Coffi class corresponding to the given Soot class. From this
+	 * coffi class, we can get the constant pool and all the related info.
 	 * 
 	 * @param cls
 	 * @return
@@ -131,8 +142,10 @@ public class AverroesApplicationConstantPool {
 		Set<SootMethod> result = new HashSet<SootMethod>();
 
 		/*
-		 * This is only useful if the application class has any methods. Some classes will not have any methods in them,
-		 * e.g., org.jfree.data.xml.DatasetTags which is an interface that has some final constants only.
+		 * This is only useful if the application class has any methods. Some
+		 * classes will not have any methods in them, e.g.,
+		 * org.jfree.data.xml.DatasetTags which is an interface that has some
+		 * final constants only.
 		 */
 		if (applicationClass.getMethodCount() > 0) {
 			ClassFile coffiClass = getCoffiClass(applicationClass);
@@ -158,7 +171,8 @@ public class AverroesApplicationConstantPool {
 					String methodDescriptor = ((CONSTANT_Utf8_info) (constantPool[i.descriptor_index])).convert();
 					SootMethod method = BytecodeUtils.makeSootMethod(className, methodName, methodDescriptor);
 
-					// If the resolved method is in the library, add it to the result
+					// If the resolved method is in the library, add it to the
+					// result
 					if (hierarchy.isLibraryMethod(method)) {
 						result.add(method);
 					}
@@ -170,21 +184,37 @@ public class AverroesApplicationConstantPool {
 	}
 
 	/**
-	 * Find all the classes whose name is referenced in the constant pool of application classes.
+	 * Find all the classes whose name is referenced in the constant pool of
+	 * application classes.
 	 * 
 	 * @throws IOException
 	 */
 	private void findApplicationClassesReferencedByName() {
 		applicationClasses = new HashSet<SootClass>();
 
-		// If we're processing an android apk, process the global string constant pool
+		// If we're processing an android apk, process the global string
+		// constant pool
 		// if (Options.v().src_prec() == Options.src_prec_apk) {
 		// applicationClasses.addAll(findAndroidApplicationClassesReferencedByName());
 		// } else {
-		// Add the classes whose name appear in the constant pool of application classes
+		// Add the classes whose name appear in the constant pool of application
+		// classes
 		for (SootClass applicationClass : hierarchy.getApplicationClasses()) {
 			applicationClasses.addAll(findApplicationClassesReferencedByName(applicationClass));
 		}
+		System.out.println("averroes found " + substrings.size() + " possible class name substrings");
+		substrings.forEach(System.out::println);
+		System.out.println("-------------");
+		// classes.forEach(System.out::println);
+		classes.stream()
+				.filter(c -> {
+					if (substrings.stream().anyMatch(s -> c.getName().startsWith(s))
+							&& substrings.stream().anyMatch(s -> c.getName().endsWith(s))) {
+						return true;
+					} else {
+						return false;
+					}
+				}).forEach(System.out::println);
 		// }
 	}
 
@@ -222,7 +252,8 @@ public class AverroesApplicationConstantPool {
 	}
 
 	/**
-	 * Get the classes referenced by name in the constant pool of an application class.
+	 * Get the classes referenced by name in the constant pool of an application
+	 * class.
 	 * 
 	 * @param applicationClass
 	 */
@@ -230,8 +261,10 @@ public class AverroesApplicationConstantPool {
 		Set<SootClass> result = new HashSet<SootClass>();
 
 		/*
-		 * This is only useful if the application class has any methods. Some classes will not have any methods in them,
-		 * e.g., org.jfree.data.xml.DatasetTags which is an interface that has some final constants only.
+		 * This is only useful if the application class has any methods. Some
+		 * classes will not have any methods in them, e.g.,
+		 * org.jfree.data.xml.DatasetTags which is an interface that has some
+		 * final constants only.
 		 */
 		if (applicationClass.getMethodCount() > 0) {
 			ClassFile coffiClass = getCoffiClass(applicationClass);
@@ -243,7 +276,15 @@ public class AverroesApplicationConstantPool {
 
 					// Get the class name
 					CONSTANT_Utf8_info s = (CONSTANT_Utf8_info) constantPool[stringInfo.string_index];
-					String className = s.convert();
+					String className = s.convert().trim();
+
+					if (!className.isEmpty() && !className.equalsIgnoreCase(".") && !className.equalsIgnoreCase("$")) {
+						Set<SootClass> set = hierarchy.matchSubstrOfApplicationClass(className);
+						if (!set.isEmpty()) {
+							classes.addAll(set);
+							substrings.add(className);
+						}
+					}
 
 					if (hierarchy.isApplicationClass(className)) {
 						result.add(hierarchy.getClass(className));
@@ -256,18 +297,21 @@ public class AverroesApplicationConstantPool {
 	}
 
 	/**
-	 * Find all the library methods referenced from the constant pool of application classes.
+	 * Find all the library methods referenced from the constant pool of
+	 * application classes.
 	 * 
 	 * @return
 	 */
 	private void findLibraryMethodsInApplicationConstantPool() {
 		libraryMethods = new HashSet<SootMethod>();
 
-		// If we're processing an android apk, process the global method constant pool
+		// If we're processing an android apk, process the global method
+		// constant pool
 		// if (Options.v().src_prec() == Options.src_prec_apk) {
 		// libraryMethods.addAll(findLibraryMethodsInAndroidApplicationConstantPool());
 		// } else {
-		// Add the library methods that appear in the constant pool of application classes
+		// Add the library methods that appear in the constant pool of
+		// application classes
 		for (SootClass applicationClass : hierarchy.getApplicationClasses()) {
 			libraryMethods.addAll(findLibraryMethodsInConstantPool(applicationClass));
 		}
@@ -288,7 +332,8 @@ public class AverroesApplicationConstantPool {
 				if (DexUtils.isArrayClone(dex, i) == false) {
 					SootMethod method = DexUtils.asSootMethod(dex, i);
 
-					// If the resolved method is in the library, add it to the result
+					// If the resolved method is in the library, add it to the
+					// result
 					if (hierarchy.isLibraryMethod(method)) {
 						result.add(method);
 					}
@@ -311,8 +356,10 @@ public class AverroesApplicationConstantPool {
 		Set<SootField> result = new HashSet<SootField>();
 
 		/*
-		 * This is only useful if the application class has any methods. Some classes will not have any methods in them,
-		 * e.g., org.jfree.data.xml.DatasetTags which is an interface that has some final constants only.
+		 * This is only useful if the application class has any methods. Some
+		 * classes will not have any methods in them, e.g.,
+		 * org.jfree.data.xml.DatasetTags which is an interface that has some
+		 * final constants only.
 		 */
 		if (applicationClass.getMethodCount() > 0) {
 			ClassFile coffiClass = getCoffiClass(applicationClass);
@@ -343,8 +390,10 @@ public class AverroesApplicationConstantPool {
 					SootField field;
 
 					/*
-					 * We have to do this ugly code. Try first and see if the field is not static. If it is static, then
-					 * create a new fieldRef in the catch and resolve it again with isStatic = true.
+					 * We have to do this ugly code. Try first and see if the
+					 * field is not static. If it is static, then create a new
+					 * fieldRef in the catch and resolve it again with isStatic
+					 * = true.
 					 */
 					try {
 						field = fieldRef.resolve();
@@ -353,7 +402,8 @@ public class AverroesApplicationConstantPool {
 					}
 					field = fieldRef.resolve();
 
-					// If the resolved field is in the library, add it to the result
+					// If the resolved field is in the library, add it to the
+					// result
 					if (hierarchy.isLibraryField(field)) {
 						result.add(field);
 					}
@@ -376,11 +426,13 @@ public class AverroesApplicationConstantPool {
 			int fieldCount = dex.readSmallUint(HeaderItem.FIELD_COUNT_OFFSET);
 			System.out.println(fieldCount);
 			for (int i = 0; i < fieldCount; i++) {
-				// NOTE: Some fields might not be resolved anyways and those need to be completely ignored.
+				// NOTE: Some fields might not be resolved anyways and those
+				// need to be completely ignored.
 				try {
 					SootField field = DexUtils.asSootField(dex, i);
 
-					// If the resolved field is in the library, add it to the result
+					// If the resolved field is in the library, add it to the
+					// result
 					if (hierarchy.isLibraryField(field)) {
 						result.add(field);
 					}
@@ -396,18 +448,21 @@ public class AverroesApplicationConstantPool {
 	}
 
 	/**
-	 * Get all the library fields referenced from the constant pool of application classes.
+	 * Get all the library fields referenced from the constant pool of
+	 * application classes.
 	 * 
 	 * @return
 	 */
 	private void findLibraryFieldsInApplicationConstantPool() {
 		libraryFields = new HashSet<SootField>();
 
-		// If we're processing an android apk, process the global field constant pool
+		// If we're processing an android apk, process the global field constant
+		// pool
 		// if (Options.v().src_prec() == Options.src_prec_apk) {
 		// libraryFields.addAll(findLibraryFieldsInAndroidApplicationConstantPool());
 		// } else {
-		// Add the library methods that appear in the constant pool of application classes
+		// Add the library methods that appear in the constant pool of
+		// application classes
 		for (SootClass applicationClass : hierarchy.getApplicationClasses()) {
 			libraryFields.addAll(findLibraryFieldsInConstantPool(applicationClass));
 		}
