@@ -28,7 +28,7 @@ public class SparkWithAverroesCallGraphGenerator {
 			String benchmark = args[0];
 
 			FileUtils.createDirectory(AverroesProperties.getOutputDir());
-			CallGraph spark = CallGraphFactory.generateSparkWithAverroesCallGraph(benchmark);
+			CallGraph spark = CallGraphFactory.generateSparkCallGraph(benchmark, true);
 			System.out.println("Total time to finish: " + TimeUtils.elapsedTime());
 			new GXLWriter().write(spark, FileUtils.sparkAverroesCallGraphFile());
 

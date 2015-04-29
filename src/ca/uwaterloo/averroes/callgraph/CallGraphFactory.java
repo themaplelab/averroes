@@ -15,7 +15,6 @@ import ca.uwaterloo.averroes.callgraph.converters.SootCallGraphConverter;
 import ca.uwaterloo.averroes.callgraph.transformers.AndroidCallGraphTransformer;
 import ca.uwaterloo.averroes.callgraph.transformers.AndroidWithAverroesCallGraphTransformer;
 import ca.uwaterloo.averroes.callgraph.transformers.SparkCallGraphTransformer;
-import ca.uwaterloo.averroes.callgraph.transformers.SparkWithAverroesCallGraphTransformer;
 import ca.uwaterloo.averroes.properties.AverroesProperties;
 import ca.uwaterloo.averroes.util.CommandExecuter;
 import ca.uwaterloo.averroes.util.ProbeUtils;
@@ -62,27 +61,15 @@ import com.ibm.wala.util.strings.Atom;
 public class CallGraphFactory {
 
 	/**
-	 * Generate the call graph for SparkAverroes.
-	 * 
-	 * @param benchmark
-	 * @return
-	 * @throws IOException
-	 */
-	public static CallGraph generateSparkWithAverroesCallGraph(String benchmark) throws IOException {
-		probe.CallGraph spark = new SparkWithAverroesCallGraphTransformer(benchmark).run();
-		return SootCallGraphConverter.convert(spark);
-	}
-
-	/**
 	 * Generate the call graph for Spark.
 	 * 
 	 * @return
 	 * @throws IOException
 	 */
-	public static CallGraph generateSparkCallGraph(String benchmark) throws IOException {
-		probe.CallGraph spark = new SparkCallGraphTransformer(benchmark).getProbeCallGraph();
+	public static CallGraph generateSparkCallGraph(String benchmark, boolean isAverroes) throws IOException {
+		probe.CallGraph spark = new SparkCallGraphTransformer(benchmark, isAverroes).getProbeCallGraph();
 		System.out.println("size of original spark is: " + spark.edges().size());
-		return SootCallGraphConverter.convert(spark);
+		return SootCallGraphConverter.convert(spark, isAverroes ? CallGraphSource.SPARK_AVERROES : CallGraphSource.SPARK);
 	}
 
 	/**
@@ -208,8 +195,8 @@ public class CallGraphFactory {
 						| ZeroXInstanceKeys.SMUSH_THROWABLES);
 	}
 
-	public static AnalysisScope makeAverroesAnalysisScope(String benchmark, String exclusions)
-			throws IOException, IllegalArgumentException, InvalidClassFileException {
+	public static AnalysisScope makeAverroesAnalysisScope(String benchmark, String exclusions) throws IOException,
+			IllegalArgumentException, InvalidClassFileException {
 		AnalysisScope scope = AnalysisScope.createJavaAnalysisScope();
 
 		// Exclusion file
@@ -219,11 +206,14 @@ public class CallGraphFactory {
 		scope.setExclusions(new FileOfClasses(fs));
 
 		// Library stuff
-		scope.addToScope(ClassLoaderReference.Primordial, new JarFileModule(new JarFile(new File(FileUtils.averroesLibraryClassJarFile(benchmark)))));
-		scope.addToScope(ClassLoaderReference.Application, new JarFileModule(new JarFile(new File(FileUtils.placeholderLibraryJarFile(benchmark)))));
+		scope.addToScope(ClassLoaderReference.Primordial,
+				new JarFileModule(new JarFile(new File(FileUtils.averroesLibraryClassJarFile(benchmark)))));
+		scope.addToScope(ClassLoaderReference.Application,
+				new JarFileModule(new JarFile(new File(FileUtils.placeholderLibraryJarFile(benchmark)))));
 
 		// Application JAR
-		scope.addToScope(ClassLoaderReference.Application, new JarFileModule(new JarFile(new File(FileUtils.organizedApplicationJarFile(benchmark)))));
+		scope.addToScope(ClassLoaderReference.Application,
+				new JarFileModule(new JarFile(new File(FileUtils.organizedApplicationJarFile(benchmark)))));
 
 		return scope;
 	}

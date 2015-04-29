@@ -1,6 +1,7 @@
 package ca.uwaterloo.averroes.soot;
 
 import soot.Scene;
+import soot.SootMethod;
 import soot.util.NumberedString;
 
 public class Names {
@@ -25,14 +26,16 @@ public class Names {
 	public static final String FINALIZE_POINTS_TO_FIELD_SIGNATURE = "<" + AVERROES_ABSTRACT_LIBRARY_CLASS
 			+ ": java.lang.Object " + FINALIZE_POINTS_TO + ">";
 	public static final String INSTANCE = "instance";
-	public static final String INSTANCE_FIELD_SIGNATURE = "<" + AVERROES_ABSTRACT_LIBRARY_CLASS
-			+ ": " + AVERROES_ABSTRACT_LIBRARY_CLASS + " " + INSTANCE + ">";
+	public static final String INSTANCE_FIELD_SIGNATURE = "<" + AVERROES_ABSTRACT_LIBRARY_CLASS + ": "
+			+ AVERROES_ABSTRACT_LIBRARY_CLASS + " " + INSTANCE + ">";
 
 	// Methods
 	public static final String AVERROES_DO_IT_ALL_METHOD_NAME = "doItAll";
 	public static final String MAIN_METHOD = "main";
-	public static final String AVERROES_ABSTRACT_DO_IT_ALL_METHOD_SIGNATURE = "<" + AVERROES_ABSTRACT_LIBRARY_CLASS + ": void "
-			+ AVERROES_DO_IT_ALL_METHOD_NAME + "()>";
+	public static final String AVERROES_ABSTRACT_DO_IT_ALL_METHOD_SIGNATURE = "<" + AVERROES_ABSTRACT_LIBRARY_CLASS
+			+ ": void " + AVERROES_DO_IT_ALL_METHOD_NAME + "()>";
+	public static final String AVERROES_LIBRARY_CLINIT_METHOD_SIGNATURE = "<" + AVERROES_LIBRARY_CLASS + ": void "
+			+ SootMethod.staticInitializerName + "()>";
 
 	// Reflection methods
 	public static final String FOR_NAME_SIG = "<java.lang.Class: java.lang.Class forName(java.lang.String)>";
