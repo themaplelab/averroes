@@ -202,7 +202,8 @@ public class CodeGenerator {
 			JimpleBody b = Jimple.v().newBody(main);
 			main.setActiveBody(b);
 			b.insertIdentityStmts();
-			b.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(getAverroesAbstractDoItAll().makeRef())));
+			b.getUnits().add(
+					Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(getAverroesAbstractDoItAll().makeRef())));
 			b.getUnits().addLast(Jimple.v().newReturnVoidStmt());
 
 			// Validate the Jimple body
@@ -489,10 +490,10 @@ public class CodeGenerator {
 	 */
 	private void createAverroesLibraryDoItAll() {
 		SootMethod doItAll = new SootMethod(Names.AVERROES_DO_IT_ALL_METHOD_NAME, Collections.<Type> emptyList(),
-				VoidType.v(), Modifier.PUBLIC | Modifier.STATIC);
+				VoidType.v(), Modifier.PUBLIC);
 
-		doItAllBody = new AverroesJimpleBody(doItAll);
 		averroesLibraryClass.addMethod(doItAll);
+		doItAllBody = new AverroesJimpleBody(doItAll);
 
 		// Insert object creation statements
 		createObjects();

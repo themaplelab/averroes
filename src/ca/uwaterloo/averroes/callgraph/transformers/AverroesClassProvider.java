@@ -114,10 +114,8 @@ public class AverroesClassProvider implements ClassProvider {
 	 * @return
 	 * @throws IOException
 	 */
-	public String addClass(ZipFile archive, ZipEntry entry,
-			boolean fromApplicationArchive) throws IOException {
-		return addClass(entry.getName(), new ZipEntryResource(archive, entry),
-				fromApplicationArchive);
+	public String addClass(ZipFile archive, ZipEntry entry, boolean fromApplicationArchive) throws IOException {
+		return addClass(entry.getName(), new ZipEntryResource(archive, entry), fromApplicationArchive);
 	}
 
 	/**
@@ -129,8 +127,7 @@ public class AverroesClassProvider implements ClassProvider {
 	 * @return
 	 * @throws IOException
 	 */
-	public String addClass(String path, Resource resource,
-			boolean fromApplicationArchive) throws IOException {
+	public String addClass(String path, Resource resource, boolean fromApplicationArchive) throws IOException {
 		ClassFile c = new ClassFile(path);
 
 		InputStream stream = null;
@@ -148,8 +145,7 @@ public class AverroesClassProvider implements ClassProvider {
 		if (classes.containsKey(className)) {
 			// This means we encountered another copy of the class later on the
 			// path, this should never happen!
-			throw new RuntimeException("class " + className
-					+ " has already been added to this class provider.");
+			throw new RuntimeException("class " + className + " has already been added to this class provider.");
 		} else {
 			if (fromApplicationArchive) {
 				applicationClassNames.add(className);
@@ -170,11 +166,9 @@ public class AverroesClassProvider implements ClassProvider {
 	 * @return
 	 * @throws IOException
 	 */
-	public List<String> addArchive(File file, boolean isApplication)
-			throws IOException {
-		System.out.println("Adding "
-				+ (isApplication ? "application" : "placeholder library")
-				+ " archive: " + file.getAbsolutePath());
+	public List<String> addArchive(File file, boolean isApplication) throws IOException {
+		System.out.println("Adding " + (isApplication ? "application" : "placeholder library") + " archive: "
+				+ file.getAbsolutePath());
 		List<String> result = new ArrayList<String>();
 
 		ZipFile archive = new ZipFile(file);
@@ -198,8 +192,7 @@ public class AverroesClassProvider implements ClassProvider {
 	 * @return
 	 * @throws IOException
 	 */
-	public List<String> addArchive(String file, boolean isApplication)
-			throws IOException {
+	public List<String> addArchive(String file, boolean isApplication) throws IOException {
 		return addArchive(new File(file), isApplication);
 	}
 
@@ -210,8 +203,7 @@ public class AverroesClassProvider implements ClassProvider {
 	 * @throws IOException
 	 */
 	private List<String> addApplicationArchive() throws IOException {
-		return addArchive(FileUtils.organizedApplicationJarFile(benchmark),
-				true);
+		return addArchive(FileUtils.organizedApplicationJarFile(benchmark), true);
 	}
 
 	/**
@@ -221,12 +213,13 @@ public class AverroesClassProvider implements ClassProvider {
 	 * @throws IOException
 	 */
 	private List<String> addLibraryArchive() throws IOException {
-		if (isAve)
-			return addArchive(FileUtils.placeholderLibraryJarFile(benchmark),
-					false);
-		else
-			return addArchive(FileUtils.organizedLibraryJarFile(benchmark),
-					false);
+		if (isAve) {
+			List<String> result = addArchive(FileUtils.placeholderLibraryJarFile(benchmark), false);
+			result.addAll(addArchive(FileUtils.averroesLibraryClassJarFile(benchmark), false));
+			return result;
+		} else {
+			return addArchive(FileUtils.organizedLibraryJarFile(benchmark), false);
+		}
 	}
 
 	/**
@@ -239,7 +232,8 @@ public class AverroesClassProvider implements ClassProvider {
 			Resource resource = classes.get(className);
 			try {
 				InputStream stream = resource.open();
-				// return new CoffiClassSource(className, stream); // TODO: use this for soot 2.5
+				// return new CoffiClassSource(className, stream); // TODO: use
+				// this for soot 2.5
 				return new CoffiClassSource(className, stream, "", ""); // TODO:
 																		// fix
 																		// for

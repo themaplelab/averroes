@@ -32,9 +32,10 @@ public class JarFactory {
 	 */
 	public static void main(String[] args) {
 		try {
-			// Find the total execution time, instead of depending on the Unix time command
+			// Find the total execution time, instead of depending on the Unix
+			// time command
 			TimeUtils.splitStart();
-			
+
 			// Process the arguments
 			AverroesProperties.processArguments(args);
 
@@ -54,7 +55,8 @@ public class JarFactory {
 			System.out.println("# application classes: " + jarOrganizer.applicationClassNames().size());
 			System.out.println("# library classes: " + jarOrganizer.libraryClassNames().size());
 
-			// Add the organized archives for the application and its dependencies.
+			// Add the organized archives for the application and its
+			// dependencies.
 			TimeUtils.reset();
 			JarFactoryClassProvider provider = new JarFactoryClassProvider();
 			provider.prepareJarFactoryClasspath();
@@ -114,12 +116,13 @@ public class JarFactory {
 			System.out.println("");
 			System.out.println("Creating the skeleton for Averroes's main library class ...");
 			CodeGenerator.v().createAverroesLibraryClass();
-			
+
 			// Create method bodies to the library classes
 			System.out.println("Generating the method bodies for the placeholder library classes ...");
 			CodeGenerator.v().createLibraryMethodBodies();
 
-			// Create empty classes for the basic classes required internally by Soot
+			// Create empty classes for the basic classes required internally by
+			// Soot
 			System.out.println("Generating empty basic library classes required by Soot ...");
 			for (SootClass basicClass : Hierarchy.v().getBasicClassesDatabase().getMissingBasicClasses()) {
 				CodeGenerator.writeLibraryClassFile(basicClass);
@@ -131,15 +134,15 @@ public class JarFactory {
 			TimeUtils.reset();
 			JarFile librJarFile = new JarFile(FileUtils.placeholderLibraryJarFile());
 			librJarFile.addGeneratedLibraryClassFiles();
-			librJarFile.verify();
 			JarFile aveJarFile = new JarFile(FileUtils.averroesLibraryClassJarFile());
 			aveJarFile.addAverroesLibraryClassFile();
-			aveJarFile.verify();
 			double bcel = TimeUtils.elapsedTime();
 			System.out.println("Placeholder library JAR file verified in " + bcel + " seconds.");
-			System.out.println("Total time (without verification) is " + MathUtils.round(soot + averroes) + " seconds.");
-			System.out.println("Total time (with verification) is " + MathUtils.round(soot + averroes + bcel) + " seconds.");
-			
+			System.out
+					.println("Total time (without verification) is " + MathUtils.round(soot + averroes) + " seconds.");
+			System.out.println("Total time (with verification) is " + MathUtils.round(soot + averroes + bcel)
+					+ " seconds.");
+
 			double total = TimeUtils.elapsedSplitTime();
 			System.out.println("Elapsed time: " + total + " seconds.");
 		} catch (Exception e) {

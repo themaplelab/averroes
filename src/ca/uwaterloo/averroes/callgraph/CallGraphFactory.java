@@ -162,13 +162,12 @@ public class CallGraphFactory {
 			InvalidClassFileException {
 		// 1. build the call graph
 		String classpath = FileUtils.composeClassPath(FileUtils.organizedApplicationJarFile(benchmark),
-				isAve ? FileUtils.placeholderLibraryJarFile(benchmark) : FileUtils.organizedLibraryJarFile(benchmark));
+				FileUtils.organizedLibraryJarFile(benchmark));
 
 		String exclusionFile = CallGraphFactory.class.getClassLoader()
 				.getResource(CallGraphTestUtil.REGRESSION_EXCLUSIONS).getPath();
 
-		AnalysisScope scope = isAve ? makeAverroesAnalysisScope(FileUtils.organizedApplicationJarFile(benchmark),
-				FileUtils.placeholderLibraryJarFile(benchmark), exclusionFile) : AnalysisScopeReader
+		AnalysisScope scope = isAve ? makeAverroesAnalysisScope(benchmark, exclusionFile) : AnalysisScopeReader
 				.makeJavaBinaryAnalysisScope(classpath, new File(exclusionFile));
 
 		ClassHierarchy cha = ClassHierarchy.make(scope);
@@ -209,7 +208,7 @@ public class CallGraphFactory {
 						| ZeroXInstanceKeys.SMUSH_THROWABLES);
 	}
 
-	public static AnalysisScope makeAverroesAnalysisScope(String app, String averroesLib, String exclusions)
+	public static AnalysisScope makeAverroesAnalysisScope(String benchmark, String exclusions)
 			throws IOException, IllegalArgumentException, InvalidClassFileException {
 		AnalysisScope scope = AnalysisScope.createJavaAnalysisScope();
 
@@ -219,43 +218,12 @@ public class CallGraphFactory {
 				.getClassLoader().getResourceAsStream(exclusionsFile.getName());
 		scope.setExclusions(new FileOfClasses(fs));
 
-		// Averroes library
-		// Try adding all class files in AveLib to Primordial except for
-		// AverroesLibraryClass, add it to Application
-		// new JarFileModule(new JarFile(new
-		// File(averroesLib))).getEntries().forEachRemaining(
-		// m -> {
-		// try {
-		// if (m.isClassFile()
-		// &&
-		// m.getClassName().equals(Names.AVERROES_LIBRARY_CLASS.replaceAll("\\.",
-		// "/"))) {
-		// scope.addClassFileToScope(ClassLoaderReference.Application,
-		// ((ClassFileModule) m.asModule()).getFile());
-		// System.out.println("Application: " + Names.AVERROES_LIBRARY_CLASS);
-		// } else if (m.isClassFile()) {
-		// scope.addClassFileToScope(ClassLoaderReference.Primordial,
-		// ((ClassFileModule) m.asModule()).getFile());
-		// System.out.println("Primordial: " + m.getClassName());
-		// }
-		//
-		// } catch (Exception e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		// });
-		// scope.addToScope(ClassLoaderReference.Application, new
-		// JarFileModule(new JarFile(new File(averroesLib.replace(".jar",
-		// "-bkp.jar")))));
-		// scope.addToScope(ClassLoaderReference.Primordial, new
-		// JarFileModule(new JarFile(new File(averroesLib.replace(".jar",
-		// "-bkp.jar")))));
-		scope.addToScope(ClassLoaderReference.Primordial, new JarFileModule(new JarFile(new File(averroesLib))));
-		scope.addClassFileToScope(ClassLoaderReference.Application, new File(
-				"benchmarks-averroes/dacapo/lusearch-placeholder-lib/ca/uwaterloo/averroes/Library.class"));
+		// Library stuff
+		scope.addToScope(ClassLoaderReference.Primordial, new JarFileModule(new JarFile(new File(FileUtils.averroesLibraryClassJarFile(benchmark)))));
+		scope.addToScope(ClassLoaderReference.Application, new JarFileModule(new JarFile(new File(FileUtils.placeholderLibraryJarFile(benchmark)))));
 
 		// Application JAR
-		scope.addToScope(ClassLoaderReference.Application, new JarFileModule(new JarFile(new File(app))));
+		scope.addToScope(ClassLoaderReference.Application, new JarFileModule(new JarFile(new File(FileUtils.organizedApplicationJarFile(benchmark)))));
 
 		return scope;
 	}

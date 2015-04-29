@@ -41,7 +41,7 @@ public class JarFile {
 
 	private JarOutputStream jarOutputStream;
 	private String fileName;
-	private Set<JavaClass> bcelClasses;
+	private static Set<JavaClass> bcelClasses = new HashSet<JavaClass>();
 
 	/**
 	 * Construct a new JAR file.
@@ -51,7 +51,6 @@ public class JarFile {
 	public JarFile(String fileName) {
 		jarOutputStream = null;
 		this.fileName = fileName;
-		bcelClasses = new HashSet<JavaClass>();
 	}
 
 	/**
@@ -80,22 +79,18 @@ public class JarFile {
 		String placeholderJar = FileUtils.placeholderLibraryJarFile();
 
 		// Add the class files to the crafted JAR file.
-		for (String fileName : FileUtils.findFiles(dir, "class", "not found")) {
-			String className = relativize(dir, fileName);
-			if (!className.equals(Names.AVERROES_LIBRARY_CLASS.replaceAll("\\.", "/"))) {
-				add(dir, new File(fileName));
-				classFiles.add(className);
-			}
-		}
+		FileUtils.findFiles(dir, "class", "not found").stream()
+				.filter(f -> !relativize(dir, f).equals(Names.AVERROES_LIBRARY_CLASS_BC_SIG + ".class"))
+				.forEach(fileName -> {
+					try {
+						String className = relativize(dir, fileName);
+						add(dir, new File(fileName));
+						classFiles.add(className);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				});
 		close();
-
-		// Set BCEL's repository class path.
-		SyntheticRepository rep = SyntheticRepository.getInstance(new ClassPath(placeholderJar + File.pathSeparator
-				+ FileUtils.organizedApplicationJarFile()));
-		Repository.setRepository(rep);
-
-		// System.out.println("rep classpath: " +
-		// Repository.getRepository().getClassPath()); // TODO
 
 		// Now add all those class files in the crafted JAR file to the BCEL
 		// repository.
@@ -103,7 +98,6 @@ public class JarFile {
 			ClassParser parser = new ClassParser(placeholderJar, classFile);
 			JavaClass cls = parser.parse();
 			bcelClasses.add(cls);
-			Repository.getRepository().storeClass(cls);
 		}
 	}
 
@@ -114,20 +108,20 @@ public class JarFile {
 	 */
 	public void addAverroesLibraryClassFile() throws IOException {
 		String dir = FileUtils.libraryClassesOutputDirectory();
-		// String fileName = dir + File.separator +
-		// Names.AVERROES_LIBRARY_CLASS.replaceAll("\\.", "/");
-		String fileName = FileUtils.findFiles(dir, "class", "not found").stream()
-				.filter(m -> m.endsWith(Names.AVERROES_LIBRARY_CLASS.replaceAll("\\.", "/") + ".class")).collect(Collectors.toList()).get(0);
-		String className = relativize(dir, fileName);
 		String placeholderJar = FileUtils.placeholderLibraryJarFile();
-		String averroesLibraryClassJar = FileUtils.placeholderLibraryJarFile();
+		String averroesLibraryClassJar = FileUtils.averroesLibraryClassJarFile();
+
+		String fileName = FileUtils.findFiles(dir, "class", "not found").stream()
+				.filter(f -> relativize(dir, f).equals(Names.AVERROES_LIBRARY_CLASS_BC_SIG + ".class"))
+				.collect(Collectors.toList()).get(0);
+		String className = relativize(dir, fileName);
 
 		// Add the class file to the separately crafted JAR file.
 		if (FileUtils.isValidFile(fileName)) {
 			add(dir, new File(fileName));
 		} else {
-			throw new IllegalStateException("cannot find " + Names.AVERROES_LIBRARY_CLASS + "\n"
-					+ "invalid path given: " + fileName);
+			throw new IllegalStateException("cannot find " + Names.AVERROES_LIBRARY_CLASS
+					+ System.getProperty("line.separator") + "Invalid path given: " + fileName);
 		}
 		close();
 
@@ -136,15 +130,19 @@ public class JarFile {
 				+ File.pathSeparator + placeholderJar + File.pathSeparator + FileUtils.organizedApplicationJarFile()));
 		Repository.setRepository(rep);
 
-		// System.out.println("rep classpath: " +
-		// Repository.getRepository().getClassPath()); // TODO
-
-		// Now add the class file in the crafted JAR file to the BCEL
-		// repository.
+		// Now add the class files (including ones from placeholder JAR) to the
+		// BCEL repository.
 		ClassParser parser = new ClassParser(averroesLibraryClassJar, className);
 		JavaClass cls = parser.parse();
 		bcelClasses.add(cls);
-		Repository.getRepository().storeClass(cls);
+
+		// Now we need to add all the BCEL classes (including ones from previous
+		// placeholder JAR to force BCEL to load
+		// those crafted files when it looks them up
+		bcelClasses.forEach(c -> Repository.getRepository().storeClass(c));
+		
+		// Now verify all the generated class files
+		verify();
 	}
 
 	/**
@@ -250,7 +248,7 @@ public class JarFile {
 	 * @throws IOException
 	 * @throws ClassFormatException
 	 */
-	public void verify() throws ClassFormatException, IOException {
+	private void verify() throws ClassFormatException, IOException {
 		for (JavaClass cls : bcelClasses) {
 			Verifier verifier = VerifierFactory.getVerifier(cls.getClassName());
 			Method[] methods = cls.getMethods();
