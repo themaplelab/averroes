@@ -3,6 +3,7 @@ package soot.coffi;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.jf.dexlib2.DexFileFactory;
@@ -202,11 +203,13 @@ public class AverroesApplicationConstantPool {
 		for (SootClass applicationClass : hierarchy.getApplicationClasses()) {
 			applicationClasses.addAll(findApplicationClassesReferencedByName(applicationClass));
 		}
-		System.out.println("averroes found " + substrings.size() + " possible class name substrings");
-		substrings.forEach(System.out::println);
-		System.out.println("-------------");
+		// System.out.println("averroes found " + substrings.size() +
+		// " possible class name substrings");
+		// substrings.forEach(System.out::println);
+		// System.out.println("-------------");
 		// classes.forEach(System.out::println);
-		classes.stream()
+		applicationClasses.addAll(classes
+				.stream()
 				.filter(c -> {
 					if (substrings.stream().anyMatch(s -> c.getName().startsWith(s))
 							&& substrings.stream().anyMatch(s -> c.getName().endsWith(s))) {
@@ -214,7 +217,7 @@ public class AverroesApplicationConstantPool {
 					} else {
 						return false;
 					}
-				}).forEach(System.out::println);
+				}).collect(Collectors.toSet()));
 		// }
 	}
 
