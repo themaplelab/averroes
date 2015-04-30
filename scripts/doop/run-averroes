@@ -399,7 +399,7 @@ function create-database()
         sootFactGenArgs="$sootFactGenArgs -ssa"
       fi
       
-      timing java -cp lib/sootclasses-2.5.0.jar:lib/soot-fact-generation.jar Main \
+      timing java -cp lib/soot-fact-generation-ave.jar Main \
         -main $mainclass $sootFactGenArgs -full -d tmp/facts $jars $depargs
 
       mkdir -p $cachefacts
@@ -425,6 +425,16 @@ function create-database()
 
     echo "setting main class to $mainclass"
     $bloxbatch -db $cachedatabase -execute "+MainClass(x) <- ClassType(x), Type:Value(x:\"$mainclass\")."
+    
+    #echo "adding averroes library class static initalizer as entry point"
+    #$bloxbatch -db $cachedatabase -execute "+InitializedClass(class) <- ClassType(class), Type:Value(class:\"ca.uwaterloo.averroes.Library\")."
+    #$bloxbatch -db $cachedatabase -execute "+ReachableContext(?clinit) <- InitializedClass(class), ClassInitializer[class] = ?clinit, Type:Value(class:\"ca.uwaterloo.averroes.Library\")."
+    #/**
+    # * The Averroes library class is always initialized
+    # */
+    #InitializedClass(?averroes) <-
+    #  ClassType(?averroes),
+    #  Type:Value(?averroes:"ca.uwaterloo.averroes.Library").
   fi
 
   mkdir -p $(dirname $database)
