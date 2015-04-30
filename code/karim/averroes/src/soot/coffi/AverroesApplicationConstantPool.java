@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.jf.dexlib2.DexFileFactory;
 import org.jf.dexlib2.dexbacked.DexBackedDexFile;
@@ -38,10 +37,6 @@ public class AverroesApplicationConstantPool {
 	private Set<SootField> libraryFields;
 
 	private Hierarchy hierarchy;
-
-	private static int count = 0;
-	private static Set<SootClass> classes = new HashSet<SootClass>();
-	private static Set<String> substrings = new HashSet<String>();
 
 	/**
 	 * Initialize this constant pool with all the library methods and fields in
@@ -203,21 +198,30 @@ public class AverroesApplicationConstantPool {
 		for (SootClass applicationClass : hierarchy.getApplicationClasses()) {
 			applicationClasses.addAll(findApplicationClassesReferencedByName(applicationClass));
 		}
+		 applicationClasses.forEach(System.out::println);
 		// System.out.println("averroes found " + substrings.size() +
 		// " possible class name substrings");
 		// substrings.forEach(System.out::println);
 		// System.out.println("-------------");
-		// classes.forEach(System.out::println);
-		applicationClasses.addAll(classes
-				.stream()
-				.filter(c -> {
-					if (substrings.stream().anyMatch(s -> c.getName().startsWith(s))
-							&& substrings.stream().anyMatch(s -> c.getName().endsWith(s))) {
-						return true;
-					} else {
-						return false;
-					}
-				}).collect(Collectors.toSet()));
+		// classes.stream()
+		// .filter(c -> {
+		// if (substrings.stream().anyMatch(s -> c.getName().startsWith(s))
+		// && substrings.stream().anyMatch(s -> c.getName().endsWith(s))) {
+		// return true;
+		// } else {
+		// return false;
+		// }
+		// }).forEach(System.out::println);
+		// applicationClasses.addAll(classes
+		// .stream()
+		// .filter(c -> {
+		// if (substrings.stream().anyMatch(s -> c.getName().startsWith(s))
+		// && substrings.stream().anyMatch(s -> c.getName().endsWith(s))) {
+		// return true;
+		// } else {
+		// return false;
+		// }
+		// }).collect(Collectors.toSet()));
 		// }
 	}
 
@@ -262,6 +266,8 @@ public class AverroesApplicationConstantPool {
 	 */
 	private Set<SootClass> findApplicationClassesReferencedByName(SootClass applicationClass) {
 		Set<SootClass> result = new HashSet<SootClass>();
+		Set<SootClass> classes = new HashSet<SootClass>();
+		Set<String> substrings = new HashSet<String>();
 
 		/*
 		 * This is only useful if the application class has any methods. Some
@@ -281,7 +287,7 @@ public class AverroesApplicationConstantPool {
 					CONSTANT_Utf8_info s = (CONSTANT_Utf8_info) constantPool[stringInfo.string_index];
 					String className = s.convert().trim();
 
-					if (!className.isEmpty() && !className.equalsIgnoreCase(".") && !className.equalsIgnoreCase("$")) {
+					if (className.length() > 2) {
 						Set<SootClass> set = hierarchy.matchSubstrOfApplicationClass(className);
 						if (!set.isEmpty()) {
 							classes.addAll(set);
@@ -289,11 +295,29 @@ public class AverroesApplicationConstantPool {
 						}
 					}
 
-					if (hierarchy.isApplicationClass(className)) {
-						result.add(hierarchy.getClass(className));
-					}
+					// if (hierarchy.isApplicationClass(className)) {
+					// result.add(hierarchy.getClass(className));
+					// }
 				}
 			}
+
+			/*
+			 * This filtering has to take place here (i.e., for each class
+			 * separately). Otherwise, we will collect a lot of class names that
+			 * has substrings spanning multiple class files which is both wrong
+			 * and imprecise.
+			 */
+			result.addAll(classes
+					.stream()
+					.filter(c -> {
+						if (substrings.stream().anyMatch(s -> c.getName().startsWith(s))
+								&& substrings.stream().anyMatch(s -> c.getName().endsWith(s))) {
+							return true;
+						} else {
+							return false;
+						}
+					}).collect(Collectors.toSet()));
+
 		}
 
 		return result;

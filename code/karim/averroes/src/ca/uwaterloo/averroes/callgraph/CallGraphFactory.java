@@ -206,9 +206,9 @@ public class CallGraphFactory {
 		scope.setExclusions(new FileOfClasses(fs));
 
 		// Library stuff
-		scope.addToScope(ClassLoaderReference.Primordial,
-				new JarFileModule(new JarFile(new File(FileUtils.averroesLibraryClassJarFile(benchmark)))));
 		scope.addToScope(ClassLoaderReference.Application,
+				new JarFileModule(new JarFile(new File(FileUtils.averroesLibraryClassJarFile(benchmark)))));
+		scope.addToScope(ClassLoaderReference.Primordial,
 				new JarFileModule(new JarFile(new File(FileUtils.placeholderLibraryJarFile(benchmark)))));
 
 		// Application JAR
@@ -237,7 +237,7 @@ public class CallGraphFactory {
 
 					@Override
 					public boolean hasNext() {
-						return index < classNames.length || !clinitTaken;
+						return index < classNames.length || (isAve && !clinitTaken);
 					}
 
 					@Override
@@ -248,13 +248,15 @@ public class CallGraphFactory {
 							MethodReference mainRef = MethodReference.findOrCreate(T, mainMethod,
 									Descriptor.findOrCreateUTF8("([Ljava/lang/String;)V"));
 							return new DefaultEntrypoint(mainRef, cha);
-						} else {
+						} else if(isAve && !clinitTaken){
 							clinitTaken = true;
 							TypeReference T = TypeReference.findOrCreate(loaderRef,
 									TypeName.string2TypeName("Lca/uwaterloo/averroes/Library"));
 							MethodReference clinitRef = MethodReference.findOrCreate(T, MethodReference.clinitName,
 									MethodReference.clinitSelector.getDescriptor());
 							return new DefaultEntrypoint(clinitRef, cha);
+						} else {
+							throw new IllegalStateException("No more entry points. This should never happen!");
 						}
 					}
 				};

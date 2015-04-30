@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="create_run_jar" name="Create Runnable Jar for Project averroes">
+<project default="create_run_jar" name="Create Runnable Jar for Averroes">
     <!--this file was created by Eclipse Runnable JAR Export Wizard-->
     <!--ANT 1.7 is required                                        -->
     <target name="create_run_jar">
-        <jar destfile="/Users/karim/Documents/workspace/averroes/jar/averroes.jar" filesetmanifest="mergewithoutmain">
+    	<script language="javascript">
+    		var logger = project.getBuildListeners( ).firstElement( );
+    		logger.setMessageOutputLevel( 0 );
+    	</script>
+        <jar destfile="/Users/karim/Documents/workspace/averroes/jar/averroes.jar" filesetmanifest="mergewithoutmain" duplicate="preserve">
             <manifest>
                 <attribute name="Main-Class" value="ca.uwaterloo.averroes.jar.JarFactory"/>
                 <attribute name="Class-Path" value="."/>
