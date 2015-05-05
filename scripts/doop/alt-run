@@ -1,0 +1,29 @@
+#! /bin/bash
+
+# usage: alt-run jre# mainclass benchmark
+
+set -e
+
+basedir=$(dirname $0)
+cd $basedir
+
+# first remove the previous analysis results
+echo "clearing all cached results ..."
+rm -rf tmp/ jars/ cache/ results/ last-analysis 2>&1
+
+# then run the analysis using the run script
+echo "running doop and generating output for graph generation for benchmark $3 ..."
+
+if test "$1" = "system"; then
+  if test "$3" = "benchmarks-averroes/dacapo/hsqldb-organized-app.jar"; then
+    $(pwd)/run -main $2 -lib $4 -disable-reflection -enable-imprecise-exceptions context-insensitive $3 2>&1
+  else
+    $(pwd)/run -main $2 -lib $4 -enable-imprecise-exceptions context-insensitive $3 2>&1
+  fi
+else
+  if test "$3" = "benchmarks-averroes/dacapo/hsqldb-organized-app.jar"; then
+    $(pwd)/run -jre $1 -main $2 -lib $4 -disable-reflection -enable-imprecise-exceptions context-insensitive $3 2>&1
+  else
+    $(pwd)/run -jre $1 -main $2 -lib $4 -enable-imprecise-exceptions context-insensitive $3 2>&1
+  fi
+fi
