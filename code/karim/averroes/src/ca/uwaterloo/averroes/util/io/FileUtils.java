@@ -241,8 +241,8 @@ public class FileUtils {
 	 * 
 	 * @return
 	 */
-	public static String placeholderLibraryJarFile(String benchmark) {
-		return composePath("benchmarks-averroes", benchmark + "-placeholder-lib.jar");
+	public static String placeholderLibraryJarFile(String base, String benchmark) {
+		return composePath(base, "benchmarks-averroes", benchmark + "-placeholder-lib.jar");
 	}
 	
 	/**
@@ -259,8 +259,8 @@ public class FileUtils {
 	 * 
 	 * @return
 	 */
-	public static String averroesLibraryClassJarFile(String benchmark) {
-		return composePath("benchmarks-averroes", benchmark + "-averroes-lib-class.jar");
+	public static String averroesLibraryClassJarFile(String base, String benchmark) {
+		return composePath(base, "benchmarks-averroes", benchmark + "-averroes-lib-class.jar");
 	}
 
 	/**
@@ -287,8 +287,8 @@ public class FileUtils {
 	 * 
 	 * @return
 	 */
-	public static String organizedApplicationJarFile(String benchmark) {
-		return composePath("benchmarks-averroes", benchmark + "-organized-app.jar");
+	public static String organizedApplicationJarFile(String base, String benchmark) {
+		return composePath(base, "benchmarks-averroes", benchmark + "-organized-app.jar");
 	}
 
 	/**
@@ -305,8 +305,8 @@ public class FileUtils {
 	 * 
 	 * @return
 	 */
-	public static String organizedLibraryJarFile(String benchmark) {
-		return composePath("benchmarks-averroes", benchmark + "-organized-lib.jar");
+	public static String organizedLibraryJarFile(String base, String benchmark) {
+		return composePath(base, "benchmarks-averroes", benchmark + "-organized-lib.jar");
 	}
 
 	/**

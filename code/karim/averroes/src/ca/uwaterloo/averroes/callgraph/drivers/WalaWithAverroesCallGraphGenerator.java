@@ -26,16 +26,17 @@ public class WalaWithAverroesCallGraphGenerator {
 		try {
 			// Generate the call graph
 			TimeUtils.reset();
-			if (args.length != 1) {
+			if (args.length != 2) {
 				usage();
-				throw new AverroesException("WalaAverroes expects exactly 1 argument.");
+				throw new AverroesException("WalaAverroes expects exactly 2 arguments.");
 			}
 
 			// Process the arguments
-			String benchmark = args[0];
+			String base = args[0];
+			String benchmark = args[1];
 			
 			FileUtils.createDirectory(AverroesProperties.getOutputDir());
-			probe.CallGraph probe = CallGraphFactory.generateWalaCallGraph(benchmark, true); 
+			probe.CallGraph probe = CallGraphFactory.generateWalaCallGraph(base, benchmark, true); 
 			CallGraph wala = ProbeCallGraphCollapser.collapse(probe, CallGraphSource.WALA_AVERROES);
 			System.out.println("Total time to finish: " + TimeUtils.elapsedTime());
 			new GXLWriter().write(wala, FileUtils.walaAverroesCallGraphFile());

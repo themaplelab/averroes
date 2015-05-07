@@ -26,9 +26,9 @@ public class SparkCallGraphTransformer {
 	private AverroesClassProvider provider;
 	private boolean isAverroes;
 
-	public SparkCallGraphTransformer(String benchmark, boolean isAverroes) {
+	public SparkCallGraphTransformer(String base, String benchmark, boolean isAverroes) {
 		this.isAverroes = isAverroes;
-		provider = new AverroesClassProvider(benchmark, this.isAverroes);
+		provider = new AverroesClassProvider(base, benchmark, this.isAverroes);
 	}
 
 	public CallGraph getProbeCallGraph() throws IOException {
