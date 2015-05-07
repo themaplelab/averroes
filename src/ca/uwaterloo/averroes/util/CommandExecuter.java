@@ -32,9 +32,9 @@ public class CommandExecuter {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	public static boolean runDoopAverroes(String doopHome, String benchmark) throws IOException, InterruptedException {
+	public static boolean runDoopAverroes(String doopHome, String base, String benchmark) throws IOException, InterruptedException {
 		String[] cmdArray = { FileUtils.doopAverroesRunExe(doopHome), "1.4", AverroesProperties.getMainClass(),
-				FileUtils.organizedApplicationJarFile(benchmark), FileUtils.placeholderLibraryJarFile(benchmark) };
+				FileUtils.organizedApplicationJarFile(base, benchmark), FileUtils.placeholderLibraryJarFile(base, benchmark) };
 		return run(cmdArray);
 	}
 	
@@ -45,9 +45,9 @@ public class CommandExecuter {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	public static boolean runDoop(String doopHome, String benchmark) throws IOException, InterruptedException {
+	public static boolean runDoop(String doopHome, String base, String benchmark) throws IOException, InterruptedException {
 		String[] cmdArray = { FileUtils.doopRunExe(doopHome), "1.4", AverroesProperties.getMainClass(),
-				FileUtils.organizedApplicationJarFile(benchmark), FileUtils.organizedLibraryJarFile(benchmark) };
+				FileUtils.organizedApplicationJarFile(base, benchmark), FileUtils.organizedLibraryJarFile(base, benchmark) };
 				//AverroesProperties.getInputJarFilesForSpark().trim(), AverroesProperties.getLibraryClassPath().trim() };
 		return run(cmdArray);
 	}

@@ -66,8 +66,8 @@ public class CallGraphFactory {
 	 * @return
 	 * @throws IOException
 	 */
-	public static CallGraph generateSparkCallGraph(String benchmark, boolean isAverroes) throws IOException {
-		probe.CallGraph spark = new SparkCallGraphTransformer(benchmark, isAverroes).getProbeCallGraph();
+	public static CallGraph generateSparkCallGraph(String base, String benchmark, boolean isAverroes) throws IOException {
+		probe.CallGraph spark = new SparkCallGraphTransformer(base, benchmark, isAverroes).getProbeCallGraph();
 		System.out.println("size of original spark is: " + spark.edges().size());
 		return SootCallGraphConverter.convert(spark, isAverroes ? CallGraphSource.SPARK_AVERROES : CallGraphSource.SPARK);
 	}
@@ -105,10 +105,10 @@ public class CallGraphFactory {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	public static CallGraph generateDoopWithAverroesCallGraph(String doopHome, String benchmark) throws IOException,
+	public static CallGraph generateDoopWithAverroesCallGraph(String doopHome, String base, String benchmark) throws IOException,
 			InterruptedException {
 		// 1. Run doop's analysis
-		CommandExecuter.runDoopAverroes(doopHome, benchmark);
+		CommandExecuter.runDoopAverroes(doopHome, base, benchmark);
 
 		// 2. Convert the Doop call graph
 		return DoopCallGraphConverter.convert(doopHome, CallGraphSource.DOOP_AVERROES);
@@ -123,10 +123,10 @@ public class CallGraphFactory {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	public static CallGraph generateDoopCallGraph(String doopHome, String benchmark) throws IOException,
+	public static CallGraph generateDoopCallGraph(String doopHome, String base, String benchmark) throws IOException,
 			InterruptedException {
 		// 1. Run doop's analysis
-		CommandExecuter.runDoop(doopHome, benchmark);
+		CommandExecuter.runDoop(doopHome, base, benchmark);
 
 		// 2. Convert the Doop call graph
 		return DoopCallGraphConverter.convert(doopHome, CallGraphSource.DOOP);
@@ -144,17 +144,17 @@ public class CallGraphFactory {
 	 * @throws IllegalArgumentException
 	 * @throws InvalidClassFileException
 	 */
-	public static probe.CallGraph generateWalaCallGraph(String benchmark, boolean isAve) throws IOException,
+	public static probe.CallGraph generateWalaCallGraph(String base, String benchmark, boolean isAve) throws IOException,
 			InterruptedException, ClassHierarchyException, IllegalArgumentException, CallGraphBuilderCancelException,
 			InvalidClassFileException {
 		// 1. build the call graph
-		String classpath = FileUtils.composeClassPath(FileUtils.organizedApplicationJarFile(benchmark),
-				FileUtils.organizedLibraryJarFile(benchmark));
+		String classpath = FileUtils.composeClassPath(FileUtils.organizedApplicationJarFile(base, benchmark),
+				FileUtils.organizedLibraryJarFile(base, benchmark));
 
 		String exclusionFile = CallGraphFactory.class.getClassLoader()
 				.getResource(CallGraphTestUtil.REGRESSION_EXCLUSIONS).getPath();
 
-		AnalysisScope scope = isAve ? makeAverroesAnalysisScope(benchmark, exclusionFile) : AnalysisScopeReader
+		AnalysisScope scope = isAve ? makeAverroesAnalysisScope(base, benchmark, exclusionFile) : AnalysisScopeReader
 				.makeJavaBinaryAnalysisScope(classpath, new File(exclusionFile));
 
 		ClassHierarchy cha = ClassHierarchy.make(scope);
@@ -195,7 +195,7 @@ public class CallGraphFactory {
 						| ZeroXInstanceKeys.SMUSH_THROWABLES);
 	}
 
-	public static AnalysisScope makeAverroesAnalysisScope(String benchmark, String exclusions) throws IOException,
+	public static AnalysisScope makeAverroesAnalysisScope(String base, String benchmark, String exclusions) throws IOException,
 			IllegalArgumentException, InvalidClassFileException {
 		AnalysisScope scope = AnalysisScope.createJavaAnalysisScope();
 
@@ -207,13 +207,13 @@ public class CallGraphFactory {
 
 		// Library stuff
 		scope.addToScope(ClassLoaderReference.Application,
-				new JarFileModule(new JarFile(new File(FileUtils.averroesLibraryClassJarFile(benchmark)))));
+				new JarFileModule(new JarFile(new File(FileUtils.averroesLibraryClassJarFile(base, benchmark)))));
 		scope.addToScope(ClassLoaderReference.Primordial,
-				new JarFileModule(new JarFile(new File(FileUtils.placeholderLibraryJarFile(benchmark)))));
+				new JarFileModule(new JarFile(new File(FileUtils.placeholderLibraryJarFile(base, benchmark)))));
 
 		// Application JAR
 		scope.addToScope(ClassLoaderReference.Application,
-				new JarFileModule(new JarFile(new File(FileUtils.organizedApplicationJarFile(benchmark)))));
+				new JarFileModule(new JarFile(new File(FileUtils.organizedApplicationJarFile(base, benchmark)))));
 
 		return scope;
 	}

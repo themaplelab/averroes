@@ -39,28 +39,25 @@ public class AverroesClassProvider implements ClassProvider {
 
 	private String benchmark;
 	private boolean isAve;
+	private String base;
 
 	/**
 	 * Construct a new class provider.
 	 */
-	public AverroesClassProvider(String benchmark) {
-		applicationClassNames = new HashSet<String>();
-		libraryClassNames = new HashSet<String>();
-		classes = new HashMap<String, Resource>();
-
-		this.benchmark = benchmark;
-		isAve = true;
+	public AverroesClassProvider(String base, String benchmark) {
+		this(base, benchmark, true);
 	}
 
 	/**
 	 * Construct a new class provider.
 	 */
-	public AverroesClassProvider(String benchmark, boolean isAve) {
+	public AverroesClassProvider(String base, String benchmark, boolean isAve) {
 		applicationClassNames = new HashSet<String>();
 		libraryClassNames = new HashSet<String>();
 		classes = new HashMap<String, Resource>();
 
 		this.benchmark = benchmark;
+		this.base = base;
 		this.isAve = isAve;
 	}
 
@@ -203,7 +200,7 @@ public class AverroesClassProvider implements ClassProvider {
 	 * @throws IOException
 	 */
 	private List<String> addApplicationArchive() throws IOException {
-		return addArchive(FileUtils.organizedApplicationJarFile(benchmark), true);
+		return addArchive(FileUtils.organizedApplicationJarFile(base, benchmark), true);
 	}
 
 	/**
@@ -214,11 +211,11 @@ public class AverroesClassProvider implements ClassProvider {
 	 */
 	private List<String> addLibraryArchive() throws IOException {
 		if (isAve) {
-			List<String> result = addArchive(FileUtils.placeholderLibraryJarFile(benchmark), false);
-			result.addAll(addArchive(FileUtils.averroesLibraryClassJarFile(benchmark), false));
+			List<String> result = addArchive(FileUtils.placeholderLibraryJarFile(base, benchmark), false);
+			result.addAll(addArchive(FileUtils.averroesLibraryClassJarFile(base, benchmark), false));
 			return result;
 		} else {
-			return addArchive(FileUtils.organizedLibraryJarFile(benchmark), false);
+			return addArchive(FileUtils.organizedLibraryJarFile(base, benchmark), false);
 		}
 	}
 

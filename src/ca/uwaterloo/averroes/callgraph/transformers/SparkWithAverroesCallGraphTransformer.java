@@ -23,8 +23,8 @@ import ca.uwaterloo.averroes.properties.AverroesProperties;
 public class SparkWithAverroesCallGraphTransformer {
 	private AverroesClassProvider provider;
 
-	public SparkWithAverroesCallGraphTransformer(String benchmark) {
-		provider = new AverroesClassProvider(benchmark);
+	public SparkWithAverroesCallGraphTransformer(String base, String benchmark) {
+		provider = new AverroesClassProvider(base, benchmark);
 	}
 
 	public probe.CallGraph run() throws IOException {

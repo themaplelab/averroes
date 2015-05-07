@@ -53,7 +53,7 @@ public final class AverroesProperties {
 
 	private static Properties properties = null;
 	private static List<String> dynamicClasses = null;
-	private static boolean isDisableReflection = false;
+	private static boolean disableTamiFlex = false;
 
 	private static boolean isProcessingAndroidApk = false;
 	private static ProcessManifest processManifest = null;
@@ -145,8 +145,8 @@ public final class AverroesProperties {
 	 */
 	public static void processArguments(String[] args) {
 		for (int i = 0; i < args.length; i++) {
-			if ("-disable-reflection".equals(args[i])) {
-				isDisableReflection = true;
+			if ("-disable-tamiflex".equals(args[i])) {
+				disableTamiFlex = true;
 			} else if ("-android".equals(args[i])) {
 				isProcessingAndroidApk = true;
 			} else {
@@ -156,12 +156,12 @@ public final class AverroesProperties {
 	}
 
 	/**
-	 * Is reflection support disabled or not.
+	 * Is tamiflex support disabled or not.
 	 * 
 	 * @return
 	 */
-	public static boolean isDisableReflection() {
-		return isDisableReflection;
+	public static boolean disableTamiFlex() {
+		return disableTamiFlex;
 	}
 
 	/**
@@ -432,17 +432,6 @@ public final class AverroesProperties {
 		String libJars = getLibraryClassPath().trim();
 		String rtJar = getJre().trim();
 		return inputJars + (libJars.length() > 0 ? File.pathSeparator + libJars : "") + File.pathSeparator + rtJar;
-	}
-
-	/**
-	 * Get the classpath of this program. That is a list of the input and library JAR files separated by
-	 * {@link File#pathSeparator}.
-	 * 
-	 * @return
-	 */
-	public static String getClasspath(String benchmark) {
-		return FileUtils.organizedApplicationJarFile(benchmark) + File.pathSeparator
-				+ FileUtils.organizedLibraryJarFile(benchmark);
 	}
 
 	/**

@@ -20,16 +20,17 @@ public class SparkCallGraphGenerator {
 		try {
 			// Generate the call graph
 			TimeUtils.reset();
-			if (args.length != 1) {
+			if (args.length != 2) {
 				usage();
-				throw new AverroesException("SparkAverroes expects exactly 1 argument.");
+				throw new AverroesException("SparkAverroes expects exactly 2 arguments.");
 			}
 
 			// Process the arguments
-			String benchmark = args[0];
+			String base = args[0];
+			String benchmark = args[1];
 			
 			FileUtils.createDirectory(AverroesProperties.getOutputDir());
-			CallGraph spark = CallGraphFactory.generateSparkCallGraph(benchmark, false);
+			CallGraph spark = CallGraphFactory.generateSparkCallGraph(base, benchmark, false);
 			System.out.println("Total time to finish: " + TimeUtils.elapsedTime());
 			new GXLWriter().write(spark, FileUtils.sparkCallGraphFile());
 

@@ -19,17 +19,18 @@ public class DoopWithAverroesCallGraphGenerator {
 	public static void main(String[] args) {
 		try {
 			TimeUtils.reset();
-			if (args.length != 2) {
+			if (args.length != 3) {
 				usage();
-				throw new AverroesException("DoopAverroes expects exactly 2 argument.");
+				throw new AverroesException("DoopAverroes expects exactly 3 arguments.");
 			}
 
 			// Process the arguments
 			String doopHome = args[0];
-			String benchmark = args[1];
+			String base = args[1];
+			String benchmark = args[2];
 
 			FileUtils.createDirectory(AverroesProperties.getOutputDir());
-			CallGraph doop = CallGraphFactory.generateDoopWithAverroesCallGraph(doopHome, benchmark);
+			CallGraph doop = CallGraphFactory.generateDoopWithAverroesCallGraph(doopHome, base, benchmark);
 			System.out.println("Total time to finish: " + TimeUtils.elapsedTime());
 			new GXLWriter().write(doop, FileUtils.doopAverroesCallGraphFile());
 

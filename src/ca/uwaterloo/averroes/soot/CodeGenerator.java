@@ -509,7 +509,7 @@ public class CodeGenerator {
 		handleArrayIndices();
 
 		// Create, reflectively, the application objects, and assign them to lpt
-		if (!AverroesProperties.isDisableReflection()) {
+		if (!AverroesProperties.disableTamiFlex()) {
 			createObjectsFromApplicationClassNames();
 		}
 
@@ -659,7 +659,7 @@ public class CodeGenerator {
 
 		// 3. The library can create application objects through
 		// Class.newInstance
-		if (!AverroesProperties.isDisableReflection()) {
+		if (!AverroesProperties.disableTamiFlex()) {
 			for (SootClass cls : getTamiFlexApplicationClassNewInstance()) {
 				doItAllBody.createObjectOfType(cls);
 			}
@@ -667,7 +667,7 @@ public class CodeGenerator {
 
 		// 4. The library can create application objects through
 		// Constructor.newInstance
-		if (!AverroesProperties.isDisableReflection()) {
+		if (!AverroesProperties.disableTamiFlex()) {
 			for (SootMethod init : getTamiFlexApplicationConstructorNewInstance()) {
 				doItAllBody.createObjectByCallingConstructor(init);
 			}
@@ -681,7 +681,7 @@ public class CodeGenerator {
 		// 6. The library could possibly create application objects whose class
 		// names are passed to it through
 		// calls to Class.forName
-		if (!AverroesProperties.isDisableReflection()) {
+		if (!AverroesProperties.disableTamiFlex()) {
 			for (SootClass cls : getTamiFlexApplicationClassForName()) {
 				doItAllBody.createObjectOfType(cls);
 			}
@@ -699,7 +699,7 @@ public class CodeGenerator {
 		result.addAll(Hierarchy.v().getLibraryArrayTypeReturns());
 
 		// Only added if reflection support is enabled
-		if (!AverroesProperties.isDisableReflection()) {
+		if (!AverroesProperties.disableTamiFlex()) {
 			result.addAll(getTamiFlexApplicationArrayNewInstance());
 		}
 
