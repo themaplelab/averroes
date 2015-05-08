@@ -6,9 +6,9 @@ import java.util.zip.GZIPOutputStream;
 import probe.CallGraph;
 import probe.TextWriter;
 import ca.uwaterloo.averroes.callgraph.CallGraphFactory;
-import ca.uwaterloo.averroes.callgraph.converters.ProbeCallGraphCollapser;
 import ca.uwaterloo.averroes.exceptions.AverroesException;
 import ca.uwaterloo.averroes.properties.AverroesProperties;
+import ca.uwaterloo.averroes.util.ProbeUtils;
 import ca.uwaterloo.averroes.util.TimeUtils;
 import ca.uwaterloo.averroes.util.io.FileUtils;
 
@@ -39,7 +39,7 @@ public class SparkCallGraphGenerator {
 			System.out.println("Total time to finish: " + TimeUtils.elapsedTime());
 
 			// collapse and write the call graph
-			probe.CallGraph collapsed = ProbeCallGraphCollapser.collapse(spark);
+			probe.CallGraph collapsed = ProbeUtils.collapse(spark);
 			new TextWriter().write(collapsed,
 					new GZIPOutputStream(new FileOutputStream(FileUtils.sparkCallGraphGzipFile())));
 

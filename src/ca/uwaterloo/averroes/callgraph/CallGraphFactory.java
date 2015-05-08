@@ -10,8 +10,6 @@ import java.util.jar.JarFile;
 import org.xmlpull.v1.XmlPullParserException;
 
 import probe.CallGraph;
-import ca.uwaterloo.averroes.callgraph.converters.DoopCallGraphConverter;
-import ca.uwaterloo.averroes.callgraph.converters.ProbeCallGraphCollapser;
 import ca.uwaterloo.averroes.callgraph.transformers.AndroidCallGraphTransformer;
 import ca.uwaterloo.averroes.callgraph.transformers.AndroidWithAverroesCallGraphTransformer;
 import ca.uwaterloo.averroes.callgraph.transformers.SparkCallGraphTransformer;
@@ -90,7 +88,7 @@ public class CallGraphFactory {
 		CommandExecuter.runDoop(doopHome, base, benchmark, isAverroes);
 
 		// 2. Convert the Doop call graph
-		return DoopCallGraphConverter.retrieve(doopHome);
+		return ProbeUtils.convertDoopCallGraph(doopHome);
 	}
 
 	/**
@@ -135,7 +133,7 @@ public class CallGraphFactory {
 		System.out.println("[Wala] Solution found in " + TimeUtils.elapsedSplitTime() + " seconds.");
 
 		// 2. Convert the Wala call graph to probe and collapse it
-		return ProbeUtils.getProbeCallGraph(cg);
+		return ProbeUtils.convertWalaCallGraph(cg);
 		// probe.CallGraph wala = ProbeUtils.getProbeCallGraph(cg);
 		// return ProbeCallGraphCollapser.collapse(wala, isAve ?
 		// CallGraphSource.WALA_AVERROES : CallGraphSource.WALA);
@@ -235,7 +233,7 @@ public class CallGraphFactory {
 	 */
 	public static probe.CallGraph generateAndroidCallGraph() throws IOException, XmlPullParserException {
 		probe.CallGraph android = new AndroidCallGraphTransformer().run();
-		return ProbeCallGraphCollapser.collapse(android);
+		return ProbeUtils.collapse(android);
 	}
 
 	/**
@@ -247,7 +245,7 @@ public class CallGraphFactory {
 	 */
 	public static probe.CallGraph generateAndroidWithAverroesCallGraph(String benchmark) throws IOException {
 		probe.CallGraph android = AndroidWithAverroesCallGraphTransformer.run(benchmark);
-		return ProbeCallGraphCollapser.collapse(android);
+		return ProbeUtils.collapse(android);
 	}
 
 }

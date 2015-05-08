@@ -2,19 +2,28 @@ package ca.uwaterloo.averroes.util;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import org.apache.bcel.classfile.Utility;
+import org.deri.iris.storage.IRelation;
 
 import probe.CallEdge;
 import probe.CallGraph;
 import probe.ObjectManager;
 import probe.ProbeClass;
 import probe.ProbeMethod;
+import probe.TextWriter;
+import soot.SootMethod;
+import ca.uwaterloo.averroes.callgraph.CallGraphSource;
+import ca.uwaterloo.averroes.callgraph.gxl.GXLReader;
+import ca.uwaterloo.averroes.properties.AverroesProperties;
 import ca.uwaterloo.averroes.soot.Names;
 
 import com.ibm.wala.classLoader.IMethod;
@@ -28,6 +37,208 @@ import com.ibm.wala.ipa.callgraph.impl.BasicCallGraph;
  * 
  */
 public class ProbeUtils {
+
+	public static final ProbeMethod LIBRARY_BLOB = ObjectManager.v().getMethod(
+			ObjectManager.v().getClass(Names.AVERROES_LIBRARY_CLASS), Names.BLOB, "");
+
+	/**
+	 * Convert the generated Doop call graph to summarized Probe version.
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public static CallGraph convertDoopCallGraph(String doopHome) throws IOException {
+		CallGraph probe = new CallGraph();
+		IRelation edges = ResultImporter.getDoopCallGraphEdges(doopHome);
+		IRelation entryPoints = ResultImporter.getDoopEntryPoints(doopHome);
+
+		// Create the graph entry points
+		for (int i = 0; i < entryPoints.size(); i++) {
+			String methodSignature = (String) entryPoints.get(i).get(0).getValue();
+			ProbeMethod method = createProbeMethodBySignature(methodSignature);
+			probe.entryPoints().add(method);
+		}
+
+		// Create the edges according to the app_includes parameter
+		for (int i = 0; i < edges.size(); i++) {
+			String srcName = (String) edges.get(i).get(0).getValue();
+			String dstName = (String) edges.get(i).get(2).getValue();
+
+			ProbeMethod src = createProbeMethodBySignature(srcName);
+			ProbeMethod dst = createProbeMethodBySignature(dstName);
+
+			boolean isSrcApp = AverroesProperties.isApplicationMethod(src);
+			boolean isDstApp = AverroesProperties.isApplicationMethod(dst);
+
+			if (isSrcApp && isDstApp) {
+				probe.edges().add(new CallEdge(src, dst));
+			} else if (isSrcApp && !isDstApp) {
+				probe.edges().add(new CallEdge(src, LIBRARY_BLOB));
+			} else if (!isSrcApp && isDstApp) {
+				probe.edges().add(new CallEdge(LIBRARY_BLOB, dst));
+			}
+		}
+
+		return probe;
+	}
+
+	/**
+	 * Convert a WALA call graph to a probe call graph.
+	 * 
+	 * @param walaCallGraph
+	 * @return
+	 */
+	public static CallGraph convertWalaCallGraph(BasicCallGraph<?> walaCallGraph) {
+		CallGraph probeGraph = new CallGraph();
+
+		// Get the entry points
+		for (CGNode entrypoint : walaCallGraph.getEntrypointNodes()) {
+			probeGraph.entryPoints().add(ProbeUtils.probeMethod(entrypoint));
+		}
+
+		// Edges from fake root clinit node are also entry points
+		CGNode root = walaCallGraph.getFakeRootNode();
+		CGNode clinit = walaCallGraph.getFakeWorldClinitNode();
+		Iterator<CGNode> moreEntryPoints = walaCallGraph.getSuccNodes(clinit);
+		while (moreEntryPoints.hasNext()) {
+			CGNode node = moreEntryPoints.next();
+			ProbeMethod dst = ProbeUtils.probeMethod(node);
+			probeGraph.entryPoints().add(dst);
+		}
+
+		// Get the edges
+		for (CGNode node : walaCallGraph) {
+			// Ignore edges from fakeRootNode, they have already been added as
+			// entry points.
+			// Also ignore edges from fakeWorldClinit
+			// if(node.getMethod().getName().toString().equals("doItAll")) {
+			// System.out.println("====================");
+			// System.out.println(node);
+			// System.out.println(node.getIR() + "\n\n");
+			// }
+			if (!node.equals(root) && !node.equals(clinit)) {
+				Iterator<CGNode> successors = walaCallGraph.getSuccNodes(node);
+				ProbeMethod src = ProbeUtils.probeMethod(node);
+
+				while (successors.hasNext()) {
+					CGNode succ = successors.next();
+					// if(node.getMethod().getName().toString().equals("doItAll"))
+					// {
+					// System.out.println(succ);
+					// }
+					ProbeMethod dst = ProbeUtils.probeMethod(succ);
+					probeGraph.edges().add(new CallEdge(src, dst));
+				}
+			}
+		}
+
+		return probeGraph;
+	}
+
+	/**
+	 * Convert the report produced by the WALA dynamic call graph generator to a
+	 * probe call graph.
+	 * 
+	 * @param dynamicCallGraphReport
+	 * @return
+	 * @throws IOException
+	 */
+	public static CallGraph convertWalaDynamicCallGraph(String dynamicCGFile) throws IOException {
+		BufferedReader dynamicEdgesFile = new BufferedReader(new InputStreamReader(new GZIPInputStream(
+				new FileInputStream(dynamicCGFile))));
+		CallGraph probecg = new CallGraph();
+		String line;
+		while ((line = dynamicEdgesFile.readLine()) != null) {
+			StringTokenizer edge = new StringTokenizer(line, "\t");
+			String callerClass = edge.nextToken();
+
+			// Lines that start with "root" are entry points
+			if ("root".equals(callerClass)) {
+				String cls = edge.nextToken().replaceAll("/", ".");
+				String subSig = edge.nextToken();
+				probecg.entryPoints().add(probeMethod(cls, subSig));
+			} else { // a normal edge
+				String callerSubSig = edge.nextToken();
+				String calleeClass = edge.nextToken().replaceAll("/", ".");
+				String calleeSubSig = edge.nextToken();
+				callerClass = callerClass.replaceAll("/", ".");
+
+				ProbeMethod src = probeMethod(callerClass, callerSubSig);
+				ProbeMethod dst = probeMethod(calleeClass, calleeSubSig);
+				probecg.edges().add(new CallEdge(src, dst));
+			}
+
+		}
+
+		dynamicEdgesFile.close();
+
+		return probecg;
+	}
+	
+	/**
+	 * Convert from the Averroes probe format to the standard probe format.
+	 * 
+	 * @param aveCallGraph
+	 * @return
+	 */
+	public static CallGraph collapse(ca.uwaterloo.averroes.callgraph.CallGraph aveCallGraph) {
+		CallGraph result = new CallGraph();
+
+		// Add the entry points
+		aveCallGraph.entryPoints().forEach(entry -> result.entryPoints().add(entry));
+
+		// Add the edges appropriately
+		aveCallGraph.appToAppEdges().forEach(edge -> result.edges().add(edge));
+		aveCallGraph.appToLibEdges().forEach(src -> result.edges().add(new CallEdge(src, LIBRARY_BLOB)));
+		aveCallGraph.libToAppEdges().forEach(dst -> result.edges().add(new CallEdge(LIBRARY_BLOB, dst)));
+
+		return result;
+	}
+
+	/**
+	 * Collapse the given probe call graph to an averroes call graph that
+	 * summarizes the library in one blob.
+	 * 
+	 * @param probe
+	 * @return
+	 */
+	public static CallGraph collapse(CallGraph probe) {
+		CallGraph result = new CallGraph();
+
+		// Add the entry points
+		probe.entryPoints().forEach(entry -> result.entryPoints().add(entry));
+
+		// Getting the correct placement for each edge
+		// Note: If both src and dst of an edge are in the library, ignore it.
+		for (CallEdge edge : probe.edges()) {
+			ProbeMethod src = edge.src();
+			ProbeMethod dst = edge.dst();
+
+			/*
+			 * We don't care about the following edges (primarily used for
+			 * converting dynamic call graphs) 1) edges to <clinit> methods 2)
+			 * edges to java.lang.ClassLoader:
+			 * loadClassInternal(Ljava/lang/String;) 3) edges to
+			 * java.lang.ClassLoader:
+			 * checkPackageAccess(Ljava/lang/Class;Ljava/security
+			 * /ProtectionDomain;)
+			 */
+			if (!isClinit(dst) && !isLoadClassInternal(dst) && !isCheckPackageAccess(dst)) {
+				boolean isSrcApp = AverroesProperties.isApplicationMethod(src);
+				boolean isDstApp = AverroesProperties.isApplicationMethod(dst);
+
+				if (isSrcApp && isDstApp) {
+					result.edges().add(edge);
+				} else if (isSrcApp && !isDstApp) {
+					result.edges().add(new CallEdge(src, LIBRARY_BLOB));
+				} else if (!isSrcApp && isDstApp) {
+					result.edges().add(new CallEdge(LIBRARY_BLOB, dst));
+				}
+			}
+		}
+
+		return result;
+	}
 
 	/**
 	 * Create a probe method given the bytecode signature of the method.
@@ -242,100 +453,32 @@ public class ProbeUtils {
 		return ObjectManager.v().getMethod(cls, name, descriptor);
 	}
 
-	/**
-	 * Convert a WALA call graph to a probe call graph.
-	 * 
-	 * @param walaCallGraph
-	 * @return
-	 */
-	public static CallGraph getProbeCallGraph(BasicCallGraph<?> walaCallGraph) {
-		CallGraph probeGraph = new CallGraph();
-
-		// Get the entry points
-		for (CGNode entrypoint : walaCallGraph.getEntrypointNodes()) {
-			probeGraph.entryPoints().add(ProbeUtils.probeMethod(entrypoint));
-		}
-
-		// Edges from fake root clinit node are also entry points
-		CGNode root = walaCallGraph.getFakeRootNode();
-		CGNode clinit = walaCallGraph.getFakeWorldClinitNode();
-		Iterator<CGNode> moreEntryPoints = walaCallGraph.getSuccNodes(clinit);
-		while (moreEntryPoints.hasNext()) {
-			CGNode node = moreEntryPoints.next();
-			ProbeMethod dst = ProbeUtils.probeMethod(node);
-			probeGraph.entryPoints().add(dst);
-		}
-
-		// Get the edges
-		for (CGNode node : walaCallGraph) {
-			// Ignore edges from fakeRootNode, they have already been added as
-			// entry points.
-			// Also ignore edges from fakeWorldClinit
-			// if(node.getMethod().getName().toString().equals("doItAll")) {
-			// System.out.println("====================");
-			// System.out.println(node);
-			// System.out.println(node.getIR() + "\n\n");
-			// }
-			if (!node.equals(root) && !node.equals(clinit)) {
-				Iterator<CGNode> successors = walaCallGraph.getSuccNodes(node);
-				ProbeMethod src = ProbeUtils.probeMethod(node);
-
-				while (successors.hasNext()) {
-					CGNode succ = successors.next();
-					// if(node.getMethod().getName().toString().equals("doItAll"))
-					// {
-					// System.out.println(succ);
-					// }
-					ProbeMethod dst = ProbeUtils.probeMethod(succ);
-					probeGraph.edges().add(new CallEdge(src, dst));
-				}
-			}
-		}
-
-		return probeGraph;
+	public static boolean isClinit(ProbeMethod method) {
+		return method.name().equalsIgnoreCase(SootMethod.staticInitializerName);
 	}
 
-	/**
-	 * Convert the report produced by the WALA dynamic call graph generator to a
-	 * probe call graph.
-	 * 
-	 * @param dynamicCallGraphReport
-	 * @return
-	 * @throws IOException
-	 */
-	public static CallGraph getProbeCallGraph(String dynamicCGFile) throws IOException {
-		BufferedReader dynamicEdgesFile = new BufferedReader(new InputStreamReader(new GZIPInputStream(
-				new FileInputStream(dynamicCGFile))));
-		CallGraph probecg = new CallGraph();
-		String line;
-		while ((line = dynamicEdgesFile.readLine()) != null) {
-			StringTokenizer edge = new StringTokenizer(line, "\t");
-			String callerClass = edge.nextToken();
-
-			// Lines that start with "root" are entry points
-			if ("root".equals(callerClass)) {
-				String cls = edge.nextToken().replaceAll("/", ".");
-				String subSig = edge.nextToken();
-				probecg.entryPoints().add(probeMethod(cls, subSig));
-			} else { // a normal edge
-				String callerSubSig = edge.nextToken();
-				String calleeClass = edge.nextToken().replaceAll("/", ".");
-				String calleeSubSig = edge.nextToken();
-				callerClass = callerClass.replaceAll("/", ".");
-
-				ProbeMethod src = probeMethod(callerClass, callerSubSig);
-				ProbeMethod dst = probeMethod(calleeClass, calleeSubSig);
-				probecg.edges().add(new CallEdge(src, dst));
-			}
-
-		}
-
-		dynamicEdgesFile.close();
-
-		return probecg;
+	public static boolean isLoadClassInternal(ProbeMethod method) {
+		return method.toString().equalsIgnoreCase("java.lang.ClassLoader: loadClassInternal(Ljava/lang/String;)");
 	}
 
-	public static final ProbeMethod LIBRARY_BLOB = ObjectManager.v().getMethod(
-			ObjectManager.v().getClass(Names.AVERROES_LIBRARY_CLASS), Names.BLOB, "");
+	public static boolean isCheckPackageAccess(ProbeMethod method) {
+		return method.toString().equalsIgnoreCase(
+				"java.lang.ClassLoader: checkPackageAccess(Ljava/lang/Class;Ljava/security/ProtectionDomain;)");
+	}
 
+	public static void main(String[] args) {
+		try {
+			ca.uwaterloo.averroes.callgraph.CallGraph aveCallGraph = new GXLReader().readCallGraph(new FileInputStream(
+					args[0]), CallGraphSource.DUMMY);
+			CallGraph probe = collapse(aveCallGraph);
+			new TextWriter().write(probe,
+					new GZIPOutputStream(new FileOutputStream(args[0].replace(".gxl", ".txt.gzip"))));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }
