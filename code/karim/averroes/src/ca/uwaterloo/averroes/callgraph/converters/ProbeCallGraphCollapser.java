@@ -8,13 +8,12 @@ import java.util.zip.GZIPOutputStream;
 
 import probe.CallEdge;
 import probe.CallGraph;
-import probe.ObjectManager;
 import probe.ProbeMethod;
 import probe.TextWriter;
 import ca.uwaterloo.averroes.callgraph.CallGraphSource;
 import ca.uwaterloo.averroes.callgraph.gxl.GXLReader;
 import ca.uwaterloo.averroes.properties.AverroesProperties;
-import ca.uwaterloo.averroes.soot.Names;
+import ca.uwaterloo.averroes.util.ProbeUtils;
 
 /**
  * A converter that transforms a probe call graph to an application-only call
@@ -24,11 +23,9 @@ import ca.uwaterloo.averroes.soot.Names;
  * 
  */
 public class ProbeCallGraphCollapser {
-	public static final ProbeMethod LIBRARY_BLOB = ObjectManager.v().getMethod(
-			ObjectManager.v().getClass(Names.AVERROES_LIBRARY_CLASS), Names.BLOB, "");
-
 	/**
-	 * Do the conversion
+	 * Collapse the given probe call graph to an averroes call graph that
+	 * summarizes the library in one blob.
 	 * 
 	 * @param probeCallGraph
 	 * @return
@@ -61,9 +58,9 @@ public class ProbeCallGraphCollapser {
 				if (isSrcApp && isDstApp) {
 					result.edges().add(edge);
 				} else if (isSrcApp && !isDstApp) {
-					result.edges().add(new CallEdge(src, LIBRARY_BLOB));
+					result.edges().add(new CallEdge(src, ProbeUtils.LIBRARY_BLOB));
 				} else if (!isSrcApp && isDstApp) {
-					result.edges().add(new CallEdge(LIBRARY_BLOB, dst));
+					result.edges().add(new CallEdge(ProbeUtils.LIBRARY_BLOB, dst));
 				}
 			}
 		}
@@ -85,8 +82,8 @@ public class ProbeCallGraphCollapser {
 
 		// Add the edges appropriately
 		aveCallGraph.appToAppEdges().forEach(edge -> result.edges().add(edge));
-		aveCallGraph.appToLibEdges().forEach(src -> result.edges().add(new CallEdge(src, LIBRARY_BLOB)));
-		aveCallGraph.libToAppEdges().forEach(dst -> result.edges().add(new CallEdge(LIBRARY_BLOB, dst)));
+		aveCallGraph.appToLibEdges().forEach(src -> result.edges().add(new CallEdge(src, ProbeUtils.LIBRARY_BLOB)));
+		aveCallGraph.libToAppEdges().forEach(dst -> result.edges().add(new CallEdge(ProbeUtils.LIBRARY_BLOB, dst)));
 
 		return result;
 	}

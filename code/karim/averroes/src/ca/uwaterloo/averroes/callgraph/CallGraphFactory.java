@@ -9,9 +9,9 @@ import java.util.jar.JarFile;
 
 import org.xmlpull.v1.XmlPullParserException;
 
+import probe.CallGraph;
 import ca.uwaterloo.averroes.callgraph.converters.DoopCallGraphConverter;
 import ca.uwaterloo.averroes.callgraph.converters.ProbeCallGraphCollapser;
-import ca.uwaterloo.averroes.callgraph.converters.SootCallGraphConverter;
 import ca.uwaterloo.averroes.callgraph.transformers.AndroidCallGraphTransformer;
 import ca.uwaterloo.averroes.callgraph.transformers.AndroidWithAverroesCallGraphTransformer;
 import ca.uwaterloo.averroes.callgraph.transformers.SparkCallGraphTransformer;
@@ -66,34 +66,13 @@ public class CallGraphFactory {
 	 * @return
 	 * @throws IOException
 	 */
-	public static CallGraph generateSparkCallGraph(String base, String benchmark, boolean isAverroes) throws IOException {
-		probe.CallGraph spark = new SparkCallGraphTransformer(base, benchmark, isAverroes).getProbeCallGraph();
+	public static CallGraph generateSparkCallGraph(String base, String benchmark, boolean isAverroes)
+			throws IOException {
+		CallGraph spark = new SparkCallGraphTransformer(base, benchmark, isAverroes).getProbeCallGraph();
 		System.out.println("size of original spark is: " + spark.edges().size());
-		return SootCallGraphConverter.convert(spark, isAverroes ? CallGraphSource.SPARK_AVERROES : CallGraphSource.SPARK);
-	}
-
-	/**
-	 * Generate the call graph for an Android apk.
-	 * 
-	 * @return
-	 * @throws IOException
-	 * @throws XmlPullParserException
-	 */
-	public static probe.CallGraph generateAndroidCallGraph() throws IOException, XmlPullParserException {
-		probe.CallGraph android = new AndroidCallGraphTransformer().run();
-		return ProbeCallGraphCollapser.collapse(android);
-	}
-
-	/**
-	 * Generate the call graph for an Android apk using the Averroes placeholder
-	 * library.
-	 * 
-	 * @return
-	 * @throws IOException
-	 */
-	public static probe.CallGraph generateAndroidWithAverroesCallGraph(String benchmark) throws IOException {
-		probe.CallGraph android = AndroidWithAverroesCallGraphTransformer.run(benchmark);
-		return ProbeCallGraphCollapser.collapse(android);
+		return spark;
+		// return SootCallGraphConverter.convert(spark, isAverroes ?
+		// CallGraphSource.SPARK_AVERROES : CallGraphSource.SPARK);
 	}
 
 	/**
@@ -105,35 +84,17 @@ public class CallGraphFactory {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	public static CallGraph generateDoopWithAverroesCallGraph(String doopHome, String base, String benchmark) throws IOException,
-			InterruptedException {
+	public static CallGraph generateDoopCallGraph(String doopHome, String base, String benchmark, boolean isAverroes)
+			throws IOException, InterruptedException {
 		// 1. Run doop's analysis
-		CommandExecuter.runDoopAverroes(doopHome, base, benchmark);
+		CommandExecuter.runDoop(doopHome, base, benchmark, isAverroes);
 
 		// 2. Convert the Doop call graph
-		return DoopCallGraphConverter.convert(doopHome, CallGraphSource.DOOP_AVERROES);
+		return DoopCallGraphConverter.retrieve(doopHome);
 	}
 
 	/**
-	 * Generate the call graph for Doop.
-	 * 
-	 * @param doopHome
-	 * @param benchmark
-	 * @return
-	 * @throws IOException
-	 * @throws InterruptedException
-	 */
-	public static CallGraph generateDoopCallGraph(String doopHome, String base, String benchmark) throws IOException,
-			InterruptedException {
-		// 1. Run doop's analysis
-		CommandExecuter.runDoop(doopHome, base, benchmark);
-
-		// 2. Convert the Doop call graph
-		return DoopCallGraphConverter.convert(doopHome, CallGraphSource.DOOP);
-	}
-
-	/**
-	 * Generate the call graph for WalaAverroes.
+	 * Generate the call graph for Wala.
 	 * 
 	 * @param benchmark
 	 * @return
@@ -144,9 +105,9 @@ public class CallGraphFactory {
 	 * @throws IllegalArgumentException
 	 * @throws InvalidClassFileException
 	 */
-	public static probe.CallGraph generateWalaCallGraph(String base, String benchmark, boolean isAve) throws IOException,
-			InterruptedException, ClassHierarchyException, IllegalArgumentException, CallGraphBuilderCancelException,
-			InvalidClassFileException {
+	public static probe.CallGraph generateWalaCallGraph(String base, String benchmark, boolean isAve)
+			throws IOException, InterruptedException, ClassHierarchyException, IllegalArgumentException,
+			CallGraphBuilderCancelException, InvalidClassFileException {
 		// 1. build the call graph
 		String classpath = FileUtils.composeClassPath(FileUtils.organizedApplicationJarFile(base, benchmark),
 				FileUtils.organizedLibraryJarFile(base, benchmark));
@@ -195,8 +156,8 @@ public class CallGraphFactory {
 						| ZeroXInstanceKeys.SMUSH_THROWABLES);
 	}
 
-	public static AnalysisScope makeAverroesAnalysisScope(String base, String benchmark, String exclusions) throws IOException,
-			IllegalArgumentException, InvalidClassFileException {
+	public static AnalysisScope makeAverroesAnalysisScope(String base, String benchmark, String exclusions)
+			throws IOException, IllegalArgumentException, InvalidClassFileException {
 		AnalysisScope scope = AnalysisScope.createJavaAnalysisScope();
 
 		// Exclusion file
@@ -248,7 +209,7 @@ public class CallGraphFactory {
 							MethodReference mainRef = MethodReference.findOrCreate(T, mainMethod,
 									Descriptor.findOrCreateUTF8("([Ljava/lang/String;)V"));
 							return new DefaultEntrypoint(mainRef, cha);
-						} else if(isAve && !clinitTaken){
+						} else if (isAve && !clinitTaken) {
 							clinitTaken = true;
 							TypeReference T = TypeReference.findOrCreate(loaderRef,
 									TypeName.string2TypeName("Lca/uwaterloo/averroes/Library"));
@@ -264,4 +225,29 @@ public class CallGraphFactory {
 		};
 
 	}
+
+	/**
+	 * Generate the call graph for an Android apk.
+	 * 
+	 * @return
+	 * @throws IOException
+	 * @throws XmlPullParserException
+	 */
+	public static probe.CallGraph generateAndroidCallGraph() throws IOException, XmlPullParserException {
+		probe.CallGraph android = new AndroidCallGraphTransformer().run();
+		return ProbeCallGraphCollapser.collapse(android);
+	}
+
+	/**
+	 * Generate the call graph for an Android apk using the Averroes placeholder
+	 * library.
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public static probe.CallGraph generateAndroidWithAverroesCallGraph(String benchmark) throws IOException {
+		probe.CallGraph android = AndroidWithAverroesCallGraphTransformer.run(benchmark);
+		return ProbeCallGraphCollapser.collapse(android);
+	}
+
 }

@@ -15,6 +15,7 @@ import probe.CallGraph;
 import probe.ObjectManager;
 import probe.ProbeClass;
 import probe.ProbeMethod;
+import ca.uwaterloo.averroes.soot.Names;
 
 import com.ibm.wala.classLoader.IMethod;
 import com.ibm.wala.ipa.callgraph.CGNode;
@@ -34,8 +35,7 @@ public class ProbeUtils {
 	 * @param methodSignature
 	 * @return
 	 */
-	public static ProbeMethod createProbeMethodBySignature(
-			String methodSignature) {
+	public static ProbeMethod createProbeMethodBySignature(String methodSignature) {
 		String methodDeclaringClass = sootSignatureToMethodDeclaringClass(methodSignature);
 		String name = sootSignatureToMethodName(methodSignature);
 		String bcSig = sootSignatureToMethodArguments(methodSignature, true);
@@ -52,8 +52,7 @@ public class ProbeUtils {
 	 * @param isInBCFormat
 	 * @return
 	 */
-	public static String sootSignatureToMethodArguments(String sootSignature,
-			boolean isInBCFormat) {
+	public static String sootSignatureToMethodArguments(String sootSignature, boolean isInBCFormat) {
 		String sub = signatureToSubsignature(sootSignature);
 		String args = sub.substring(sub.indexOf('(') + 1, sub.indexOf(')'));
 
@@ -78,8 +77,7 @@ public class ProbeUtils {
 	 * @param isInBCFormat
 	 * @return
 	 */
-	public static String sootSignatureToMethodReturnType(String sootSignature,
-			boolean isInBCFormat) {
+	public static String sootSignatureToMethodReturnType(String sootSignature, boolean isInBCFormat) {
 		String sub = signatureToSubsignature(sootSignature);
 		String type = sub.substring(0, sub.indexOf(" "));
 
@@ -94,8 +92,7 @@ public class ProbeUtils {
 	 * @param sootSignature
 	 * @return
 	 */
-	public static String sootSignatureToMethodDeclaringClass(
-			String sootSignature) {
+	public static String sootSignatureToMethodDeclaringClass(String sootSignature) {
 		if (sootSignature.charAt(0) != '<') {
 			throw new RuntimeException("oops " + sootSignature);
 		}
@@ -251,9 +248,8 @@ public class ProbeUtils {
 	 * @param walaCallGraph
 	 * @return
 	 */
-	public static probe.CallGraph getProbeCallGraph(
-			BasicCallGraph<?> walaCallGraph) {
-		probe.CallGraph probeGraph = new probe.CallGraph();
+	public static CallGraph getProbeCallGraph(BasicCallGraph<?> walaCallGraph) {
+		CallGraph probeGraph = new CallGraph();
 
 		// Get the entry points
 		for (CGNode entrypoint : walaCallGraph.getEntrypointNodes()) {
@@ -275,20 +271,21 @@ public class ProbeUtils {
 			// Ignore edges from fakeRootNode, they have already been added as
 			// entry points.
 			// Also ignore edges from fakeWorldClinit
-//			if(node.getMethod().getName().toString().equals("doItAll")) {
-//			System.out.println("====================");
-//			System.out.println(node);
-//				System.out.println(node.getIR() + "\n\n");
-//			}
+			// if(node.getMethod().getName().toString().equals("doItAll")) {
+			// System.out.println("====================");
+			// System.out.println(node);
+			// System.out.println(node.getIR() + "\n\n");
+			// }
 			if (!node.equals(root) && !node.equals(clinit)) {
 				Iterator<CGNode> successors = walaCallGraph.getSuccNodes(node);
 				ProbeMethod src = ProbeUtils.probeMethod(node);
 
 				while (successors.hasNext()) {
 					CGNode succ = successors.next();
-//					if(node.getMethod().getName().toString().equals("doItAll")) {
-//						System.out.println(succ);
-//					}
+					// if(node.getMethod().getName().toString().equals("doItAll"))
+					// {
+					// System.out.println(succ);
+					// }
 					ProbeMethod dst = ProbeUtils.probeMethod(succ);
 					probeGraph.edges().add(new CallEdge(src, dst));
 				}
@@ -306,12 +303,10 @@ public class ProbeUtils {
 	 * @return
 	 * @throws IOException
 	 */
-	public static probe.CallGraph getProbeCallGraph(String dynamicCGFile)
-			throws IOException {
-		BufferedReader dynamicEdgesFile = new BufferedReader(
-				new InputStreamReader(new GZIPInputStream(new FileInputStream(
-						dynamicCGFile))));
-		probe.CallGraph probecg = new CallGraph();
+	public static CallGraph getProbeCallGraph(String dynamicCGFile) throws IOException {
+		BufferedReader dynamicEdgesFile = new BufferedReader(new InputStreamReader(new GZIPInputStream(
+				new FileInputStream(dynamicCGFile))));
+		CallGraph probecg = new CallGraph();
 		String line;
 		while ((line = dynamicEdgesFile.readLine()) != null) {
 			StringTokenizer edge = new StringTokenizer(line, "\t");
@@ -339,5 +334,8 @@ public class ProbeUtils {
 
 		return probecg;
 	}
+
+	public static final ProbeMethod LIBRARY_BLOB = ObjectManager.v().getMethod(
+			ObjectManager.v().getClass(Names.AVERROES_LIBRARY_CLASS), Names.BLOB, "");
 
 }
