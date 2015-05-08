@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="create_run_jar" name="Create Runnable Jar for Spark">
+<project default="create_run_jar" name="Create Runnable Jar for CallGraphGenerator">
 	<!--this file was created by Eclipse Runnable JAR Export Wizard-->
 	<!--ANT 1.7 is required                                        -->
 	<target name="create_run_jar">
@@ -7,9 +7,9 @@
 			var logger = project.getBuildListeners( ).firstElement( );
 			logger.setMessageOutputLevel( 0 );
     	</script>
-		<jar destfile="/Users/karim/Documents/workspace/averroes/jar/spark.jar" filesetmanifest="mergewithoutmain" duplicate="preserve">
+		<jar destfile="/Users/karim/Documents/workspace/averroes/jar/tool.jar" filesetmanifest="mergewithoutmain" duplicate="preserve">
 			<manifest>
-				<attribute name="Main-Class" value="ca.uwaterloo.averroes.callgraph.drivers.SparkCallGraphGenerator" />
+				<attribute name="Main-Class" value="ca.uwaterloo.averroes.callgraph.drivers.CallGraphGenerator" />
 				<attribute name="Class-Path" value="." />
 			</manifest>
 			<fileset dir="/Users/karim/Documents/workspace/averroes/bin" />

@@ -98,7 +98,8 @@ public class FileUtils {
 	 * The difference between File.delete() and this method are:
 	 * <ul>
 	 * <li>A directory to be deleted does not have to be empty.</li>
-	 * <li>You get exceptions when a file or directory cannot be deleted. (java.io.File methods returns a boolean)</li>
+	 * <li>You get exceptions when a file or directory cannot be deleted.
+	 * (java.io.File methods returns a boolean)</li>
 	 * </ul>
 	 * 
 	 * @param file
@@ -137,9 +138,10 @@ public class FileUtils {
 	}
 
 	/**
-	 * Make a directory, including any necessary but nonexistent parent directories. If a file already exists with
-	 * specified name but it is not a directory then an IOException is thrown. If the directory cannot be created (or
-	 * does not already exist) then an IOException is thrown.
+	 * Make a directory, including any necessary but nonexistent parent
+	 * directories. If a file already exists with specified name but it is not a
+	 * directory then an IOException is thrown. If the directory cannot be
+	 * created (or does not already exist) then an IOException is thrown.
 	 * 
 	 * @param directory
 	 * @throws NullPointerException
@@ -165,7 +167,8 @@ public class FileUtils {
 	}
 
 	/**
-	 * Find the files with the given extension in the given directory, ignoring sub-directories.
+	 * Find the files with the given extension in the given directory, ignoring
+	 * sub-directories.
 	 * 
 	 * @param dir
 	 * @param ext
@@ -244,9 +247,10 @@ public class FileUtils {
 	public static String placeholderLibraryJarFile(String base, String benchmark) {
 		return composePath(base, "benchmarks-averroes", benchmark + "-placeholder-lib.jar");
 	}
-	
+
 	/**
-	 * The path to the JAR file that contains the single file ca.uwaterloo.averroes.Library
+	 * The path to the JAR file that contains the single file
+	 * ca.uwaterloo.averroes.Library
 	 * 
 	 * @return
 	 */
@@ -255,7 +259,8 @@ public class FileUtils {
 	}
 
 	/**
-	 * The path to the JAR file that contains the single file ca.uwaterloo.averroes.Library
+	 * The path to the JAR file that contains the single file
+	 * ca.uwaterloo.averroes.Library
 	 * 
 	 * @return
 	 */
@@ -308,106 +313,16 @@ public class FileUtils {
 	public static String organizedLibraryJarFile(String base, String benchmark) {
 		return composePath(base, "benchmarks-averroes", benchmark + "-organized-lib.jar");
 	}
-	
-	/**
-	 * The path to the SparkAverroes call graph.
-	 * 
-	 * @return
-	 */
-	public static String sparkAverroesCallGraphGzipFile() {
-		return AverroesProperties.getOutputDir().concat(File.separator).concat("spark-averroes.txt.gzip");
-	}
 
 	/**
 	 * The path to the Spark call graph.
 	 * 
 	 * @return
 	 */
-	public static String sparkCallGraphGzipFile() {
-		return AverroesProperties.getOutputDir().concat(File.separator).concat("spark.txt.gzip");
+	public static String callGraphGzipFile() {
+		return AverroesProperties.getOutputDir().concat(File.separator).concat("callgraph.txt.gzip");
 	}
 	
-	/**
-	 * The path to the DoopAverroes call graph.
-	 * 
-	 * @return
-	 */
-	public static String doopAverroesCallGraphGzipFile() {
-		return AverroesProperties.getOutputDir().concat(File.separator).concat("doop-averroes.txt.gzip");
-	}
-
-	/**
-	 * The path to the Doop call graph.
-	 * 
-	 * @return
-	 */
-	public static String doopCallGraphGzipFile() {
-		return AverroesProperties.getOutputDir().concat(File.separator).concat("doop.txt.gzip");
-	}
-	
-	/**
-	 * The path to the WalaAverroes call graph.
-	 * 
-	 * @return
-	 */
-	public static String walaAverroesCallGraphGzipFile() {
-		return AverroesProperties.getOutputDir().concat(File.separator).concat("wala-averroes.txt.gzip");
-	}
-
-	/**
-	 * The path to the Wala call graph.
-	 * 
-	 * @return
-	 */
-	public static String walaCallGraphGzipFile() {
-		return AverroesProperties.getOutputDir().concat(File.separator).concat("wala.txt.gzip");
-	}
-
-	/**
-	 * The path to the SparkAverroes call graph.
-	 * 
-	 * @return
-	 */
-	public static String sparkAverroesCallGraphFile() {
-		return AverroesProperties.getOutputDir().concat(File.separator).concat("sparkAverroes.gxl");
-	}
-
-	/**
-	 * The path to the Spark call graph.
-	 * 
-	 * @return
-	 */
-	public static String sparkCallGraphFile() {
-		return AverroesProperties.getOutputDir().concat(File.separator).concat("spark.gxl");
-	}
-	
-	/**
-	 * The path to the WalaAverroes call graph.
-	 * 
-	 * @return
-	 */
-	public static String walaAverroesCallGraphFile() {
-		return AverroesProperties.getOutputDir().concat(File.separator).concat("walaAverroes.gxl");
-	}
-
-	/**
-	 * The path to the Wala call graph.
-	 * 
-	 * @return
-	 */
-	public static String walaCallGraphFile() {
-		return AverroesProperties.getOutputDir().concat(File.separator).concat("wala.gxl");
-	}
-	
-	/**
-	 * The path to the Doop call graph.
-	 * 
-	 * @return
-	 */
-	public static String doopCallGraphFile() {
-		return AverroesProperties.getOutputDir().concat(File.separator).concat("doop.gxl");
-	}
-
 	/**
 	 * The path to the Android call graph.
 	 * 
@@ -427,15 +342,6 @@ public class FileUtils {
 	}
 
 	/**
-	 * The path to the DoopAverroes call graph.
-	 * 
-	 * @return
-	 */
-	public static String doopAverroesCallGraphFile() {
-		return AverroesProperties.getOutputDir().concat(File.separator).concat("doopAverroes.gxl");
-	}
-
-	/**
 	 * The path to the DoopAverroes executable
 	 * 
 	 * @return
@@ -443,7 +349,7 @@ public class FileUtils {
 	public static String doopAverroesRunExe(String doopHome) {
 		return doopHome.concat(File.separator).concat("alt-run-averroes");
 	}
-	
+
 	/**
 	 * The path to the Doop executable
 	 * 
@@ -490,7 +396,7 @@ public class FileUtils {
 
 		return path;
 	}
-	
+
 	/**
 	 * Compose a path from the given arguments.
 	 * 
