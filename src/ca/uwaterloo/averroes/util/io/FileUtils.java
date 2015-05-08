@@ -308,6 +308,60 @@ public class FileUtils {
 	public static String organizedLibraryJarFile(String base, String benchmark) {
 		return composePath(base, "benchmarks-averroes", benchmark + "-organized-lib.jar");
 	}
+	
+	/**
+	 * The path to the SparkAverroes call graph.
+	 * 
+	 * @return
+	 */
+	public static String sparkAverroesCallGraphGzipFile() {
+		return AverroesProperties.getOutputDir().concat(File.separator).concat("spark-averroes.txt.gzip");
+	}
+
+	/**
+	 * The path to the Spark call graph.
+	 * 
+	 * @return
+	 */
+	public static String sparkCallGraphGzipFile() {
+		return AverroesProperties.getOutputDir().concat(File.separator).concat("spark.txt.gzip");
+	}
+	
+	/**
+	 * The path to the DoopAverroes call graph.
+	 * 
+	 * @return
+	 */
+	public static String doopAverroesCallGraphGzipFile() {
+		return AverroesProperties.getOutputDir().concat(File.separator).concat("doop-averroes.txt.gzip");
+	}
+
+	/**
+	 * The path to the Doop call graph.
+	 * 
+	 * @return
+	 */
+	public static String doopCallGraphGzipFile() {
+		return AverroesProperties.getOutputDir().concat(File.separator).concat("doop.txt.gzip");
+	}
+	
+	/**
+	 * The path to the WalaAverroes call graph.
+	 * 
+	 * @return
+	 */
+	public static String walaAverroesCallGraphGzipFile() {
+		return AverroesProperties.getOutputDir().concat(File.separator).concat("wala-averroes.txt.gzip");
+	}
+
+	/**
+	 * The path to the Wala call graph.
+	 * 
+	 * @return
+	 */
+	public static String walaCallGraphGzipFile() {
+		return AverroesProperties.getOutputDir().concat(File.separator).concat("wala.txt.gzip");
+	}
 
 	/**
 	 * The path to the SparkAverroes call graph.
@@ -343,24 +397,6 @@ public class FileUtils {
 	 */
 	public static String walaCallGraphFile() {
 		return AverroesProperties.getOutputDir().concat(File.separator).concat("wala.gxl");
-	}
-	
-	/**
-	 * The path to the WalaAverroes call graph.
-	 * 
-	 * @return
-	 */
-	public static String walaAverroesCallGraphGzipFile() {
-		return AverroesProperties.getOutputDir().concat(File.separator).concat("walaAverroes.txt.gzip");
-	}
-
-	/**
-	 * The path to the Wala call graph.
-	 * 
-	 * @return
-	 */
-	public static String walaCallGraphGzipFile() {
-		return AverroesProperties.getOutputDir().concat(File.separator).concat("wala.txt.gzip");
 	}
 	
 	/**
