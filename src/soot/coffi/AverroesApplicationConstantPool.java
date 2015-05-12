@@ -5,11 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.jf.dexlib2.DexFileFactory;
-import org.jf.dexlib2.dexbacked.DexBackedDexFile;
-import org.jf.dexlib2.dexbacked.raw.HeaderItem;
-
-import soot.RefType;
 import soot.ResolutionFailedException;
 import soot.Scene;
 import soot.SootClass;
@@ -17,10 +12,8 @@ import soot.SootField;
 import soot.SootFieldRef;
 import soot.SootMethod;
 import soot.Type;
-import ca.uwaterloo.averroes.properties.AverroesProperties;
 import ca.uwaterloo.averroes.soot.Hierarchy;
 import ca.uwaterloo.averroes.util.BytecodeUtils;
-import ca.uwaterloo.averroes.util.DexUtils;
 
 /**
  * A class that holds the values of library methods and fields found in the
@@ -226,39 +219,6 @@ public class AverroesApplicationConstantPool {
 	}
 
 	/**
-	 * Search the android string constant pool for application class names.
-	 * 
-	 * @return
-	 */
-	private Set<SootClass> findAndroidApplicationClassesReferencedByName() {
-		Set<SootClass> result = new HashSet<SootClass>();
-		try {
-			DexBackedDexFile dex = DexFileFactory.loadDexFile(AverroesProperties.getApkLocation(), 17);
-			int stringCount = dex.readSmallUint(HeaderItem.STRING_COUNT_OFFSET);
-			for (int i = 0; i < stringCount; i++) {
-				try {
-					Type tpe = Util.v().jimpleTypeOfFieldDescriptor(dex.getString(i));
-
-					if (tpe instanceof RefType) {
-						SootClass sc = ((RefType) tpe).getSootClass();
-
-						// Ignore the R class and its inner classes here
-						if (hierarchy.isApplicationClass(sc) && !AverroesProperties.isAndroidRClassOrInnerClass(sc)) {
-							result.add(sc);
-						}
-					}
-				} catch (RuntimeException e) {
-					// eat it, some entries won't be for class names
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return result;
-	}
-
-	/**
 	 * Get the classes referenced by name in the constant pool of an application
 	 * class.
 	 * 
@@ -346,34 +306,6 @@ public class AverroesApplicationConstantPool {
 	}
 
 	/**
-	 * Search the android string constant pool for application class names.
-	 * 
-	 * @return
-	 */
-	private Set<SootMethod> findLibraryMethodsInAndroidApplicationConstantPool() {
-		Set<SootMethod> result = new HashSet<SootMethod>();
-		try {
-			DexBackedDexFile dex = DexFileFactory.loadDexFile(AverroesProperties.getApkLocation(), 17);
-			int methodCount = dex.readSmallUint(HeaderItem.METHOD_COUNT_OFFSET);
-			for (int i = 0; i < methodCount; i++) {
-				if (DexUtils.isArrayClone(dex, i) == false) {
-					SootMethod method = DexUtils.asSootMethod(dex, i);
-
-					// If the resolved method is in the library, add it to the
-					// result
-					if (hierarchy.isLibraryMethod(method)) {
-						result.add(method);
-					}
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return result;
-	}
-
-	/**
 	 * Get the referenced library fields in an application class.
 	 * 
 	 * @param applicationClass
@@ -436,39 +368,6 @@ public class AverroesApplicationConstantPool {
 					}
 				}
 			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Search the android string constant pool for application class names.
-	 * 
-	 * @return
-	 */
-	private Set<SootField> findLibraryFieldsInAndroidApplicationConstantPool() {
-		Set<SootField> result = new HashSet<SootField>();
-		try {
-			DexBackedDexFile dex = DexFileFactory.loadDexFile(AverroesProperties.getApkLocation(), 17);
-			int fieldCount = dex.readSmallUint(HeaderItem.FIELD_COUNT_OFFSET);
-			System.out.println(fieldCount);
-			for (int i = 0; i < fieldCount; i++) {
-				// NOTE: Some fields might not be resolved anyways and those
-				// need to be completely ignored.
-				try {
-					SootField field = DexUtils.asSootField(dex, i);
-
-					// If the resolved field is in the library, add it to the
-					// result
-					if (hierarchy.isLibraryField(field)) {
-						result.add(field);
-					}
-				} catch (ResolutionFailedException e) {
-					// eat it up!
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 
 		return result;

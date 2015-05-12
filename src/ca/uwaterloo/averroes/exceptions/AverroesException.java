@@ -19,13 +19,4 @@ public class AverroesException extends Exception {
 	public AverroesException(String message, Throwable cause) {
 		super(message, cause);
 	}
-
-	/**
-	 * Construct a new Averroes exception with the given error message.
-	 * 
-	 * @param message
-	 */
-	public AverroesException(String message) {
-		super(message);
-	}
 }

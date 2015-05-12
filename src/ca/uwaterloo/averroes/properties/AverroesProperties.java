@@ -19,12 +19,8 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.Type;
-import soot.jimple.infoflow.android.manifest.ProcessManifest;
 import ca.uwaterloo.averroes.exceptions.Assertions;
 import ca.uwaterloo.averroes.exceptions.AverroesException;
-import ca.uwaterloo.averroes.soot.Names;
-import ca.uwaterloo.averroes.util.android.AndroidResourceParser;
-import ca.uwaterloo.averroes.util.io.FileUtils;
 
 /**
  * A utility class that holds all the properties required by Averroes to run. For the possible values of each property,
@@ -43,7 +39,6 @@ public final class AverroesProperties {
 	public static final String INPUT_JAR_FILES = "input_jar_files";
 	public static final String APK_LOCATION = "apk_location";
 	public static final String LIBRARY_JAR_FILES = "library_jar_files";
-	public static final String ANDROID_PATH = "android_path";
 	public static final String DYNAMIC_CLASSES_FILE = "dynamic_classes_file";
 	public static final String TAMIFLEX_FACTS_FILE = "tamiflex_facts_file";
 
@@ -54,11 +49,6 @@ public final class AverroesProperties {
 	private static Properties properties = null;
 	private static List<String> dynamicClasses = null;
 	private static boolean disableTamiFlex = false;
-
-	private static boolean isProcessingAndroidApk = false;
-	private static ProcessManifest processManifest = null;
-	private static AndroidResourceParser parser = null;
-	private static Set<String> classesOfDex = null;
 
 	/**
 	 * Load the properties file at the first access of this class.
@@ -147,8 +137,6 @@ public final class AverroesProperties {
 		for (int i = 0; i < args.length; i++) {
 			if ("-disable-tamiflex".equals(args[i])) {
 				disableTamiFlex = true;
-			} else if ("-android".equals(args[i])) {
-				isProcessingAndroidApk = true;
 			} else {
 				Assertions.unknownArgument(args[i]);
 			}
@@ -162,15 +150,6 @@ public final class AverroesProperties {
 	 */
 	public static boolean disableTamiFlex() {
 		return disableTamiFlex;
-	}
-
-	/**
-	 * Are we processing an android apk?
-	 * 
-	 * @return
-	 */
-	public static boolean isProcessingAndroidApk() {
-		return isProcessingAndroidApk;
 	}
 
 	/**
@@ -222,65 +201,6 @@ public final class AverroesProperties {
 	}
 
 	/**
-	 * Get {@value #APK_LOCATION} property. That is a location of the android application to be processed.
-	 * 
-	 * @return
-	 */
-	public static String getApkLocation() {
-		String result = properties.getProperty(APK_LOCATION);
-		Assertions.notNullAssertion(result, APK_LOCATION.concat(" not found."));
-		return result;
-	}
-
-	/**
-	 * Get the location of the jar file generated for the input apk. This jar file is obtained via the tool dex2jar.
-	 * 
-	 * @return
-	 */
-	public static String getApkJarLocation() {
-		return getApkLocation().replace(".apk", ".jar");
-	}
-
-	/**
-	 * Get the manifest of the underlying android apk. Otherwise, throw an exception if not processing an android apk.
-	 * 
-	 * @return
-	 */
-	public static ProcessManifest getAndroidManifest() {
-		if (processManifest == null) {
-			throw new RuntimeException("Oops! Not processing an android apk.");
-		}
-		return processManifest;
-	}
-
-	/**
-	 * Get the resources parser of the underlying android apk. Otherwise, throw an exception if not processing an
-	 * android apk.
-	 * 
-	 * @return
-	 */
-	public static AndroidResourceParser getAndroidResourceParser() {
-		if (parser == null) {
-			throw new RuntimeException("Oops! Not processing an android apk.");
-		}
-		return parser;
-	}
-
-	/**
-	 * Get the classes defined in classes.dex of an android app.
-	 * 
-	 * @return
-	 * @throws IOException
-	 */
-	public static Set<String> classesOfDex() {
-		if (classesOfDex == null) {
-			throw new RuntimeException("Oops! Not processing an android apk.");
-		}
-
-		return classesOfDex;
-	}
-
-	/**
 	 * Get the {@value #LIBRARY_JAR_FILES} property. That is a list of the library JAR files separated by
 	 * {@link File#pathSeparator}.
 	 * 
@@ -302,136 +222,6 @@ public final class AverroesProperties {
 		String result = properties.getProperty(LIBRARY_JAR_FILES);
 		Assertions.notNullAssertion(result, LIBRARY_JAR_FILES.concat(" not found."));
 		return result;
-	}
-
-	/**
-	 * Get {@value #ANDROID_PATH} property. That is the path to the home directory of the android libraries. This
-	 * directory should contain sub-directories for each android version. In each sub-directory, there should be one
-	 * android.jar that representes the android SDK. Soot will search for the proper SDK to use.
-	 * 
-	 * @return
-	 */
-	public static String getAndroidPath() {
-		String result = properties.getProperty(ANDROID_PATH);
-		Assertions.notNullAssertion(result, ANDROID_PATH.concat(" not found."));
-		return result;
-	}
-
-	/**
-	 * Get the classpath of the input android app.
-	 * 
-	 * @return
-	 */
-	public static String getAndroidAppClassPath() {
-		// Scene.v().getAndroidJarPath(getAndroidPath(), getApkLocation());
-		return FileUtils.composeClassPath(getApkLocation(), defaultAndroidJar(), defaultGoogleAPIs());// ,
-																										// androidExtras());
-	}
-
-	/**
-	 * The default API to use.
-	 * 
-	 * @return
-	 */
-	public static String defaultAndroidAPI() {
-		return "android-17";
-	}
-
-	/**
-	 * The path to the default android sdk.
-	 * 
-	 * @return
-	 */
-	public static String defaultAndroidPath() {
-		return getAndroidPath() + File.separator + defaultAndroidAPI();
-	}
-
-	/**
-	 * The path to extra libraries commonly used by android apps.
-	 * 
-	 * @return
-	 */
-	public static String getAndroidExtrasPath() {
-		return getAndroidPath() + File.separator + "extras";
-	}
-
-	/**
-	 * The default android jar to use.
-	 * 
-	 * @return
-	 */
-	public static String defaultAndroidJar() {
-		return defaultAndroidPath() + File.separator + "android.jar";
-	}
-
-	/**
-	 * The default Google APIS add-ons that could be used by an android app.
-	 * 
-	 * @return
-	 */
-	public static String defaultGoogleAPIs() {
-		return FileUtils.composeClassPath(pathToGoogleAPI("effects.jar"), pathToGoogleAPI("maps.jar"),
-				pathToGoogleAPI("usb.jar"));
-	}
-
-	/**
-	 * Get the path to a google android api.
-	 * 
-	 * @param name
-	 * @return
-	 */
-	public static String pathToGoogleAPI(String name) {
-		return FileUtils.pathTo(defaultAndroidPath(), name);
-	}
-
-	/**
-	 * Get the classpath to the android extra libraries.
-	 * 
-	 * @return
-	 */
-	public static String androidExtras() {
-		return FileUtils.composeClassPath(pathToAndroidExtra("MMSDK.jar"),
-				pathToAndroidExtra("jackson-core-2.3.1.jar"), pathToAndroidExtra("jackson-databind-2.3.1.jar"),
-				pathToAndroidExtra("jackson-annotations-2.3.1.jar"), pathToAndroidExtra("InMobiAdNetwork-3.7.1.jar"),
-				pathToAndroidExtra("InMobiCommons-3.7.1.jar"), pathToAndroidExtra("JtAdTag-2.5.0.0-120327.jar"),
-				pathToAndroidExtra("mobclix.jar"), pathToAndroidExtra("android-rome-feed-reader-1.0.0-r2.jar"),
-				pathToAndroidExtra("httpclient-4.3.2.jar"), pathToAndroidExtra("commons-httpclient-3.1.jar"),
-				pathToAndroidExtra("jackson-core-asl-1.9.13.jar"), pathToAndroidExtra("jackson-mapper-asl-1.9.13.jar"),
-				pathToAndroidExtra("simple-xml-2.7.1.jar"), pathToAndroidExtra("gson-2.2.4.jar"),
-				pathToAndroidExtra("jdom-1.1.3.jar"));
-	}
-
-	/**
-	 * Get the path to an android extra library.
-	 * 
-	 * @param name
-	 * @return
-	 */
-	public static String pathToAndroidExtra(String name) {
-		return FileUtils.pathTo(getAndroidExtrasPath(), name);
-	}
-
-	/**
-	 * Get the classpath for the input android app, if we're using the averroes-generated placeholder library.
-	 * 
-	 * @param benchmark
-	 * @return
-	 */
-	public static String getAndroidAverroesClassPath(String benchmark) {
-		return getApkLocation() + File.pathSeparator + FileUtils.androidPlaceholderLibraryJarFile(benchmark);
-	}
-
-	/**
-	 * Get the classpath of this program. That is a list of the input and library JAR files separated by
-	 * {@link File#pathSeparator}.
-	 * 
-	 * @return
-	 */
-	public static String getClasspath() {
-		String inputJars = getInputJarFilesForSpark().trim();
-		String libJars = getLibraryClassPath().trim();
-		String rtJar = getJre().trim();
-		return inputJars + (libJars.length() > 0 ? File.pathSeparator + libJars : "") + File.pathSeparator + rtJar;
 	}
 
 	/**
@@ -535,55 +325,6 @@ public final class AverroesProperties {
 	 */
 	public static String getJavaHome() {
 		return System.getProperty("java.home");
-	}
-
-	/**
-	 * Check if a class is the android R class, or one of its inner classes.
-	 * 
-	 * @param probeClass
-	 * @return
-	 */
-	public static boolean isAndroidRClassOrInnerClass(ProbeClass probeClass) {
-		// if (Options.v().src_prec() != Options.src_prec_apk) {
-		// throw new RuntimeException("Oops. Checking for Android R class, but we are not processing an apk.");
-		// }
-
-		if (probeClass.pkg().equalsIgnoreCase(processManifest.getPackageName())) {
-			return probeClass.name().equalsIgnoreCase(Names.ANDROID_R)
-					|| probeClass.name().startsWith(Names.ANDROID_R + "$");
-		}
-
-		return false;
-	}
-
-	/**
-	 * Check if a class is the android R class, or one of its inner classes.
-	 * 
-	 * @param sootClass
-	 * @return
-	 */
-	public static boolean isAndroidRClassOrInnerClass(SootClass sootClass) {
-		return isAndroidRClassOrInnerClass(sootClass.getName());
-	}
-
-	/**
-	 * Check if a class is the android R class, or one of its inner classes.
-	 * 
-	 * @param className
-	 * @return
-	 */
-	public static boolean isAndroidRClassOrInnerClass(String className) {
-		return isAndroidRClassOrInnerClass(ObjectManager.v().getClass(className));
-	}
-
-	/**
-	 * Check if a class is the android R class, or one of its inner classes.
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public static boolean isAndroidRClassOrInnerClass(Type type) {
-		return isAndroidRClassOrInnerClass(type.toString());
 	}
 
 	/**

@@ -10,8 +10,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import ca.uwaterloo.averroes.callgraph.CallGraphDiffOptions;
-import ca.uwaterloo.averroes.callgraph.CallGraphSource;
 import ca.uwaterloo.averroes.properties.AverroesProperties;
 
 /**
@@ -339,45 +337,6 @@ public class FileUtils {
 	 */
 	public static String androidAverroesCallGraphFile() {
 		return AverroesProperties.getOutputDir().concat(File.separator).concat("androidAverroes.txt.gzip");
-	}
-
-	/**
-	 * The path to the DoopAverroes executable
-	 * 
-	 * @return
-	 */
-	public static String doopAverroesRunExe(String doopHome) {
-		return doopHome.concat(File.separator).concat("alt-run-averroes");
-	}
-
-	/**
-	 * The path to the Doop executable
-	 * 
-	 * @return
-	 */
-	public static String doopRunExe(String doopHome) {
-		return doopHome.concat(File.separator).concat("alt-run");
-	}
-
-	/* Some utility methods to get the names of comparison call graphs */
-	public static String missingCallGraphFile(CallGraphSource sup, CallGraphSource sub, CallGraphDiffOptions options) {
-		String suffix = options.isSetSoundnessOptions() ? "_app" : "_lib";
-		return missingCallGraphFile(sup, sub).replace(".gxl", suffix + ".gxl");
-	}
-
-	public static String extraCallGraphFile(CallGraphSource sup, CallGraphSource sub, CallGraphDiffOptions options) {
-		String suffix = options.isSetSoundnessOptions() ? "_app" : "_lib";
-		return extraCallGraphFile(sup, sub).replace(".gxl", suffix + ".gxl");
-	}
-
-	public static String missingCallGraphFile(CallGraphSource sup, CallGraphSource sub) {
-		return AverroesProperties.getOutputDir().concat(File.separator).concat(sup.source()).concat("-")
-				.concat(sub.source()).concat(".gxl");
-	}
-
-	public static String extraCallGraphFile(CallGraphSource sup, CallGraphSource sub) {
-		return AverroesProperties.getOutputDir().concat(File.separator).concat(sub.source()).concat("-")
-				.concat(sup.source()).concat(".gxl");
 	}
 
 	/**
