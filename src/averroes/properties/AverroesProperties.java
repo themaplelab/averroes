@@ -2,6 +2,7 @@ package averroes.properties;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -82,9 +83,10 @@ public final class AverroesProperties {
 			throw new IllegalArgumentException("null fileName");
 		}
 
-		final InputStream propertyStream = loader.getResourceAsStream(fileName);
+		InputStream propertyStream = loader.getResourceAsStream(fileName);
 		if (propertyStream == null) {
-			throw new IOException("property file unreadable " + fileName);
+			// Maybe it's an absolute path so try that out
+			propertyStream = new FileInputStream(fileName);
 		}
 
 		Properties result = new Properties();
