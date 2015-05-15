@@ -2,6 +2,7 @@ package averroes;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
@@ -65,8 +66,9 @@ public class JarOrganizer {
 	 * 
 	 * @throws ZipException
 	 * @throws IOException
+	 * @throws URISyntaxException
 	 */
-	public void organizeInputJarFiles() throws ZipException, IOException {
+	public void organizeInputJarFiles() throws ZipException, IOException, URISyntaxException {
 		processInputs();
 		processDependencies();
 		organizedApplicationJarFile.close();
@@ -78,8 +80,9 @@ public class JarOrganizer {
 	 * 
 	 * @throws ZipException
 	 * @throws IOException
+	 * @throws URISyntaxException
 	 */
-	private void processInputs() throws ZipException, IOException {
+	private void processInputs() throws ZipException, IOException, URISyntaxException {
 		for (String entry : AverroesProperties.getInputJarFiles()) {
 			if (FileUtils.isValidFile(entry)) {
 				processArchive(entry, true);
@@ -92,8 +95,9 @@ public class JarOrganizer {
 	 * 
 	 * @throws ZipException
 	 * @throws IOException
+	 * @throws URISyntaxException
 	 */
-	private void processDependencies() throws ZipException, IOException {
+	private void processDependencies() throws ZipException, IOException, URISyntaxException {
 		for (String lib : AverroesProperties.getLibraryJarFiles()) {
 			processArchive(lib, false);
 		}
@@ -117,14 +121,17 @@ public class JarOrganizer {
 	 * @param fromApplicationArchive
 	 * @throws ZipException
 	 * @throws IOException
+	 * @throws URISyntaxException
 	 */
-	private void processArchive(String fileName, boolean fromApplicationArchive) throws ZipException, IOException {
+	private void processArchive(String fileName, boolean fromApplicationArchive) throws ZipException, IOException,
+			URISyntaxException {
 		// Exit if the fileName is empty
 		if (fileName.trim().length() <= 0) {
 			return;
 		}
 
-		File file = new File(fileName);
+		// Get the file from the resource
+		File file = FileUtils.getResource(fileName);
 		System.out.println("Processing " + (fromApplicationArchive ? "input" : "library") + " archive: "
 				+ file.getAbsolutePath());
 

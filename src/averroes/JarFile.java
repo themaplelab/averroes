@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.jar.Attributes;
@@ -105,8 +106,9 @@ public class JarFile {
 	 * Add the generated AverroesLibraryClass file to the Jar file.
 	 * 
 	 * @throws IOException
+	 * @throws URISyntaxException
 	 */
-	public void addAverroesLibraryClassFile() throws IOException {
+	public void addAverroesLibraryClassFile() throws IOException, URISyntaxException {
 		String dir = FileUtils.libraryClassesOutputDirectory();
 		String placeholderJar = FileUtils.placeholderLibraryJarFile();
 		String averroesLibraryClassJar = FileUtils.averroesLibraryClassJarFile();
@@ -140,7 +142,7 @@ public class JarFile {
 		// placeholder JAR to force BCEL to load
 		// those crafted files when it looks them up
 		bcelClasses.forEach(c -> Repository.getRepository().storeClass(c));
-		
+
 		// Now verify all the generated class files
 		verify();
 	}

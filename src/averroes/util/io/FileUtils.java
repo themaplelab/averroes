@@ -5,8 +5,13 @@ package averroes.util.io;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +24,47 @@ import averroes.properties.AverroesProperties;
  * 
  */
 public class FileUtils {
+
+	/**
+	 * Get the file as a resource stream. If not then load it with its absolute
+	 * path.
+	 * 
+	 * @param fileName
+	 * @return
+	 * @throws FileNotFoundException
+	 */
+	public static InputStream getResourceAsStream(String fileName) throws FileNotFoundException {
+		InputStream stream = AverroesProperties.class.getClassLoader().getResourceAsStream(fileName);
+
+		if (stream == null) {
+			// Maybe it's an absolute path so try that out
+			stream = new FileInputStream(fileName);
+		}
+
+		return stream;
+	}
+
+	/**
+	 * Get the file from as resource. If not then load it with its absolute
+	 * path.
+	 * 
+	 * @param fileName
+	 * @return
+	 * @throws FileNotFoundException
+	 * @throws MalformedURLException
+	 * @throws URISyntaxException
+	 */
+	public static File getResource(String fileName) throws FileNotFoundException, MalformedURLException,
+			URISyntaxException {
+		URL resource = AverroesProperties.class.getClassLoader().getResource(fileName);
+
+		if (resource == null) {
+			// Maybe it's an absolute path so try that out
+			resource = new File(fileName).toURI().toURL();
+		}
+
+		return new File(resource.toURI());
+	}
 
 	/**
 	 * Check if a directory is valid.
@@ -35,9 +81,13 @@ public class FileUtils {
 	 * 
 	 * @param fileName
 	 * @return
+	 * @throws URISyntaxException
+	 * @throws MalformedURLException
+	 * @throws FileNotFoundException
 	 */
-	public static boolean isValidFile(String fileName) {
-		return new File(fileName).isFile();
+	public static boolean isValidFile(String fileName) throws FileNotFoundException, MalformedURLException,
+			URISyntaxException {
+		return getResource(fileName).isFile();
 	}
 
 	/**
@@ -257,26 +307,6 @@ public class FileUtils {
 	}
 
 	/**
-	 * The path to the JAR file that contains the single file
-	 * ca.uwaterloo.averroes.Library
-	 * 
-	 * @return
-	 */
-	public static String averroesLibraryClassJarFile(String base, String benchmark) {
-		return composePath(base, "benchmarks-averroes", benchmark + "-averroes-lib-class.jar");
-	}
-
-	/**
-	 * The path to the android placeholder library JAr file of a benchmark.
-	 * 
-	 * @param benchmark
-	 * @return
-	 */
-	public static String androidPlaceholderLibraryJarFile(String benchmark) {
-		return composePath("benchmarks-averroes", "android", benchmark + "-placeholder-lib.jar");
-	}
-
-	/**
 	 * The path to the organized application JAR file.
 	 * 
 	 * @return
@@ -286,57 +316,12 @@ public class FileUtils {
 	}
 
 	/**
-	 * The path to the organized application JAR file of a benchmark.
-	 * 
-	 * @return
-	 */
-	public static String organizedApplicationJarFile(String base, String benchmark) {
-		return composePath(base, "benchmarks-averroes", benchmark + "-organized-app.jar");
-	}
-
-	/**
 	 * The path to the organized library JAR file.
 	 * 
 	 * @return
 	 */
 	public static String organizedLibraryJarFile() {
 		return AverroesProperties.getOutputDir().concat(File.separator).concat("organized-lib.jar");
-	}
-
-	/**
-	 * The path to the organized library JAR file of a benchmark.
-	 * 
-	 * @return
-	 */
-	public static String organizedLibraryJarFile(String base, String benchmark) {
-		return composePath(base, "benchmarks-averroes", benchmark + "-organized-lib.jar");
-	}
-
-	/**
-	 * The path to the Spark call graph.
-	 * 
-	 * @return
-	 */
-	public static String callGraphGzipFile() {
-		return AverroesProperties.getOutputDir().concat(File.separator).concat("callgraph.txt.gzip");
-	}
-
-	/**
-	 * The path to the Android call graph.
-	 * 
-	 * @return
-	 */
-	public static String androidCallGraphFile() {
-		return AverroesProperties.getOutputDir().concat(File.separator).concat("android.txt.gzip");
-	}
-
-	/**
-	 * The path to the android-averroes call graph.
-	 * 
-	 * @return
-	 */
-	public static String androidAverroesCallGraphFile() {
-		return AverroesProperties.getOutputDir().concat(File.separator).concat("androidAverroes.txt.gzip");
 	}
 
 	/**

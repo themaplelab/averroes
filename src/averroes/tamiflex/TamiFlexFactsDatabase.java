@@ -3,10 +3,12 @@ package averroes.tamiflex;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
 
 import averroes.properties.AverroesProperties;
+import averroes.util.io.FileUtils;
 
 /**
  * A database for all the TamiFlex facts Averroes extracts from the given TamiFlex facts file.
@@ -26,7 +28,7 @@ public class TamiFlexFactsDatabase {
 	static {
 		try {
 			loadFacts();
-		} catch (IOException e) {
+		} catch (IOException | URISyntaxException e) {
 			e.printStackTrace();
 		}
 	}
@@ -35,8 +37,9 @@ public class TamiFlexFactsDatabase {
 	 * Load the facts into the database.
 	 * 
 	 * @throws IOException
+	 * @throws URISyntaxException 
 	 */
-	private static void loadFacts() throws IOException {
+	private static void loadFacts() throws IOException, URISyntaxException {
 		String fileToLoad = AverroesProperties.getTamiFlexFactsFile();
 
 		// If no file is given, no facts to load, just return.
@@ -44,7 +47,7 @@ public class TamiFlexFactsDatabase {
 			return;
 		}
 
-		BufferedReader in = new BufferedReader(new FileReader(fileToLoad));
+		BufferedReader in = new BufferedReader(new FileReader(FileUtils.getResource(fileToLoad)));
 		String line;
 
 		while ((line = in.readLine()) != null) {

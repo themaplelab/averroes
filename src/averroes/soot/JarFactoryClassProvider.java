@@ -96,10 +96,8 @@ public class JarFactoryClassProvider implements ClassProvider {
 	 * @return
 	 * @throws IOException
 	 */
-	public String addClass(ZipFile archive, ZipEntry entry,
-			boolean fromApplicationArchive) throws IOException {
-		return addClass(entry.getName(), new ZipEntryResource(archive, entry),
-				fromApplicationArchive);
+	public String addClass(ZipFile archive, ZipEntry entry, boolean fromApplicationArchive) throws IOException {
+		return addClass(entry.getName(), new ZipEntryResource(archive, entry), fromApplicationArchive);
 	}
 
 	/**
@@ -111,8 +109,7 @@ public class JarFactoryClassProvider implements ClassProvider {
 	 * @return
 	 * @throws IOException
 	 */
-	public String addClass(String path, Resource resource,
-			boolean fromApplicationArchive) throws IOException {
+	public String addClass(String path, Resource resource, boolean fromApplicationArchive) throws IOException {
 		ClassFile c = new ClassFile(path);
 
 		InputStream stream = null;
@@ -130,8 +127,7 @@ public class JarFactoryClassProvider implements ClassProvider {
 		if (classes.containsKey(className)) {
 			// This means we encountered another copy of the class later on the
 			// path, this should never happen!
-			throw new RuntimeException("class " + className
-					+ " has already been added to this class provider.");
+			throw new RuntimeException("class " + className + " has already been added to this class provider.");
 		} else {
 			if (fromApplicationArchive) {
 				applicationClassNames.add(className);
@@ -152,10 +148,8 @@ public class JarFactoryClassProvider implements ClassProvider {
 	 * @return
 	 * @throws IOException
 	 */
-	public List<String> addArchive(File file, boolean isApplication)
-			throws IOException {
-		System.out.println("Adding "
-				+ (isApplication ? "application" : "library") + " archive: "
+	public List<String> addArchive(File file, boolean isApplication) throws IOException {
+		System.out.println("Adding " + (isApplication ? "application" : "library") + " archive: "
 				+ file.getAbsolutePath());
 		List<String> result = new ArrayList<String>();
 
@@ -180,8 +174,7 @@ public class JarFactoryClassProvider implements ClassProvider {
 	 * @return
 	 * @throws IOException
 	 */
-	public List<String> addArchive(String file, boolean isApplication)
-			throws IOException {
+	public List<String> addArchive(String file, boolean isApplication) throws IOException {
 		return addArchive(new File(file), isApplication);
 	}
 
@@ -222,8 +215,7 @@ public class JarFactoryClassProvider implements ClassProvider {
 				// return new CoffiClassSource(className, stream); // TODO: use
 				// for soot 2.5
 				// TODO: use for soot nightly build
-				return new CoffiClassSource(className, stream, zer.entry()
-						.getName(), zer.archive().getName());
+				return new CoffiClassSource(className, stream, zer.entry().getName(), zer.archive().getName());
 			} catch (IOException exc) {
 				throw new RuntimeException(exc);
 			}

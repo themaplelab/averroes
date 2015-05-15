@@ -2,7 +2,6 @@ package averroes.properties;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,6 +16,7 @@ import probe.ObjectManager;
 import probe.ProbeClass;
 import soot.SootClass;
 import averroes.exceptions.AverroesException;
+import averroes.util.io.FileUtils;
 
 /**
  * A class that holds all the properties required by Averroes to run. For the
@@ -59,7 +59,7 @@ public final class AverroesProperties {
 	 */
 	public static void loadProperties(String file) throws AverroesException {
 		try {
-			properties = loadPropertiesFromFile(AverroesProperties.class.getClassLoader(), file);
+			properties = loadPropertiesFromFile(file);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -74,20 +74,12 @@ public final class AverroesProperties {
 	 * @return
 	 * @throws IOException
 	 */
-	private static Properties loadPropertiesFromFile(ClassLoader loader, String fileName) throws IOException {
-		if (loader == null) {
-			throw new IllegalArgumentException("loader is null");
-		}
-
+	private static Properties loadPropertiesFromFile(String fileName) throws IOException {
 		if (fileName == null) {
 			throw new IllegalArgumentException("null fileName");
 		}
 
-		InputStream propertyStream = loader.getResourceAsStream(fileName);
-		if (propertyStream == null) {
-			// Maybe it's an absolute path so try that out
-			propertyStream = new FileInputStream(fileName);
-		}
+		InputStream propertyStream = FileUtils.getResourceAsStream(fileName);
 
 		Properties result = new Properties();
 		result.load(propertyStream);
