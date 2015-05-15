@@ -44,15 +44,6 @@ public class Names {
 	// Finalize
 	public static final String FINALIZE_SIG = "<java.lang.Object: void finalize()>";
 
-	// Android-specific
-	public static final String ANDROID_VIEW = "android.view.View";
-	public static final String ANDROID_R = "R";
-	public static final String CLONE = "clone";
-
-	public static String getOnClickSubSig(String methodName) {
-		return "void " + methodName + "(" + ANDROID_VIEW + ")";
-	}
-
 	// Soot-specific constants
 	public static final NumberedString DEFAULT_CONSTRUCTOR_SIG = Scene.v().getSubSigNumberer()
 			.findOrAdd("void <init>()");

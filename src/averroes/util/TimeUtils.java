@@ -14,16 +14,6 @@ public class TimeUtils {
 	/**
 	 * Calculate the elapsed time in seconds.
 	 * 
-	 * @param start
-	 * @return
-	 */
-	public static double elapsedTime(long start) {
-		return MathUtils.round((System.currentTimeMillis() - start) / 1000.0);
-	}
-
-	/**
-	 * Calculate the elapsed time in seconds.
-	 * 
 	 * @return
 	 */
 	public static double elapsedTime() {

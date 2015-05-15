@@ -37,7 +37,6 @@ public final class AverroesProperties {
 	public static final String APPLICATION_INCLUDES = "application_includes";
 	public static final String MAIN_CLASS = "main_class";
 	public static final String INPUT_JAR_FILES = "input_jar_files";
-	public static final String APK_LOCATION = "apk_location";
 	public static final String LIBRARY_JAR_FILES = "library_jar_files";
 	public static final String DYNAMIC_CLASSES_FILE = "dynamic_classes_file";
 	public static final String TAMIFLEX_FACTS_FILE = "tamiflex_facts_file";

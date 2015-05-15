@@ -12,12 +12,11 @@ public class LocalVariableNumberer {
 	private String letter;
 
 	public LocalVariableNumberer() {
-		number = 0;
-		letter = "r";
+		this(0, "r");
 	}
 
-	public LocalVariableNumberer(String letter) {
-		number = 0;
+	public LocalVariableNumberer(int number, String letter) {
+		this.number = number;
 		this.letter = letter;
 	}
 

@@ -11,8 +11,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import averroes.properties.AverroesProperties;
-import averroes.util.SetUtils;
 import soot.ArrayType;
 import soot.Modifier;
 import soot.RefLikeType;
@@ -24,6 +22,7 @@ import soot.Type;
 import soot.VoidType;
 import soot.coffi.AverroesApplicationConstantPool;
 import soot.tagkit.Tag;
+import averroes.properties.AverroesProperties;
 
 /**
  * A representation of the class hierarchy Averroes uses for the input program.
@@ -153,10 +152,8 @@ public class Hierarchy {
 		nameToApplicationClass = new HashMap<String, SootClass>();
 		nameToLibraryClass = new HashMap<String, SootClass>();
 
-		applicationClasses = new TreeSet<SootClass>(
-				new SootClassHierarchyComparer(this));
-		libraryClasses = new TreeSet<SootClass>(new SootClassHierarchyComparer(
-				this));
+		applicationClasses = new TreeSet<SootClass>(new SootClassHierarchyComparer(this));
+		libraryClasses = new TreeSet<SootClass>(new SootClassHierarchyComparer(this));
 
 		abstractLibraryClasses = new HashSet<SootClass>();
 		concreteLibraryClasses = new HashSet<SootClass>();
@@ -350,10 +347,8 @@ public class Hierarchy {
 	 */
 	public boolean isBasicLibraryMethod(SootMethod method) {
 		String sig = method.getSignature();
-		return method.isConstructor() || isStaticInitializer(method)
-				|| sig.equals(Names.FOR_NAME_SIG)
-				|| sig.equals(Names.NEW_INSTANCE_SIG)
-				|| sig.equals(Names.FINALIZE_SIG);
+		return method.isConstructor() || isStaticInitializer(method) || sig.equals(Names.FOR_NAME_SIG)
+				|| sig.equals(Names.NEW_INSTANCE_SIG) || sig.equals(Names.FINALIZE_SIG);
 	}
 
 	/**
@@ -399,8 +394,7 @@ public class Hierarchy {
 	 * @return
 	 */
 	public SootMethod getDirectSuperclassDefaultConstructor(SootMethod method) {
-		return getDirectSuperclassOf(method.getDeclaringClass()).getMethod(
-				Names.DEFAULT_CONSTRUCTOR_SIG);
+		return getDirectSuperclassOf(method.getDeclaringClass()).getMethod(Names.DEFAULT_CONSTRUCTOR_SIG);
 	}
 
 	/**
@@ -409,8 +403,7 @@ public class Hierarchy {
 	 * @return
 	 */
 	public static SootMethod getNewDefaultConstructor() {
-		return new SootMethod(SootMethod.constructorName,
-				Collections.<Type> emptyList(), VoidType.v(), Modifier.PUBLIC);
+		return new SootMethod(SootMethod.constructorName, Collections.<Type> emptyList(), VoidType.v(), Modifier.PUBLIC);
 	}
 
 	/**
@@ -421,11 +414,9 @@ public class Hierarchy {
 	public void addDefaultConstructorToLibraryClass(SootClass libraryClass) {
 		if (!libraryClass.isInterface()) {
 			if (hasDefaultConstructor(libraryClass)) {
-				makePublic(libraryClass
-						.getMethod(Names.DEFAULT_CONSTRUCTOR_SIG));
+				makePublic(libraryClass.getMethod(Names.DEFAULT_CONSTRUCTOR_SIG));
 			} else {
-				addMethodToLibraryClass(libraryClass,
-						getNewDefaultConstructor());
+				addMethodToLibraryClass(libraryClass, getNewDefaultConstructor());
 			}
 		}
 	}
@@ -436,8 +427,7 @@ public class Hierarchy {
 	 * @param libraryClass
 	 * @param method
 	 */
-	private void addMethodToLibraryClass(SootClass libraryClass,
-			SootMethod method) {
+	private void addMethodToLibraryClass(SootClass libraryClass, SootMethod method) {
 		libraryClass.addMethod(method);
 
 		// Update the library method count
@@ -457,8 +447,7 @@ public class Hierarchy {
 			// This is a stupid workaround because Soot doesn't allow changing
 			// the modifiers of a library method
 			libraryMethod.getDeclaringClass().setApplicationClass();
-			libraryMethod.setModifiers(libraryMethod.getModifiers()
-					& ~Modifier.NATIVE);
+			libraryMethod.setModifiers(libraryMethod.getModifiers() & ~Modifier.NATIVE);
 			libraryMethod.getDeclaringClass().setLibraryClass();
 		}
 	}
@@ -550,8 +539,7 @@ public class Hierarchy {
 	 * @return
 	 */
 	public static boolean isValidSignature(String sig) {
-		return sig.charAt(0) == '<' && sig.charAt(sig.length() - 1) == '>'
-				&& sig.indexOf(":") >= 0;
+		return sig.charAt(0) == '<' && sig.charAt(sig.length() - 1) == '>' && sig.indexOf(":") >= 0;
 	}
 
 	/**
@@ -571,8 +559,7 @@ public class Hierarchy {
 	 * @return
 	 */
 	public static boolean isStaticInitializer(SootMethod method) {
-		return method.isStatic()
-				&& method.getName().equals(SootMethod.staticInitializerName);
+		return method.isStatic() && method.getName().equals(SootMethod.staticInitializerName);
 	}
 
 	/**
@@ -605,8 +592,7 @@ public class Hierarchy {
 	public ArrayType getArrayType(String type) {
 		String className = getBaseType(type);
 		int numberOfDimensions = (type.length() - className.length()) / 2;
-		return ArrayType.v(nameToClass.get(className).getType(),
-				numberOfDimensions);
+		return ArrayType.v(nameToClass.get(className).getType(), numberOfDimensions);
 	}
 
 	/**
@@ -642,8 +628,7 @@ public class Hierarchy {
 	 * @return
 	 */
 	public Type getStringArrayType() {
-		return ArrayType
-				.v(nameToClass.get(Names.JAVA_LANG_STRING).getType(), 1);
+		return ArrayType.v(nameToClass.get(Names.JAVA_LANG_STRING).getType(), 1);
 	}
 
 	/**
@@ -662,8 +647,7 @@ public class Hierarchy {
 	 * @return
 	 */
 	public boolean isDeclaredInJavaLangObject(SootMethod method) {
-		return method.getDeclaringClass().getName()
-				.equals(Names.JAVA_LANG_OBJECT);
+		return method.getDeclaringClass().getName().equals(Names.JAVA_LANG_OBJECT);
 	}
 
 	/**
@@ -683,8 +667,7 @@ public class Hierarchy {
 	 * @return
 	 */
 	public SootMethod getMethod(String methodSignature) {
-		return getClass(signatureToClass(methodSignature)).getMethod(
-				signatureToSubsignature(methodSignature));
+		return getClass(signatureToClass(methodSignature)).getMethod(signatureToSubsignature(methodSignature));
 	}
 
 	/**
@@ -695,10 +678,8 @@ public class Hierarchy {
 	 * @return list of application classes it matches
 	 */
 	public Set<SootClass> matchSubstrOfApplicationClass(String str) {
-		return nameToApplicationClass.keySet().stream()
-				.filter(k -> k.contains(str))
-				.map(k -> nameToApplicationClass.get(k))
-				.collect(Collectors.toSet());
+		return nameToApplicationClass.keySet().stream().filter(k -> k.contains(str))
+				.map(k -> nameToApplicationClass.get(k)).collect(Collectors.toSet());
 	}
 
 	/**
@@ -907,8 +888,7 @@ public class Hierarchy {
 		checkLevel(cls);
 
 		if (!classToLibraryConcreteSubclasses.containsKey(cls)) {
-			classToLibraryConcreteSubclasses.put(cls,
-					new LinkedHashSet<SootClass>());
+			classToLibraryConcreteSubclasses.put(cls, new LinkedHashSet<SootClass>());
 		}
 
 		return classToLibraryConcreteSubclasses.get(cls);
@@ -975,8 +955,7 @@ public class Hierarchy {
 	 * @param cls
 	 * @return
 	 */
-	public boolean isLibraryConcreteSubclassOf(SootClass possibleChild,
-			SootClass cls) {
+	public boolean isLibraryConcreteSubclassOf(SootClass possibleChild, SootClass cls) {
 		return getLibraryConcreteSubclassesOf(cls).contains(possibleChild);
 	}
 
@@ -1047,8 +1026,7 @@ public class Hierarchy {
 	 * @param iface
 	 * @return
 	 */
-	public LinkedHashSet<SootClass> getSuperinterfacesOfIncluding(
-			SootClass iface) {
+	public LinkedHashSet<SootClass> getSuperinterfacesOfIncluding(SootClass iface) {
 		LinkedHashSet<SootClass> result = new LinkedHashSet<SootClass>();
 		result.add(iface);
 		result.addAll(getSuperinterfacesOf(iface));
@@ -1065,8 +1043,7 @@ public class Hierarchy {
 		checkLevel(cls);
 
 		if (!classToDirectSuperinterfaces.containsKey(cls)) {
-			LinkedHashSet<SootClass> ifaces = new LinkedHashSet<SootClass>(
-					cls.getInterfaces());
+			LinkedHashSet<SootClass> ifaces = new LinkedHashSet<SootClass>(cls.getInterfaces());
 			classToDirectSuperinterfaces.put(cls, ifaces);
 		}
 
@@ -1083,8 +1060,7 @@ public class Hierarchy {
 		checkLevel(iface);
 
 		if (!interfaceToDirectImplementers.containsKey(iface)) {
-			interfaceToDirectImplementers.put(iface,
-					new LinkedHashSet<SootClass>());
+			interfaceToDirectImplementers.put(iface, new LinkedHashSet<SootClass>());
 		}
 
 		return interfaceToDirectImplementers.get(iface);
@@ -1116,8 +1092,7 @@ public class Hierarchy {
 		checkLevel(iface);
 
 		if (!interfaceToConcreteImplementers.containsKey(iface)) {
-			interfaceToConcreteImplementers.put(iface,
-					new LinkedHashSet<SootClass>());
+			interfaceToConcreteImplementers.put(iface, new LinkedHashSet<SootClass>());
 		}
 
 		return interfaceToConcreteImplementers.get(iface);
@@ -1129,13 +1104,11 @@ public class Hierarchy {
 	 * @param iface
 	 * @return
 	 */
-	public LinkedHashSet<SootClass> getLibraryConcreteImplementersOf(
-			SootClass iface) {
+	public LinkedHashSet<SootClass> getLibraryConcreteImplementersOf(SootClass iface) {
 		checkLevel(iface);
 
 		if (!interfaceToLibraryConcreteImplementers.containsKey(iface)) {
-			interfaceToLibraryConcreteImplementers.put(iface,
-					new LinkedHashSet<SootClass>());
+			interfaceToLibraryConcreteImplementers.put(iface, new LinkedHashSet<SootClass>());
 		}
 
 		return interfaceToLibraryConcreteImplementers.get(iface);
@@ -1245,20 +1218,16 @@ public class Hierarchy {
 	 * @param method
 	 * @return
 	 */
-	public LinkedHashSet<SootMethod> getSuperclassesSuperMethodsOf(
-			SootMethod method) {
+	public LinkedHashSet<SootMethod> getSuperclassesSuperMethodsOf(SootMethod method) {
 		if (canOverride(method)) {
 			if (!methodToSuperclassesSuperMethods.containsKey(method)) {
 				LinkedHashSet<SootMethod> result = new LinkedHashSet<SootMethod>();
 
-				for (SootClass superClass : getSuperclassesOf(method
-						.getDeclaringClass())) {
-					if (superClass.declaresMethod(method
-							.getNumberedSubSignature())) {
+				for (SootClass superClass : getSuperclassesOf(method.getDeclaringClass())) {
+					if (superClass.declaresMethod(method.getNumberedSubSignature())) {
 						// NOTE: Private methods are ignored in calculating
 						// supermethods from superclasses
-						SootMethod m = superClass.getMethod(method
-								.getNumberedSubSignature());
+						SootMethod m = superClass.getMethod(method.getNumberedSubSignature());
 						if (!m.isPrivate()) {
 							result.add(m);
 						}
@@ -1296,12 +1265,9 @@ public class Hierarchy {
 			if (!methodToSuperinterfacesSuperMethods.containsKey(method)) {
 				Set<SootMethod> result = new HashSet<SootMethod>();
 
-				for (SootClass superInterface : getSuperinterfacesOf(method
-						.getDeclaringClass())) {
-					if (superInterface.declaresMethod(method
-							.getNumberedSubSignature())) {
-						result.add(superInterface.getMethod(method
-								.getNumberedSubSignature()));
+				for (SootClass superInterface : getSuperinterfacesOf(method.getDeclaringClass())) {
+					if (superInterface.declaresMethod(method.getNumberedSubSignature())) {
+						result.add(superInterface.getMethod(method.getNumberedSubSignature()));
 					}
 				}
 
@@ -1374,8 +1340,10 @@ public class Hierarchy {
 				SootMethod result = null;
 
 				if (hasSuperclassesSuperMethods(method)) {
-					result = SetUtils
-							.getLastElement(getSuperclassesSuperMethodsOf(method));
+					LinkedHashSet<SootMethod> s = getSuperclassesSuperMethodsOf(method);
+					result = s.stream().skip(s.size() - 1).findFirst().get();
+					// result =
+					// SetUtils.getLastElement(getSuperclassesSuperMethodsOf(method));
 				}
 
 				methodToTopmostSuperclassesSuperMethod.put(method, result);
@@ -1448,8 +1416,7 @@ public class Hierarchy {
 	 * @return
 	 */
 	public boolean isOverrideOf(SootMethod possibleChild, SootMethod method) {
-		return hasSuperMethods(possibleChild)
-				&& getSuperMethodsOf(possibleChild).contains(method);
+		return hasSuperMethods(possibleChild) && getSuperMethodsOf(possibleChild).contains(method);
 	}
 
 	/**
@@ -1460,8 +1427,7 @@ public class Hierarchy {
 	 * @return
 	 */
 	public boolean isSuperMethodOf(SootMethod possibleParent, SootMethod method) {
-		return hasSuperMethods(method)
-				&& getSuperMethodsOf(method).contains(possibleParent);
+		return hasSuperMethods(method) && getSuperMethodsOf(method).contains(possibleParent);
 	}
 
 	/**
@@ -1484,8 +1450,7 @@ public class Hierarchy {
 
 						// Get the array parameters in this topmost library
 						// super method.
-						libraryArrayTypeParameters
-								.addAll(getArrayTypeParameters(topmostSuperMethod));
+						libraryArrayTypeParameters.addAll(getArrayTypeParameters(topmostSuperMethod));
 					}
 				}
 			}
@@ -1512,8 +1477,7 @@ public class Hierarchy {
 	 * @param libraryMethod
 	 * @return
 	 */
-	public boolean isLibraryMethodReferencedInApplication(
-			SootMethod libraryMethod) {
+	public boolean isLibraryMethodReferencedInApplication(SootMethod libraryMethod) {
 		return libraryMethodsReferencedInApplication.contains(libraryMethod);
 	}
 
@@ -1754,8 +1718,7 @@ public class Hierarchy {
 	 */
 	private void findLibrarySuperMethodsOfApplicationMethods() {
 		for (SootClass cls : getApplicationClasses()) {
-			librarySuperMethodsOfApplicationMethods
-					.addAll(getLibrarySuperMethodsOf(cls));
+			librarySuperMethodsOfApplicationMethods.addAll(getLibrarySuperMethodsOf(cls));
 		}
 	}
 
@@ -1772,26 +1735,22 @@ public class Hierarchy {
 	}
 
 	private void findApplicationClassesReferencedByName() {
-		applicationClassesReferencedByName.addAll(applicationConstantPool
-				.getApplicationClasses());
+		applicationClassesReferencedByName.addAll(applicationConstantPool.getApplicationClasses());
 	}
 
 	/**
 	 * Find all the library methods referenced by the application.
 	 */
 	private void findLibraryMethodsReferencedInApplication() {
-		libraryMethodsReferencedInApplication
-				.addAll(librarySuperMethodsOfApplicationMethods);
-		libraryMethodsReferencedInApplication.addAll(applicationConstantPool
-				.getLibraryMethods());
+		libraryMethodsReferencedInApplication.addAll(librarySuperMethodsOfApplicationMethods);
+		libraryMethodsReferencedInApplication.addAll(applicationConstantPool.getLibraryMethods());
 	}
 
 	/**
 	 * Find all the library fields referenced by the application.
 	 */
 	private void findLibraryFieldsReferencedInApplication() {
-		libraryFieldsReferencedInApplication.addAll(applicationConstantPool
-				.getLibraryFields());
+		libraryFieldsReferencedInApplication.addAll(applicationConstantPool.getLibraryFields());
 	}
 
 	/**
@@ -1803,14 +1762,11 @@ public class Hierarchy {
 	 * @param superMethods
 	 * @return
 	 */
-	private SootMethod purifySuperinterfacesSuperMethodsSet(
-			Set<SootMethod> superMethods) {
-		SortedSet<SootMethod> sorted = new TreeSet<SootMethod>(
-				new SootMethodComparer());
+	private SootMethod purifySuperinterfacesSuperMethodsSet(Set<SootMethod> superMethods) {
+		SortedSet<SootMethod> sorted = new TreeSet<SootMethod>(new SootMethodComparer());
 
 		for (SootMethod method : superMethods) {
-			if (!containsSuperinterface(superMethods,
-					method.getDeclaringClass())) {
+			if (!containsSuperinterface(superMethods, method.getDeclaringClass())) {
 				sorted.add(method);
 			}
 		}
@@ -1826,8 +1782,7 @@ public class Hierarchy {
 	 * @param cls
 	 * @return
 	 */
-	private boolean containsSuperinterface(Set<SootMethod> methods,
-			SootClass cls) {
+	private boolean containsSuperinterface(Set<SootMethod> methods, SootClass cls) {
 		for (SootMethod method : methods) {
 			if (isSuperinterfaceOf(method.getDeclaringClass(), cls)) {
 				return true;
@@ -2001,15 +1956,12 @@ public class Hierarchy {
 	 * @return
 	 */
 	private boolean isLibraryMethodRemovable(SootMethod libraryMethod) {
-		if (libraryMethod.isPrivate()
-				|| isLibraryMethodReturnTypeRemovable(libraryMethod)
+		if (libraryMethod.isPrivate() || isLibraryMethodReturnTypeRemovable(libraryMethod)
 				|| isLibraryMethodParameterTypesRemovable(libraryMethod)) {
 			return true;
-		} else if (isBasicLibraryMethod(libraryMethod)
-				|| isLibraryMethodReferencedInApplication(libraryMethod)) {
+		} else if (isBasicLibraryMethod(libraryMethod) || isLibraryMethodReferencedInApplication(libraryMethod)) {
 			return false;
-		} else if (libraryMethod.isConcrete()
-				&& !hasConcreteSuperMethod(libraryMethod)
+		} else if (libraryMethod.isConcrete() && !hasConcreteSuperMethod(libraryMethod)
 				&& hasAbstractSuperMethod(libraryMethod)) {
 			return false;
 		} else {
