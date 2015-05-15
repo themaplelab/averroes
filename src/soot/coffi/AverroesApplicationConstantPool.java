@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import averroes.soot.Hierarchy;
+import averroes.util.BytecodeUtils;
 import soot.ResolutionFailedException;
 import soot.Scene;
 import soot.SootClass;
@@ -12,8 +14,6 @@ import soot.SootField;
 import soot.SootFieldRef;
 import soot.SootMethod;
 import soot.Type;
-import ca.uwaterloo.averroes.soot.Hierarchy;
-import ca.uwaterloo.averroes.util.BytecodeUtils;
 
 /**
  * A class that holds the values of library methods and fields found in the
