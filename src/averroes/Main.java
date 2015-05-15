@@ -157,7 +157,7 @@ public class Main {
 
 	public static void usage() {
 		System.out.println("");
-		System.out.println("Usage: java -jar averroes.jar averroes.AverroesProperties");
+		System.out.println("Usage: java -jar averroes.jar averroes.properties");
 		System.out.println("");
 		System.exit(1);
 	}
