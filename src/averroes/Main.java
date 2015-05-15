@@ -1,7 +1,13 @@
-package averroes.jar;
+package averroes;
 
 import java.util.Collections;
 
+import soot.ClassProvider;
+import soot.G;
+import soot.Scene;
+import soot.SootClass;
+import soot.SourceLocator;
+import soot.options.Options;
 import averroes.properties.AverroesProperties;
 import averroes.soot.CodeGenerator;
 import averroes.soot.Hierarchy;
@@ -10,20 +16,14 @@ import averroes.soot.SootSceneUtil;
 import averroes.util.MathUtils;
 import averroes.util.TimeUtils;
 import averroes.util.io.FileUtils;
-import soot.ClassProvider;
-import soot.G;
-import soot.Scene;
-import soot.SootClass;
-import soot.SourceLocator;
-import soot.options.Options;
 
 /**
  * The main Averroes class.
  * 
- * @author karim
+ * @author Karim Ali
  * 
  */
-public class JarFactory {
+public class Main {
 
 	/**
 	 * The main Averroes method.
@@ -32,12 +32,17 @@ public class JarFactory {
 	 */
 	public static void main(String[] args) {
 		try {
+
+			if (args.length != 1) {
+				usage();
+			}
+
 			// Find the total execution time, instead of depending on the Unix
 			// time command
 			TimeUtils.splitStart();
 
 			// Process the arguments
-			AverroesProperties.processArguments(args);
+			AverroesProperties.loadProperties(args[0]);
 
 			// Reset Soot
 			G.reset();
@@ -148,5 +153,12 @@ public class JarFactory {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public static void usage() {
+		System.out.println("");
+		System.out.println("Usage: java -jar averroes.jar averroes.AverroesProperties");
+		System.out.println("");
+		System.exit(1);
 	}
 }

@@ -15,9 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import averroes.properties.AverroesProperties;
-import averroes.tamiflex.TamiFlexFactsDatabase;
-import averroes.util.io.FileUtils;
 import soot.ArrayType;
 import soot.Local;
 import soot.Modifier;
@@ -37,6 +34,9 @@ import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
 import soot.options.Options;
 import soot.util.JasminOutputStream;
+import averroes.properties.AverroesProperties;
+import averroes.tamiflex.TamiFlexFactsDatabase;
+import averroes.util.io.FileUtils;
 
 /**
  * The master-mind of Averroes. That's where the magic of generating code for
@@ -80,15 +80,6 @@ public class CodeGenerator {
 		generatedClassCount = 0;
 
 		initialize();
-	}
-
-	/**
-	 * Get the underlying class Hierarchy.v().
-	 * 
-	 * @return
-	 */
-	public Hierarchy getHierarchy() {
-		return Hierarchy.v();
 	}
 
 	/**
@@ -509,7 +500,7 @@ public class CodeGenerator {
 		handleArrayIndices();
 
 		// Create, reflectively, the application objects, and assign them to lpt
-		if (!AverroesProperties.disableTamiFlex()) {
+		if (AverroesProperties.enableTamiflex()) {
 			createObjectsFromApplicationClassNames();
 		}
 
@@ -659,7 +650,7 @@ public class CodeGenerator {
 
 		// 3. The library can create application objects through
 		// Class.newInstance
-		if (!AverroesProperties.disableTamiFlex()) {
+		if (AverroesProperties.enableTamiflex()) {
 			for (SootClass cls : getTamiFlexApplicationClassNewInstance()) {
 				doItAllBody.createObjectOfType(cls);
 			}
@@ -667,7 +658,7 @@ public class CodeGenerator {
 
 		// 4. The library can create application objects through
 		// Constructor.newInstance
-		if (!AverroesProperties.disableTamiFlex()) {
+		if (AverroesProperties.enableTamiflex()) {
 			for (SootMethod init : getTamiFlexApplicationConstructorNewInstance()) {
 				doItAllBody.createObjectByCallingConstructor(init);
 			}
@@ -681,7 +672,7 @@ public class CodeGenerator {
 		// 6. The library could possibly create application objects whose class
 		// names are passed to it through
 		// calls to Class.forName
-		if (!AverroesProperties.disableTamiFlex()) {
+		if (AverroesProperties.enableTamiflex()) {
 			for (SootClass cls : getTamiFlexApplicationClassForName()) {
 				doItAllBody.createObjectOfType(cls);
 			}
@@ -699,7 +690,7 @@ public class CodeGenerator {
 		result.addAll(Hierarchy.v().getLibraryArrayTypeReturns());
 
 		// Only added if reflection support is enabled
-		if (!AverroesProperties.disableTamiFlex()) {
+		if (AverroesProperties.enableTamiflex()) {
 			result.addAll(getTamiFlexApplicationArrayNewInstance());
 		}
 

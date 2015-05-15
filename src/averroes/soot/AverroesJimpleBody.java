@@ -34,7 +34,7 @@ import soot.jimple.LongConstant;
 /**
  * A representation of the {@link JimpleBody} Averroes generates for all the placeholder library methods.
  * 
- * @author karim
+ * @author Karim Ali
  * 
  */
 public class AverroesJimpleBody {

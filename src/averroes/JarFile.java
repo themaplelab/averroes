@@ -1,4 +1,4 @@
-package averroes.jar;
+package averroes;
 
 import java.io.BufferedInputStream;
 import java.io.File;

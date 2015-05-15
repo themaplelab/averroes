@@ -27,7 +27,7 @@ import averroes.properties.AverroesProperties;
 /**
  * A representation of the class hierarchy Averroes uses for the input program.
  * 
- * @author karim
+ * @author Karim Ali
  * 
  */
 public class Hierarchy {

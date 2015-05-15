@@ -15,7 +15,7 @@ import averroes.properties.AverroesProperties;
 /**
  * Utility class for file-related operations.
  * 
- * @author karim
+ * @author Karim Ali
  * 
  */
 public class FileUtils {
@@ -320,7 +320,7 @@ public class FileUtils {
 	public static String callGraphGzipFile() {
 		return AverroesProperties.getOutputDir().concat(File.separator).concat("callgraph.txt.gzip");
 	}
-	
+
 	/**
 	 * The path to the Android call graph.
 	 * 

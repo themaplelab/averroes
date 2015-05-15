@@ -6,19 +6,19 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import averroes.properties.AverroesProperties;
 import soot.Modifier;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.Type;
 import soot.VoidType;
+import averroes.properties.AverroesProperties;
 
 /**
- * A database of all the classes required by Soot to run properly. These are the classes from
- * {@link Scene#addSootBasicClasses()}.
+ * A database of all the classes required by Soot to run properly. These are the
+ * classes from {@link Scene#addSootBasicClasses()}.
  * 
- * @author karim
+ * @author Karim Ali
  * 
  */
 public class SootBasicClassesDatabase {
@@ -59,7 +59,8 @@ public class SootBasicClassesDatabase {
 			}
 		}
 
-		// Set the superclass of the basic classes based on the underlying hierarchy
+		// Set the superclass of the basic classes based on the underlying
+		// hierarchy
 		for (SootClass cls : result) {
 			if (fakeHierarchy.containsKey(cls.getName())) {
 				cls.setSuperclass(Scene.v().getSootClass(fakeHierarchy.get(cls.getName())));
@@ -76,7 +77,8 @@ public class SootBasicClassesDatabase {
 	public Set<String> listClasses() {
 		Set<String> classNames = new HashSet<String>();
 
-		// NOTE: This list of classes are the ones in the Scene.addSootBasicClasses method.
+		// NOTE: This list of classes are the ones in the
+		// Scene.addSootBasicClasses method.
 		classNames.add("java.lang.Object");
 		classNames.add("java.lang.Class");
 
@@ -144,9 +146,11 @@ public class SootBasicClassesDatabase {
 	}
 
 	/**
-	 * Initialize the underlying fake hierarchy. Note: I changed the direct superclass to java.lang.Object wherever it
-	 * doesn't matter (e.g., java.lang.Byte). I also "round-up" the direct superclass to the nearest existing basic
-	 * class if the original direct superclass is not in the list (e.g., java.lang.OutOfMemoryError).
+	 * Initialize the underlying fake hierarchy. Note: I changed the direct
+	 * superclass to java.lang.Object wherever it doesn't matter (e.g.,
+	 * java.lang.Byte). I also "round-up" the direct superclass to the nearest
+	 * existing basic class if the original direct superclass is not in the list
+	 * (e.g., java.lang.OutOfMemoryError).
 	 */
 	private void initialize() {
 		fakeHierarchy.put("java.lang.Class", "java.lang.Object");

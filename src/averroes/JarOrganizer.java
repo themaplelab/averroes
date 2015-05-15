@@ -1,4 +1,4 @@
-package averroes.jar;
+package averroes;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,8 +13,9 @@ import averroes.properties.AverroesProperties;
 import averroes.util.io.FileUtils;
 
 /**
- * Utility class to organize the input JAR files to Averroes into two JAR files only: one for the application, and
- * another one for the library. This process does not alter the original class files in any way, it's merely copying the
+ * Utility class to organize the input JAR files to Averroes into two JAR files
+ * only: one for the application, and another one for the library. This process
+ * does not alter the original class files in any way, it's merely copying the
  * class files into these temporary JAR files for convenience.
  * 
  * @author karim
@@ -59,7 +60,8 @@ public class JarOrganizer {
 	}
 
 	/**
-	 * Organize the input JAR files into two JAR files only: one for application classes, the other for library classes.
+	 * Organize the input JAR files into two JAR files only: one for application
+	 * classes, the other for library classes.
 	 * 
 	 * @throws ZipException
 	 * @throws IOException
@@ -118,10 +120,10 @@ public class JarOrganizer {
 	 */
 	private void processArchive(String fileName, boolean fromApplicationArchive) throws ZipException, IOException {
 		// Exit if the fileName is empty
-		if(fileName.trim().length() <= 0) {
+		if (fileName.trim().length() <= 0) {
 			return;
 		}
-		
+
 		File file = new File(fileName);
 		System.out.println("Processing " + (fromApplicationArchive ? "input" : "library") + " archive: "
 				+ file.getAbsolutePath());
@@ -138,8 +140,9 @@ public class JarOrganizer {
 	}
 
 	/**
-	 * Determine whether the given class file will be added to the list of application or library class files depending
-	 * on the properties file.
+	 * Determine whether the given class file will be added to the list of
+	 * application or library class files depending on the AverroesProperties
+	 * file.
 	 * 
 	 * @param archive
 	 * @param entry
@@ -151,17 +154,22 @@ public class JarOrganizer {
 
 		if (classNames.contains(className)) {
 			/*
-			 * Ignore, this means we encountered another copy of the class later on the path, it should be ignored. This
-			 * is the case in some benchmarks where the jar file contains both application and library classes, while
-			 * some of those library classes are also in the rt.jar or deps.jar. In such a case, we want to add the
+			 * Ignore, this means we encountered another copy of the class later
+			 * on the path, it should be ignored. This is the case in some
+			 * benchmarks where the jar file contains both application and
+			 * library classes, while some of those library classes are also in
+			 * the rt.jar or deps.jar. In such a case, we want to add the
 			 * classes from the jar file first and ignore the repetition.
 			 */
-			// System.out.println("class " + className + " has already been added to this class provider.");
+			// System.out.println("class " + className +
+			// " has already been added to this class provider.");
 		} else {
 			/*
-			 * The class has to be from an application archive & an application class. Some classes in xalan are
-			 * application classes based on their package name only, while they're in fact not part of the application
-			 * and they come from rt.jar (e.g., org.apache.xalan.templates.OutputProperties$1).
+			 * The class has to be from an application archive & an application
+			 * class. Some classes in xalan are application classes based on
+			 * their package name only, while they're in fact not part of the
+			 * application and they come from rt.jar (e.g.,
+			 * org.apache.xalan.templates.OutputProperties$1).
 			 */
 			if (AverroesProperties.isApplicationClass(className) && fromApplicationArchive) {
 				extractApplicationClassFile(archive, entry);
@@ -206,7 +214,8 @@ public class JarOrganizer {
 	 * @throws IOException
 	 */
 	private void extractClassFile(ZipFile sourceArchive, ZipEntry entry, JarFile destArchive) throws IOException {
-		// Write out the class file to the destination archive directly. No temporary file used.
+		// Write out the class file to the destination archive directly. No
+		// temporary file used.
 		destArchive.add(sourceArchive.getInputStream(entry), entry.getName());
 	}
 }
