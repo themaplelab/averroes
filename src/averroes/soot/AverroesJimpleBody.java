@@ -598,15 +598,6 @@ public class AverroesJimpleBody {
 	}
 
 	/**
-	 * Add Jimple code to create an object of the given RefType.
-	 * 
-	 * @param type
-	 */
-	public void createObjectOfType(RefType type) {
-		createObjectOfType(type.getSootClass());
-	}
-
-	/**
 	 * Add Jimple code to create an object of the given ArrayType.
 	 * 
 	 * @param type

@@ -1,4 +1,4 @@
-package averroes.soot.providers;
+package averroes.soot;
 
 import java.io.File;
 import java.io.IOException;
