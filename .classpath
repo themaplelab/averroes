@@ -6,7 +6,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/soot-infoflow"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/soot-infoflow-android"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/probe"/>
-	<classpathentry kind="lib" path="lib/guava-15.0.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
