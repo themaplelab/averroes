@@ -33,7 +33,6 @@
 			<zipfileset excludes="META-INF/*.SF" src="/Users/karim/Dropbox/workspace/soot/libs/commons-lang3-3.4.jar" />
 			<fileset dir="/Users/karim/Dropbox/workspace/probe/bin" />
 			<zipfileset excludes="META-INF/*.SF" src="/Users/karim/Dropbox/workspace/probe/lib/gxl.jar" />
-			<fileset dir="/Users/karim/Dropbox/workspace/averroes-experiments-data/bin" />
 		</jar>
 	</target>
 </project>

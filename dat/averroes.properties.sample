@@ -1,0 +1,80 @@
+################################################################################
+# 						Averroes property file
+# This file defines the settings Averroes uses to generate a placeholder library
+################################################################################
+
+####################### All settings are mandatory #############################
+
+##### 
+# The packages and classes that Averroes should treat as application classes.
+# Those classes are not touched or altered in any way, they are just packaged
+# in one JAR file called organizedApplication.jar in the output directory.
+#
+# This could be a list of packages/classes separated by the Java 
+# File.pathSeparator character. Each entry can be one of the following forms:
+#	- <package>.* : this will include all the classes in this package
+#	- <package>.** : this will include all the classes in this package and all 
+#					 its sub-packages
+#	- <class_name> : this will include this class only
+#	- ** : this will include all the classes in the default package 
+#####
+application_includes = hello.**
+
+##### 
+# The Java-style name of main class that will run if this input program executes. 
+#####
+main_class = hello.HelloWorld
+
+##### 
+# The paths to the input JAR files. This could be a list of JAR files separated 
+# by the Java File.pathSeparator.
+#
+# Info: paths do not have to be absolute.
+#####
+input_jar_files = hello/hello.jar
+
+##### 
+# The paths to the library JAR files. This could be a list of JAR files separated 
+# by the Java File.pathSeparator.
+#
+# Info: paths do not have to be absolute.
+#####
+library_jar_files =
+
+##### 
+# The path to a file that contains the list of Java-style names for classes this 
+# program could load dynamically when it executes.
+#
+# Info: the path does not have to be absolute. The file can empty.
+#####
+dynamic_classes_file = hello/hello.dyn
+
+##### 
+# The path to a file that contains uses of reflection in the TamiFlexformat.
+# This can either be the output file from TamiFlex, or a manually created file.
+#
+# Info: the path does not have to be absolute. The file can be empty.
+#####
+tamiflex_facts_file = hello/hello.tfx
+
+##### 
+# The path to the output directory where Averroes will store its output which is 3 JAR 
+# files:
+#	organizedApplication.jar : a jar file with all the application classes
+#	organizedLibrary.jar : a jar file with all the original library classes
+#	placeholderLibrary.jar : a jar file with all the placeholder library classes
+#
+# Info: the path does not have to be absolute.
+# Note: You can use the organizedApplication.jar and placeholderLibrary.jar with
+# any whole-program analysis tool later on to generate the call graph of the program.
+#####
+output_dir = output
+
+##### 
+# The Java runtime environment Averroes should use as the Java standard library.
+# This could either be a path to a single JAR file, or the token "system" to use the
+# installed JRE on the system Averroes is running on.
+#
+# Info: the path does not have to be absolute.
+#####
+jre = jre/rt-1.4.2_11.jar

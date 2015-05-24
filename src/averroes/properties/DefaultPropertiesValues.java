@@ -19,15 +19,14 @@ public final class DefaultPropertiesValues {
 	public static final String DEFAULT_LIBRARY_JAR_FILES = "deps.jar";
 
 	public static final String DEFAULT_DYNAMIC_CLASSES_FILE = "classes.dyn";
-	
-	public static final String DEFAULT_ENABLE_DYNAMIC_CLASSES = "false";
 
 	public static final String DEFAULT_TAMIFLEX_FACTS_FILE = "reflection.tfx";
-
-	public static final String DEFAULT_ENABLE_TAMIFLEX = "false";
 
 	public static final String DEFAULT_OUTPUT_DIR = "output";
 
 	public static final String DEFAULT_JRE = "jre/rt-1.4.2_11.jar";
 
+	public static final boolean DEFAULT_ENABLE_DYNAMIC_CLASSES = false;
+	
+	public static final boolean DEFAULT_ENABLE_TAMIFLEX = false;
 }

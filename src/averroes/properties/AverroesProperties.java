@@ -15,8 +15,8 @@ import java.util.Set;
 import probe.ObjectManager;
 import probe.ProbeClass;
 import soot.SootClass;
+import averroes.exceptions.Assertions;
 import averroes.exceptions.AverroesException;
-import averroes.util.io.FileUtils;
 
 /**
  * A class that holds all the properties required by Averroes to run. For the
@@ -29,40 +29,54 @@ import averroes.util.io.FileUtils;
  */
 public final class AverroesProperties {
 
-	private static final String APPLICATION_INCLUDES = "application_includes";
+	public static final String PROPERTY_FILENAME = "averroes.properties";
 
-	private static final String MAIN_CLASS = "main_class";
+	public static final String APPLICATION_INCLUDES = "application_includes";
 
-	private static final String INPUT_JAR_FILES = "input_jar_files";
+	public static final String MAIN_CLASS = "main_class";
 
-	private static final String LIBRARY_JAR_FILES = "library_jar_files";
+	public static final String INPUT_JAR_FILES = "input_jar_files";
 
-	private static final String ENABLE_DYNAMIC_CLASSES = "enable_dynamic_classes";
+	public static final String LIBRARY_JAR_FILES = "library_jar_files";
 
-	private static final String DYNAMIC_CLASSES_FILE = "dynamic_classes_file";
+	public static final String DYNAMIC_CLASSES_FILE = "dynamic_classes_file";
 
-	private static final String ENABLE_TAMIFLEX = "enable_tamiflex";
+	public static final String TAMIFLEX_FACTS_FILE = "tamiflex_facts_file";
 
-	private static final String TAMIFLEX_FACTS_FILE = "tamiflex_facts_file";
+	public static final String OUTPUT_DIR = "output_dir";
 
-	private static final String OUTPUT_DIR = "output_dir";
-
-	private static final String JRE = "jre";
+	public static final String JRE = "jre";
 
 	private static Properties properties = null;
 	private static List<String> dynamicClasses = null;
+
+	private static boolean enableTamiflex = DefaultPropertiesValues.DEFAULT_ENABLE_TAMIFLEX;
+	private static boolean enableDynamicClasses = DefaultPropertiesValues.DEFAULT_ENABLE_DYNAMIC_CLASSES;
+
+	/**
+	 * Load the properties file at the first access of this class.
+	 */
+	static {
+		try {
+			loadProperties();
+		} catch (AverroesException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+	}
 
 	/**
 	 * Load the properties file.
 	 * 
 	 * @throws AverroesException
 	 */
-	public static void loadProperties(String file) throws AverroesException {
+	private static void loadProperties() throws AverroesException {
+		System.out.println("Loading properties...");
 		try {
-			properties = loadPropertiesFromFile(file);
+			properties = loadPropertiesFromFile(AverroesProperties.class.getClassLoader(), PROPERTY_FILENAME);
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.exit(1);
+			throw new AverroesException("Unable to load Averroes properties.", e);
 		}
 	}
 
@@ -74,16 +88,40 @@ public final class AverroesProperties {
 	 * @return
 	 * @throws IOException
 	 */
-	private static Properties loadPropertiesFromFile(String fileName) throws IOException {
+	private static Properties loadPropertiesFromFile(ClassLoader loader, String fileName) throws IOException {
+		if (loader == null) {
+			throw new IllegalArgumentException("loader is null");
+		}
+
 		if (fileName == null) {
 			throw new IllegalArgumentException("null fileName");
 		}
 
-		InputStream propertyStream = FileUtils.getResourceAsStream(fileName);
+		final InputStream propertyStream = loader.getResourceAsStream(fileName);
+		if (propertyStream == null) {
+			throw new IOException("property file unreadable " + fileName);
+		}
 
 		Properties result = new Properties();
 		result.load(propertyStream);
 		return result;
+	}
+
+	/**
+	 * Process the input arguments of Averroes.
+	 * 
+	 * @param args
+	 */
+	public static void processArguments(String[] args) {
+		for (int i = 0; i < args.length; i++) {
+			if ("-enable-tamiflex".equals(args[i])) {
+				enableTamiflex = true;
+			} else if ("-enable-dynamic-classes".equals(args[i])) {
+				enableDynamicClasses = true;
+			} else {
+				Assertions.unknownArgument(args[i]);
+			}
+		}
 	}
 
 	/**
@@ -136,9 +174,7 @@ public final class AverroesProperties {
 	 * @return
 	 */
 	public static boolean enableDynamicClasses() {
-		String result = properties.getProperty(ENABLE_DYNAMIC_CLASSES,
-				DefaultPropertiesValues.DEFAULT_ENABLE_DYNAMIC_CLASSES);
-		return Boolean.parseBoolean(result);
+		return enableDynamicClasses;
 	}
 
 	/**
@@ -153,8 +189,7 @@ public final class AverroesProperties {
 			String property = properties.getProperty(DYNAMIC_CLASSES_FILE,
 					DefaultPropertiesValues.DEFAULT_DYNAMIC_CLASSES_FILE);
 
-			// If a file was given, process it only if enable_dynamic is set to
-			// true.
+			// Process the file only if enable_dynamic is set to true.
 			if (enableDynamicClasses()) {
 				BufferedReader in = new BufferedReader(new FileReader(property));
 				String line;
@@ -194,8 +229,7 @@ public final class AverroesProperties {
 	 * @return
 	 */
 	public static boolean enableTamiflex() {
-		String result = properties.getProperty(ENABLE_TAMIFLEX, DefaultPropertiesValues.DEFAULT_ENABLE_TAMIFLEX);
-		return Boolean.parseBoolean(result);
+		return enableTamiflex;
 	}
 
 	/**
@@ -204,7 +238,7 @@ public final class AverroesProperties {
 	 * 
 	 * @return
 	 */
-	public static String getTamiFlexFactsFile() {
+	public static String getTamiflexFactsFile() {
 		return properties.getProperty(TAMIFLEX_FACTS_FILE, DefaultPropertiesValues.DEFAULT_TAMIFLEX_FACTS_FILE);
 	}
 

@@ -42,7 +42,7 @@ public class Main {
 			TimeUtils.splitStart();
 
 			// Process the arguments
-			AverroesProperties.loadProperties(args[0]);
+			AverroesProperties.processArguments(args);
 
 			// Reset Soot
 			G.reset();

@@ -40,7 +40,7 @@ public class TamiFlexFactsDatabase {
 	 * @throws URISyntaxException 
 	 */
 	private static void loadFacts() throws IOException, URISyntaxException {
-		String fileToLoad = AverroesProperties.getTamiFlexFactsFile();
+		String fileToLoad = AverroesProperties.getTamiflexFactsFile();
 
 		// If no file is given, no facts to load, just return.
 		if (fileToLoad.equalsIgnoreCase("")) {
