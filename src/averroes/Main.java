@@ -32,11 +32,6 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		try {
-
-			if (args.length != 1) {
-				usage();
-			}
-
 			// Find the total execution time, instead of depending on the Unix
 			// time command
 			TimeUtils.splitStart();
@@ -157,7 +152,9 @@ public class Main {
 
 	public static void usage() {
 		System.out.println("");
-		System.out.println("Usage: java -jar averroes.jar averroes.properties");
+		System.out.println("Usage: java -jar averroes.jar [options]");
+		System.out.println("  -tfx : enable Tamiflex support");
+		System.out.println("  -dyn : enable dynamic classes support");
 		System.out.println("");
 		System.exit(1);
 	}

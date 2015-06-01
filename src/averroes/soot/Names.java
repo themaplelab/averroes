@@ -6,10 +6,9 @@ import soot.util.NumberedString;
 
 public class Names {
 	// Averroes-specific Classes
-	public static final String AVERROES_LIBRARY_CLASS = "ca.uwaterloo.averroes.Library";
-	public static final String AVERROES_LIBRARY_CLASS_BC_SIG = "ca/uwaterloo/averroes/Library";
-	public static final String AVERROES_ABSTRACT_LIBRARY_CLASS = "ca.uwaterloo.averroes.AbstractLibrary";
-	public static final String ANDROID_DUMMY_MAIN_CLASS = "ca.uwaterloo.averroes.AndroidDummyMainClass";
+	public static final String AVERROES_LIBRARY_CLASS = "averroes.Library";
+	public static final String AVERROES_LIBRARY_CLASS_BC_SIG = "averroes/Library";
+	public static final String AVERROES_ABSTRACT_LIBRARY_CLASS = "averroes.AbstractLibrary";
 
 	// Classes
 	public static final String JAVA_LANG_OBJECT = "java.lang.Object";

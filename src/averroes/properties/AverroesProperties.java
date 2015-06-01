@@ -50,8 +50,8 @@ public final class AverroesProperties {
 	private static Properties properties = null;
 	private static List<String> dynamicClasses = null;
 
-	private static boolean enableTamiflex = DefaultPropertiesValues.DEFAULT_ENABLE_TAMIFLEX;
-	private static boolean enableDynamicClasses = DefaultPropertiesValues.DEFAULT_ENABLE_DYNAMIC_CLASSES;
+	private static boolean isTamiflexEnabled = DefaultPropertiesValues.IS_TAMIFLEX_ENABLED;
+	private static boolean isDynamicClassesEnabled = DefaultPropertiesValues.IS_DYNAMIC_CLASSES_ENABLED;
 
 	/**
 	 * Load the properties file at the first access of this class.
@@ -114,10 +114,10 @@ public final class AverroesProperties {
 	 */
 	public static void processArguments(String[] args) {
 		for (int i = 0; i < args.length; i++) {
-			if ("-enable-tamiflex".equals(args[i])) {
-				enableTamiflex = true;
-			} else if ("-enable-dynamic-classes".equals(args[i])) {
-				enableDynamicClasses = true;
+			if ("-tfx".equals(args[i])) {
+				isTamiflexEnabled = true;
+			} else if ("-dyn".equals(args[i])) {
+				isDynamicClassesEnabled = true;
 			} else {
 				Assertions.unknownArgument(args[i]);
 			}
@@ -131,8 +131,7 @@ public final class AverroesProperties {
 	 * @return
 	 */
 	public static Set<String> getApplicationIncludes() {
-		String result = properties.getProperty(APPLICATION_INCLUDES,
-				DefaultPropertiesValues.DEFAULT_APPLICATION_INCLUDES);
+		String result = properties.getProperty(APPLICATION_INCLUDES, DefaultPropertiesValues.APPLICATION_INCLUDES);
 		return new HashSet<String>(Arrays.asList(result.split(File.pathSeparator)));
 	}
 
@@ -143,7 +142,7 @@ public final class AverroesProperties {
 	 * @return
 	 */
 	public static String getMainClass() {
-		return properties.getProperty(MAIN_CLASS, DefaultPropertiesValues.DEFAULT_MAIN_CLASS);
+		return properties.getProperty(MAIN_CLASS, DefaultPropertiesValues.MAIN_CLASS);
 	}
 
 	/**
@@ -153,7 +152,7 @@ public final class AverroesProperties {
 	 * @return
 	 */
 	public static Set<String> getInputJarFiles() {
-		String result = properties.getProperty(INPUT_JAR_FILES, DefaultPropertiesValues.DEFAULT_INPUT_JAR_FILES);
+		String result = properties.getProperty(INPUT_JAR_FILES, DefaultPropertiesValues.INPUT_JAR_FILES);
 		return new HashSet<String>(Arrays.asList(result.split(File.pathSeparator)));
 	}
 
@@ -164,17 +163,17 @@ public final class AverroesProperties {
 	 * @return
 	 */
 	public static Set<String> getLibraryJarFiles() {
-		String result = properties.getProperty(LIBRARY_JAR_FILES, DefaultPropertiesValues.DEFAULT_LIBRARY_JAR_FILES);
+		String result = properties.getProperty(LIBRARY_JAR_FILES, DefaultPropertiesValues.LIBRARY_JAR_FILES);
 		return new HashSet<String>(Arrays.asList(result.split(File.pathSeparator)));
 	}
 
 	/**
-	 * Get the {@value #ENABLE_DYNAMIC_CLASSES} property.
+	 * Get the {@value #IS_DYNAMIC_CLASSES_ENABLED} property.
 	 * 
 	 * @return
 	 */
-	public static boolean enableDynamicClasses() {
-		return enableDynamicClasses;
+	public static boolean isDynamicClassesEnabled() {
+		return isDynamicClassesEnabled;
 	}
 
 	/**
@@ -186,18 +185,15 @@ public final class AverroesProperties {
 	public static List<String> getDynamicClasses() throws IOException {
 		if (dynamicClasses == null) {
 			dynamicClasses = new ArrayList<String>();
-			String property = properties.getProperty(DYNAMIC_CLASSES_FILE,
-					DefaultPropertiesValues.DEFAULT_DYNAMIC_CLASSES_FILE);
+			String property = properties
+					.getProperty(DYNAMIC_CLASSES_FILE, DefaultPropertiesValues.DYNAMIC_CLASSES_FILE);
 
-			// Process the file only if enable_dynamic is set to true.
-			if (enableDynamicClasses()) {
-				BufferedReader in = new BufferedReader(new FileReader(property));
-				String line;
-				while ((line = in.readLine()) != null) {
-					dynamicClasses.add(line);
-				}
-				in.close();
+			BufferedReader in = new BufferedReader(new FileReader(property));
+			String line;
+			while ((line = in.readLine()) != null) {
+				dynamicClasses.add(line);
 			}
+			in.close();
 		}
 
 		return dynamicClasses;
@@ -212,11 +208,9 @@ public final class AverroesProperties {
 	public static List<String> getDynamicLibraryClasses() throws IOException {
 		List<String> dynamicLibraryClasses = new ArrayList<String>();
 
-		if (enableDynamicClasses()) {
-			for (String className : getDynamicClasses()) {
-				if (isLibraryClass(className)) {
-					dynamicLibraryClasses.add(className);
-				}
+		for (String className : getDynamicClasses()) {
+			if (isLibraryClass(className)) {
+				dynamicLibraryClasses.add(className);
 			}
 		}
 
@@ -224,12 +218,12 @@ public final class AverroesProperties {
 	}
 
 	/**
-	 * Get the {@value #ENABLE_TAMIFLEX} property.
+	 * Get the {@value #IS_TAMIFLEX_ENABLED} property.
 	 * 
 	 * @return
 	 */
-	public static boolean enableTamiflex() {
-		return enableTamiflex;
+	public static boolean isTamiflexEnabled() {
+		return isTamiflexEnabled;
 	}
 
 	/**
@@ -239,7 +233,7 @@ public final class AverroesProperties {
 	 * @return
 	 */
 	public static String getTamiflexFactsFile() {
-		return properties.getProperty(TAMIFLEX_FACTS_FILE, DefaultPropertiesValues.DEFAULT_TAMIFLEX_FACTS_FILE);
+		return properties.getProperty(TAMIFLEX_FACTS_FILE, DefaultPropertiesValues.TAMIFLEX_FACTS_FILE);
 	}
 
 	/**
@@ -249,7 +243,7 @@ public final class AverroesProperties {
 	 * @return
 	 */
 	public static String getOutputDir() {
-		return properties.getProperty(OUTPUT_DIR, DefaultPropertiesValues.DEFAULT_OUTPUT_DIR);
+		return properties.getProperty(OUTPUT_DIR, DefaultPropertiesValues.OUTPUT_DIR);
 	}
 
 	/**
@@ -260,7 +254,7 @@ public final class AverroesProperties {
 	 * @return
 	 */
 	public static String getJre() {
-		return properties.getProperty(JRE, DefaultPropertiesValues.DEFAULT_JRE);
+		return properties.getProperty(JRE, DefaultPropertiesValues.JRE);
 	}
 
 	/**

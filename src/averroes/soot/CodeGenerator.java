@@ -58,7 +58,6 @@ public class CodeGenerator {
 	private SootClass averroesLibraryClass = null;
 	private SootClass averroesAbstractLibraryClass = null;
 	private AverroesJimpleBody doItAllBody = null;
-	private SootClass androidDummyMainClass = null;
 
 	/**
 	 * Get the CodeGenerator singleton.
@@ -165,45 +164,6 @@ public class CodeGenerator {
 	 */
 	public SootField getAverroesInstanceField() {
 		return averroesAbstractLibraryClass.getField(Hierarchy.signatureToSubsignature(Names.INSTANCE_FIELD_SIGNATURE));
-	}
-
-	/**
-	 * Create a dummy main class for an android app. This basically is a class
-	 * that contains one method: the main method, which calls the
-	 * Library.doItAll() method. This class will be part of the
-	 * placeholderLibrary.jar for convenience. It can then be used as the
-	 * main_class for, in fact, any android app, either using the Soot call
-	 * graph generator or any other tool.
-	 * 
-	 * @throws IOException
-	 * 
-	 */
-	public void createAndroidDummyMainClass() throws IOException {
-		if (androidDummyMainClass == null) {
-			// Create the class
-			androidDummyMainClass = new SootClass(Names.ANDROID_DUMMY_MAIN_CLASS, Modifier.PUBLIC);
-			androidDummyMainClass.setSuperclass(Hierarchy.v().getJavaLangObject());
-
-			// Add the main method
-			SootMethod main = new SootMethod(Names.MAIN_METHOD, Hierarchy.v().getMainParams(), VoidType.v(),
-					Modifier.PUBLIC | Modifier.STATIC);
-			androidDummyMainClass.addMethod(main);
-
-			// Create a simple Jimple body that calls the method doItAll()
-			JimpleBody b = Jimple.v().newBody(main);
-			main.setActiveBody(b);
-			b.insertIdentityStmts();
-			b.getUnits().add(
-					Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(getAverroesAbstractDoItAll().makeRef())));
-			b.getUnits().addLast(Jimple.v().newReturnVoidStmt());
-
-			// Validate the Jimple body
-			b.validate();
-
-			// Write the class file to disk
-			writeLibraryClassFile(androidDummyMainClass);
-		}
-
 	}
 
 	/**
@@ -500,7 +460,7 @@ public class CodeGenerator {
 		handleArrayIndices();
 
 		// Create, reflectively, the application objects, and assign them to lpt
-		if (AverroesProperties.enableTamiflex()) {
+		if (AverroesProperties.isTamiflexEnabled()) {
 			createObjectsFromApplicationClassNames();
 		}
 
@@ -650,7 +610,7 @@ public class CodeGenerator {
 
 		// 3. The library can create application objects through
 		// Class.newInstance
-		if (AverroesProperties.enableTamiflex()) {
+		if (AverroesProperties.isTamiflexEnabled()) {
 			for (SootClass cls : getTamiFlexApplicationClassNewInstance()) {
 				doItAllBody.createObjectOfType(cls);
 			}
@@ -658,7 +618,7 @@ public class CodeGenerator {
 
 		// 4. The library can create application objects through
 		// Constructor.newInstance
-		if (AverroesProperties.enableTamiflex()) {
+		if (AverroesProperties.isTamiflexEnabled()) {
 			for (SootMethod init : getTamiFlexApplicationConstructorNewInstance()) {
 				doItAllBody.createObjectByCallingConstructor(init);
 			}
@@ -672,7 +632,7 @@ public class CodeGenerator {
 		// 6. The library could possibly create application objects whose class
 		// names are passed to it through
 		// calls to Class.forName
-		if (AverroesProperties.enableTamiflex()) {
+		if (AverroesProperties.isTamiflexEnabled()) {
 			for (SootClass cls : getTamiFlexApplicationClassForName()) {
 				doItAllBody.createObjectOfType(cls);
 			}
@@ -690,7 +650,7 @@ public class CodeGenerator {
 		result.addAll(Hierarchy.v().getLibraryArrayTypeReturns());
 
 		// Only added if reflection support is enabled
-		if (AverroesProperties.enableTamiflex()) {
+		if (AverroesProperties.isTamiflexEnabled()) {
 			result.addAll(getTamiFlexApplicationArrayNewInstance());
 		}
 
