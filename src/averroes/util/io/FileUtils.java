@@ -87,7 +87,8 @@ public class FileUtils {
 	 */
 	public static boolean isValidFile(String fileName) throws FileNotFoundException, MalformedURLException,
 			URISyntaxException {
-		return getResource(fileName).isFile();
+		return new File(fileName).isFile();
+		// return getResource(fileName).isFile();
 	}
 
 	/**
@@ -288,17 +289,7 @@ public class FileUtils {
 	}
 
 	/**
-	 * The path to the placeholder library JAR file of a benchmark.
-	 * 
-	 * @return
-	 */
-	public static String placeholderLibraryJarFile(String base, String benchmark) {
-		return composePath(base, "benchmarks-averroes", benchmark + "-placeholder-lib.jar");
-	}
-
-	/**
-	 * The path to the JAR file that contains the single file
-	 * ca.uwaterloo.averroes.Library
+	 * The path to the JAR file that contains the single file averroes.Library
 	 * 
 	 * @return
 	 */

@@ -191,7 +191,7 @@ public class AverroesApplicationConstantPool {
 		for (SootClass applicationClass : hierarchy.getApplicationClasses()) {
 			applicationClasses.addAll(findApplicationClassesReferencedByName(applicationClass));
 		}
-		 applicationClasses.forEach(System.out::println);
+		// applicationClasses.forEach(System.out::println);
 		// System.out.println("averroes found " + substrings.size() +
 		// " possible class name substrings");
 		// substrings.forEach(System.out::println);

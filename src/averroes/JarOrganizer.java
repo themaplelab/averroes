@@ -131,7 +131,8 @@ public class JarOrganizer {
 		}
 
 		// Get the file from the resource
-		File file = FileUtils.getResource(fileName);
+//		File file = FileUtils.getResource(fileName);
+		File file = new File(fileName);
 		System.out.println("Processing " + (fromApplicationArchive ? "input" : "library") + " archive: "
 				+ file.getAbsolutePath());
 

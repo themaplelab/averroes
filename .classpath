@@ -6,6 +6,5 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/soot"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/probe"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/averroes-experiments-data"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
