@@ -3,10 +3,7 @@ package soot.coffi;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import averroes.soot.Hierarchy;
-import averroes.util.BytecodeUtils;
 import soot.ResolutionFailedException;
 import soot.Scene;
 import soot.SootClass;
@@ -14,6 +11,8 @@ import soot.SootField;
 import soot.SootFieldRef;
 import soot.SootMethod;
 import soot.Type;
+import averroes.soot.Hierarchy;
+import averroes.util.BytecodeUtils;
 
 /**
  * A class that holds the values of library methods and fields found in the
@@ -226,8 +225,8 @@ public class AverroesApplicationConstantPool {
 	 */
 	private Set<SootClass> findApplicationClassesReferencedByName(SootClass applicationClass) {
 		Set<SootClass> result = new HashSet<SootClass>();
-		Set<SootClass> classes = new HashSet<SootClass>();
-		Set<String> substrings = new HashSet<String>();
+		// Set<SootClass> classes = new HashSet<SootClass>();
+		// Set<String> substrings = new HashSet<String>();
 
 		/*
 		 * This is only useful if the application class has any methods. Some
@@ -247,17 +246,18 @@ public class AverroesApplicationConstantPool {
 					CONSTANT_Utf8_info s = (CONSTANT_Utf8_info) constantPool[stringInfo.string_index];
 					String className = s.convert().trim();
 
-					if (className.length() > 2) {
-						Set<SootClass> set = hierarchy.matchSubstrOfApplicationClass(className);
-						if (!set.isEmpty()) {
-							classes.addAll(set);
-							substrings.add(className);
-						}
-					}
-
-					// if (hierarchy.isApplicationClass(className)) {
-					// result.add(hierarchy.getClass(className));
+					// if (className.length() > 2) {
+					// Set<SootClass> set =
+					// hierarchy.matchSubstrOfApplicationClass(className);
+					// if (!set.isEmpty()) {
+					// classes.addAll(set);
+					// substrings.add(className);
 					// }
+					// }
+
+					if (hierarchy.isApplicationClass(className)) {
+						result.add(hierarchy.getClass(className));
+					}
 				}
 			}
 
@@ -267,16 +267,16 @@ public class AverroesApplicationConstantPool {
 			 * has substrings spanning multiple class files which is both wrong
 			 * and imprecise.
 			 */
-			result.addAll(classes
-					.stream()
-					.filter(c -> {
-						if (substrings.stream().anyMatch(s -> c.getName().startsWith(s))
-								&& substrings.stream().anyMatch(s -> c.getName().endsWith(s))) {
-							return true;
-						} else {
-							return false;
-						}
-					}).collect(Collectors.toSet()));
+			// result.addAll(classes
+			// .stream()
+			// .filter(c -> {
+			// if (substrings.stream().anyMatch(s -> c.getName().startsWith(s))
+			// && substrings.stream().anyMatch(s -> c.getName().endsWith(s))) {
+			// return true;
+			// } else {
+			// return false;
+			// }
+			// }).collect(Collectors.toSet()));
 
 		}
 
