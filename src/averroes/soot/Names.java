@@ -33,6 +33,8 @@ public class Names {
 	public static final String MAIN_METHOD = "main";
 	public static final String AVERROES_ABSTRACT_DO_IT_ALL_METHOD_SIGNATURE = "<" + AVERROES_ABSTRACT_LIBRARY_CLASS
 			+ ": void " + AVERROES_DO_IT_ALL_METHOD_NAME + "()>";
+	public static final String AVERROES_LIBRARY_DO_IT_ALL_METHOD_SIGNATURE = "<" + AVERROES_LIBRARY_CLASS + ": void "
+			+ AVERROES_DO_IT_ALL_METHOD_NAME + "()>";
 	public static final String AVERROES_LIBRARY_CLINIT_METHOD_SIGNATURE = "<" + AVERROES_LIBRARY_CLASS + ": void "
 			+ SootMethod.staticInitializerName + "()>";
 

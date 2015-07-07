@@ -273,6 +273,12 @@ public class CodeGenerator {
 	 * @return
 	 */
 	private JimpleBody createJimpleBody(SootMethod method) {
+		if (method.getDeclaringClass().getName().equals(Names.AVERROES_ABSTRACT_LIBRARY_CLASS)
+				|| method.getDeclaringClass().getName().equals(Names.AVERROES_LIBRARY_CLASS)) {
+			throw new IllegalArgumentException("Creating Jimple body for " + method.getSignature()
+					+ ". We should never enter createJimpleBody() for the Averroes library classes.");
+		}
+
 		// Create a basic Jimple body
 		AverroesJimpleBody body = new AverroesJimpleBody(method);
 
@@ -290,6 +296,9 @@ public class CodeGenerator {
 
 		// Validate the Jimple body
 		body.validate();
+
+		// TODO
+		// System.out.println(body.getJimpleBody());
 
 		return (JimpleBody) method.getActiveBody();
 	}
@@ -364,9 +373,9 @@ public class CodeGenerator {
 	 */
 	private void createAverroesAbstractLibraryFields() {
 		SootField libraryPointsTo = new SootField(Names.LIBRARY_POINTS_TO, Hierarchy.v().getJavaLangObject().getType(),
-				Modifier.PUBLIC | Modifier.STATIC);
+				Modifier.PUBLIC);
 		SootField finalizePointsTo = new SootField(Names.FINALIZE_POINTS_TO, Hierarchy.v().getJavaLangObject()
-				.getType(), Modifier.PUBLIC | Modifier.STATIC);
+				.getType(), Modifier.PUBLIC);
 		SootField instance = new SootField(Names.INSTANCE, averroesAbstractLibraryClass.getType(), Modifier.PUBLIC
 				| Modifier.STATIC);
 		averroesAbstractLibraryClass.addField(libraryPointsTo);
@@ -474,6 +483,7 @@ public class CodeGenerator {
 		// statement, and the return type is void.
 		// body.insertReturnStmt();
 
+		// TODO
 		// System.out.println(doItAllBody.getJimpleBody());
 
 		// Finally validate the Jimple body
