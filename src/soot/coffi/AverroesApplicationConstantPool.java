@@ -187,9 +187,10 @@ public class AverroesApplicationConstantPool {
 		// } else {
 		// Add the classes whose name appear in the constant pool of application
 		// classes
-		for (SootClass applicationClass : hierarchy.getApplicationClasses()) {
-			applicationClasses.addAll(findApplicationClassesReferencedByName(applicationClass));
-		}
+		// TODO
+//		for (SootClass applicationClass : hierarchy.getApplicationClasses()) {
+//			applicationClasses.addAll(findApplicationClassesReferencedByName(applicationClass));
+//		}
 		// applicationClasses.forEach(System.out::println);
 		// System.out.println("averroes found " + substrings.size() +
 		// " possible class name substrings");
@@ -244,7 +245,7 @@ public class AverroesApplicationConstantPool {
 
 					// Get the class name
 					CONSTANT_Utf8_info s = (CONSTANT_Utf8_info) constantPool[stringInfo.string_index];
-					String className = s.convert().trim();
+					String className = s.convert();//.trim();
 
 					// if (className.length() > 2) {
 					// Set<SootClass> set =
