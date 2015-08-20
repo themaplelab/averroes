@@ -216,6 +216,24 @@ public final class AverroesProperties {
 
 		return dynamicLibraryClasses;
 	}
+	
+	/**
+	 * Get the class names of the dynamic application classes.
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public static List<String> getDynamicApplicationClasses() throws IOException {
+		List<String> dynamicApplicationClasses = new ArrayList<String>();
+
+		for (String className : getDynamicClasses()) {
+			if (isApplicationClass(className)) {
+				dynamicApplicationClasses.add(className);
+			}
+		}
+
+		return dynamicApplicationClasses;
+	}
 
 	/**
 	 * Get the {@value #IS_TAMIFLEX_ENABLED} property.

@@ -484,7 +484,7 @@ public class CodeGenerator {
 		// body.insertReturnStmt();
 
 		// TODO
-//		 System.out.println(doItAllBody.getJimpleBody());
+		// System.out.println(doItAllBody.getJimpleBody());
 
 		// Finally validate the Jimple body
 		doItAllBody.validate();
@@ -645,6 +645,17 @@ public class CodeGenerator {
 		if (AverroesProperties.isTamiflexEnabled()) {
 			for (SootClass cls : getTamiFlexApplicationClassForName()) {
 				doItAllBody.createObjectOfType(cls);
+			}
+		}
+
+		// 7. Create instances of dynamic classes
+		if (AverroesProperties.isDynamicClassesEnabled()) {
+			try {
+				for (String className : AverroesProperties.getDynamicApplicationClasses()) {
+					doItAllBody.createObjectOfType(Hierarchy.v().getClass(className));
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 	}

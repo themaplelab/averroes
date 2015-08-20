@@ -68,7 +68,7 @@ public class JarOrganizer {
 	 * @throws IOException
 	 * @throws URISyntaxException
 	 */
-	public void organizeInputJarFiles() throws ZipException, IOException, URISyntaxException {
+	public void organizeInputJarFiles() throws ZipException, IOException {
 		processInputs();
 		processDependencies();
 		organizedApplicationJarFile.close();
@@ -82,7 +82,7 @@ public class JarOrganizer {
 	 * @throws IOException
 	 * @throws URISyntaxException
 	 */
-	private void processInputs() throws ZipException, IOException, URISyntaxException {
+	private void processInputs() throws ZipException, IOException {
 		for (String entry : AverroesProperties.getInputJarFiles()) {
 			if (FileUtils.isValidFile(entry)) {
 				processArchive(entry, true);
@@ -97,7 +97,7 @@ public class JarOrganizer {
 	 * @throws IOException
 	 * @throws URISyntaxException
 	 */
-	private void processDependencies() throws ZipException, IOException, URISyntaxException {
+	private void processDependencies() throws ZipException, IOException {
 		for (String lib : AverroesProperties.getLibraryJarFiles()) {
 			processArchive(lib, false);
 		}
@@ -123,15 +123,14 @@ public class JarOrganizer {
 	 * @throws IOException
 	 * @throws URISyntaxException
 	 */
-	private void processArchive(String fileName, boolean fromApplicationArchive) throws ZipException, IOException,
-			URISyntaxException {
+	private void processArchive(String fileName, boolean fromApplicationArchive) throws ZipException, IOException {
 		// Exit if the fileName is empty
 		if (fileName.trim().length() <= 0) {
 			return;
 		}
 
 		// Get the file from the resource
-//		File file = FileUtils.getResource(fileName);
+		// File file = FileUtils.getResource(fileName);
 		File file = new File(fileName);
 		System.out.println("Processing " + (fromApplicationArchive ? "input" : "library") + " archive: "
 				+ file.getAbsolutePath());

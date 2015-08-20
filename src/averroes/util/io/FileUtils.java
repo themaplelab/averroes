@@ -81,12 +81,10 @@ public class FileUtils {
 	 * 
 	 * @param fileName
 	 * @return
-	 * @throws URISyntaxException
 	 * @throws MalformedURLException
 	 * @throws FileNotFoundException
 	 */
-	public static boolean isValidFile(String fileName) throws FileNotFoundException, MalformedURLException,
-			URISyntaxException {
+	public static boolean isValidFile(String fileName) throws FileNotFoundException, MalformedURLException {
 		return new File(fileName).isFile();
 		// return getResource(fileName).isFile();
 	}
