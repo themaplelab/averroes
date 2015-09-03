@@ -53,6 +53,20 @@ public class FileFilterFactory {
 			}
 		};
 	}
+	
+	/**
+	 * Create a file filter that recognizes JRE files in a given directory.
+	 * 
+	 * @return
+	 */
+	public static IOFileFilter createJreFilesFilter() {
+		return new IOFileFilter() {
+			@Override
+			public boolean accept(File dir, String name) {
+				return name.equals("rt.jar") || name.equals("jsse.jar") || name.equals("jce.jar");
+			}
+		};
+	}
 
 	/**
 	 * Create a file filter that is the "union" of the all the given file filters.

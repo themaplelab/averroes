@@ -21,7 +21,7 @@ import soot.Type;
 import soot.VoidType;
 import soot.coffi.AverroesApplicationConstantPool;
 import soot.tagkit.Tag;
-import averroes.properties.AverroesProperties;
+import averroes.options.AverroesOptions;
 
 /**
  * A representation of the class hierarchy Averroes uses for the input program.
@@ -1576,7 +1576,7 @@ public class Hierarchy {
 		for (SootClass cls : classes) {
 			// Get the class names
 			nameToClass.put(cls.getName(), cls);
-			if (AverroesProperties.isApplicationClass(cls)) {
+			if (AverroesOptions.isApplicationClass(cls)) {
 				nameToApplicationClass.put(cls.getName(), cls);
 				applicationMethodCount += cls.getMethodCount();
 				applicationFieldCount += cls.getFieldCount();

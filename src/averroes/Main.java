@@ -8,7 +8,7 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SourceLocator;
 import soot.options.Options;
-import averroes.properties.AverroesProperties;
+import averroes.options.AverroesOptions;
 import averroes.soot.CodeGenerator;
 import averroes.soot.Hierarchy;
 import averroes.soot.JarFactoryClassProvider;
@@ -37,13 +37,13 @@ public class Main {
 			TimeUtils.splitStart();
 
 			// Process the arguments
-			AverroesProperties.processArguments(args);
+			AverroesOptions.processArguments(args);
 
 			// Reset Soot
 			G.reset();
 
 			// Create the output directory
-			FileUtils.createDirectory(AverroesProperties.getOutputDir());
+			FileUtils.createDirectory(AverroesOptions.getOutputDirectory());
 
 			// Organize the input JAR files
 			System.out.println("");
@@ -65,7 +65,7 @@ public class Main {
 			SourceLocator.v().setClassProviders(Collections.singletonList((ClassProvider) provider));
 			SootSceneUtil.addCommonDynamicClasses(provider);
 			Options.v().classes().addAll(provider.getApplicationClassNames());
-			Options.v().set_main_class(AverroesProperties.getMainClass());
+			Options.v().set_main_class(AverroesOptions.getMainClass());
 			Options.v().set_validate(true);
 
 			// Load the necessary classes

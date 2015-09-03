@@ -15,7 +15,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import averroes.properties.AverroesProperties;
+import averroes.options.AverroesOptions;
 
 /**
  * Utility class for file-related operations.
@@ -34,7 +34,7 @@ public class FileUtils {
 	 * @throws FileNotFoundException
 	 */
 	public static InputStream getResourceAsStream(String fileName) throws FileNotFoundException {
-		InputStream stream = AverroesProperties.class.getClassLoader().getResourceAsStream(fileName);
+		InputStream stream = AverroesOptions.class.getClassLoader().getResourceAsStream(fileName);
 
 		if (stream == null) {
 			// Maybe it's an absolute path so try that out
@@ -56,7 +56,7 @@ public class FileUtils {
 	 */
 	public static File getResource(String fileName) throws FileNotFoundException, MalformedURLException,
 			URISyntaxException {
-		URL resource = AverroesProperties.class.getClassLoader().getResource(fileName);
+		URL resource = AverroesOptions.class.getClassLoader().getResource(fileName);
 
 		if (resource == null) {
 			// Maybe it's an absolute path so try that out
@@ -265,7 +265,7 @@ public class FileUtils {
 	 * @return
 	 */
 	public static String classesOutputDirectory() {
-		return AverroesProperties.getOutputDir().concat(File.separator).concat("classes");
+		return AverroesOptions.getOutputDirectory().concat(File.separator).concat("classes");
 	}
 
 	/**
@@ -283,7 +283,7 @@ public class FileUtils {
 	 * @return
 	 */
 	public static String placeholderLibraryJarFile() {
-		return AverroesProperties.getOutputDir().concat(File.separator).concat("placeholder-lib.jar");
+		return AverroesOptions.getOutputDirectory().concat(File.separator).concat("placeholder-lib.jar");
 	}
 
 	/**
@@ -292,7 +292,7 @@ public class FileUtils {
 	 * @return
 	 */
 	public static String averroesLibraryClassJarFile() {
-		return AverroesProperties.getOutputDir().concat(File.separator).concat("averroes-lib-class.jar");
+		return AverroesOptions.getOutputDirectory().concat(File.separator).concat("averroes-lib-class.jar");
 	}
 
 	/**
@@ -301,7 +301,7 @@ public class FileUtils {
 	 * @return
 	 */
 	public static String organizedApplicationJarFile() {
-		return AverroesProperties.getOutputDir().concat(File.separator).concat("organized-app.jar");
+		return AverroesOptions.getOutputDirectory().concat(File.separator).concat("organized-app.jar");
 	}
 
 	/**
@@ -310,7 +310,7 @@ public class FileUtils {
 	 * @return
 	 */
 	public static String organizedLibraryJarFile() {
-		return AverroesProperties.getOutputDir().concat(File.separator).concat("organized-lib.jar");
+		return AverroesOptions.getOutputDirectory().concat(File.separator).concat("organized-lib.jar");
 	}
 
 	/**

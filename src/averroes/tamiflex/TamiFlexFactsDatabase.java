@@ -7,7 +7,7 @@ import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
 
-import averroes.properties.AverroesProperties;
+import averroes.options.AverroesOptions;
 
 /**
  * A database for all the TamiFlex facts Averroes extracts from the given
@@ -40,7 +40,7 @@ public class TamiFlexFactsDatabase {
 	 * @throws URISyntaxException
 	 */
 	private static void loadFacts() throws IOException, URISyntaxException {
-		String fileToLoad = AverroesProperties.getTamiflexFactsFile();
+		String fileToLoad = AverroesOptions.getTamiflexFactsFile();
 
 		// If no file is given, no facts to load, just return.
 		if (fileToLoad.equalsIgnoreCase("")) {

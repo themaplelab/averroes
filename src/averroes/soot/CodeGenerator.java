@@ -34,7 +34,7 @@ import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
 import soot.options.Options;
 import soot.util.JasminOutputStream;
-import averroes.properties.AverroesProperties;
+import averroes.options.AverroesOptions;
 import averroes.tamiflex.TamiFlexFactsDatabase;
 import averroes.util.io.FileUtils;
 
@@ -469,7 +469,7 @@ public class CodeGenerator {
 		handleArrayIndices();
 
 		// Create, reflectively, the application objects, and assign them to lpt
-		if (AverroesProperties.isTamiflexEnabled()) {
+		if (AverroesOptions.isTamiflexEnabled()) {
 			createObjectsFromApplicationClassNames();
 		}
 
@@ -620,7 +620,7 @@ public class CodeGenerator {
 
 		// 3. The library can create application objects through
 		// Class.newInstance
-		if (AverroesProperties.isTamiflexEnabled()) {
+		if (AverroesOptions.isTamiflexEnabled()) {
 			for (SootClass cls : getTamiFlexApplicationClassNewInstance()) {
 				doItAllBody.createObjectOfType(cls);
 			}
@@ -628,7 +628,7 @@ public class CodeGenerator {
 
 		// 4. The library can create application objects through
 		// Constructor.newInstance
-		if (AverroesProperties.isTamiflexEnabled()) {
+		if (AverroesOptions.isTamiflexEnabled()) {
 			for (SootMethod init : getTamiFlexApplicationConstructorNewInstance()) {
 				doItAllBody.createObjectByCallingConstructor(init);
 			}
@@ -642,16 +642,16 @@ public class CodeGenerator {
 		// 6. The library could possibly create application objects whose class
 		// names are passed to it through
 		// calls to Class.forName
-		if (AverroesProperties.isTamiflexEnabled()) {
+		if (AverroesOptions.isTamiflexEnabled()) {
 			for (SootClass cls : getTamiFlexApplicationClassForName()) {
 				doItAllBody.createObjectOfType(cls);
 			}
 		}
 
 		// 7. Create instances of dynamic classes
-		if (AverroesProperties.isDynamicClassesEnabled()) {
+		if (AverroesOptions.isDynamicClassesEnabled()) {
 			try {
-				for (String className : AverroesProperties.getDynamicApplicationClasses()) {
+				for (String className : AverroesOptions.getDynamicApplicationClasses()) {
 					doItAllBody.createObjectOfType(Hierarchy.v().getClass(className));
 				}
 			} catch (IOException e) {
@@ -671,7 +671,7 @@ public class CodeGenerator {
 		result.addAll(Hierarchy.v().getLibraryArrayTypeReturns());
 
 		// Only added if reflection support is enabled
-		if (AverroesProperties.isTamiflexEnabled()) {
+		if (AverroesOptions.isTamiflexEnabled()) {
 			result.addAll(getTamiFlexApplicationArrayNewInstance());
 		}
 

@@ -1,6 +1,7 @@
 package averroes;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Enumeration;
@@ -10,8 +11,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
-import averroes.properties.AverroesProperties;
+import averroes.options.AverroesOptions;
+import averroes.util.io.FileFilterFactory;
 import averroes.util.io.FileUtils;
+import averroes.util.io.IOFileFilter;
 
 /**
  * Utility class to organize the input JAR files to Averroes into two JAR files
@@ -83,7 +86,7 @@ public class JarOrganizer {
 	 * @throws URISyntaxException
 	 */
 	private void processInputs() throws ZipException, IOException {
-		for (String entry : AverroesProperties.getInputJarFiles()) {
+		for (String entry : AverroesOptions.getApplicationJars()) {
 			if (FileUtils.isValidFile(entry)) {
 				processArchive(entry, true);
 			}
@@ -92,25 +95,30 @@ public class JarOrganizer {
 
 	/**
 	 * Process the dependencies of the input JAR files.
-	 * 
-	 * @throws ZipException
-	 * @throws IOException
-	 * @throws URISyntaxException
 	 */
-	private void processDependencies() throws ZipException, IOException {
-		for (String lib : AverroesProperties.getLibraryJarFiles()) {
+	private void processDependencies() {
+		// Add the application library dependencies
+		for (String lib : AverroesOptions.getLibraryJarFiles()) {
 			processArchive(lib, false);
 		}
 
 		// Add the JRE libraries
-		if (AverroesProperties.getJre().equalsIgnoreCase("system")) {
-			processArchive(AverroesProperties.getJavaHome() + File.separator + "lib" + File.separator + "rt.jar", false);
-			processArchive(AverroesProperties.getJavaHome() + File.separator + "lib" + File.separator + "jce.jar",
-					false);
-			processArchive(AverroesProperties.getJavaHome() + File.separator + "lib" + File.separator + "jsse.jar",
-					false);
+		if ("system".equals(AverroesOptions.getJreDirectory())) {
+			processJreArchives(System.getProperty("java.home"));
 		} else {
-			processArchive(AverroesProperties.getJre(), false);
+			processJreArchives(AverroesOptions.getJreDirectory());
+		}
+	}
+
+	/**
+	 * Process the JRE archives (recognized JAR files are: rt.jar, jsse.jar, jce.jar).
+	 * 
+	 * @param dir
+	 */
+	private void processJreArchives(String dir) {
+		IOFileFilter filter = FileFilterFactory.createJreFilesFilter();
+		for (File file : new File(dir).listFiles((FileFilter)filter)) {
+			processArchive(file.getPath(), false);
 		}
 	}
 
@@ -119,11 +127,8 @@ public class JarOrganizer {
 	 * 
 	 * @param fileName
 	 * @param fromApplicationArchive
-	 * @throws ZipException
-	 * @throws IOException
-	 * @throws URISyntaxException
 	 */
-	private void processArchive(String fileName, boolean fromApplicationArchive) throws ZipException, IOException {
+	private void processArchive(String fileName, boolean fromApplicationArchive) {
 		// Exit if the fileName is empty
 		if (fileName.trim().length() <= 0) {
 			return;
@@ -135,15 +140,21 @@ public class JarOrganizer {
 		System.out.println("Processing " + (fromApplicationArchive ? "input" : "library") + " archive: "
 				+ file.getAbsolutePath());
 
-		ZipFile archive = new ZipFile(file);
-		Enumeration<? extends ZipEntry> entries = archive.entries();
-		while (entries.hasMoreElements()) {
-			ZipEntry entry = entries.nextElement();
-			if (entry.getName().endsWith(".class")) {
-				addClass(archive, entry, fromApplicationArchive);
+		try {
+			ZipFile archive = new ZipFile(file);
+			Enumeration<? extends ZipEntry> entries = archive.entries();
+
+			while (entries.hasMoreElements()) {
+				ZipEntry entry = entries.nextElement();
+				if (entry.getName().endsWith(".class")) {
+					addClass(archive, entry, fromApplicationArchive);
+				}
 			}
+			archive.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
 		}
-		archive.close();
 	}
 
 	/**
@@ -178,7 +189,7 @@ public class JarOrganizer {
 			 * application and they come from rt.jar (e.g.,
 			 * org.apache.xalan.templates.OutputProperties$1).
 			 */
-			if (AverroesProperties.isApplicationClass(className) && fromApplicationArchive) {
+			if (AverroesOptions.isApplicationClass(className) && fromApplicationArchive) {
 				extractApplicationClassFile(archive, entry);
 				applicationClassNames.add(className);
 			} else {

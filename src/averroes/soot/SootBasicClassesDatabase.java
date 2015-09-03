@@ -12,7 +12,7 @@ import soot.SootClass;
 import soot.SootMethod;
 import soot.Type;
 import soot.VoidType;
-import averroes.properties.AverroesProperties;
+import averroes.options.AverroesOptions;
 
 /**
  * A database of all the classes required by Soot to run properly. These are the
@@ -137,7 +137,7 @@ public class SootBasicClassesDatabase {
 		classNames.add("java.lang.ref.Finalizer");
 
 		try {
-			classNames.addAll(AverroesProperties.getDynamicLibraryClasses());
+			classNames.addAll(AverroesOptions.getDynamicLibraryClasses());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
