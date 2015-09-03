@@ -36,7 +36,7 @@ import soot.options.Options;
 import soot.util.JasminOutputStream;
 import averroes.options.AverroesOptions;
 import averroes.tamiflex.TamiFlexFactsDatabase;
-import averroes.util.io.FileUtils;
+import averroes.util.io.Paths;
 
 /**
  * The master-mind of Averroes. That's where the magic of generating code for
@@ -243,7 +243,7 @@ public class CodeGenerator {
 	 * @throws IOException
 	 */
 	public static void writeLibraryClassFile(SootClass cls) throws IOException {
-		Options.v().set_output_dir(FileUtils.libraryClassesOutputDirectory());
+		Options.v().set_output_dir(Paths.libraryClassesOutputDirectory().getPath());
 
 		File file = new File(SourceLocator.v().getFileNameFor(cls, Options.output_format_class));
 		file.getParentFile().mkdirs();

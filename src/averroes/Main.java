@@ -1,6 +1,9 @@
 package averroes;
 
+import java.io.File;
 import java.util.Collections;
+
+import org.apache.commons.io.FileUtils;
 
 import soot.ClassProvider;
 import soot.G;
@@ -15,7 +18,7 @@ import averroes.soot.JarFactoryClassProvider;
 import averroes.soot.SootSceneUtil;
 import averroes.util.MathUtils;
 import averroes.util.TimeUtils;
-import averroes.util.io.FileUtils;
+import averroes.util.io.Paths;
 
 /**
  * The main Averroes class.
@@ -43,7 +46,7 @@ public class Main {
 			G.reset();
 
 			// Create the output directory
-			FileUtils.createDirectory(AverroesOptions.getOutputDirectory());
+			FileUtils.forceMkdir(new File(AverroesOptions.getOutputDirectory()));
 
 			// Organize the input JAR files
 			System.out.println("");
@@ -104,7 +107,7 @@ public class Main {
 			System.out.println("# final library fields: " + Hierarchy.v().getLibraryFieldCount());
 
 			// Create the output directory for the library class files
-			FileUtils.createDirectory(FileUtils.libraryClassesOutputDirectory());
+			FileUtils.forceMkdir(Paths.libraryClassesOutputDirectory());
 
 			// Output some code generation statistics
 			System.out.println("");
@@ -132,9 +135,9 @@ public class Main {
 
 			// Create the jar file and add all the generated class files to it.
 			TimeUtils.reset();
-			JarFile librJarFile = new JarFile(FileUtils.placeholderLibraryJarFile());
+			JarFile librJarFile = new JarFile(Paths.placeholderLibraryJarFile());
 			librJarFile.addGeneratedLibraryClassFiles();
-			JarFile aveJarFile = new JarFile(FileUtils.averroesLibraryClassJarFile());
+			JarFile aveJarFile = new JarFile(Paths.averroesLibraryClassJarFile());
 			aveJarFile.addAverroesLibraryClassFile();
 			double bcel = TimeUtils.elapsedTime();
 			System.out.println("Placeholder library JAR file verified in " + bcel + " seconds.");

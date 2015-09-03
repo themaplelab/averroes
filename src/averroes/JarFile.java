@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.jar.Attributes;
@@ -25,11 +26,12 @@ import org.apache.bcel.util.SyntheticRepository;
 import org.apache.bcel.verifier.VerificationResult;
 import org.apache.bcel.verifier.Verifier;
 import org.apache.bcel.verifier.VerifierFactory;
+import org.apache.commons.io.FileUtils;
 
+import soot.SootMethod;
 import averroes.exceptions.Assertions;
 import averroes.soot.Names;
-import averroes.util.io.FileUtils;
-import soot.SootMethod;
+import averroes.util.io.Paths;
 
 /**
  * A JAR file is a collection of class files. We use BCEL to verify that the
@@ -41,7 +43,7 @@ import soot.SootMethod;
 public class JarFile {
 
 	private JarOutputStream jarOutputStream;
-	private String fileName;
+	private File fileName;
 	private static Set<JavaClass> bcelClasses = new HashSet<JavaClass>();
 
 	/**
@@ -49,9 +51,9 @@ public class JarFile {
 	 * 
 	 * @param fileName
 	 */
-	public JarFile(String fileName) {
+	public JarFile(File file) {
 		jarOutputStream = null;
-		this.fileName = fileName;
+		this.fileName = file;
 	}
 
 	/**
@@ -76,16 +78,16 @@ public class JarFile {
 	 */
 	public void addGeneratedLibraryClassFiles() throws IOException {
 		Set<String> classFiles = new HashSet<String>();
-		String dir = FileUtils.libraryClassesOutputDirectory();
-		String placeholderJar = FileUtils.placeholderLibraryJarFile();
+		File dir = Paths.libraryClassesOutputDirectory();
+		File placeholderJar = Paths.placeholderLibraryJarFile();
 
 		// Add the class files to the crafted JAR file.
-		FileUtils.findFiles(dir, "class", "not found").stream()
+		FileUtils.listFiles(dir, new String[] { "class" }, true).stream()
 				.filter(f -> !relativize(dir, f).equals(Names.AVERROES_LIBRARY_CLASS_BC_SIG + ".class"))
-				.forEach(fileName -> {
+				.forEach(file -> {
 					try {
-						String className = relativize(dir, fileName);
-						add(dir, new File(fileName));
+						String className = relativize(dir, file);
+						add(dir, file);
 						classFiles.add(className);
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -96,7 +98,7 @@ public class JarFile {
 		// Now add all those class files in the crafted JAR file to the BCEL
 		// repository.
 		for (String classFile : classFiles) {
-			ClassParser parser = new ClassParser(placeholderJar, classFile);
+			ClassParser parser = new ClassParser(placeholderJar.getPath(), classFile);
 			JavaClass cls = parser.parse();
 			bcelClasses.add(cls);
 		}
@@ -109,18 +111,18 @@ public class JarFile {
 	 * @throws URISyntaxException
 	 */
 	public void addAverroesLibraryClassFile() throws IOException, URISyntaxException {
-		String dir = FileUtils.libraryClassesOutputDirectory();
-		String placeholderJar = FileUtils.placeholderLibraryJarFile();
-		String averroesLibraryClassJar = FileUtils.averroesLibraryClassJarFile();
+		File dir = Paths.libraryClassesOutputDirectory();
+		File placeholderJar = Paths.placeholderLibraryJarFile();
+		File averroesLibraryClassJar = Paths.averroesLibraryClassJarFile();
 
-		String fileName = FileUtils.findFiles(dir, "class", "not found").stream()
+		File file = FileUtils.listFiles(dir, new String[] { "class" }, true).stream()
 				.filter(f -> relativize(dir, f).equals(Names.AVERROES_LIBRARY_CLASS_BC_SIG + ".class"))
 				.collect(Collectors.toList()).get(0);
-		String className = relativize(dir, fileName);
+		String className = relativize(dir, file);
 
 		// Add the class file to the separately crafted JAR file.
-		if (FileUtils.isValidFile(fileName)) {
-			add(dir, new File(fileName));
+		if (file.isFile()) {
+			add(dir, file);
 		} else {
 			throw new IllegalStateException("cannot find " + Names.AVERROES_LIBRARY_CLASS
 					+ System.getProperty("line.separator") + "Invalid path given: " + fileName);
@@ -129,12 +131,12 @@ public class JarFile {
 
 		// Set BCEL's repository class path.
 		SyntheticRepository rep = SyntheticRepository.getInstance(new ClassPath(averroesLibraryClassJar
-				+ File.pathSeparator + placeholderJar + File.pathSeparator + FileUtils.organizedApplicationJarFile()));
+				+ File.pathSeparator + placeholderJar + File.pathSeparator + Paths.organizedApplicationJarFile()));
 		Repository.setRepository(rep);
 
 		// Now add the class files (including ones from placeholder JAR) to the
 		// BCEL repository.
-		ClassParser parser = new ClassParser(averroesLibraryClassJar, className);
+		ClassParser parser = new ClassParser(averroesLibraryClassJar.getPath(), className);
 		JavaClass cls = parser.parse();
 		bcelClasses.add(cls);
 
@@ -154,7 +156,7 @@ public class JarFile {
 	 * @param source
 	 * @throws IOException
 	 */
-	public void add(String dir, File source) throws IOException {
+	public void add(File dir, File source) throws IOException {
 		BufferedInputStream in = null;
 		try {
 			if (source.isDirectory()) {
@@ -273,33 +275,14 @@ public class JarFile {
 	/**
 	 * Get the relative path for an absolute file path.
 	 * 
-	 * @param absolute
-	 * @return
-	 */
-	public static String relativize(String dir, String absolute) {
-		return new File(dir).toURI().relativize(new File(absolute).toURI()).getPath();
-	}
-
-	/**
-	 * Get the relative path for an absolute file path.
-	 * 
 	 * @param dir
 	 * @param file
 	 * @return
 	 * @throws IOException
 	 */
-	public static String relativize(String dir, File file) throws IOException {
-		return relativize(dir, file.getCanonicalPath());
-	}
-
-	/**
-	 * Get the class name from an absolute path to a class file.
-	 * 
-	 * @param dir
-	 * @param classFile
-	 * @return
-	 */
-	public static String pathToClassName(String dir, String classFile) {
-		return relativize(dir, classFile).replace(".class", "").replaceAll("/", ".");
+	public static String relativize(File base, File absolute) {
+		Path pathAbsolute = java.nio.file.Paths.get(absolute.getPath()).normalize();
+		Path pathBase = java.nio.file.Paths.get(base.getPath()).normalize();
+		return pathBase.relativize(pathAbsolute).toString();
 	}
 }

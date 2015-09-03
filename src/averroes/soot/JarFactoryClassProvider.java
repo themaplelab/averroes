@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import averroes.util.io.FileUtils;
+import averroes.util.io.Paths;
 import averroes.util.io.Resource;
 import averroes.util.io.ZipEntryResource;
 import soot.ClassProvider;
@@ -185,7 +185,7 @@ public class JarFactoryClassProvider implements ClassProvider {
 	 * @throws IOException
 	 */
 	private List<String> addApplicationArchive() throws IOException {
-		return addArchive(FileUtils.organizedApplicationJarFile(), true);
+		return addArchive(Paths.organizedApplicationJarFile(), true);
 	}
 
 	/**
@@ -195,7 +195,7 @@ public class JarFactoryClassProvider implements ClassProvider {
 	 * @throws IOException
 	 */
 	private List<String> addLibraryArchive() throws IOException {
-		return addArchive(FileUtils.organizedLibraryJarFile(), false);
+		return addArchive(Paths.organizedLibraryJarFile(), false);
 	}
 
 	/**

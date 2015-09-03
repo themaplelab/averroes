@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
@@ -20,7 +21,7 @@ import soot.SootClass;
 /**
  * A class that holds all the properties required by Averroes to run. For the
  * possible values of each property, you can consult the accompanying
- * properties/averroes.properties.sample file or the online tutorial at
+ * averroes.properties.sample file or the online tutorial at
  * {@link http ://karimali.ca/averroes}
  * 
  * @author Karim Ali
@@ -124,8 +125,8 @@ public final class AverroesOptions {
 	 * 
 	 * @return
 	 */
-	public static String[] getApplicationRegex() {
-		return cmd.getOptionValue(applicationRegex.getOpt()).split(File.pathSeparator);
+	public static List<String> getApplicationRegex() {
+		return Arrays.asList(cmd.getOptionValue(applicationRegex.getOpt()).split(File.pathSeparator));
 	}
 
 	/**
@@ -143,8 +144,8 @@ public final class AverroesOptions {
 	 * 
 	 * @return
 	 */
-	public static String[] getApplicationJars() {
-		return cmd.getOptionValue(applicationJars.getOpt()).split(File.pathSeparator);
+	public static List<String> getApplicationJars() {
+		return Arrays.asList(cmd.getOptionValue(applicationJars.getOpt()).split(File.pathSeparator));
 	}
 
 	/**
@@ -152,8 +153,8 @@ public final class AverroesOptions {
 	 * 
 	 * @return
 	 */
-	public static String[] getLibraryJarFiles() {
-		return cmd.getOptionValue(libraryJars.getOpt()).split(File.pathSeparator);
+	public static List<String> getLibraryJarFiles() {
+		return Arrays.asList(cmd.getOptionValue(libraryJars.getOpt()).split(File.pathSeparator));
 	}
 
 	/**

@@ -1,7 +1,6 @@
 package averroes;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Enumeration;
@@ -11,10 +10,11 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.FileFilterUtils;
+
 import averroes.options.AverroesOptions;
-import averroes.util.io.FileFilterFactory;
-import averroes.util.io.FileUtils;
-import averroes.util.io.IOFileFilter;
+import averroes.util.io.Paths;
 
 /**
  * Utility class to organize the input JAR files to Averroes into two JAR files
@@ -41,8 +41,8 @@ public class JarOrganizer {
 		classNames = new HashSet<String>();
 		applicationClassNames = new HashSet<String>();
 		libraryClassNames = new HashSet<String>();
-		organizedApplicationJarFile = new JarFile(FileUtils.organizedApplicationJarFile());
-		organizedLibraryJarFile = new JarFile(FileUtils.organizedLibraryJarFile());
+		organizedApplicationJarFile = new JarFile(Paths.organizedApplicationJarFile());
+		organizedLibraryJarFile = new JarFile(Paths.organizedLibraryJarFile());
 	}
 
 	/**
@@ -86,11 +86,7 @@ public class JarOrganizer {
 	 * @throws URISyntaxException
 	 */
 	private void processInputs() throws ZipException, IOException {
-		for (String entry : AverroesOptions.getApplicationJars()) {
-			if (FileUtils.isValidFile(entry)) {
-				processArchive(entry, true);
-			}
-		}
+		AverroesOptions.getApplicationJars().forEach(jar -> processArchive(jar, true));
 	}
 
 	/**
@@ -98,9 +94,7 @@ public class JarOrganizer {
 	 */
 	private void processDependencies() {
 		// Add the application library dependencies
-		for (String lib : AverroesOptions.getLibraryJarFiles()) {
-			processArchive(lib, false);
-		}
+		AverroesOptions.getLibraryJarFiles().forEach(lib -> processArchive(lib, false));
 
 		// Add the JRE libraries
 		if ("system".equals(AverroesOptions.getJreDirectory())) {
@@ -111,15 +105,19 @@ public class JarOrganizer {
 	}
 
 	/**
-	 * Process the JRE archives (recognized JAR files are: rt.jar, jsse.jar, jce.jar).
+	 * Process the JRE archives (recognized JAR files are: rt.jar, jsse.jar,
+	 * jce.jar).
 	 * 
 	 * @param dir
 	 */
 	private void processJreArchives(String dir) {
-		IOFileFilter filter = FileFilterFactory.createJreFilesFilter();
-		for (File file : new File(dir).listFiles((FileFilter)filter)) {
-			processArchive(file.getPath(), false);
-		}
+		File directory = new File(dir);
+		org.apache.commons.io.filefilter.IOFileFilter nameFilter = FileFilterUtils.or(
+				FileFilterUtils.nameFileFilter("rt.jar"), FileFilterUtils.nameFileFilter("jsse.jar"),
+				FileFilterUtils.nameFileFilter("jce.jar"));
+
+		FileUtils.listFiles(directory, nameFilter, FileFilterUtils.trueFileFilter()).forEach(
+				file -> processArchive(file.getPath(), false));
 	}
 
 	/**
@@ -134,8 +132,6 @@ public class JarOrganizer {
 			return;
 		}
 
-		// Get the file from the resource
-		// File file = FileUtils.getResource(fileName);
 		File file = new File(fileName);
 		System.out.println("Processing " + (fromApplicationArchive ? "input" : "library") + " archive: "
 				+ file.getAbsolutePath());
