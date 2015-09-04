@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
@@ -196,15 +197,7 @@ public final class AverroesOptions {
 	 * @throws IOException
 	 */
 	public static List<String> getDynamicLibraryClasses() throws IOException {
-		List<String> dynamicLibraryClasses = new ArrayList<String>();
-
-		for (String className : getDynamicClasses()) {
-			if (isLibraryClass(className)) {
-				dynamicLibraryClasses.add(className);
-			}
-		}
-
-		return dynamicLibraryClasses;
+		return getDynamicClasses().stream().filter(AverroesOptions::isLibraryClass).collect(Collectors.toList());
 	}
 
 	/**
@@ -214,15 +207,7 @@ public final class AverroesOptions {
 	 * @throws IOException
 	 */
 	public static List<String> getDynamicApplicationClasses() throws IOException {
-		List<String> dynamicApplicationClasses = new ArrayList<String>();
-
-		for (String className : getDynamicClasses()) {
-			if (isApplicationClass(className)) {
-				dynamicApplicationClasses.add(className);
-			}
-		}
-
-		return dynamicApplicationClasses;
+		return getDynamicClasses().stream().filter(AverroesOptions::isApplicationClass).collect(Collectors.toList());
 	}
 
 	/**
@@ -299,7 +284,7 @@ public final class AverroesOptions {
 
 	/**
 	 * Check if a class belongs to the application, based on the
-	 * {@value #APPLICATION_INCLUDES} property.
+	 * {@link #applicationRegex} option.
 	 * 
 	 * @param className
 	 * @return
@@ -310,7 +295,7 @@ public final class AverroesOptions {
 
 	/**
 	 * Check if a class belongs to the application, based on the
-	 * {@value #APPLICATION_INCLUDES} property.
+	 * {@link #applicationRegex} option.
 	 * 
 	 * @param sootClass
 	 * @return
