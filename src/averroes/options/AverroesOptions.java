@@ -61,7 +61,7 @@ public final class AverroesOptions {
 			.desc("a list of the JAR files for library dependencies separated by File.pathSeparator")
 			.hasArg()
 			.argName("path")
-			.required()
+			.required(false)
 			.build();
 	
 	private static Option dynamicClassesFile = Option.builder("d")
@@ -155,7 +155,7 @@ public final class AverroesOptions {
 	 * @return
 	 */
 	public static List<String> getLibraryJarFiles() {
-		return Arrays.asList(cmd.getOptionValue(libraryJars.getOpt()).split(File.pathSeparator));
+		return Arrays.asList(cmd.getOptionValue(libraryJars.getOpt(), "").split(File.pathSeparator));
 	}
 
 	/**
@@ -226,7 +226,7 @@ public final class AverroesOptions {
 	 * @return
 	 */
 	public static String getTamiflexFactsFile() {
-		return cmd.getOptionValue(tamiflexFactsFile.getOpt());
+		return cmd.getOptionValue(tamiflexFactsFile.getOpt(), "");
 	}
 
 	/**

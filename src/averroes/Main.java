@@ -45,8 +45,9 @@ public class Main {
 			// Reset Soot
 			G.reset();
 
-			// Create the output directory
+			// Create the output directory and clean up any class files in there
 			FileUtils.forceMkdir(new File(AverroesOptions.getOutputDirectory()));
+			FileUtils.cleanDirectory(Paths.classesOutputDirectory());
 
 			// Organize the input JAR files
 			System.out.println("");
