@@ -5,12 +5,14 @@ import java.util.Collections;
 import soot.Modifier;
 import soot.Scene;
 import soot.SootClass;
+import soot.SootField;
 import soot.SootMethod;
 import soot.Type;
 import soot.Value;
 import soot.VoidType;
 import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
+import averroes.soot.Names;
 
 /**
  * The master-mind of Averroes. That's where the magic of generating code for
@@ -20,6 +22,19 @@ import soot.jimple.JimpleBody;
  * 
  */
 public class CodeGenerator {
+
+	/**
+	 * Add a field to given Soot class.
+	 * 
+	 * @param cls
+	 * @param fieldName
+	 * @param fieldType
+	 * @param modifiers
+	 */
+	public static void createField(SootClass cls, String fieldName, Type fieldType, int modifiers) {
+		SootField field = new SootField(fieldName, fieldType, modifiers);
+		cls.addField(field);
+	}
 
 	/**
 	 * Create a new Soot class, set its superclass, and add it to the Soot
@@ -64,39 +79,13 @@ public class CodeGenerator {
 	}
 
 	/**
-	 * Check if the given class has a default constructor.
-	 * 
-	 * @param cls
-	 * @return
-	 */
-	public static boolean hasDefaultConstructor(SootClass cls) {
-		return cls.declaresMethod(Names.DEFAULT_CONSTRUCTOR_SIG);
-	}
-
-	/**
 	 * Get the default constructor of the given class.
 	 * 
 	 * @param cls
 	 * @return
 	 */
-	public static SootMethod getDefaultConstructor(SootClass cls) {
+	private static SootMethod getDefaultConstructor(SootClass cls) {
 		return cls.getMethod(Names.DEFAULT_CONSTRUCTOR_SIG);
-	}
-
-	/**
-	 * Check if the method is not public, make it public. Useful for Averroes to
-	 * make public constructors for library classes.
-	 * 
-	 * @param method
-	 */
-	public static void ensurePublic(SootMethod method) {
-		if (!method.isPublic()) {
-			// This is a stupid workaround because Soot doesn't allow changing
-			// the modifiers of a library method
-			method.getDeclaringClass().setApplicationClass();
-			method.setModifiers(Modifier.PUBLIC);
-			method.getDeclaringClass().setLibraryClass();
-		}
 	}
 
 	/**
@@ -104,7 +93,7 @@ public class CodeGenerator {
 	 * 
 	 * @return
 	 */
-	public static SootMethod makeDefaultConstructor() {
+	private static SootMethod makeDefaultConstructor() {
 		return new SootMethod(SootMethod.constructorName, Collections.<Type> emptyList(), VoidType.v(), Modifier.PUBLIC);
 	}
 

@@ -35,11 +35,15 @@ public class RtaJimpleBodyCreator extends JimpleBodyCreator {
 	// Create the singleton RTA class
 	static {
 		// Create a public class and set its super class to java.lang.Object
-		averroesRta = CodeGenerator.createEmptyClass(Names.AVERROES_RTA_CLASS, Modifier.PUBLIC, Scene.v()
-				.getObjectType().getSootClass());
+		averroesRta = CodeGenerator.createEmptyClass(Names.RTA_CLASS, Modifier.PUBLIC, Scene.v().getObjectType()
+				.getSootClass());
 
 		// Add a default constructor to it
 		CodeGenerator.createEmptyDefaultConstructor(averroesRta);
+
+		// Add static field "set" to the class
+		CodeGenerator.createField(averroesRta, Names.RTA_SET_FIELD_NAME, Scene.v().getObjectType(), Modifier.PUBLIC
+				| Modifier.STATIC);
 
 		// Write it to disk
 		ClassWriter.writeLibraryClassFile(averroesRta);
@@ -54,7 +58,7 @@ public class RtaJimpleBodyCreator extends JimpleBodyCreator {
 		if (!isRtaSetLoaded) {
 			
 		}
-		
+
 		return rtaLocal;
 	}
 

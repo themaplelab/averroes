@@ -6,11 +6,11 @@ import soot.util.NumberedString;
 
 public class Names {
 	// Averroes-specific Classes
-	public static final String AVERROES_RTA_CLASS = "averroes.Rta";
+	public static final String RTA_CLASS = "averroes.Rta";
 
 	// Fields
 	public static final String RTA_SET_FIELD_NAME = "set";
-	public static final String RTA_SET_FIELD_SIGNATURE = "<" + AVERROES_RTA_CLASS + ": java.lang.Object "
+	public static final String RTA_SET_FIELD_SIGNATURE = "<" + RTA_CLASS + ": java.lang.Object "
 			+ RTA_SET_FIELD_NAME + ">";
 	
 	// Soot-specific constants
