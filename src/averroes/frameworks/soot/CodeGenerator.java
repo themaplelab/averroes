@@ -1,6 +1,7 @@
 package averroes.frameworks.soot;
 
 import java.util.Collections;
+import java.util.List;
 
 import soot.Modifier;
 import soot.Scene;
@@ -12,6 +13,7 @@ import soot.Value;
 import soot.VoidType;
 import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
+import averroes.frameworks.analysis.JimpleBodyCreator;
 import averroes.soot.Names;
 
 /**
@@ -22,7 +24,7 @@ import averroes.soot.Names;
  * 
  */
 public class CodeGenerator {
-
+	
 	/**
 	 * Add a field to given Soot class.
 	 * 
