@@ -54,7 +54,7 @@ public class RtaJimpleBodyCreator extends JimpleBodyCreator {
 	}
 
 	@Override
-	public Value buildExpression(Type type) {
+	public Value setOf(Type type) {
 		if (!isRtaSetLoaded) {
 			
 		}

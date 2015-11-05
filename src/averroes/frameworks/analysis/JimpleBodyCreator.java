@@ -10,32 +10,23 @@ import soot.Local;
 import soot.RefLikeType;
 import soot.SootField;
 import soot.SootMethod;
-import soot.Type;
 import soot.Unit;
 import soot.Value;
 import soot.javaToJimple.LocalGenerator;
+import soot.jimple.AbstractStmtSwitch;
+import soot.jimple.ArrayRef;
 import soot.jimple.AssignStmt;
-import soot.jimple.BreakpointStmt;
-import soot.jimple.EnterMonitorStmt;
-import soot.jimple.ExitMonitorStmt;
-import soot.jimple.GotoStmt;
+import soot.jimple.FieldRef;
 import soot.jimple.IdentityStmt;
-import soot.jimple.IfStmt;
 import soot.jimple.InterfaceInvokeExpr;
 import soot.jimple.InvokeExpr;
 import soot.jimple.InvokeStmt;
 import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
-import soot.jimple.LookupSwitchStmt;
-import soot.jimple.NopStmt;
-import soot.jimple.RetStmt;
 import soot.jimple.ReturnStmt;
 import soot.jimple.ReturnVoidStmt;
 import soot.jimple.SpecialInvokeExpr;
 import soot.jimple.StaticInvokeExpr;
-import soot.jimple.Stmt;
-import soot.jimple.StmtSwitch;
-import soot.jimple.TableSwitchStmt;
 import soot.jimple.ThrowStmt;
 import soot.jimple.VirtualInvokeExpr;
 import soot.util.Chain;
@@ -63,7 +54,9 @@ public abstract class JimpleBodyCreator {
 				original.getModifiers(), original.getExceptions());
 		this.body = Jimple.v().newBody(method);
 		this.method.setActiveBody(body);
-		localGenerator = new LocalGenerator(body);
+		this.localGenerator = new LocalGenerator(body);
+		// this.localSetOf =
+		// localGenerator.generateLocal(Scene.v().getObjectType());
 
 		// Insert header of Jimple method body (identity statements, call to
 		// super constructor, etc)
@@ -71,18 +64,18 @@ public abstract class JimpleBodyCreator {
 	}
 
 	/**
-	 * Build an expression for the given type. This depends on the underlying
-	 * analysis:
+	 * The corresponding pt-set of the given value. This depends on the
+	 * underlying analysis:
 	 * <ul>
 	 * <li>for RTA => RTA.set</li>
 	 * <li>for XTA => set_m or set_f</li>
 	 * <li>for CFA => ???</li>
 	 * </ul>
 	 * 
-	 * @param type
+	 * @param value
 	 * @return
 	 */
-	protected abstract Value buildExpression(Type type);
+	protected abstract Value setOf(Value value);
 
 	/**
 	 * Generate the code for the underlying Soot method.
@@ -90,7 +83,46 @@ public abstract class JimpleBodyCreator {
 	public void generateCode() {
 		// Loop over all the original method statements and transform them
 		// appropriately.
-		original.getActiveBody().getUnits().forEach(u -> u.apply(new StmtSwitch() {
+		original.getActiveBody().getUnits().forEach(u -> u.apply(new AbstractStmtSwitch() {
+			@Override
+			public void caseIdentityStmt(IdentityStmt stmt) {
+				body.getUnits().add(Jimple.v().newIdentityStmt(stmt.getLeftOp(), stmt.getRightOp()));
+			}
+
+			@Override
+			public void caseAssignStmt(AssignStmt stmt) {
+				body.getUnits().add(Jimple.v().newAssignStmt(setOf(stmt.getLeftOp()), setOf(stmt.getRightOp())));
+
+				// if (isArrayRead(stmt)) {
+				// body.getUnits().add(Jimple.v().newAssignStmt(setOf(method),
+				// setOf(stmt.getRightOp().getType())));
+				// }
+				//
+				// if (isArrayWrite(stmt)) {
+				// body.getUnits().add(Jimple.v().newAssignStmt(setOf(stmt.getRightOp().getType()),
+				// setOf(method)));
+				// }
+				//
+				// if (isFieldRead(stmt)) {
+				// body.getUnits().add(
+				// Jimple.v().newAssignStmt(setOf(method), setOf(((FieldRef)
+				// stmt.getRightOp()).getField())));
+				// }
+				//
+				// if (isFieldWrite(stmt)) {
+				// body.getUnits().add(
+				// Jimple.v().newAssignStmt(setOf(((FieldRef)
+				// stmt.getRightOp()).getField()),
+				// Jimple.v().newCastExpr(setOf(method),
+				// stmt.getRightOp().getType())));
+				// }
+			}
+
+			@Override
+			public void caseThrowStmt(ThrowStmt stmt) {
+				body.getUnits().add(Jimple.v().newThrowStmt(setOf(stmt.getOp())));
+			}
+
 			@Override
 			public void caseInvokeStmt(InvokeStmt stmt) {
 				InvokeExpr expr = transformInvokeExpr(stmt.getInvokeExpr());
@@ -98,82 +130,13 @@ public abstract class JimpleBodyCreator {
 			}
 
 			@Override
-			public void caseAssignStmt(AssignStmt stmt) {
-				// TODO Auto-generated method stub
-
+			public void caseReturnVoidStmt(ReturnVoidStmt stmt) {
+				body.getUnits().add(Jimple.v().newReturnVoidStmt());
 			}
 
 			@Override
 			public void caseReturnStmt(ReturnStmt stmt) {
-				ReturnStmt ret = transformReturnStmt(stmt);
-				body.getUnits().add(ret);
-			}
-
-			@Override
-			public void caseThrowStmt(ThrowStmt stmt) {
-				// TODO Auto-generated method stub
-			}
-
-			@Override
-			public void caseBreakpointStmt(BreakpointStmt stmt) {
-				defaultCase(stmt);
-			}
-
-			@Override
-			public void caseIdentityStmt(IdentityStmt stmt) {
-				defaultCase(stmt);
-			}
-
-			@Override
-			public void caseEnterMonitorStmt(EnterMonitorStmt stmt) {
-				defaultCase(stmt);
-			}
-
-			@Override
-			public void caseExitMonitorStmt(ExitMonitorStmt stmt) {
-				defaultCase(stmt);
-			}
-
-			@Override
-			public void caseGotoStmt(GotoStmt stmt) {
-				defaultCase(stmt);
-			}
-
-			@Override
-			public void caseIfStmt(IfStmt stmt) {
-				defaultCase(stmt);
-			}
-
-			@Override
-			public void caseLookupSwitchStmt(LookupSwitchStmt stmt) {
-				defaultCase(stmt);
-			}
-
-			@Override
-			public void caseNopStmt(NopStmt stmt) {
-				defaultCase(stmt);
-			}
-
-			@Override
-			public void caseRetStmt(RetStmt stmt) {
-				defaultCase(stmt);
-			}
-
-			@Override
-			public void caseReturnVoidStmt(ReturnVoidStmt stmt) {
-				defaultCase(stmt);
-			}
-
-			@Override
-			public void caseTableSwitchStmt(TableSwitchStmt stmt) {
-				defaultCase(stmt);
-			}
-
-			@Override
-			public void defaultCase(Object obj) {
-				if (obj instanceof Stmt) {
-					body.getUnits().add((Stmt) obj);
-				}
+				body.getUnits().add(Jimple.v().newReturnStmt(setOf(stmt.getOp())));
 			}
 		}));
 
@@ -186,15 +149,43 @@ public abstract class JimpleBodyCreator {
 	}
 
 	/**
-	 * Transform a return statement from the original method to its equivalent
-	 * according the definition of the library model.
+	 * Is this assignment an array read?
 	 * 
-	 * @param stmt
+	 * @param assign
 	 * @return
 	 */
-	protected ReturnStmt transformReturnStmt(ReturnStmt stmt) {
-		Value op = buildExpression(stmt.getOp().getType());
-		return Jimple.v().newReturnStmt(op);
+	protected boolean isArrayRead(AssignStmt assign) {
+		return assign.getRightOp() instanceof ArrayRef;
+	}
+
+	/**
+	 * Is this assignment an array write?
+	 * 
+	 * @param assign
+	 * @return
+	 */
+	protected boolean isArrayWrite(AssignStmt assign) {
+		return assign.getLeftOp() instanceof ArrayRef;
+	}
+
+	/**
+	 * Is this assignment a field read?
+	 * 
+	 * @param assign
+	 * @return
+	 */
+	protected boolean isFieldRead(AssignStmt assign) {
+		return assign.getRightOp() instanceof FieldRef;
+	}
+
+	/**
+	 * Is this assignment a field write?
+	 * 
+	 * @param assign
+	 * @return
+	 */
+	protected boolean isFieldWrite(AssignStmt assign) {
+		return assign.getLeftOp() instanceof FieldRef;
 	}
 
 	/**
@@ -209,19 +200,19 @@ public abstract class JimpleBodyCreator {
 		SootMethod callee = originalInvokeExpr.getMethod();
 
 		// Get the arguments to the call
-		List<Value> args = callee.getParameterTypes().stream().map(this::buildExpression).collect(Collectors.toList());
+		List<Value> args = originalInvokeExpr.getArgs().stream().map(this::setOf).collect(Collectors.toList());
 
 		// Build the invoke expression
 		if (originalInvokeExpr instanceof StaticInvokeExpr) {
 			invokeExpr = Jimple.v().newStaticInvokeExpr(callee.makeRef(), args);
 		} else if (originalInvokeExpr instanceof SpecialInvokeExpr) {
-			Local base = (Local) buildExpression(((SpecialInvokeExpr) originalInvokeExpr).getBase().getType());
+			Local base = (Local) setOf(((SpecialInvokeExpr) originalInvokeExpr).getBase());
 			invokeExpr = Jimple.v().newSpecialInvokeExpr(base, callee.makeRef(), args);
 		} else if (originalInvokeExpr instanceof InterfaceInvokeExpr) {
-			Local base = (Local) buildExpression(((InterfaceInvokeExpr) originalInvokeExpr).getBase().getType());
+			Local base = (Local) setOf(((InterfaceInvokeExpr) originalInvokeExpr).getBase());
 			invokeExpr = Jimple.v().newInterfaceInvokeExpr(base, callee.makeRef(), args);
 		} else if (originalInvokeExpr instanceof VirtualInvokeExpr) {
-			Local base = (Local) buildExpression(((VirtualInvokeExpr) originalInvokeExpr).getBase().getType());
+			Local base = (Local) setOf(((VirtualInvokeExpr) originalInvokeExpr).getBase());
 			invokeExpr = Jimple.v().newVirtualInvokeExpr(base, callee.makeRef(), args);
 		} else {
 			logger.error("Cannot handle invoke expression of type: " + originalInvokeExpr.getClass());
@@ -253,11 +244,11 @@ public abstract class JimpleBodyCreator {
 		// Loop over all parameters of reference type and create an assignment
 		// statement to the appropriate "expression".
 		body.getParameterLocals().stream().filter(l -> l.getType() instanceof RefLikeType)
-				.forEach(l -> newUnits.add(Jimple.v().newAssignStmt(buildExpression(l.getType()), l)));
+				.forEach(l -> newUnits.add(Jimple.v().newAssignStmt(setOf(l), l)));
 
 		// and the "this" parameter for non-static methods
 		if (!method.isStatic()) {
-			newUnits.add(Jimple.v().newAssignStmt(buildExpression(body.getThisLocal().getType()), body.getThisLocal()));
+			newUnits.add(Jimple.v().newAssignStmt(setOf(body.getThisLocal()), body.getThisLocal()));
 		}
 
 		// Insert those assignment statements after the first non-identity
