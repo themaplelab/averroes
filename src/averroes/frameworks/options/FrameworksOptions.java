@@ -18,6 +18,14 @@ import org.apache.commons.cli.ParseException;
  */
 public final class FrameworksOptions {
 	
+	private static Option inputJars = Option.builder("i")
+			.longOpt("input-jars")
+			.desc("a list of the JAR files for library dependencies separated by File.pathSeparator")
+			.hasArg()
+			.argName("path")
+			.required()
+			.build();
+	
 	private static Option libraryJars = Option.builder("l")
 			.longOpt("library-jars")
 			.desc("a list of the JAR files for library dependencies separated by File.pathSeparator")
@@ -42,8 +50,8 @@ public final class FrameworksOptions {
 			.required()
 			.build();
 	
-	private static Option analysis = Option.builder("a")
-			.longOpt("analysis")
+	private static Option analysis = Option.builder("m")
+			.longOpt("analysis-model")
 			.desc("the analysis that Averroes should use to model the library stubs (one of rta, xta, cfa)")
 			.hasArg()
 			.argName("analysis")

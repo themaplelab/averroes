@@ -78,6 +78,16 @@ public abstract class JimpleBodyCreator {
 	protected abstract Value setOf(Value value);
 
 	/**
+	 * Return the compatible cast of setOf(value)
+	 * 
+	 * @param value
+	 * @return
+	 */
+	protected Value castSetOf(Value value) {
+		return Jimple.v().newCastExpr(setOf(value), value.getType());
+	}
+
+	/**
 	 * Generate the code for the underlying Soot method.
 	 */
 	public void generateCode() {
@@ -91,7 +101,8 @@ public abstract class JimpleBodyCreator {
 
 			@Override
 			public void caseAssignStmt(AssignStmt stmt) {
-				body.getUnits().add(Jimple.v().newAssignStmt(setOf(stmt.getLeftOp()), setOf(stmt.getRightOp())));
+				stmt.containsArrayRef();
+				body.getUnits().add(Jimple.v().newAssignStmt(setOf(stmt.getLeftOp()), castSetOf(stmt.getRightOp())));
 
 				// if (isArrayRead(stmt)) {
 				// body.getUnits().add(Jimple.v().newAssignStmt(setOf(method),

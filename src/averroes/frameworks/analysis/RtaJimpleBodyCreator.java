@@ -8,7 +8,6 @@ import soot.Modifier;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
-import soot.Type;
 import soot.Value;
 import averroes.frameworks.soot.ClassWriter;
 import averroes.frameworks.soot.CodeGenerator;
@@ -54,17 +53,12 @@ public class RtaJimpleBodyCreator extends JimpleBodyCreator {
 	}
 
 	@Override
-	public Value setOf(Type type) {
+	public Value setOf(Value value) {
 		if (!isRtaSetLoaded) {
-			
+			rtaLocal = loadStaticField(Scene.v().getField(Names.RTA_SET_FIELD_SIGNATURE));
+			isRtaSetLoaded = true;
 		}
 
 		return rtaLocal;
 	}
-
-	@Override
-	public void generateCode() {
-
-	}
-
 }
