@@ -1,17 +1,12 @@
 package averroes.frameworks.analysis;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import soot.Local;
 import soot.Scene;
 import soot.SootField;
 import soot.SootMethod;
-import soot.Unit;
+import soot.jimple.AssignStmt;
 import soot.jimple.FieldRef;
 import soot.jimple.Jimple;
-import soot.util.Chain;
-import soot.util.HashChain;
 
 /**
  * XTA Jimple body creator that overapproximates objects in each method in the
@@ -61,43 +56,19 @@ public class XtaJimpleBodyCreator extends TypeBasedJimpleBodyCreator {
 		return xtaLocal;
 	}
 
-	/**
-	 * Handle all field reads and writes.
-	 */
 	@Override
-	protected void handleFields() {
-		Chain<Unit> newUnits = new HashChain<Unit>();
-
-		getFieldReads().forEach(
-				fr -> newUnits.add(Jimple.v().newAssignStmt(set(),
-						fieldToPtSet.getOrDefault(fr, localGenerator.generateLocal(fr.getType())))));
-
-		getFieldWrites()
-				.forEach(
-						fw -> newUnits.add(Jimple.v().newAssignStmt(
-								fieldToPtSet.getOrDefault(fw, localGenerator.generateLocal(fw.getType())),
-								setOf(fw.getType()))));
-
-		body.getUnits().insertBefore(newUnits, body.getUnits().getLast());
+	protected void transformFieldRead(AssignStmt stmt) {
+		SootField fr = ((FieldRef) stmt.getRightOp()).getField();
+		body.getUnits().add(
+				Jimple.v().newAssignStmt(set(),
+						fieldToPtSet.getOrDefault(fr, localGenerator.generateLocal(fr.getType()))));
 	}
 
-	/**
-	 * Get all field reads.
-	 * 
-	 * @return
-	 */
-	private List<SootField> getFieldReads() {
-		return original.getActiveBody().getUseBoxes().stream().filter(vb -> vb.getValue() instanceof FieldRef)
-				.map(vb -> ((FieldRef) vb).getField()).distinct().collect(Collectors.toList());
-	}
-
-	/**
-	 * Get all field writes.
-	 * 
-	 * @return
-	 */
-	private List<SootField> getFieldWrites() {
-		return original.getActiveBody().getDefBoxes().stream().filter(vb -> vb.getValue() instanceof FieldRef)
-				.map(vb -> ((FieldRef) vb).getField()).distinct().collect(Collectors.toList());
+	@Override
+	protected void transformFieldWrite(AssignStmt stmt) {
+		SootField fr = ((FieldRef) stmt.getLeftOp()).getField();
+		body.getUnits().add(
+				Jimple.v().newAssignStmt(fieldToPtSet.getOrDefault(fr, localGenerator.generateLocal(fr.getType())),
+						set()));
 	}
 }

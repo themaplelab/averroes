@@ -15,7 +15,6 @@ import soot.Local;
 import soot.LongType;
 import soot.PrimType;
 import soot.RefLikeType;
-import soot.Scene;
 import soot.SootField;
 import soot.SootMethod;
 import soot.Type;
@@ -23,9 +22,11 @@ import soot.Unit;
 import soot.Value;
 import soot.javaToJimple.LocalGenerator;
 import soot.jimple.AbstractStmtSwitch;
+import soot.jimple.AnyNewExpr;
 import soot.jimple.ArrayRef;
 import soot.jimple.AssignStmt;
 import soot.jimple.DoubleConstant;
+import soot.jimple.FieldRef;
 import soot.jimple.FloatConstant;
 import soot.jimple.IdentityStmt;
 import soot.jimple.IntConstant;
@@ -36,6 +37,7 @@ import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
 import soot.jimple.LongConstant;
 import soot.jimple.NewArrayExpr;
+import soot.jimple.NewExpr;
 import soot.jimple.NewMultiArrayExpr;
 import soot.jimple.ReturnStmt;
 import soot.jimple.ReturnVoidStmt;
@@ -64,6 +66,9 @@ public abstract class TypeBasedJimpleBodyCreator {
 
 	protected Map<SootField, Local> fieldToPtSet;
 
+	protected static IntConstant ARRAY_LENGTH = IntConstant.v(1);
+	protected static IntConstant ARRAY_INDEX = IntConstant.v(0);
+
 	protected TypeBasedJimpleBodyCreator(SootMethod m) {
 		original = m;
 		method = new SootMethod(original.getName(), original.getParameterTypes(), original.getReturnType(),
@@ -76,11 +81,6 @@ public abstract class TypeBasedJimpleBodyCreator {
 	}
 
 	protected abstract Local set();
-
-	/**
-	 * Handle all field reads and writes.
-	 */
-	protected abstract void handleFields();
 
 	/**
 	 * The corresponding pt-set of the given value. This depends on the
@@ -117,6 +117,17 @@ public abstract class TypeBasedJimpleBodyCreator {
 
 			@Override
 			public void caseAssignStmt(AssignStmt stmt) {
+				if (isNewExpr(stmt)) {
+					transformNewExpr(stmt);
+				} else if (isArrayRead(stmt)) {
+					transformArrayRead(stmt);
+				} else if (isArrayWrite(stmt)) {
+					transformArrayWrite(stmt);
+				} else if (isFieldRead(stmt)) {
+					transformFieldRead(stmt);
+				} else if (isFieldWrite(stmt)) {
+					transformFieldWrite(stmt);
+				}
 
 			}
 
@@ -146,14 +157,82 @@ public abstract class TypeBasedJimpleBodyCreator {
 		// appropriate set
 		assignMethodParameters();
 
-		// Handle arrays
-		handleArrays();
-
-		// Handle fields
-		handleFields();
-
 		// Validate method Jimple body
 		body.validate();
+	}
+	
+	/**
+	 * Transform an array read statement.
+	 * 
+	 * @param stmt
+	 */
+	protected void transformFieldRead(AssignStmt stmt) {
+	}
+
+	/**
+	 * Transform an array write statement.
+	 * 
+	 * @param stmt
+	 */
+	protected void transformFieldWrite(AssignStmt stmt) {
+	}
+	
+	/**
+	 * Construct Jimple code that load the given static field and assign it to a
+	 * new temporary local variable.
+	 * 
+	 * @param field
+	 * @return
+	 */
+	protected Local loadStaticField(SootField field) {
+		Local tmp = localGenerator.generateLocal(field.getType());
+		body.getUnits().add(Jimple.v().newAssignStmt(tmp, Jimple.v().newStaticFieldRef(field.makeRef())));
+		return tmp;
+	}
+
+	/**
+	 * Transform an array read statement.
+	 * 
+	 * @param stmt
+	 */
+	private void transformArrayRead(AssignStmt stmt) {
+		body.getUnits().add(
+				Jimple.v().newAssignStmt(set(),
+						Jimple.v().newArrayRef(Jimple.v().newCastExpr(set(), set().getType()), ARRAY_INDEX)));
+	}
+
+	/**
+	 * Transform an array write statement.
+	 * 
+	 * @param stmt
+	 */
+	private void transformArrayWrite(AssignStmt stmt) {
+		body.getUnits().add(
+				Jimple.v().newAssignStmt(
+						Jimple.v().newArrayRef(Jimple.v().newCastExpr(set(), set().getType()), ARRAY_INDEX), set()));
+	}
+
+	/**
+	 * Transform object creation statements (regular "new", new Array[], and new
+	 * MultiArray[][]).
+	 * 
+	 * @param stmt
+	 */
+	private void transformNewExpr(AssignStmt stmt) {
+		if (stmt.getRightOp() instanceof NewExpr) {
+			NewExpr n = (NewExpr) stmt.getRightOp();
+			Value rvalue = Jimple.v().newNewExpr(n.getBaseType());
+			body.getUnits().add(Jimple.v().newAssignStmt(set(), rvalue));
+		} else if (stmt.getRightOp() instanceof NewArrayExpr) {
+			NewArrayExpr n = (NewArrayExpr) stmt.getRightOp();
+			Value rvalue = Jimple.v().newNewArrayExpr(n.getBaseType(), ARRAY_LENGTH);
+			body.getUnits().add(Jimple.v().newAssignStmt(set(), rvalue));
+		} else if (stmt.getRightOp() instanceof NewMultiArrayExpr) {
+			NewMultiArrayExpr n = (NewMultiArrayExpr) stmt.getRightOp();
+			Value rvalue = Jimple.v().newNewMultiArrayExpr(n.getBaseType(),
+					Collections.nCopies(n.getSizeCount(), ARRAY_LENGTH));
+			body.getUnits().add(Jimple.v().newAssignStmt(set(), rvalue));
+		}
 	}
 
 	/**
@@ -189,76 +268,53 @@ public abstract class TypeBasedJimpleBodyCreator {
 	}
 
 	/**
-	 * Handle array reads, writes, and creations.
+	 * Is this assignment an object creation?
+	 * 
+	 * @param assign
+	 * @return
 	 */
-	private void handleArrays() {
-		Chain<Unit> newUnits = new HashChain<Unit>();
-
-		// array reads => set = ((Object[])set)[0]
-		if (readsArray()) {
-			newUnits.add(Jimple.v().newAssignStmt(set(),
-					Jimple.v().newArrayRef(Jimple.v().newCastExpr(set(), Scene.v().getObjectType()), IntConstant.v(0))));
-		}
-
-		// array writes => ((Object[])set)[0] = set
-		if (writesArray()) {
-			newUnits.add(Jimple.v().newAssignStmt(
-					Jimple.v().newArrayRef(Jimple.v().newCastExpr(set(), Scene.v().getObjectType()), IntConstant.v(0)),
-					set()));
-		}
-
-		// array creations => set = new T[1]
-		getNewArrayExpressions().forEach(e -> newUnits.add(Jimple.v().newAssignStmt(set(), e)));
-		getNewMultiArrayExpressions().forEach(e -> newUnits.add(Jimple.v().newAssignStmt(set(), e)));
-
-		body.getUnits().insertBefore(newUnits, body.getUnits().getLast());
+	private boolean isNewExpr(AssignStmt assign) {
+		return assign.getRightOp() instanceof AnyNewExpr;
 	}
 
 	/**
-	 * Does this method read an array?
+	 * Is this assignment an array read?
 	 * 
+	 * @param assign
 	 * @return
 	 */
-	private boolean readsArray() {
-		return original.getActiveBody().getUseBoxes().stream().filter(vb -> vb.getValue() instanceof ArrayRef).count() > 0;
+	private boolean isArrayRead(AssignStmt assign) {
+		return assign.getRightOp() instanceof ArrayRef;
 	}
 
 	/**
-	 * Does this method write to an array?
+	 * Is this assignment an array write?
 	 * 
+	 * @param assign
 	 * @return
 	 */
-	private boolean writesArray() {
-		return original.getActiveBody().getDefBoxes().stream().filter(vb -> vb.getValue() instanceof ArrayRef).count() > 0;
+	private boolean isArrayWrite(AssignStmt assign) {
+		return assign.getLeftOp() instanceof ArrayRef;
 	}
 
 	/**
-	 * Get all the 1-dimensional array creations.
+	 * Is this assignment a field read?
 	 * 
+	 * @param assign
 	 * @return
 	 */
-	private List<NewArrayExpr> getNewArrayExpressions() {
-		return original.getActiveBody().getUnits().stream()
-				.filter(u -> u instanceof AssignStmt && ((AssignStmt) u).getRightOp() instanceof NewArrayExpr)
-				.map(u -> (NewArrayExpr) ((AssignStmt) u).getRightOp()).distinct()
-				.map(n -> Jimple.v().newNewArrayExpr(n.getBaseType(), IntConstant.v(1))).collect(Collectors.toList());
+	private boolean isFieldRead(AssignStmt assign) {
+		return assign.getRightOp() instanceof FieldRef;
 	}
 
 	/**
-	 * Get all the multi-dimensional array creations.
+	 * Is this assignment a field write?
 	 * 
+	 * @param assign
 	 * @return
 	 */
-	private List<NewMultiArrayExpr> getNewMultiArrayExpressions() {
-		return original
-				.getActiveBody()
-				.getUnits()
-				.stream()
-				.filter(u -> u instanceof AssignStmt && ((AssignStmt) u).getRightOp() instanceof NewMultiArrayExpr)
-				.map(u -> (NewMultiArrayExpr) ((AssignStmt) u).getRightOp())
-				.distinct()
-				.map(n -> Jimple.v().newNewMultiArrayExpr(n.getBaseType(),
-						Collections.nCopies(n.getSizeCount(), IntConstant.v(1)))).collect(Collectors.toList());
+	private boolean isFieldWrite(AssignStmt assign) {
+		return assign.getLeftOp() instanceof FieldRef;
 	}
 
 	/**
