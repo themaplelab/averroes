@@ -47,8 +47,14 @@ public class FrameworksClassProvider implements ClassProvider {
 
 	private Map<String, Resource> classes;
 
-	private static IOFileFilter classFileFilter = FileFilterUtils.suffixFileFilter("class");
-	private static IOFileFilter jarFileFilter = FileFilterUtils.suffixFileFilter("jar");
+	private static IOFileFilter classFileFilter = FileFilterUtils
+			.suffixFileFilter("class");
+	private static IOFileFilter jarFileFilter = FileFilterUtils
+			.suffixFileFilter("jar");
+	private static IOFileFilter jreFileFilter = FileFilterUtils.or(
+			FileFilterUtils.nameFileFilter("rt.jar"),
+			FileFilterUtils.nameFileFilter("jsse.jar"),
+			FileFilterUtils.nameFileFilter("jce.jar"));
 
 	/**
 	 * Construct a new class provider.
@@ -71,8 +77,14 @@ public class FrameworksClassProvider implements ClassProvider {
 	 * 
 	 */
 	public void prepareClasspath() {
-		FrameworksOptions.getInputs().stream().map(p -> new File(p)).forEach(p -> add(p));
-		FrameworksOptions.getDependencies().stream().map(p -> new File(p)).forEach(p -> add(p));
+		FrameworksOptions.getInputs().stream().map(p -> new File(p))
+				.forEach(p -> add(p));
+		FrameworksOptions.getDependencies().stream().map(p -> new File(p))
+				.forEach(p -> add(p));
+		FileUtils
+				.listFiles(new File(FrameworksOptions.getJreDirectory()),
+						jreFileFilter, null).stream()
+				.map(f -> new File(f.getAbsolutePath()));
 	}
 
 	/**
@@ -87,8 +99,9 @@ public class FrameworksClassProvider implements ClassProvider {
 		} else if (jarFileFilter.accept(p)) {
 			addArchive(p);
 		} else if (DirectoryFileFilter.DIRECTORY.accept(p)) {
-			FileUtils.listFiles(p, FileFilterUtils.or(classFileFilter, jarFileFilter), TrueFileFilter.TRUE).forEach(
-					file -> add(file));
+			FileUtils.listFiles(p,
+					FileFilterUtils.or(classFileFilter, jarFileFilter),
+					TrueFileFilter.TRUE).forEach(file -> add(file));
 		}
 	}
 
@@ -118,7 +131,8 @@ public class FrameworksClassProvider implements ClassProvider {
 		if (classes.containsKey(className)) {
 			// This means we encountered another copy of the class later on the
 			// path, this should never happen!
-			throw new RuntimeException("class " + className + " has already been added to this class provider.");
+			throw new RuntimeException("class " + className
+					+ " has already been added to this class provider.");
 		} else {
 			classes.put(className, resource);
 		}
@@ -142,7 +156,8 @@ public class FrameworksClassProvider implements ClassProvider {
 			while (entries.hasMoreElements()) {
 				ZipEntry entry = entries.nextElement();
 				if (entry.getName().endsWith(".class")) {
-					String className = addClass(entry.getName(), new ZipEntryResource(archive, entry));
+					String className = addClass(entry.getName(),
+							new ZipEntryResource(archive, entry));
 					result.add(className);
 				}
 			}
@@ -176,7 +191,8 @@ public class FrameworksClassProvider implements ClassProvider {
 				fileName = cfr.file().getPath();
 			}
 
-			return new CoffiClassSource(className, stream, fileName, zipFileName);
+			return new CoffiClassSource(className, stream, fileName,
+					zipFileName);
 
 		} else {
 			return null;

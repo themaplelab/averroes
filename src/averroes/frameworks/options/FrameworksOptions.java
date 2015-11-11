@@ -17,29 +17,40 @@ import org.apache.commons.cli.ParseException;
  * 
  */
 public final class FrameworksOptions {
-	
-	private static Option input = Option.builder("i").longOpt("input")
-			.desc("a classpath of the input files (class files, JARs, or folders)").hasArg().argName("path").required()
-			.build();
 
-	private static Option deps = Option.builder("d").longOpt("dependencies")
-			.desc("a classpath of the dependencies (class files, JARs, or folders)").hasArg().argName("path")
-			.required(false).build();
+	private static Option input = Option
+			.builder("i")
+			.longOpt("input")
+			.desc("a classpath of the input files (class files, JARs, or folders)")
+			.hasArg().argName("path").required().build();
 
-	private static Option outputDirectory = Option.builder("o").longOpt("output-directory")
-			.desc("the directory to which Averroes will write any output files/folders.").hasArg().argName("directory")
-			.required().build();
+	private static Option deps = Option
+			.builder("d")
+			.longOpt("dependencies")
+			.desc("a classpath of the dependencies (class files, JARs, or folders)")
+			.hasArg().argName("path").required(false).build();
 
-	private static Option jreDirectory = Option.builder("j").longOpt("jre")
-			.desc("the directory that contains the Java runtime environment that Averroes should model").hasArg()
-			.argName("directory").required().build();
+	private static Option outputDirectory = Option
+			.builder("o")
+			.longOpt("output-directory")
+			.desc("the directory to which Averroes will write any output files/folders.")
+			.hasArg().argName("directory").required().build();
 
-	private static Option analysis = Option.builder("a").longOpt("analysis-model")
-			.desc("the analysis that Averroes should use to model the library stubs (one of rta, xta, cfa)").hasArg()
-			.argName("analysis").required().build();
+	private static Option jreDirectory = Option
+			.builder("j")
+			.longOpt("jre")
+			.desc("the directory that contains the Java runtime environment that Averroes should model")
+			.hasArg().argName("directory").required().build();
 
-	private static Options options = new Options().addOption(input).addOption(deps).addOption(outputDirectory)
-			.addOption(jreDirectory).addOption(analysis);
+	private static Option analysis = Option
+			.builder("a")
+			.longOpt("analysis-model")
+			.desc("the analysis that Averroes should use to model the library stubs (one of rta, xta, cfa)")
+			.hasArg().argName("analysis").required().build();
+
+	private static Options options = new Options().addOption(input)
+			.addOption(deps).addOption(outputDirectory).addOption(jreDirectory)
+			.addOption(analysis);
 
 	private static CommandLine cmd;
 
@@ -62,7 +73,8 @@ public final class FrameworksOptions {
 	 * @return
 	 */
 	public static List<String> getInputs() {
-		return Arrays.asList(cmd.getOptionValue(input.getOpt()).split(File.pathSeparator));
+		return Arrays.asList(cmd.getOptionValue(input.getOpt()).split(
+				File.pathSeparator));
 	}
 
 	/**
@@ -71,7 +83,8 @@ public final class FrameworksOptions {
 	 * @return
 	 */
 	public static List<String> getDependencies() {
-		return Arrays.asList(cmd.getOptionValue(deps.getOpt(), "").split(File.pathSeparator));
+		return Arrays.asList(cmd.getOptionValue(deps.getOpt(), "").split(
+				File.pathSeparator));
 	}
 
 	/**
