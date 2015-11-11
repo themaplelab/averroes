@@ -18,52 +18,29 @@ import org.apache.commons.cli.ParseException;
  */
 public final class FrameworksOptions {
 	
-	private static Option inputJars = Option.builder("i")
-			.longOpt("input-jars")
-			.desc("a list of the JAR files for library dependencies separated by File.pathSeparator")
-			.hasArg()
-			.argName("path")
-			.required()
+	private static Option input = Option.builder("i").longOpt("input")
+			.desc("a classpath of the input files (class files, JARs, or folders)").hasArg().argName("path").required()
 			.build();
-	
-	private static Option libraryJars = Option.builder("l")
-			.longOpt("library-jars")
-			.desc("a list of the JAR files for library dependencies separated by File.pathSeparator")
-			.hasArg()
-			.argName("path")
-			.required()
-			.build();
-	
-	private static Option outputDirectory = Option.builder("o")
-			.longOpt("output-directory")
-			.desc("the directory to which Averroes will write any output files/folders.")
-			.hasArg()
-			.argName("directory")
-			.required()
-			.build();
-	
-	private static Option jreDirectory = Option.builder("j")
-			.longOpt("java-runtime-directory")
-			.desc("the directory that contains the Java runtime environment that Averroes should model")
-			.hasArg()
-			.argName("directory")
-			.required()
-			.build();
-	
-	private static Option analysis = Option.builder("m")
-			.longOpt("analysis-model")
-			.desc("the analysis that Averroes should use to model the library stubs (one of rta, xta, cfa)")
-			.hasArg()
-			.argName("analysis")
-			.required()
-			.build();
-	
-	private static Options options = new Options()
-			.addOption(libraryJars)
-			.addOption(outputDirectory)
-			.addOption(jreDirectory)
-			.addOption(analysis);
-	
+
+	private static Option deps = Option.builder("d").longOpt("dependencies")
+			.desc("a classpath of the dependencies (class files, JARs, or folders)").hasArg().argName("path")
+			.required().build();
+
+	private static Option outputDirectory = Option.builder("o").longOpt("output-directory")
+			.desc("the directory to which Averroes will write any output files/folders.").hasArg().argName("directory")
+			.required().build();
+
+	private static Option jreDirectory = Option.builder("j").longOpt("jre")
+			.desc("the directory that contains the Java runtime environment that Averroes should model").hasArg()
+			.argName("directory").required().build();
+
+	private static Option analysis = Option.builder("a").longOpt("analysis-model")
+			.desc("the analysis that Averroes should use to model the library stubs (one of rta, xta, cfa)").hasArg()
+			.argName("analysis").required().build();
+
+	private static Options options = new Options().addOption(input).addOption(deps).addOption(outputDirectory)
+			.addOption(jreDirectory).addOption(analysis);
+
 	private static CommandLine cmd;
 
 	/**
@@ -80,12 +57,21 @@ public final class FrameworksOptions {
 	}
 
 	/**
-	 * The list of the library JAR files separated by {@link File#pathSeparator}
+	 * A list of the input files (class files, JARs, or folders).
 	 * 
 	 * @return
 	 */
-	public static List<String> getLibraryJarFiles() {
-		return Arrays.asList(cmd.getOptionValue(libraryJars.getOpt()).split(File.pathSeparator));
+	public static List<String> getInputs() {
+		return Arrays.asList(cmd.getOptionValue(input.getOpt()).split(File.pathSeparator));
+	}
+
+	/**
+	 * A list of dependencies (class files, JARs, or folders).
+	 * 
+	 * @return
+	 */
+	public static List<String> getDependencies() {
+		return Arrays.asList(cmd.getOptionValue(deps.getOpt()).split(File.pathSeparator));
 	}
 
 	/**
@@ -105,5 +91,15 @@ public final class FrameworksOptions {
 	 */
 	public static String getJreDirectory() {
 		return cmd.getOptionValue(jreDirectory.getOpt());
+	}
+
+	/**
+	 * The analysis that Averroes should use to model the library stubs (one of
+	 * rta, xta, cfa).
+	 * 
+	 * @return
+	 */
+	public static String getAnalysis() {
+		return cmd.getOptionValue(analysis.getOpt());
 	}
 }

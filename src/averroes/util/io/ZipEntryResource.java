@@ -17,9 +17,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 /**
- * A resource that represents a ZIP archive entry. That's used for both ZIP and JAR archives.
+ * A resource that represents a ZIP archive entry. That's used for both ZIP and
+ * JAR archives.
  * 
- * @author karim
+ * @author Karim Ali
  * 
  */
 public class ZipEntryResource implements Resource {
@@ -39,36 +40,42 @@ public class ZipEntryResource implements Resource {
 	}
 
 	@Override
-	public InputStream open() throws IOException {
-		return doJDKBugWorkaround(archive.getInputStream(entry), entry.getSize());
+	public InputStream open() {
+		return doJDKBugWorkaround();
 	}
-	
+
 	public ZipFile archive() {
 		return archive;
 	}
-	
+
 	public ZipEntry entry() {
 		return entry;
 	}
 
 	/**
-	 * Copied from SourceLocator because FoundFile is not accessible outside the soot package.
+	 * Copied from SourceLocator because FoundFile is not accessible outside the
+	 * soot package.
 	 * 
 	 * @param is
 	 * @param size
 	 * @return
 	 * @throws IOException
 	 */
-	private InputStream doJDKBugWorkaround(InputStream is, long size) throws IOException {
-		int sz = (int) size;
+	private InputStream doJDKBugWorkaround() {
+		int sz = (int) entry.getSize();
 		byte[] buf = new byte[sz];
 
 		final int N = 1024;
 		int ln = 0;
 		int count = 0;
-		while (sz > 0 && (ln = is.read(buf, count, Math.min(N, sz))) != -1) {
-			count += ln;
-			sz -= ln;
+		try {
+			InputStream is = archive.getInputStream(entry);
+			while (sz > 0 && (ln = is.read(buf, count, Math.min(N, sz))) != -1) {
+				count += ln;
+				sz -= ln;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		return new ByteArrayInputStream(buf);
 	}
