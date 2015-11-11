@@ -24,7 +24,7 @@ public final class FrameworksOptions {
 
 	private static Option deps = Option.builder("d").longOpt("dependencies")
 			.desc("a classpath of the dependencies (class files, JARs, or folders)").hasArg().argName("path")
-			.required().build();
+			.required(false).build();
 
 	private static Option outputDirectory = Option.builder("o").longOpt("output-directory")
 			.desc("the directory to which Averroes will write any output files/folders.").hasArg().argName("directory")
@@ -71,7 +71,7 @@ public final class FrameworksOptions {
 	 * @return
 	 */
 	public static List<String> getDependencies() {
-		return Arrays.asList(cmd.getOptionValue(deps.getOpt()).split(File.pathSeparator));
+		return Arrays.asList(cmd.getOptionValue(deps.getOpt(), "").split(File.pathSeparator));
 	}
 
 	/**

@@ -159,6 +159,9 @@ public abstract class TypeBasedJimpleBodyCreator {
 
 		// Validate method Jimple body
 		body.validate();
+		
+		// TODO
+		System.out.println(body);
 	}
 	
 	/**
