@@ -78,13 +78,13 @@ public class FrameworksClassProvider implements ClassProvider {
 	 */
 	public void prepareClasspath() {
 		FrameworksOptions.getInputs().stream().map(p -> new File(p))
-				.forEach(p -> add(p));
+				.forEach(this::add);
 		FrameworksOptions.getDependencies().stream().map(p -> new File(p))
-				.forEach(p -> add(p));
+				.forEach(this::add);
 		FileUtils
 				.listFiles(new File(FrameworksOptions.getJreDirectory()),
 						jreFileFilter, null).stream()
-				.map(f -> new File(f.getAbsolutePath()));
+				.map(f -> new File(f.getAbsolutePath())).forEach(this::add);
 	}
 
 	/**
