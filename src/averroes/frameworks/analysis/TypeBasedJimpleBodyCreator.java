@@ -2,6 +2,8 @@ package averroes.frameworks.analysis;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -9,14 +11,13 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import averroes.frameworks.soot.CodeGenerator;
 import soot.FloatType;
 import soot.IntegerType;
 import soot.Local;
 import soot.LongType;
 import soot.PrimType;
 import soot.RefLikeType;
-import soot.SootClass;
+import soot.Scene;
 import soot.SootField;
 import soot.SootMethod;
 import soot.Type;
@@ -30,7 +31,6 @@ import soot.jimple.AssignStmt;
 import soot.jimple.DoubleConstant;
 import soot.jimple.FieldRef;
 import soot.jimple.FloatConstant;
-import soot.jimple.IdentityStmt;
 import soot.jimple.IntConstant;
 import soot.jimple.InterfaceInvokeExpr;
 import soot.jimple.InvokeExpr;
@@ -42,7 +42,6 @@ import soot.jimple.NewArrayExpr;
 import soot.jimple.NewExpr;
 import soot.jimple.NewMultiArrayExpr;
 import soot.jimple.ReturnStmt;
-import soot.jimple.ReturnVoidStmt;
 import soot.jimple.SpecialInvokeExpr;
 import soot.jimple.StaticInvokeExpr;
 import soot.jimple.ThrowStmt;
@@ -61,30 +60,32 @@ public abstract class TypeBasedJimpleBodyCreator {
 
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-	protected SootMethod original;
 	protected SootMethod method;
 	protected JimpleBody body;
 	protected LocalGenerator localGenerator;
 
 	protected Map<SootField, Local> fieldToPtSet;
 
+	protected Map<Unit, Unit> swap;
+	protected List<Unit> insert;
+
 	protected static IntConstant ARRAY_LENGTH = IntConstant.v(1);
 	protected static IntConstant ARRAY_INDEX = IntConstant.v(0);
 
 	/**
-	 * Create a new type-based Jimple body creator for method M in class C.
+	 * Create a new type-based Jimple body creator for method M.
 	 * 
-	 * @param cls
-	 * @param m
+	 * @param method
 	 */
-	protected TypeBasedJimpleBodyCreator(SootClass cls, SootMethod m) {
-		original = m;
-		method = CodeGenerator.getSootMethod(m);
-		body = Jimple.v().newBody(method);
-		method.setActiveBody(body);
+	protected TypeBasedJimpleBodyCreator(SootMethod method) {
+		this.method = method;
+		body = (JimpleBody) method.retrieveActiveBody();
 		localGenerator = new LocalGenerator(body);
 
 		fieldToPtSet = new HashMap<SootField, Local>();
+
+		swap = new HashMap<Unit, Unit>();
+		insert = new LinkedList<Unit>();
 	}
 
 	protected abstract Local set();
@@ -113,60 +114,55 @@ public abstract class TypeBasedJimpleBodyCreator {
 	 * Generate the code for the underlying Soot method.
 	 */
 	public void generateCode() {
+		// TODO
+		System.out.println("==========================");
+		System.out.println("BEFORE transformation");
+		System.out.println("==========================");
+		System.out.println(body);
 
 		// Loop over all the original method statements and transform them
 		// appropriately.
-		original.retrieveActiveBody().getUnits()
-				.forEach(u -> u.apply(new AbstractStmtSwitch() {
-					@Override
-					public void caseIdentityStmt(IdentityStmt stmt) {
-						body.getUnits().add(
-								Jimple.v().newIdentityStmt(stmt.getLeftOp(),
-										stmt.getRightOp()));
+		for (Iterator<Unit> iter = method.retrieveActiveBody().getUnits()
+				.iterator(); iter.hasNext();) {
+			Unit u = iter.next();
+
+			u.apply(new AbstractStmtSwitch() {
+				@Override
+				public void caseAssignStmt(AssignStmt stmt) {
+					if (isNewExpr(stmt)) {
+						transformNewExpr(stmt);
+					} else if (isArrayRead(stmt)) {
+						transformArrayRead(stmt);
+					} else if (isArrayWrite(stmt)) {
+						transformArrayWrite(stmt);
+					} else if (isFieldRead(stmt)) {
+						transformFieldRead(stmt);
+					} else if (isFieldWrite(stmt)) {
+						transformFieldWrite(stmt);
 					}
 
-					@Override
-					public void caseAssignStmt(AssignStmt stmt) {
-						if (isNewExpr(stmt)) {
-							transformNewExpr(stmt);
-						} else if (isArrayRead(stmt)) {
-							transformArrayRead(stmt);
-						} else if (isArrayWrite(stmt)) {
-							transformArrayWrite(stmt);
-						} else if (isFieldRead(stmt)) {
-							transformFieldRead(stmt);
-						} else if (isFieldWrite(stmt)) {
-							transformFieldWrite(stmt);
-						}
+				}
 
-					}
+				@Override
+				public void caseThrowStmt(ThrowStmt stmt) {
+					transformThrowStmt(stmt);
+				}
 
-					@Override
-					public void caseThrowStmt(ThrowStmt stmt) {
-						body.getUnits().add(
-								Jimple.v().newThrowStmt(
-										setOf(stmt.getOp().getType())));
-					}
+				@Override
+				public void caseInvokeStmt(InvokeStmt stmt) {
+					transformInvokeStmt(stmt);
+				}
 
-					@Override
-					public void caseInvokeStmt(InvokeStmt stmt) {
-						InvokeExpr expr = transformInvokeExpr(stmt
-								.getInvokeExpr());
-						body.getUnits().add(Jimple.v().newInvokeStmt(expr));
-					}
+				@Override
+				public void caseReturnStmt(ReturnStmt stmt) {
+					transformReturnStmt(stmt);
+				}
+			});
+		}
 
-					@Override
-					public void caseReturnVoidStmt(ReturnVoidStmt stmt) {
-						body.getUnits().add(Jimple.v().newReturnVoidStmt());
-					}
-
-					@Override
-					public void caseReturnStmt(ReturnStmt stmt) {
-						body.getUnits().add(
-								Jimple.v().newReturnStmt(
-										setOf(original.getReturnType())));
-					}
-				}));
+		// Swap and insert all the units in the buffer
+		swap.keySet().forEach(u -> body.getUnits().swapWith(u, swap.get(u)));
+		body.getUnits().insertBefore(insert, body.getFirstNonIdentityStmt());
 
 		// Assign method parameters, including "this, if available, to the
 		// appropriate set
@@ -176,7 +172,63 @@ public abstract class TypeBasedJimpleBodyCreator {
 		body.validate();
 
 		// TODO
+		System.out.println("==========================");
+		System.out.println("AFTER transformation");
+		System.out.println("==========================");
 		System.out.println(body);
+		System.out.println();
+		System.out.println();
+	}
+
+	/**
+	 * Replace "out" in the underlying method body with "in".
+	 * 
+	 * @param in
+	 * @param out
+	 */
+	protected void swapWith(Unit in, Unit out) {
+		swap.put(out, in);
+		// body.getUnits().swapWith(out, in);
+	}
+
+	/**
+	 * Insert a new unit before the first non-identity statement.
+	 * 
+	 * @param in
+	 * @param out
+	 */
+	protected void insert(Unit toInsert) {
+		insert.add(toInsert);
+		// body.getUnits().insertBefore(toInsert,
+		// body.getFirstNonIdentityStmt());
+	}
+
+	/**
+	 * Transform the given return statement.
+	 * 
+	 * @param stmt
+	 */
+	protected void transformReturnStmt(ReturnStmt stmt) {
+		swapWith(Jimple.v().newReturnStmt(setOf(method.getReturnType())), stmt);
+	}
+
+	/**
+	 * Transform the given invoke statement.
+	 * 
+	 * @param stmt
+	 */
+	protected void transformInvokeStmt(InvokeStmt stmt) {
+		InvokeExpr expr = transformInvokeExpr(stmt.getInvokeExpr());
+		swapWith(Jimple.v().newInvokeStmt(expr), stmt);
+	}
+
+	/**
+	 * Transform the given throw statement.
+	 * 
+	 * @param stmt
+	 */
+	protected void transformThrowStmt(ThrowStmt stmt) {
+		swapWith(Jimple.v().newThrowStmt(setOf(stmt.getOp().getType())), stmt);
 	}
 
 	/**
@@ -204,9 +256,8 @@ public abstract class TypeBasedJimpleBodyCreator {
 	 */
 	protected Local loadStaticField(SootField field) {
 		Local tmp = localGenerator.generateLocal(field.getType());
-		body.getUnits().add(
-				Jimple.v().newAssignStmt(tmp,
-						Jimple.v().newStaticFieldRef(field.makeRef())));
+		insert(Jimple.v().newAssignStmt(tmp,
+				Jimple.v().newStaticFieldRef(field.makeRef())));
 		return tmp;
 	}
 
@@ -216,12 +267,12 @@ public abstract class TypeBasedJimpleBodyCreator {
 	 * @param stmt
 	 */
 	private void transformArrayRead(AssignStmt stmt) {
-		body.getUnits().add(
+		swapWith(
 				Jimple.v().newAssignStmt(
 						set(),
 						Jimple.v().newArrayRef(
 								Jimple.v().newCastExpr(set(), set().getType()),
-								ARRAY_INDEX)));
+								ARRAY_INDEX)), stmt);
 	}
 
 	/**
@@ -230,11 +281,11 @@ public abstract class TypeBasedJimpleBodyCreator {
 	 * @param stmt
 	 */
 	private void transformArrayWrite(AssignStmt stmt) {
-		body.getUnits().add(
+		swapWith(
 				Jimple.v().newAssignStmt(
 						Jimple.v().newArrayRef(
 								Jimple.v().newCastExpr(set(), set().getType()),
-								ARRAY_INDEX), set()));
+								ARRAY_INDEX), set()), stmt);
 	}
 
 	/**
@@ -244,21 +295,25 @@ public abstract class TypeBasedJimpleBodyCreator {
 	 * @param stmt
 	 */
 	private void transformNewExpr(AssignStmt stmt) {
+		AssignStmt in = null;
+
 		if (stmt.getRightOp() instanceof NewExpr) {
 			NewExpr n = (NewExpr) stmt.getRightOp();
 			Value rvalue = Jimple.v().newNewExpr(n.getBaseType());
-			body.getUnits().add(Jimple.v().newAssignStmt(set(), rvalue));
+			in = Jimple.v().newAssignStmt(set(), rvalue);
 		} else if (stmt.getRightOp() instanceof NewArrayExpr) {
 			NewArrayExpr n = (NewArrayExpr) stmt.getRightOp();
 			Value rvalue = Jimple.v().newNewArrayExpr(n.getBaseType(),
 					ARRAY_LENGTH);
-			body.getUnits().add(Jimple.v().newAssignStmt(set(), rvalue));
+			in = Jimple.v().newAssignStmt(set(), rvalue);
 		} else if (stmt.getRightOp() instanceof NewMultiArrayExpr) {
 			NewMultiArrayExpr n = (NewMultiArrayExpr) stmt.getRightOp();
 			Value rvalue = Jimple.v().newNewMultiArrayExpr(n.getBaseType(),
 					Collections.nCopies(n.getSizeCount(), ARRAY_LENGTH));
-			body.getUnits().add(Jimple.v().newAssignStmt(set(), rvalue));
+			in = Jimple.v().newAssignStmt(set(), rvalue);
 		}
+
+		swapWith(in, stmt);
 	}
 
 	/**
@@ -289,9 +344,8 @@ public abstract class TypeBasedJimpleBodyCreator {
 	 */
 	private Local insertCastStatement(Local local, Type type) {
 		Local tmp = localGenerator.generateLocal(type);
-		body.getUnits().add(
-				Jimple.v().newAssignStmt(tmp,
-						Jimple.v().newCastExpr(local, type)));
+		insert(Jimple.v().newAssignStmt(tmp,
+				Jimple.v().newCastExpr(local, type)));
 		return tmp;
 	}
 
@@ -399,13 +453,14 @@ public abstract class TypeBasedJimpleBodyCreator {
 				.filter(l -> l.getType() instanceof RefLikeType)
 				.forEach(l -> newUnits.add(Jimple.v().newAssignStmt(set(), l)));
 
-		// and the "this" parameter for non-static methods
-		if (!method.isStatic()) {
+		// and the "this" parameter for java.lang.Object to capture all objects
+		// created throughout the program
+		if (method.isConstructor() && method.getDeclaringClass().equals(Scene.v().getObjectType().getSootClass())) {
 			newUnits.add(Jimple.v().newAssignStmt(set(), body.getThisLocal()));
 		}
 
-		// Insert those assignment statements after the first non-identity
+		// Insert those assignment statements before the first non-identity
 		// statement
-		body.getUnits().insertAfter(newUnits, body.getFirstNonIdentityStmt());
+		body.getUnits().insertBefore(newUnits, body.getFirstNonIdentityStmt());
 	}
 }

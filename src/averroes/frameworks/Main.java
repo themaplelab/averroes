@@ -2,12 +2,14 @@ package averroes.frameworks;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
 import soot.ClassProvider;
 import soot.G;
 import soot.Scene;
+import soot.SootMethod;
 import soot.SourceLocator;
 import soot.options.Options;
 import averroes.frameworks.options.FrameworksOptions;
@@ -41,8 +43,10 @@ public class Main {
 			G.reset();
 
 			// Create the output directory and clean up any class files in there
-			FileUtils.forceMkdir(new File(FrameworksOptions.getOutputDirectory()));
-			FileUtils.cleanDirectory(new File(FrameworksOptions.getOutputDirectory()));
+			FileUtils.forceMkdir(new File(FrameworksOptions
+					.getOutputDirectory()));
+			FileUtils.cleanDirectory(new File(FrameworksOptions
+					.getOutputDirectory()));
 
 			// Prepare the soot classpath
 			TimeUtils.reset();
@@ -52,7 +56,8 @@ public class Main {
 			provider.prepareClasspath();
 
 			// Set some soot parameters
-			SourceLocator.v().setClassProviders(Collections.singletonList((ClassProvider) provider));
+			SourceLocator.v().setClassProviders(
+					Collections.singletonList((ClassProvider) provider));
 			Options.v().classes().addAll(provider.getClassNames());
 			System.out.println(Options.v().soot_classpath());
 			Options.v().set_full_resolver(true);
@@ -64,13 +69,21 @@ public class Main {
 			System.out.println("Loading classes ...");
 			Scene.v().loadNecessaryClasses();
 			double soot = TimeUtils.elapsedTime();
-			System.out.println("Soot loaded the input classes in " + soot + " seconds.");
+			System.out.println("Soot loaded the input classes in " + soot
+					+ " seconds.");
 
 			// Now let Averroes do its thing
 			TimeUtils.reset();
 			System.out.println("");
-			System.out.println("$$$$$$$$$ " + Scene.v().getSootClass("java.lang.Throwable").getMethods());
-			Scene.v().getClasses().forEach(CodeGenerator::transformSootClass);
+			Scene.v()
+					.getClasses()
+					.stream()
+					.map(c -> c.getMethods())
+					.flatMap(List::stream)
+					.filter(SootMethod::isConcrete)
+					.forEach(
+							m -> CodeGenerator.getJimpleBodyCreator(m)
+									.generateCode());
 
 		} catch (Exception e) {
 			e.printStackTrace();

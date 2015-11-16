@@ -42,8 +42,8 @@ public class RtaJimpleBodyCreator extends TypeBasedJimpleBodyCreator {
 		ClassWriter.writeLibraryClassFile(averroesRta);
 	}
 
-	public RtaJimpleBodyCreator(SootClass cls, SootMethod method) {
-		super(cls, method);
+	public RtaJimpleBodyCreator(SootMethod method) {
+		super(method);
 	}
 
 	@Override

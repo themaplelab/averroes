@@ -2,7 +2,6 @@ package averroes.frameworks.analysis;
 
 import soot.Local;
 import soot.Scene;
-import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
 import soot.jimple.AssignStmt;
@@ -44,8 +43,8 @@ public class XtaJimpleBodyCreator extends TypeBasedJimpleBodyCreator {
 	// ClassWriter.writeLibraryClassFile(averroesXta);
 	// }
 
-	public XtaJimpleBodyCreator(SootClass cls, SootMethod method) {
-		super(cls, method);
+	public XtaJimpleBodyCreator(SootMethod method) {
+		super(method);
 	}
 
 	@Override
@@ -60,16 +59,21 @@ public class XtaJimpleBodyCreator extends TypeBasedJimpleBodyCreator {
 	@Override
 	protected void transformFieldRead(AssignStmt stmt) {
 		SootField fr = ((FieldRef) stmt.getRightOp()).getField();
-		body.getUnits().add(
-				Jimple.v().newAssignStmt(set(),
-						fieldToPtSet.getOrDefault(fr, localGenerator.generateLocal(fr.getType()))));
+		swapWith(
+				Jimple.v().newAssignStmt(
+						set(),
+						fieldToPtSet.getOrDefault(fr,
+								localGenerator.generateLocal(fr.getType()))),
+				stmt);
 	}
 
 	@Override
 	protected void transformFieldWrite(AssignStmt stmt) {
 		SootField fr = ((FieldRef) stmt.getLeftOp()).getField();
-		body.getUnits().add(
-				Jimple.v().newAssignStmt(fieldToPtSet.getOrDefault(fr, localGenerator.generateLocal(fr.getType())),
-						set()));
+		swapWith(
+				Jimple.v().newAssignStmt(
+						fieldToPtSet.getOrDefault(fr,
+								localGenerator.generateLocal(fr.getType())),
+						set()), stmt);
 	}
 }
