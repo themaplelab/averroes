@@ -66,6 +66,8 @@ public abstract class TypeBasedJimpleBodyCreator {
 
 	protected Map<SootField, Local> fieldToPtSet;
 
+	protected Map<Type, Local> casts;
+
 	protected Map<Unit, Unit> swap;
 	protected List<Unit> insert;
 
@@ -84,6 +86,8 @@ public abstract class TypeBasedJimpleBodyCreator {
 
 		fieldToPtSet = new HashMap<SootField, Local>();
 
+		casts = new HashMap<Type, Local>();
+		
 		swap = new HashMap<Unit, Unit>();
 		insert = new LinkedList<Unit>();
 	}
@@ -106,7 +110,7 @@ public abstract class TypeBasedJimpleBodyCreator {
 		if (type instanceof PrimType) {
 			return getPrimValue((PrimType) type);
 		} else {
-			return insertCastStatement(set(), type);
+			return insertCastStatement(type);
 		}
 	}
 
@@ -188,7 +192,6 @@ public abstract class TypeBasedJimpleBodyCreator {
 	 */
 	protected void swapWith(Unit in, Unit out) {
 		swap.put(out, in);
-		// body.getUnits().swapWith(out, in);
 	}
 
 	/**
@@ -199,8 +202,6 @@ public abstract class TypeBasedJimpleBodyCreator {
 	 */
 	protected void insert(Unit toInsert) {
 		insert.add(toInsert);
-		// body.getUnits().insertBefore(toInsert,
-		// body.getFirstNonIdentityStmt());
 	}
 
 	/**
@@ -335,18 +336,21 @@ public abstract class TypeBasedJimpleBodyCreator {
 	}
 
 	/**
-	 * Insert a statement that casts the given local variable to the given type
-	 * and assign it to a new temporary local variable.
+	 * Insert a statement that casts set() to the given type and assign it to a
+	 * new temporary local variable.
 	 * 
-	 * @param local
 	 * @param type
 	 * @return temporary variable that holds the result of the cast expression
 	 */
-	private Local insertCastStatement(Local local, Type type) {
-		Local tmp = localGenerator.generateLocal(type);
-		insert(Jimple.v().newAssignStmt(tmp,
-				Jimple.v().newCastExpr(local, type)));
-		return tmp;
+	private Local insertCastStatement(Type type) {
+		if(!casts.keySet().contains(type)) {
+			Local tmp = localGenerator.generateLocal(type);
+			insert(Jimple.v().newAssignStmt(tmp,
+					Jimple.v().newCastExpr(set(), type)));
+			casts.put(type, tmp);
+		}
+		
+		return casts.get(type);
 	}
 
 	/**
@@ -455,7 +459,9 @@ public abstract class TypeBasedJimpleBodyCreator {
 
 		// and the "this" parameter for java.lang.Object to capture all objects
 		// created throughout the program
-		if (method.isConstructor() && method.getDeclaringClass().equals(Scene.v().getObjectType().getSootClass())) {
+		if (method.isConstructor()
+				&& method.getDeclaringClass().equals(
+						Scene.v().getObjectType().getSootClass())) {
 			newUnits.add(Jimple.v().newAssignStmt(set(), body.getThisLocal()));
 		}
 
