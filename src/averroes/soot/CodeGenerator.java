@@ -30,6 +30,7 @@ import soot.Local;
 import soot.Modifier;
 import soot.RefLikeType;
 import soot.RefType;
+import soot.Scene;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
@@ -115,8 +116,10 @@ public class CodeGenerator {
 	 * @param libraryInterface
 	 * @return
 	 */
-	public SootClass getConcreteImplementationClassOfLibraryInterface(SootClass libraryInterface) {
-		return libraryInterfaceToConcreteImplementationClass.get(libraryInterface);
+	public SootClass getConcreteImplementationClassOfLibraryInterface(
+			SootClass libraryInterface) {
+		return libraryInterfaceToConcreteImplementationClass
+				.get(libraryInterface);
 	}
 
 	/**
@@ -143,8 +146,9 @@ public class CodeGenerator {
 	 * @return
 	 */
 	public SootMethod getAverroesAbstractDoItAll() {
-		return averroesAbstractLibraryClass.getMethod(Hierarchy
-				.signatureToSubsignature(Names.AVERROES_ABSTRACT_DO_IT_ALL_METHOD_SIGNATURE));
+		return averroesAbstractLibraryClass
+				.getMethod(Hierarchy
+						.signatureToSubsignature(Names.AVERROES_ABSTRACT_DO_IT_ALL_METHOD_SIGNATURE));
 	}
 
 	/**
@@ -153,8 +157,9 @@ public class CodeGenerator {
 	 * @return
 	 */
 	public SootField getAverroesLibraryPointsTo() {
-		return averroesAbstractLibraryClass.getField(Hierarchy
-				.signatureToSubsignature(Names.LIBRARY_POINTS_TO_FIELD_SIGNATURE));
+		return averroesAbstractLibraryClass
+				.getField(Hierarchy
+						.signatureToSubsignature(Names.LIBRARY_POINTS_TO_FIELD_SIGNATURE));
 	}
 
 	/**
@@ -163,8 +168,9 @@ public class CodeGenerator {
 	 * @return
 	 */
 	public SootField getAverroesFinalizePointsTo() {
-		return averroesAbstractLibraryClass.getField(Hierarchy
-				.signatureToSubsignature(Names.FINALIZE_POINTS_TO_FIELD_SIGNATURE));
+		return averroesAbstractLibraryClass
+				.getField(Hierarchy
+						.signatureToSubsignature(Names.FINALIZE_POINTS_TO_FIELD_SIGNATURE));
 	}
 
 	/**
@@ -173,7 +179,8 @@ public class CodeGenerator {
 	 * @return
 	 */
 	public SootField getAverroesInstanceField() {
-		return averroesAbstractLibraryClass.getField(Hierarchy.signatureToSubsignature(Names.INSTANCE_FIELD_SIGNATURE));
+		return averroesAbstractLibraryClass.getField(Hierarchy
+				.signatureToSubsignature(Names.INSTANCE_FIELD_SIGNATURE));
 	}
 
 	/**
@@ -188,8 +195,10 @@ public class CodeGenerator {
 		// will be part of the primordial library that is added to WALA.
 		if (averroesAbstractLibraryClass == null) {
 			// Create the class
-			averroesAbstractLibraryClass = new SootClass(Names.AVERROES_ABSTRACT_LIBRARY_CLASS, Modifier.PUBLIC);
-			averroesAbstractLibraryClass.setSuperclass(Hierarchy.v().getJavaLangObject());
+			averroesAbstractLibraryClass = new SootClass(
+					Names.AVERROES_ABSTRACT_LIBRARY_CLASS, Modifier.PUBLIC);
+			averroesAbstractLibraryClass.setSuperclass(Hierarchy.v()
+					.getJavaLangObject());
 
 			// Create the constructor that calls the JavaLangObject constructor
 			createAverroesAbstractLibraryInit();
@@ -211,7 +220,8 @@ public class CodeGenerator {
 		// regenerating the whole placeholder library
 		if (averroesLibraryClass == null) {
 			// Create the class
-			averroesLibraryClass = new SootClass(Names.AVERROES_LIBRARY_CLASS, Modifier.PUBLIC);
+			averroesLibraryClass = new SootClass(Names.AVERROES_LIBRARY_CLASS,
+					Modifier.PUBLIC);
 			averroesLibraryClass.setSuperclass(averroesAbstractLibraryClass);
 
 			// Add a default empty constructor
@@ -253,13 +263,17 @@ public class CodeGenerator {
 	 * @throws IOException
 	 */
 	public static void writeLibraryClassFile(SootClass cls) throws IOException {
-		Options.v().set_output_dir(Paths.libraryClassesOutputDirectory().getPath());
+		Options.v().set_output_dir(
+				Paths.libraryClassesOutputDirectory().getPath());
 
-		File file = new File(SourceLocator.v().getFileNameFor(cls, Options.output_format_class));
+		File file = new File(SourceLocator.v().getFileNameFor(cls,
+				Options.output_format_class));
 		file.getParentFile().mkdirs();
 
-		OutputStream streamOut = new JasminOutputStream(new FileOutputStream(file));
-		PrintWriter writerOut = new PrintWriter(new OutputStreamWriter(streamOut));
+		OutputStream streamOut = new JasminOutputStream(new FileOutputStream(
+				file));
+		PrintWriter writerOut = new PrintWriter(new OutputStreamWriter(
+				streamOut));
 
 		if (cls.containsBafBody()) {
 			new soot.baf.JasminClass(cls).print(writerOut);
@@ -283,10 +297,14 @@ public class CodeGenerator {
 	 * @return
 	 */
 	private JimpleBody createJimpleBody(SootMethod method) {
-		if (method.getDeclaringClass().getName().equals(Names.AVERROES_ABSTRACT_LIBRARY_CLASS)
-				|| method.getDeclaringClass().getName().equals(Names.AVERROES_LIBRARY_CLASS)) {
-			throw new IllegalArgumentException("Creating Jimple body for " + method.getSignature()
-					+ ". We should never enter createJimpleBody() for the Averroes library classes.");
+		if (method.getDeclaringClass().getName()
+				.equals(Names.AVERROES_ABSTRACT_LIBRARY_CLASS)
+				|| method.getDeclaringClass().getName()
+						.equals(Names.AVERROES_LIBRARY_CLASS)) {
+			throw new IllegalArgumentException(
+					"Creating Jimple body for "
+							+ method.getSignature()
+							+ ". We should never enter createJimpleBody() for the Averroes library classes.");
 		}
 
 		// Create a basic Jimple body
@@ -308,7 +326,10 @@ public class CodeGenerator {
 		body.validate();
 
 		// TODO
-		// System.out.println(body.getJimpleBody());
+		if (method.getDeclaringClass().equals(
+				Scene.v().getSootClass("java.lang.Throwable"))) {
+			System.out.println(body.getJimpleBody());
+		}
 
 		return (JimpleBody) method.getActiveBody();
 	}
@@ -336,7 +357,8 @@ public class CodeGenerator {
 	 * Implement any library interface that is not implemented in the library.
 	 */
 	private void implementLibraryInterfacesNotImplementedInLibrary() {
-		for (SootClass iface : Hierarchy.v().getLibraryInterfacesNotImplementedInLibrary()) {
+		for (SootClass iface : Hierarchy.v()
+				.getLibraryInterfacesNotImplementedInLibrary()) {
 			SootClass cls = createLibraryClassImplementsInterface(iface);
 			libraryInterfaceToConcreteImplementationClass.put(iface, cls);
 		}
@@ -347,9 +369,11 @@ public class CodeGenerator {
 	 * not implemented in the library.
 	 */
 	private void implementAbstractLibraryClassesNotImplementedInLibrary() {
-		for (SootClass cls : Hierarchy.v().getAbstractLibraryClassesNotImplementedInLibrary()) {
+		for (SootClass cls : Hierarchy.v()
+				.getAbstractLibraryClassesNotImplementedInLibrary()) {
 			SootClass concrete = createConcreteLibrarySubclassFor(cls);
-			abstractLibraryClassToConcreteImplementationClass.put(cls, concrete);
+			abstractLibraryClassToConcreteImplementationClass
+					.put(cls, concrete);
 		}
 	}
 
@@ -367,8 +391,11 @@ public class CodeGenerator {
 		body.insertIdentityStmts();
 		body.getUnits().add(
 				Jimple.v().newInvokeStmt(
-						Jimple.v().newSpecialInvokeExpr(body.getThisLocal(),
-								Hierarchy.getDefaultConstructor(Hierarchy.v().getJavaLangObject()).makeRef(),
+						Jimple.v().newSpecialInvokeExpr(
+								body.getThisLocal(),
+								Hierarchy.getDefaultConstructor(
+										Hierarchy.v().getJavaLangObject())
+										.makeRef(),
 								Collections.<Value> emptyList())));
 
 		// Add return statement
@@ -382,12 +409,13 @@ public class CodeGenerator {
 	 * Add the main 3 fields to the AverroesAbstractLibrary class.
 	 */
 	private void createAverroesAbstractLibraryFields() {
-		SootField libraryPointsTo = new SootField(Names.LIBRARY_POINTS_TO, Hierarchy.v().getJavaLangObject().getType(),
-				Modifier.PUBLIC);
-		SootField finalizePointsTo = new SootField(Names.FINALIZE_POINTS_TO, Hierarchy.v().getJavaLangObject()
-				.getType(), Modifier.PUBLIC);
-		SootField instance = new SootField(Names.INSTANCE, averroesAbstractLibraryClass.getType(), Modifier.PUBLIC
-				| Modifier.STATIC);
+		SootField libraryPointsTo = new SootField(Names.LIBRARY_POINTS_TO,
+				Hierarchy.v().getJavaLangObject().getType(), Modifier.PUBLIC);
+		SootField finalizePointsTo = new SootField(Names.FINALIZE_POINTS_TO,
+				Hierarchy.v().getJavaLangObject().getType(), Modifier.PUBLIC);
+		SootField instance = new SootField(Names.INSTANCE,
+				averroesAbstractLibraryClass.getType(), Modifier.PUBLIC
+						| Modifier.STATIC);
 		averroesAbstractLibraryClass.addField(libraryPointsTo);
 		averroesAbstractLibraryClass.addField(finalizePointsTo);
 		averroesAbstractLibraryClass.addField(instance);
@@ -397,8 +425,10 @@ public class CodeGenerator {
 	 * Add the abstract doItAll method to the AverroesAbstractLibrary class.
 	 */
 	private void createAverroesAbstractLibraryDoItAll() {
-		SootMethod doItAll = new SootMethod(Names.AVERROES_DO_IT_ALL_METHOD_NAME, Collections.<Type> emptyList(),
-				VoidType.v(), Modifier.PUBLIC | Modifier.ABSTRACT);
+		SootMethod doItAll = new SootMethod(
+				Names.AVERROES_DO_IT_ALL_METHOD_NAME,
+				Collections.<Type> emptyList(), VoidType.v(), Modifier.PUBLIC
+						| Modifier.ABSTRACT);
 		averroesAbstractLibraryClass.addMethod(doItAll);
 	}
 
@@ -416,9 +446,13 @@ public class CodeGenerator {
 		body.insertIdentityStmts();
 		body.getUnits().add(
 				Jimple.v().newInvokeStmt(
-						Jimple.v().newSpecialInvokeExpr(body.getThisLocal(),
-								Hierarchy.getDefaultConstructor(averroesAbstractLibraryClass).makeRef(),
-								Collections.<Value> emptyList())));
+						Jimple.v()
+								.newSpecialInvokeExpr(
+										body.getThisLocal(),
+										Hierarchy.getDefaultConstructor(
+												averroesAbstractLibraryClass)
+												.makeRef(),
+										Collections.<Value> emptyList())));
 
 		// Add return statement
 		body.getUnits().addLast(Jimple.v().newReturnVoidStmt());
@@ -431,18 +465,22 @@ public class CodeGenerator {
 	 * Create the default constructor for the Averroes library class.
 	 */
 	private void createAverroesLibraryClinit() {
-		SootMethod clinit = new SootMethod(SootMethod.staticInitializerName, Collections.<Type> emptyList(),
-				VoidType.v(), Modifier.PUBLIC | Modifier.STATIC);
+		SootMethod clinit = new SootMethod(SootMethod.staticInitializerName,
+				Collections.<Type> emptyList(), VoidType.v(), Modifier.PUBLIC
+						| Modifier.STATIC);
 
 		AverroesJimpleBody body = new AverroesJimpleBody(clinit);
 		averroesLibraryClass.addMethod(clinit);
 
 		// Create instance and call the constructor
-		Local instance = body.insertNewStatement(RefType.v(averroesLibraryClass));
-		body.insertSpecialInvokeStatement(instance, averroesLibraryClass.getMethod(Names.DEFAULT_CONSTRUCTOR_SIG));
+		Local instance = body.insertNewStatement(RefType
+				.v(averroesLibraryClass));
+		body.insertSpecialInvokeStatement(instance,
+				averroesLibraryClass.getMethod(Names.DEFAULT_CONSTRUCTOR_SIG));
 
 		// Now assign this instance to AverroesAbstractLibrary.instance
-		body.storeStaticField(CodeGenerator.v().getAverroesInstanceField(), instance);
+		body.storeStaticField(CodeGenerator.v().getAverroesInstanceField(),
+				instance);
 
 		// Add return statement
 		body.insertReturnStmt();
@@ -459,8 +497,9 @@ public class CodeGenerator {
 	 * exceptions and all the stuff that the library could do.
 	 */
 	private void createAverroesLibraryDoItAll() {
-		SootMethod doItAll = new SootMethod(Names.AVERROES_DO_IT_ALL_METHOD_NAME, Collections.<Type> emptyList(),
-				VoidType.v(), Modifier.PUBLIC);
+		SootMethod doItAll = new SootMethod(
+				Names.AVERROES_DO_IT_ALL_METHOD_NAME,
+				Collections.<Type> emptyList(), VoidType.v(), Modifier.PUBLIC);
 
 		averroesLibraryClass.addMethod(doItAll);
 		doItAllBody = new AverroesJimpleBody(doItAll);
@@ -494,7 +533,7 @@ public class CodeGenerator {
 		// body.insertReturnStmt();
 
 		// TODO
-		// System.out.println(doItAllBody.getJimpleBody());
+		 System.out.println(doItAllBody.getJimpleBody());
 
 		// Finally validate the Jimple body
 		doItAllBody.validate();
@@ -526,11 +565,13 @@ public class CodeGenerator {
 
 			// Call the method
 			if (cls.isInterface()) {
-				invokeExpr = Jimple.v().newInterfaceInvokeExpr(base, methodRef, args);
+				invokeExpr = Jimple.v().newInterfaceInvokeExpr(base, methodRef,
+						args);
 			} else if (toCall.isStatic()) {
 				invokeExpr = Jimple.v().newStaticInvokeExpr(methodRef, args);
 			} else {
-				invokeExpr = Jimple.v().newVirtualInvokeExpr(base, methodRef, args);
+				invokeExpr = Jimple.v().newVirtualInvokeExpr(base, methodRef,
+						args);
 			}
 
 			// Assign the return of the call to the return variable only if it
@@ -561,7 +602,8 @@ public class CodeGenerator {
 	 */
 	public Set<SootMethod> getAllMethodsToCallReflectively() {
 		LinkedHashSet<SootMethod> result = new LinkedHashSet<SootMethod>();
-		result.addAll(Hierarchy.v().getLibrarySuperMethodsOfApplicationMethods());
+		result.addAll(Hierarchy.v()
+				.getLibrarySuperMethodsOfApplicationMethods());
 		result.addAll(getTamiFlexApplicationMethodInvokes());
 
 		// Get those methods specified in the apk resource xml files that handle
@@ -577,9 +619,10 @@ public class CodeGenerator {
 	 * Handle possible array writes in the library.
 	 */
 	private void handleArrayIndices() {
-		Local objectArray = (Local) doItAllBody.getCompatibleValue(ArrayType.v(Hierarchy.v().getJavaLangObject()
-				.getType(), 1));
-		doItAllBody.insertAssignmentStatement(Jimple.v().newArrayRef(objectArray, IntConstant.v(0)),
+		Local objectArray = (Local) doItAllBody.getCompatibleValue(ArrayType.v(
+				Hierarchy.v().getJavaLangObject().getType(), 1));
+		doItAllBody.insertAssignmentStatement(
+				Jimple.v().newArrayRef(objectArray, IntConstant.v(0)),
 				doItAllBody.getLpt());
 	}
 
@@ -589,11 +632,15 @@ public class CodeGenerator {
 	 */
 	private void createObjectsFromApplicationClassNames() {
 		SootMethod forName = Hierarchy.v().getMethod(Names.FOR_NAME_SIG);
-		SootMethod newInstance = Hierarchy.v().getMethod(Names.NEW_INSTANCE_SIG);
+		SootMethod newInstance = Hierarchy.v()
+				.getMethod(Names.NEW_INSTANCE_SIG);
 		List<Value> args = doItAllBody.prepareActualArguments(forName);
-		Local classes = doItAllBody.newLocal(Hierarchy.v().getJavaLangClass().getType());
-		Local instances = doItAllBody.newLocal(Hierarchy.v().getJavaLangObject().getType());
-		doItAllBody.insertAssignmentStatement(classes, Jimple.v().newStaticInvokeExpr(forName.makeRef(), args));
+		Local classes = doItAllBody.newLocal(Hierarchy.v().getJavaLangClass()
+				.getType());
+		Local instances = doItAllBody.newLocal(Hierarchy.v()
+				.getJavaLangObject().getType());
+		doItAllBody.insertAssignmentStatement(classes, Jimple.v()
+				.newStaticInvokeExpr(forName.makeRef(), args));
 		doItAllBody.insertAssignmentStatement(instances, Jimple.v()
 				.newVirtualInvokeExpr(classes, newInstance.makeRef()));
 		doItAllBody.storeLibraryPointsToField(instances);
@@ -605,7 +652,8 @@ public class CodeGenerator {
 	 * otherwise the method is invalid (Soot).
 	 */
 	private void throwThrowables() {
-		Local throwables = (Local) doItAllBody.getCompatibleValue(Hierarchy.v().getJavaLangThrowable().getType());
+		Local throwables = (Local) doItAllBody.getCompatibleValue(Hierarchy.v()
+				.getJavaLangThrowable().getType());
 		doItAllBody.insertThrowStatement(throwables);
 	}
 
@@ -622,7 +670,8 @@ public class CodeGenerator {
 
 		// 2. Convert any use of application class name string constants to
 		// explicit instantiations.
-		for (SootClass cls : Hierarchy.v().getApplicationConstantPool().getApplicationClasses()) {
+		for (SootClass cls : Hierarchy.v().getApplicationConstantPool()
+				.getApplicationClasses()) {
 			if (!Hierarchy.isAbstractClass(cls) && !cls.isInterface()) {
 				doItAllBody.createObjectOfType(cls);
 			}
@@ -661,8 +710,10 @@ public class CodeGenerator {
 		// 7. Create instances of dynamic classes
 		if (AverroesOptions.isDynamicClassesEnabled()) {
 			try {
-				for (String className : AverroesOptions.getDynamicApplicationClasses()) {
-					doItAllBody.createObjectOfType(Hierarchy.v().getClass(className));
+				for (String className : AverroesOptions
+						.getDynamicApplicationClasses()) {
+					doItAllBody.createObjectOfType(Hierarchy.v().getClass(
+							className));
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -698,7 +749,8 @@ public class CodeGenerator {
 	private Set<SootClass> getConcreteLibraryClasses() {
 		Set<SootClass> result = new HashSet<SootClass>();
 		result.addAll(Hierarchy.v().getConcreteLibraryClasses());
-		result.addAll(abstractLibraryClassToConcreteImplementationClass.values());
+		result.addAll(abstractLibraryClassToConcreteImplementationClass
+				.values());
 		result.addAll(libraryInterfaceToConcreteImplementationClass.values());
 		return result;
 	}
@@ -713,7 +765,8 @@ public class CodeGenerator {
 	private Set<SootClass> getLibraryClasses() {
 		Set<SootClass> result = new HashSet<SootClass>();
 		result.addAll(Hierarchy.v().getLibraryClasses());
-		result.addAll(abstractLibraryClassToConcreteImplementationClass.values());
+		result.addAll(abstractLibraryClassToConcreteImplementationClass
+				.values());
 		result.addAll(libraryInterfaceToConcreteImplementationClass.values());
 		return result;
 	}
@@ -800,7 +853,8 @@ public class CodeGenerator {
 	private Set<SootMethod> getTamiFlexApplicationConstructorNewInstance() {
 		Set<SootMethod> result = new HashSet<SootMethod>();
 
-		for (String methodSignature : TamiFlexFactsDatabase.getConstructorNewInstance()) {
+		for (String methodSignature : TamiFlexFactsDatabase
+				.getConstructorNewInstance()) {
 			if (Hierarchy.v().isApplicationMethod(methodSignature)) {
 				result.add(Hierarchy.v().getMethod(methodSignature));
 			}
@@ -895,7 +949,8 @@ public class CodeGenerator {
 	private Collection<SootMethod> getSuperinterfacesMethods(SootClass iface) {
 		Map<String, SootMethod> methods = new HashMap<String, SootMethod>();
 
-		for (SootClass superInterface : Hierarchy.v().getSuperinterfacesOfIncluding(iface)) {
+		for (SootClass superInterface : Hierarchy.v()
+				.getSuperinterfacesOfIncluding(iface)) {
 			for (SootMethod method : superInterface.getMethods()) {
 				if (!methods.containsKey(method.getSubSignature())) {
 					methods.put(method.getSubSignature(), method);
@@ -915,8 +970,9 @@ public class CodeGenerator {
 	 * @return
 	 */
 	private SootMethod getConcreteMethod(SootMethod method) {
-		return new SootMethod(method.getName(), method.getParameterTypes(), method.getReturnType(),
-				method.getModifiers() & ~Modifier.ABSTRACT, method.getExceptions());
+		return new SootMethod(method.getName(), method.getParameterTypes(),
+				method.getReturnType(), method.getModifiers()
+						& ~Modifier.ABSTRACT, method.getExceptions());
 	}
 
 	/**
@@ -925,7 +981,8 @@ public class CodeGenerator {
 	 * @param generatedClass
 	 * @param method
 	 */
-	private void addMethodToGeneratedClass(SootClass generatedClass, SootMethod method) {
+	private void addMethodToGeneratedClass(SootClass generatedClass,
+			SootMethod method) {
 		generatedClass.addMethod(method);
 
 		// Update the generated method count
@@ -940,9 +997,11 @@ public class CodeGenerator {
 	private void addDefaultConstructorToGeneratedClass(SootClass generatedClass) {
 		if (!generatedClass.isInterface()) {
 			if (Hierarchy.hasDefaultConstructor(generatedClass)) {
-				Hierarchy.makePublic(generatedClass.getMethod(Names.DEFAULT_CONSTRUCTOR_SIG));
+				Hierarchy.makePublic(generatedClass
+						.getMethod(Names.DEFAULT_CONSTRUCTOR_SIG));
 			} else {
-				addMethodToGeneratedClass(generatedClass, Hierarchy.getNewDefaultConstructor());
+				addMethodToGeneratedClass(generatedClass,
+						Hierarchy.getNewDefaultConstructor());
 			}
 		}
 	}

@@ -60,20 +60,21 @@ public class XtaJimpleBodyCreator extends TypeBasedJimpleBodyCreator {
 	protected void transformFieldRead(AssignStmt stmt) {
 		SootField fr = ((FieldRef) stmt.getRightOp()).getField();
 		swapWith(
+				stmt,
 				Jimple.v().newAssignStmt(
 						set(),
 						fieldToPtSet.getOrDefault(fr,
-								localGenerator.generateLocal(fr.getType()))),
-				stmt);
+								localGenerator.generateLocal(fr.getType()))));
 	}
 
 	@Override
 	protected void transformFieldWrite(AssignStmt stmt) {
 		SootField fr = ((FieldRef) stmt.getLeftOp()).getField();
 		swapWith(
+				stmt,
 				Jimple.v().newAssignStmt(
 						fieldToPtSet.getOrDefault(fr,
 								localGenerator.generateLocal(fr.getType())),
-						set()), stmt);
+						set()));
 	}
 }

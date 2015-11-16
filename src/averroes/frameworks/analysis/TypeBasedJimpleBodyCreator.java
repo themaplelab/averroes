@@ -46,8 +46,6 @@ import soot.jimple.SpecialInvokeExpr;
 import soot.jimple.StaticInvokeExpr;
 import soot.jimple.ThrowStmt;
 import soot.jimple.VirtualInvokeExpr;
-import soot.util.Chain;
-import soot.util.HashChain;
 
 /**
  * Common base class for all Jimple body creators. This should be sub-classed by
@@ -87,7 +85,7 @@ public abstract class TypeBasedJimpleBodyCreator {
 		fieldToPtSet = new HashMap<SootField, Local>();
 
 		casts = new HashMap<Type, Local>();
-		
+
 		swap = new HashMap<Unit, Unit>();
 		insert = new LinkedList<Unit>();
 	}
@@ -154,7 +152,9 @@ public abstract class TypeBasedJimpleBodyCreator {
 
 				@Override
 				public void caseInvokeStmt(InvokeStmt stmt) {
-					transformInvokeStmt(stmt);
+					if (!isCallToSuperConstructor(stmt)) {
+						transformInvokeStmt(stmt);
+					}
 				}
 
 				@Override
@@ -164,13 +164,13 @@ public abstract class TypeBasedJimpleBodyCreator {
 			});
 		}
 
-		// Swap and insert all the units in the buffer
-		swap.keySet().forEach(u -> body.getUnits().swapWith(u, swap.get(u)));
-		body.getUnits().insertBefore(insert, body.getFirstNonIdentityStmt());
-
 		// Assign method parameters, including "this, if available, to the
 		// appropriate set
 		assignMethodParameters();
+
+		// Swap and insert all the units in the buffer
+		swap.keySet().forEach(u -> body.getUnits().swapWith(u, swap.get(u)));
+		body.getUnits().insertBefore(insert, insertPoint());
 
 		// Validate method Jimple body
 		body.validate();
@@ -185,12 +185,41 @@ public abstract class TypeBasedJimpleBodyCreator {
 	}
 
 	/**
+	 * Is this the call to a super constructor?
+	 * 
+	 * @param stmt
+	 * @return
+	 */
+	protected boolean isCallToSuperConstructor(InvokeStmt stmt) {
+		return method.isConstructor()
+				&& body.getFirstNonIdentityStmt().equals(stmt)
+				&& stmt.getInvokeExpr() instanceof SpecialInvokeExpr;
+	}
+
+	/**
+	 * The unit before which we insert new statements (mainly casts).
+	 * 
+	 * @return
+	 */
+	protected Unit insertPoint() {
+		// If it's a constructor then, the first non-identity statement is
+		// usually the call to the super constructor. Statements should be
+		// inserted after that one. Otherwise, the insert point is the first
+		// non-identity statement.
+		if (method.isConstructor()) {
+			return body.getUnits().getSuccOf(body.getFirstNonIdentityStmt());
+		} else {
+			return body.getFirstNonIdentityStmt();
+		}
+	}
+
+	/**
 	 * Replace "out" in the underlying method body with "in".
 	 * 
-	 * @param in
 	 * @param out
+	 * @param in
 	 */
-	protected void swapWith(Unit in, Unit out) {
+	protected void swapWith(Unit out, Unit in) {
 		swap.put(out, in);
 	}
 
@@ -210,7 +239,7 @@ public abstract class TypeBasedJimpleBodyCreator {
 	 * @param stmt
 	 */
 	protected void transformReturnStmt(ReturnStmt stmt) {
-		swapWith(Jimple.v().newReturnStmt(setOf(method.getReturnType())), stmt);
+		swapWith(stmt, Jimple.v().newReturnStmt(setOf(method.getReturnType())));
 	}
 
 	/**
@@ -220,7 +249,7 @@ public abstract class TypeBasedJimpleBodyCreator {
 	 */
 	protected void transformInvokeStmt(InvokeStmt stmt) {
 		InvokeExpr expr = transformInvokeExpr(stmt.getInvokeExpr());
-		swapWith(Jimple.v().newInvokeStmt(expr), stmt);
+		swapWith(stmt, Jimple.v().newInvokeStmt(expr));
 	}
 
 	/**
@@ -229,7 +258,7 @@ public abstract class TypeBasedJimpleBodyCreator {
 	 * @param stmt
 	 */
 	protected void transformThrowStmt(ThrowStmt stmt) {
-		swapWith(Jimple.v().newThrowStmt(setOf(stmt.getOp().getType())), stmt);
+		swapWith(stmt, Jimple.v().newThrowStmt(setOf(stmt.getOp().getType())));
 	}
 
 	/**
@@ -269,11 +298,12 @@ public abstract class TypeBasedJimpleBodyCreator {
 	 */
 	private void transformArrayRead(AssignStmt stmt) {
 		swapWith(
+				stmt,
 				Jimple.v().newAssignStmt(
 						set(),
 						Jimple.v().newArrayRef(
 								Jimple.v().newCastExpr(set(), set().getType()),
-								ARRAY_INDEX)), stmt);
+								ARRAY_INDEX)));
 	}
 
 	/**
@@ -283,10 +313,11 @@ public abstract class TypeBasedJimpleBodyCreator {
 	 */
 	private void transformArrayWrite(AssignStmt stmt) {
 		swapWith(
+				stmt,
 				Jimple.v().newAssignStmt(
 						Jimple.v().newArrayRef(
 								Jimple.v().newCastExpr(set(), set().getType()),
-								ARRAY_INDEX), set()), stmt);
+								ARRAY_INDEX), set()));
 	}
 
 	/**
@@ -314,7 +345,7 @@ public abstract class TypeBasedJimpleBodyCreator {
 			in = Jimple.v().newAssignStmt(set(), rvalue);
 		}
 
-		swapWith(in, stmt);
+		swapWith(stmt, in);
 	}
 
 	/**
@@ -343,13 +374,13 @@ public abstract class TypeBasedJimpleBodyCreator {
 	 * @return temporary variable that holds the result of the cast expression
 	 */
 	private Local insertCastStatement(Type type) {
-		if(!casts.keySet().contains(type)) {
+		if (!casts.keySet().contains(type)) {
 			Local tmp = localGenerator.generateLocal(type);
 			insert(Jimple.v().newAssignStmt(tmp,
 					Jimple.v().newCastExpr(set(), type)));
 			casts.put(type, tmp);
 		}
-		
+
 		return casts.get(type);
 	}
 
@@ -449,24 +480,25 @@ public abstract class TypeBasedJimpleBodyCreator {
 	 * "this" parameter, if available.
 	 */
 	private void assignMethodParameters() {
-		Chain<Unit> newUnits = new HashChain<Unit>();
+		// Chain<Unit> newUnits = new HashChain<Unit>();
 
 		// Loop over all parameters of reference type and create an assignment
 		// statement to the appropriate "expression".
 		body.getParameterLocals().stream()
 				.filter(l -> l.getType() instanceof RefLikeType)
-				.forEach(l -> newUnits.add(Jimple.v().newAssignStmt(set(), l)));
+				.forEach(l -> insert(Jimple.v().newAssignStmt(set(), l)));
 
 		// and the "this" parameter for java.lang.Object to capture all objects
 		// created throughout the program
 		if (method.isConstructor()
 				&& method.getDeclaringClass().equals(
 						Scene.v().getObjectType().getSootClass())) {
-			newUnits.add(Jimple.v().newAssignStmt(set(), body.getThisLocal()));
+			insert(Jimple.v().newAssignStmt(set(), body.getThisLocal()));
 		}
 
 		// Insert those assignment statements before the first non-identity
 		// statement
-		body.getUnits().insertBefore(newUnits, body.getFirstNonIdentityStmt());
+		// body.getUnits().insertBefore(newUnits,
+		// body.getFirstNonIdentityStmt());
 	}
 }

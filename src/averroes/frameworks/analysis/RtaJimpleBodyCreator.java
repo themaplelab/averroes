@@ -5,6 +5,8 @@ import soot.Modifier;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
+import soot.jimple.AssignStmt;
+import soot.jimple.Jimple;
 import averroes.frameworks.soot.ClassWriter;
 import averroes.frameworks.soot.CodeGenerator;
 import averroes.frameworks.soot.Names;
@@ -54,5 +56,15 @@ public class RtaJimpleBodyCreator extends TypeBasedJimpleBodyCreator {
 		}
 
 		return rtaLocal;
+	}
+
+	@Override
+	protected void transformFieldRead(AssignStmt stmt) {
+		swapWith(stmt, Jimple.v().newNopStmt());
+	}
+
+	@Override
+	protected void transformFieldWrite(AssignStmt stmt) {
+		swapWith(stmt, Jimple.v().newNopStmt());
 	}
 }
