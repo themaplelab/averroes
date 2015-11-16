@@ -10,7 +10,7 @@ import averroes.frameworks.soot.CodeGenerator;
 import averroes.frameworks.soot.Names;
 
 /**
- * RTA Jimple body creator that overapproximates all objects in the library by
+ * RTA Jimple body creator that over-approximates all objects in the library by
  * just one set represented by the field RTA.set in the newly generated class
  * RTA.
  * 
@@ -28,28 +28,29 @@ public class RtaJimpleBodyCreator extends TypeBasedJimpleBodyCreator {
 	// Create the singleton RTA class
 	static {
 		// Create a public class and set its super class to java.lang.Object
-		averroesRta = CodeGenerator.createEmptyClass(Names.RTA_CLASS, Modifier.PUBLIC, Scene.v().getObjectType()
-				.getSootClass());
+		averroesRta = CodeGenerator.createEmptyClass(Names.RTA_CLASS,
+				Modifier.PUBLIC, Scene.v().getObjectType().getSootClass());
 
 		// Add a default constructor to it
 		CodeGenerator.createEmptyDefaultConstructor(averroesRta);
 
 		// Add static field "set" to the class
-		CodeGenerator.createField(averroesRta, Names.RTA_SET_FIELD_NAME, Scene.v().getObjectType(), Modifier.PUBLIC
-				| Modifier.STATIC);
+		CodeGenerator.createField(averroesRta, Names.RTA_SET_FIELD_NAME, Scene
+				.v().getObjectType(), Modifier.PUBLIC | Modifier.STATIC);
 
 		// Write it to disk
-		 ClassWriter.writeLibraryClassFile(averroesRta);
+		ClassWriter.writeLibraryClassFile(averroesRta);
 	}
 
-	public RtaJimpleBodyCreator(SootMethod method) {
-		super(method);
+	public RtaJimpleBodyCreator(SootClass cls, SootMethod method) {
+		super(cls, method);
 	}
 
 	@Override
 	public Local set() {
 		if (rtaLocal == null) {
-			rtaLocal = loadStaticField(Scene.v().getField(Names.RTA_SET_FIELD_SIGNATURE));
+			rtaLocal = loadStaticField(Scene.v().getField(
+					Names.RTA_SET_FIELD_SIGNATURE));
 		}
 
 		return rtaLocal;

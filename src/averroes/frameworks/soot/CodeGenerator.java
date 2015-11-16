@@ -1,6 +1,8 @@
 package averroes.frameworks.soot;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
 import soot.Modifier;
 import soot.Scene;
@@ -26,22 +28,90 @@ import averroes.soot.Names;
  * 
  */
 public class CodeGenerator {
-	
+
+	private static HashMap<String, SootClass> nameToClass;
+
+	static {
+		nameToClass = new HashMap<String, SootClass>();
+
+		// Create our own hierarchy
+		Scene.v().getClasses().forEach(CodeGenerator::addSootClassSkeleton);
+
+	}
+
+	/**
+	 * Add a skeleton representing the given soot class to the code generator.
+	 * The main reason is that when we generate, for example, an invoke
+	 * instruction, we need to make sure that all the methods and classes are
+	 * present (regardless of the code within the method bodies). Otherwise,
+	 * Soot will throw exceptions whenever we try to get a non-existent method
+	 * or class.
+	 * 
+	 * @param cls
+	 */
+	private static void addSootClassSkeleton(SootClass cls) {
+		nameToClass.put(cls.getName(),
+				new SootClass(cls.getName(), cls.getModifiers()));
+		cls.getMethods().forEach(CodeGenerator::addSootMethodSkeleton);
+	}
+
+	/**
+	 * Add a skeleton representing the given soot method, for the same reasons
+	 * we do that for Soot classes. This method also adds the newly generated
+	 * method to the corresponding class.
+	 * 
+	 * @param original
+	 */
+	private static void addSootMethodSkeleton(SootMethod original) {
+		SootMethod method = new SootMethod(original.getName(),
+				original.getParameterTypes(), original.getReturnType(),
+				original.getModifiers(), original.getExceptions());
+		nameToClass.get(original.getDeclaringClass().getName()).addMethod(
+				method);
+	}
+
+	/**
+	 * Get the soot method that we have created and that corresponds to the
+	 * given original soot method.
+	 * 
+	 * @param method
+	 * @return
+	 */
+	public static SootMethod getSootMethod(SootMethod original) {
+		return nameToClass.values().stream().map(sc -> sc.getMethods())
+				.flatMap(List::stream)
+				.filter(m -> m.getSignature().equals(original.getSignature()))
+				.findFirst().get();
+	}
+
 	/**
 	 * Get a Jimple body creator for this method, based on the options.
 	 * 
 	 * @param method
 	 */
-	public static TypeBasedJimpleBodyCreator getJimpleBodyCreator(SootMethod method) {
-		if(FrameworksOptions.getAnalysis().equalsIgnoreCase("rta")) {
-			return new RtaJimpleBodyCreator(method);
+	public static TypeBasedJimpleBodyCreator getJimpleBodyCreator(
+			SootClass cls, SootMethod method) {
+		if (FrameworksOptions.getAnalysis().equalsIgnoreCase("rta")) {
+			return new RtaJimpleBodyCreator(cls, method);
 		} else if (FrameworksOptions.getAnalysis().equalsIgnoreCase("xta")) {
-			return new XtaJimpleBodyCreator(method);
+			return new XtaJimpleBodyCreator(cls, method);
 		} else {
-			return new RtaJimpleBodyCreator(method);
+			return new RtaJimpleBodyCreator(cls, method);
 		}
 	}
-	
+
+	/**
+	 * Transform a soot class (by transforming its methods) based on the
+	 * underlying anlaysis.
+	 * 
+	 * @param method
+	 */
+	public static void transformSootClass(SootClass cls) {
+		SootClass newClass = new SootClass(cls.getName(), cls.getModifiers());
+		cls.getMethods().forEach(
+				m -> getJimpleBodyCreator(newClass, m).generateCode());
+	}
+
 	/**
 	 * Add a field to given Soot class.
 	 * 
@@ -50,7 +120,8 @@ public class CodeGenerator {
 	 * @param fieldType
 	 * @param modifiers
 	 */
-	public static void createField(SootClass cls, String fieldName, Type fieldType, int modifiers) {
+	public static void createField(SootClass cls, String fieldName,
+			Type fieldType, int modifiers) {
 		SootField field = new SootField(fieldName, fieldType, modifiers);
 		cls.addField(field);
 	}
@@ -64,7 +135,8 @@ public class CodeGenerator {
 	 * @param superClass
 	 * @return
 	 */
-	public static SootClass createEmptyClass(String className, int modifiers, SootClass superClass) {
+	public static SootClass createEmptyClass(String className, int modifiers,
+			SootClass superClass) {
 		SootClass cls = new SootClass(className, modifiers);
 		cls.setSuperclass(superClass);
 		Scene.v().addClass(cls);
@@ -87,7 +159,8 @@ public class CodeGenerator {
 		body.insertIdentityStmts();
 		body.getUnits().add(
 				Jimple.v().newInvokeStmt(
-						Jimple.v().newSpecialInvokeExpr(body.getThisLocal(), getDefaultConstructor(cls).makeRef(),
+						Jimple.v().newSpecialInvokeExpr(body.getThisLocal(),
+								getDefaultConstructor(cls).makeRef(),
 								Collections.<Value> emptyList())));
 
 		// Add return statement
@@ -113,7 +186,8 @@ public class CodeGenerator {
 	 * @return
 	 */
 	private static SootMethod makeDefaultConstructor() {
-		return new SootMethod(SootMethod.constructorName, Collections.<Type> emptyList(), VoidType.v(), Modifier.PUBLIC);
+		return new SootMethod(SootMethod.constructorName,
+				Collections.<Type> emptyList(), VoidType.v(), Modifier.PUBLIC);
 	}
 
 }

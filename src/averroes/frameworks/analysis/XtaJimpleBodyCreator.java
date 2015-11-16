@@ -2,6 +2,7 @@ package averroes.frameworks.analysis;
 
 import soot.Local;
 import soot.Scene;
+import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
 import soot.jimple.AssignStmt;
@@ -43,8 +44,8 @@ public class XtaJimpleBodyCreator extends TypeBasedJimpleBodyCreator {
 	// ClassWriter.writeLibraryClassFile(averroesXta);
 	// }
 
-	public XtaJimpleBodyCreator(SootMethod method) {
-		super(method);
+	public XtaJimpleBodyCreator(SootClass cls, SootMethod method) {
+		super(cls, method);
 	}
 
 	@Override

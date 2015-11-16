@@ -2,7 +2,6 @@ package averroes.frameworks;
 
 import java.io.File;
 import java.util.Collections;
-import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
@@ -70,7 +69,8 @@ public class Main {
 			// Now let Averroes do its thing
 			TimeUtils.reset();
 			System.out.println("");
-			Scene.v().getClasses().stream().map(c -> c.getMethods()).flatMap(List::stream).forEach(m -> CodeGenerator.getJimpleBodyCreator(m).generateCode());
+			System.out.println("$$$$$$$$$ " + Scene.v().getSootClass("java.lang.Throwable").getMethods());
+			Scene.v().getClasses().forEach(CodeGenerator::transformSootClass);
 
 		} catch (Exception e) {
 			e.printStackTrace();
