@@ -6,6 +6,7 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.jimple.AssignStmt;
+import soot.jimple.FieldRef;
 import soot.jimple.Jimple;
 import averroes.frameworks.soot.ClassWriter;
 import averroes.frameworks.soot.CodeGenerator;
@@ -49,7 +50,13 @@ public class RtaJimpleBodyCreator extends TypeBasedJimpleBodyCreator {
 	}
 
 	@Override
-	public Local set() {
+	public FieldRef set() {
+		return Jimple.v().newStaticFieldRef(
+				Scene.v().getField(Names.RTA_SET_FIELD_SIGNATURE).makeRef());
+	}
+
+	@Override
+	public Local setAsRightOp() {
 		if (rtaLocal == null) {
 			rtaLocal = loadStaticField(Scene.v().getField(
 					Names.RTA_SET_FIELD_SIGNATURE));

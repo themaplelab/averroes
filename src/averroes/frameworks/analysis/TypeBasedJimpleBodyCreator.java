@@ -68,6 +68,7 @@ public abstract class TypeBasedJimpleBodyCreator {
 
 	protected Map<Unit, Unit> swap;
 	protected List<Unit> insert;
+	protected Map<Unit, Unit> insertAfter;
 
 	protected static IntConstant ARRAY_LENGTH = IntConstant.v(1);
 	protected static IntConstant ARRAY_INDEX = IntConstant.v(0);
@@ -88,9 +89,12 @@ public abstract class TypeBasedJimpleBodyCreator {
 
 		swap = new HashMap<Unit, Unit>();
 		insert = new LinkedList<Unit>();
+		insertAfter = new HashMap<Unit, Unit>();
 	}
 
-	protected abstract Local set();
+	protected abstract Value set();
+
+	protected abstract Local setAsRightOp();
 
 	/**
 	 * The corresponding pt-set of the given value. This depends on the
@@ -141,6 +145,8 @@ public abstract class TypeBasedJimpleBodyCreator {
 						transformFieldRead(stmt);
 					} else if (isFieldWrite(stmt)) {
 						transformFieldWrite(stmt);
+					} else if (isAssignInvoke(stmt)) {
+						transformAssignInvoke(stmt);
 					}
 
 				}
@@ -171,6 +177,7 @@ public abstract class TypeBasedJimpleBodyCreator {
 		// Swap and insert all the units in the buffer
 		swap.keySet().forEach(u -> body.getUnits().swapWith(u, swap.get(u)));
 		body.getUnits().insertBefore(insert, insertPoint());
+		insertAfter.keySet().forEach(u -> body.getUnits().insertAfter(u, insertAfter.get(u)));
 
 		// Validate method Jimple body
 		body.validate();
@@ -231,6 +238,30 @@ public abstract class TypeBasedJimpleBodyCreator {
 	 */
 	protected void insert(Unit toInsert) {
 		insert.add(toInsert);
+	}
+	
+	/**
+	 * Insert a new unit after a given point.
+	 * 
+	 * @param in
+	 * @param out
+	 */
+	protected void insertAfter(Unit toInsert, Unit point) {
+		insertAfter.put(toInsert, point);
+	}
+
+	/**
+	 * Transform the given invoke statement.
+	 * 
+	 * @param stmt
+	 */
+	protected void transformAssignInvoke(AssignStmt stmt) {
+		InvokeExpr expr = transformInvokeExpr((InvokeExpr) stmt.getRightOp());
+		Local tmp = localGenerator.generateLocal(expr.getMethod().getReturnType());
+		AssignStmt assign = Jimple.v().newAssignStmt(tmp, expr);
+		swapWith(stmt, assign);
+		insertAfter(Jimple.v().newAssignStmt(set(), tmp), assign);
+		
 	}
 
 	/**
@@ -317,7 +348,7 @@ public abstract class TypeBasedJimpleBodyCreator {
 				Jimple.v().newAssignStmt(
 						Jimple.v().newArrayRef(
 								Jimple.v().newCastExpr(set(), set().getType()),
-								ARRAY_INDEX), set()));
+								ARRAY_INDEX), setAsRightOp()));
 	}
 
 	/**
@@ -377,11 +408,21 @@ public abstract class TypeBasedJimpleBodyCreator {
 		if (!casts.keySet().contains(type)) {
 			Local tmp = localGenerator.generateLocal(type);
 			insert(Jimple.v().newAssignStmt(tmp,
-					Jimple.v().newCastExpr(set(), type)));
+					Jimple.v().newCastExpr(setAsRightOp(), type)));
 			casts.put(type, tmp);
 		}
 
 		return casts.get(type);
+	}
+
+	/**
+	 * Is this assignment a method invocation?
+	 * 
+	 * @param assign
+	 * @return
+	 */
+	private boolean isAssignInvoke(AssignStmt assign) {
+		return assign.getRightOp() instanceof InvokeExpr;
 	}
 
 	/**

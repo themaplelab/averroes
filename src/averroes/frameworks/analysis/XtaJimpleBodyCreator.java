@@ -57,6 +57,11 @@ public class XtaJimpleBodyCreator extends TypeBasedJimpleBodyCreator {
 	}
 
 	@Override
+	protected Local setAsRightOp() {
+		return set();
+	}
+
+	@Override
 	protected void transformFieldRead(AssignStmt stmt) {
 		SootField fr = ((FieldRef) stmt.getRightOp()).getField();
 		swapWith(
