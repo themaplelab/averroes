@@ -54,7 +54,8 @@ public class FrameworksClassProvider implements ClassProvider {
 	private static IOFileFilter jreFileFilter = FileFilterUtils.or(
 			FileFilterUtils.nameFileFilter("rt.jar"),
 			FileFilterUtils.nameFileFilter("jsse.jar"),
-			FileFilterUtils.nameFileFilter("jce.jar"));
+			FileFilterUtils.nameFileFilter("jce.jar"),
+			FileFilterUtils.nameFileFilter("charsets.jar"));
 
 	/**
 	 * Construct a new class provider.
@@ -95,8 +96,10 @@ public class FrameworksClassProvider implements ClassProvider {
 	 */
 	public void add(File p) {
 		if (classFileFilter.accept(p)) {
+			System.out.println("Adding class file: " + p);
 			addClass(p.getPath(), new ClassFileResource(p));
 		} else if (jarFileFilter.accept(p)) {
+			System.out.println("Adding archive: " + p.getAbsolutePath());
 			addArchive(p);
 		} else if (DirectoryFileFilter.DIRECTORY.accept(p)) {
 			FileUtils.listFiles(p,
@@ -114,8 +117,6 @@ public class FrameworksClassProvider implements ClassProvider {
 	 * @throws IOException
 	 */
 	public String addClass(String path, Resource resource) {
-		System.out.println("Adding class file: " + path);
-
 		ClassFile c = new ClassFile(path);
 
 		try {
@@ -147,7 +148,6 @@ public class FrameworksClassProvider implements ClassProvider {
 	 * @return
 	 */
 	public List<String> addArchive(File file) {
-		System.out.println("Adding archive: " + file.getAbsolutePath());
 		List<String> result = new ArrayList<String>();
 
 		try {

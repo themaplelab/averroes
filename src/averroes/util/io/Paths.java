@@ -15,6 +15,7 @@ package averroes.util.io;
 
 import java.io.File;
 
+import averroes.frameworks.options.FrameworksOptions;
 import averroes.options.AverroesOptions;
 
 /**
@@ -24,6 +25,15 @@ import averroes.options.AverroesOptions;
  * 
  */
 public class Paths {
+	/**
+	 * The path to the placeholder library class files.
+	 * 
+	 * @return
+	 */
+	public static File framewokrsLibraryClassesOutputDirectory() {
+		return java.nio.file.Paths.get(FrameworksOptions.getOutputDirectory(),
+				"classes", "lib").toFile();
+	}
 
 	/**
 	 * The path to the output class files.
@@ -49,7 +59,8 @@ public class Paths {
 	 * @return
 	 */
 	public static File placeholderLibraryJarFile() {
-		return new File(AverroesOptions.getOutputDirectory(), "placeholder-lib.jar");
+		return new File(AverroesOptions.getOutputDirectory(),
+				"placeholder-lib.jar");
 	}
 
 	/**
@@ -58,7 +69,8 @@ public class Paths {
 	 * @return
 	 */
 	public static File averroesLibraryClassJarFile() {
-		return new File(AverroesOptions.getOutputDirectory(), "averroes-lib-class.jar");
+		return new File(AverroesOptions.getOutputDirectory(),
+				"averroes-lib-class.jar");
 	}
 
 	/**
@@ -67,7 +79,8 @@ public class Paths {
 	 * @return
 	 */
 	public static File organizedApplicationJarFile() {
-		return new File(AverroesOptions.getOutputDirectory(), "organized-app.jar");
+		return new File(AverroesOptions.getOutputDirectory(),
+				"organized-app.jar");
 	}
 
 	/**
@@ -76,6 +89,7 @@ public class Paths {
 	 * @return
 	 */
 	public static File organizedLibraryJarFile() {
-		return new File(AverroesOptions.getOutputDirectory(), "organized-lib.jar");
+		return new File(AverroesOptions.getOutputDirectory(),
+				"organized-lib.jar");
 	}
 }

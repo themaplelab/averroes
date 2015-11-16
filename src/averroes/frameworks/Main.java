@@ -1,8 +1,8 @@
 package averroes.frameworks;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
@@ -11,8 +11,8 @@ import soot.G;
 import soot.Scene;
 import soot.SourceLocator;
 import soot.options.Options;
-import averroes.frameworks.analysis.RtaJimpleBodyCreator;
 import averroes.frameworks.options.FrameworksOptions;
+import averroes.frameworks.soot.CodeGenerator;
 import averroes.frameworks.soot.FrameworksClassProvider;
 import averroes.util.TimeUtils;
 
@@ -70,10 +70,7 @@ public class Main {
 			// Now let Averroes do its thing
 			TimeUtils.reset();
 			System.out.println("");
-			Scene.v().getClasses().stream().map(c -> c.getMethods()).flatMap(Collection::stream).forEach(m -> {
-				RtaJimpleBodyCreator jbc = new RtaJimpleBodyCreator(m);
-				jbc.generateCode();
-			});
+			Scene.v().getClasses().stream().map(c -> c.getMethods()).flatMap(List::stream).forEach(m -> CodeGenerator.getJimpleBodyCreator(m).generateCode());
 
 		} catch (Exception e) {
 			e.printStackTrace();

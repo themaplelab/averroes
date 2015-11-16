@@ -33,12 +33,13 @@ import soot.util.Chain;
 import soot.util.HashChain;
 
 /**
- * Common base class for all jimple body creators. This should be sub-classed by
+ * Common base class for all Jimple body creators. This should be sub-classed by
  * any analysis that wants to provide it's own method code generator.
  * 
  * @author Karim Ali
  *
  */
+@Deprecated
 public abstract class JimpleBodyCreator {
 
 	protected final Logger logger = LoggerFactory.getLogger(getClass());

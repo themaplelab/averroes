@@ -39,7 +39,7 @@ public class RtaJimpleBodyCreator extends TypeBasedJimpleBodyCreator {
 				| Modifier.STATIC);
 
 		// Write it to disk
-		ClassWriter.writeLibraryClassFile(averroesRta);
+		 ClassWriter.writeLibraryClassFile(averroesRta);
 	}
 
 	public RtaJimpleBodyCreator(SootMethod method) {

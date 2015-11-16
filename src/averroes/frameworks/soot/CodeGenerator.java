@@ -1,7 +1,6 @@
 package averroes.frameworks.soot;
 
 import java.util.Collections;
-import java.util.List;
 
 import soot.Modifier;
 import soot.Scene;
@@ -13,7 +12,10 @@ import soot.Value;
 import soot.VoidType;
 import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
-import averroes.frameworks.analysis.JimpleBodyCreator;
+import averroes.frameworks.analysis.RtaJimpleBodyCreator;
+import averroes.frameworks.analysis.TypeBasedJimpleBodyCreator;
+import averroes.frameworks.analysis.XtaJimpleBodyCreator;
+import averroes.frameworks.options.FrameworksOptions;
 import averroes.soot.Names;
 
 /**
@@ -24,6 +26,21 @@ import averroes.soot.Names;
  * 
  */
 public class CodeGenerator {
+	
+	/**
+	 * Get a Jimple body creator for this method, based on the options.
+	 * 
+	 * @param method
+	 */
+	public static TypeBasedJimpleBodyCreator getJimpleBodyCreator(SootMethod method) {
+		if(FrameworksOptions.getAnalysis().equalsIgnoreCase("rta")) {
+			return new RtaJimpleBodyCreator(method);
+		} else if (FrameworksOptions.getAnalysis().equalsIgnoreCase("xta")) {
+			return new XtaJimpleBodyCreator(method);
+		} else {
+			return new RtaJimpleBodyCreator(method);
+		}
+	}
 	
 	/**
 	 * Add a field to given Soot class.
