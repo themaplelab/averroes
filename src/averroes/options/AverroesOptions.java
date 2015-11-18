@@ -109,7 +109,7 @@ public final class AverroesOptions {
 	 * Print out some help information.
 	 */
 	private static void help() {
-		new HelpFormatter().printHelp("jar -jar averroes.jar", options);
+		new HelpFormatter().printHelp("jar -jar averroes.jar", "", options, "", true);
 		System.exit(0);
 	}
 
