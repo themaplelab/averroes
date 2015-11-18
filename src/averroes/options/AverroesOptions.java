@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
@@ -32,8 +33,8 @@ import soot.SootClass;
 /**
  * A class that holds all the properties required by Averroes to run. For the
  * possible values of each property, you can consult the accompanying
- * averroes.properties.sample file or the online tutorial at
- * {@link http ://karimali.ca/averroes}
+ * averroes.properties.sample file or the online tutorial at {@link http
+ * ://karimali.ca/averroes}
  * 
  * @author Karim Ali
  * 
@@ -42,80 +43,47 @@ public final class AverroesOptions {
 
 	private static List<String> dynamicClasses = null;
 
-	private static Option applicationRegex = Option.builder("r")
-			.longOpt("application-regex")
+	private static Option applicationRegex = Option.builder("r").longOpt("application-regex")
 			.desc("a list of regular expressions for application packages or classes separated by File.pathSeparator")
-			.hasArg()
-			.argName("regex")
-			.required()
-			.build();
-	
-	private static Option mainClass = Option.builder("m")
-			.longOpt("main-class")
-			.desc("the main class that runs the application when the program executes")
-			.hasArg()
-			.argName("class")
-			.required()
-			.build();
-	
-	private static Option applicationJars = Option.builder("a")
-			.longOpt("application-jars")
-			.desc("a list of the application JAR files separated by File.pathSeparator")
-			.hasArg()
-			.argName("path")
-			.required()
-			.build();
-	
-	private static Option libraryJars = Option.builder("l")
-			.longOpt("library-jars")
-			.desc("a list of the JAR files for library dependencies separated by File.pathSeparator")
-			.hasArg()
-			.argName("path")
-			.required(false)
-			.build();
-	
-	private static Option dynamicClassesFile = Option.builder("d")
+			.hasArg().argName("regex").required().build();
+
+	private static Option mainClass = Option.builder("m").longOpt("main-class")
+			.desc("the main class that runs the application when the program executes").hasArg().argName("class")
+			.required().build();
+
+	private static Option applicationJars = Option.builder("a").longOpt("application-jars")
+			.desc("a list of the application JAR files separated by File.pathSeparator").hasArg().argName("path")
+			.required().build();
+
+	private static Option libraryJars = Option.builder("l").longOpt("library-jars")
+			.desc("a list of the JAR files for library dependencies separated by File.pathSeparator").hasArg()
+			.argName("path").required(false).build();
+
+	private static Option dynamicClassesFile = Option
+			.builder("d")
 			.longOpt("dynamic-classes-file")
 			.desc("a file that contains a list of classes that are loaded dynamically by Averroes (e.g., classes instantiated through reflection)")
-			.hasArg()
-			.argName("file")
-			.required(false)
-			.build();
-	
-	private static Option tamiflexFactsFile = Option.builder("t")
-			.longOpt("tamiflex-facts-file")
+			.hasArg().argName("file").required(false).build();
+
+	private static Option tamiflexFactsFile = Option.builder("t").longOpt("tamiflex-facts-file")
 			.desc("a file that contains reflection facts generated for this application in the TamiFlex format")
-			.hasArg()
-			.argName("file")
-			.required(false)
-			.build();
-	
-	private static Option outputDirectory = Option.builder("o")
-			.longOpt("output-directory")
-			.desc("the directory to which Averroes will write any output files/folders.")
-			.hasArg()
-			.argName("directory")
-			.required()
-			.build();
-	
-	private static Option jreDirectory = Option.builder("j")
-			.longOpt("java-runtime-directory")
-			.desc("the directory that contains the Java runtime environment that Averroes should model")
-			.hasArg()
-			.argName("directory")
-			.required()
-			.build();
-	
-	private static Options options = new Options()
-			.addOption(applicationRegex)
-			.addOption(mainClass)
-			.addOption(applicationJars)
-			.addOption(libraryJars)
-			.addOption(dynamicClassesFile)
-			.addOption(tamiflexFactsFile)
-			.addOption(outputDirectory)
-			.addOption(jreDirectory);
-	
+			.hasArg().argName("file").required(false).build();
+
+	private static Option outputDirectory = Option.builder("o").longOpt("output-directory")
+			.desc("the directory to which Averroes will write any output files/folders.").hasArg().argName("directory")
+			.required().build();
+
+	private static Option jreDirectory = Option.builder("j").longOpt("java-runtime-directory")
+			.desc("the directory that contains the Java runtime environment that Averroes should model").hasArg()
+			.argName("directory").required().build();
+
+	private static Option help = Option.builder("h").longOpt("help").desc("print out this help message").hasArg(false)
+			.required(false).build();
+
+	private static Options options = new Options().addOption(applicationRegex).addOption(mainClass)
+			.addOption(applicationJars).addOption(libraryJars).addOption(dynamicClassesFile)
+			.addOption(tamiflexFactsFile).addOption(outputDirectory).addOption(jreDirectory).addOption(help);
+
 	private static CommandLine cmd;
 
 	/**
@@ -126,13 +94,28 @@ public final class AverroesOptions {
 	public static void processArguments(String[] args) {
 		try {
 			cmd = new DefaultParser().parse(options, args);
+
+			// Do we need to print out help messages?
+			if (cmd.hasOption(help.getOpt())) {
+				help();
+			}
 		} catch (ParseException e) {
 			e.printStackTrace();
+			help();
 		}
 	}
 
 	/**
-	 * The list of application packages or classes separated by {@link File#pathSeparator}.
+	 * Print out some help information.
+	 */
+	private static void help() {
+		new HelpFormatter().printHelp("jar -jar averroes.jar", options);
+		System.exit(0);
+	}
+
+	/**
+	 * The list of application packages or classes separated by
+	 * {@link File#pathSeparator}.
 	 * 
 	 * @return
 	 */
@@ -187,7 +170,7 @@ public final class AverroesOptions {
 		if (dynamicClasses == null) {
 			dynamicClasses = new ArrayList<String>();
 
-			if(isDynamicClassesEnabled()) {
+			if (isDynamicClassesEnabled()) {
 				BufferedReader in = new BufferedReader(new FileReader(cmd.getOptionValue(dynamicClassesFile.getOpt())));
 				String line;
 				while ((line = in.readLine()) != null) {
