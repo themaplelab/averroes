@@ -10,7 +10,6 @@
  *******************************************************************************/
 package averroes;
 
-import java.io.File;
 import java.util.Collections;
 
 import org.apache.commons.io.FileUtils;
@@ -56,7 +55,7 @@ public class Main {
 			G.reset();
 
 			// Create the output directory and clean up any class files in there
-			FileUtils.forceMkdir(new File(AverroesOptions.getOutputDirectory()));
+			FileUtils.forceMkdir(Paths.libraryClassesOutputDirectory());
 			FileUtils.cleanDirectory(Paths.classesOutputDirectory());
 
 			// Organize the input JAR files
@@ -116,9 +115,6 @@ public class Main {
 			// The +1 is for Finalizer.register that will be added later
 			System.out.println("# final library methods: " + (Hierarchy.v().getLibraryMethodCount() + 1));
 			System.out.println("# final library fields: " + Hierarchy.v().getLibraryFieldCount());
-
-			// Create the output directory for the library class files
-			FileUtils.forceMkdir(Paths.libraryClassesOutputDirectory());
 
 			// Output some code generation statistics
 			System.out.println("");
