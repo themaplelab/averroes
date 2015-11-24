@@ -12,9 +12,8 @@ import soot.Value;
 import soot.VoidType;
 import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
-import averroes.frameworks.analysis.RtaJimpleBodyCreator;
-import averroes.frameworks.analysis.TypeBasedJimpleBodyCreator;
-import averroes.frameworks.analysis.XtaJimpleBodyCreator;
+import averroes.frameworks.analysis.AbstractJimpleBody;
+import averroes.frameworks.analysis.RtaJimpleBody;
 import averroes.frameworks.options.FrameworksOptions;
 import averroes.soot.Names;
 
@@ -32,14 +31,14 @@ public class CodeGenerator {
 	 * 
 	 * @param method
 	 */
-	public static TypeBasedJimpleBodyCreator getJimpleBodyCreator(
-			SootMethod method) {
+	public static AbstractJimpleBody getJimpleBodyCreator(SootMethod method) {
 		if (FrameworksOptions.getAnalysis().equalsIgnoreCase("rta")) {
-			return new RtaJimpleBodyCreator(method);
-		} else if (FrameworksOptions.getAnalysis().equalsIgnoreCase("xta")) {
-			return new XtaJimpleBodyCreator(method);
+			return new RtaJimpleBody(method);
+			// } else if
+			// (FrameworksOptions.getAnalysis().equalsIgnoreCase("xta")) {
+			// return new XtaJimpleBodyCreator(method);
 		} else {
-			return new RtaJimpleBodyCreator(method);
+			return new RtaJimpleBody(method);
 		}
 	}
 
@@ -51,8 +50,7 @@ public class CodeGenerator {
 	 * @param fieldType
 	 * @param modifiers
 	 */
-	public static void createField(SootClass cls, String fieldName,
-			Type fieldType, int modifiers) {
+	public static void createField(SootClass cls, String fieldName, Type fieldType, int modifiers) {
 		SootField field = new SootField(fieldName, fieldType, modifiers);
 		cls.addField(field);
 	}
@@ -66,8 +64,7 @@ public class CodeGenerator {
 	 * @param superClass
 	 * @return
 	 */
-	public static SootClass createEmptyClass(String className, int modifiers,
-			SootClass superClass) {
+	public static SootClass createEmptyClass(String className, int modifiers, SootClass superClass) {
 		SootClass cls = new SootClass(className, modifiers);
 		cls.setSuperclass(superClass);
 		Scene.v().addClass(cls);
@@ -90,8 +87,7 @@ public class CodeGenerator {
 		body.insertIdentityStmts();
 		body.getUnits().add(
 				Jimple.v().newInvokeStmt(
-						Jimple.v().newSpecialInvokeExpr(body.getThisLocal(),
-								getDefaultConstructor(cls).makeRef(),
+						Jimple.v().newSpecialInvokeExpr(body.getThisLocal(), getDefaultConstructor(cls).makeRef(),
 								Collections.<Value> emptyList())));
 
 		// Add return statement
@@ -117,8 +113,7 @@ public class CodeGenerator {
 	 * @return
 	 */
 	private static SootMethod makeDefaultConstructor() {
-		return new SootMethod(SootMethod.constructorName,
-				Collections.<Type> emptyList(), VoidType.v(), Modifier.PUBLIC);
+		return new SootMethod(SootMethod.constructorName, Collections.<Type> emptyList(), VoidType.v(), Modifier.PUBLIC);
 	}
 
 }
