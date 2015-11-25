@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import soot.ArrayType;
 import soot.Local;
 import soot.Modifier;
 import soot.PrimType;
@@ -17,13 +18,12 @@ import soot.SootMethod;
 import soot.Type;
 import soot.Value;
 import soot.VoidType;
-import soot.jimple.AssignStmt;
+import soot.jimple.ArrayRef;
 import soot.jimple.InterfaceInvokeExpr;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Jimple;
 import soot.jimple.SpecialInvokeExpr;
 import soot.jimple.StaticInvokeExpr;
-import soot.jimple.ThrowStmt;
 import soot.jimple.VirtualInvokeExpr;
 import averroes.frameworks.soot.ClassWriter;
 import averroes.frameworks.soot.CodeGenerator;
@@ -83,7 +83,7 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 		createObjects();
 		callMethods();
 		handleArrays();
-		handleExceptions();
+		// handleExceptions();
 		insertJimpleBodyFooter();
 
 		// Validate method Jimple body & assign it to the method
@@ -138,6 +138,22 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 		});
 
 		invokeExprs.forEach(this::insertInvokeStmt);
+	}
+
+	/**
+	 * Handle array reads and writes.
+	 */
+	private void handleArrays() {
+		if (readsArray || writesArray) {
+			Local cast = (Local) getCompatibleValue(getRtaSet(), ArrayType.v(getRtaSet().getType(), ARRAY_LENGTH.value));
+			ArrayRef arrayRef = Jimple.v().newArrayRef(cast, ARRAY_INDEX);
+
+			if (readsArray) {
+				body.getUnits().add(Jimple.v().newAssignStmt(getRtaSet(), arrayRef));
+			} else {
+				body.getUnits().add(Jimple.v().newAssignStmt(arrayRef, getRtaSet()));
+			}
+		}
 	}
 
 	/**
@@ -280,16 +296,6 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	}
 
 	/**
-	 * Transform the given throw statement.
-	 * 
-	 * @param stmt
-	 */
-	protected void transformThrowStmt(ThrowStmt stmt) {
-		Local rta = loadRtaSet(stmt);
-		swapWith(stmt, Jimple.v().newThrowStmt(getCompatibleValue(rta, stmt.getOp().getType(), stmt)));
-	}
-
-	/**
 	 * Build the grammar of an invoke expression based on the given original
 	 * invoke expression. This method does not insert the grammar chunk into the
 	 * method body. It only inserts any code needed to prepare the arguments to
@@ -310,13 +316,16 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 		if (originalInvokeExpr instanceof StaticInvokeExpr) {
 			invokeExpr = Jimple.v().newStaticInvokeExpr(callee.makeRef(), args);
 		} else if (originalInvokeExpr instanceof SpecialInvokeExpr) {
-			Local base = (Local) getCompatibleValue(getRtaSet(), ((SpecialInvokeExpr) originalInvokeExpr).getBase().getType());
+			Local base = (Local) getCompatibleValue(getRtaSet(), ((SpecialInvokeExpr) originalInvokeExpr).getBase()
+					.getType());
 			invokeExpr = Jimple.v().newSpecialInvokeExpr(base, callee.makeRef(), args);
 		} else if (originalInvokeExpr instanceof InterfaceInvokeExpr) {
-			Local base = (Local) getCompatibleValue(getRtaSet(), ((InterfaceInvokeExpr) originalInvokeExpr).getBase().getType());
+			Local base = (Local) getCompatibleValue(getRtaSet(), ((InterfaceInvokeExpr) originalInvokeExpr).getBase()
+					.getType());
 			invokeExpr = Jimple.v().newInterfaceInvokeExpr(base, callee.makeRef(), args);
 		} else if (originalInvokeExpr instanceof VirtualInvokeExpr) {
-			Local base = (Local) getCompatibleValue(getRtaSet(), ((VirtualInvokeExpr) originalInvokeExpr).getBase().getType());
+			Local base = (Local) getCompatibleValue(getRtaSet(), ((VirtualInvokeExpr) originalInvokeExpr).getBase()
+					.getType());
 			invokeExpr = Jimple.v().newVirtualInvokeExpr(base, callee.makeRef(), args);
 		} else {
 			logger.error("Cannot handle invoke expression of type: " + originalInvokeExpr.getClass());
