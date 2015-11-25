@@ -1,6 +1,5 @@
 package averroes.frameworks.analysis;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,21 +15,14 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.Type;
-import soot.Unit;
 import soot.Value;
 import soot.VoidType;
-import soot.jimple.AbstractStmtSwitch;
 import soot.jimple.AssignStmt;
-import soot.jimple.IdentityStmt;
 import soot.jimple.InterfaceInvokeExpr;
 import soot.jimple.InvokeExpr;
-import soot.jimple.InvokeStmt;
 import soot.jimple.Jimple;
-import soot.jimple.ReturnStmt;
-import soot.jimple.ReturnVoidStmt;
 import soot.jimple.SpecialInvokeExpr;
 import soot.jimple.StaticInvokeExpr;
-import soot.jimple.Stmt;
 import soot.jimple.ThrowStmt;
 import soot.jimple.VirtualInvokeExpr;
 import averroes.frameworks.soot.ClassWriter;
@@ -105,63 +97,6 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 		System.out.println(method.retrieveActiveBody());
 		System.out.println();
 		System.out.println();
-
-		// Loop over all the original method statements and transform them
-		// appropriately.
-		for (Iterator<Unit> iter = method.retrieveActiveBody().getUnits().iterator(); iter.hasNext();) {
-			Unit u = iter.next();
-
-			u.apply(new AbstractStmtSwitch() {
-				@Override
-				public void caseIdentityStmt(IdentityStmt stmt) {
-					super.defaultCase(stmt);
-				}
-
-				@Override
-				public void caseAssignStmt(AssignStmt stmt) {
-					if (isNewExpr(stmt)) {
-						storeToRtaSet(stmt.getLeftOp(), stmt);
-					} else if (!readsArray && isArrayRead(stmt)) {
-						readsArray = true;
-					} else if (!writesArray && isArrayWrite(stmt)) {
-						writesArray = true;
-					} else if (isFieldRead(stmt)) {
-						defaultCase(stmt);
-					} else if (isFieldWrite(stmt)) {
-						defaultCase(stmt);
-					} else if (isAssignInvoke(stmt)) {
-						transformAssignInvoke(stmt);
-					}
-				}
-
-				@Override
-				public void caseThrowStmt(ThrowStmt stmt) {
-					transformThrowStmt(stmt);
-				}
-
-				@Override
-				public void caseInvokeStmt(InvokeStmt stmt) {
-					if (!isCallToSuperConstructor(stmt)) {
-						transformInvokeStmt(stmt);
-					}
-				}
-
-				@Override
-				public void caseReturnVoidStmt(ReturnVoidStmt stmt) {
-					super.defaultCase(stmt);
-				}
-
-				@Override
-				public void caseReturnStmt(ReturnStmt stmt) {
-					transformReturnStmt(stmt);
-				}
-
-				@Override
-				public void defaultCase(Object obj) {
-					swapWith((Unit) obj, Jimple.v().newNopStmt());
-				}
-			});
-		}
 	}
 
 	/**
@@ -174,20 +109,35 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 		objectCreations.forEach(e -> {
 			SootMethod init = e.getMethod();
 			SootClass cls = init.getDeclaringClass();
-			Local obj = insertNewStatement(RefType.v(cls));
-			insertSpecialInvokeStatement(obj, init);
+			Local obj = insertNewStmt(RefType.v(cls));
+			insertSpecialInvokeStmt(obj, init);
 			storeToRtaSet(obj);
 
-			// Call clinit if found
+			// Call <clinit> if found
 				if (cls.declaresMethod(SootMethod.staticInitializerName)) {
-					insertStaticInvokeStatement(cls.getMethodByName(SootMethod.staticInitializerName));
+					insertStaticInvokeStmt(cls.getMethodByName(SootMethod.staticInitializerName));
 				}
 			});
 
 		arrayCreations.forEach(t -> {
-			Local obj = insertNewStatement(t);
+			Local obj = insertNewStmt(t);
 			storeToRtaSet(obj);
 		});
+	}
+
+	/**
+	 * Call the methods that are called in the original method body. Averroes
+	 * preserves the fact that the return value of some method calls
+	 * (invokeExprs) is stored locally, while it's not for other calls
+	 * (invokeStmts).
+	 */
+	private void callMethods() {
+		invokeStmts.forEach(e -> {
+			InvokeExpr expr = buildInvokeExpr(e);
+			storeMethodCallReturn(expr);
+		});
+
+		invokeExprs.forEach(this::insertInvokeStmt);
 	}
 
 	/**
@@ -206,7 +156,7 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 		 */
 		if (method.isConstructor() && !method.getDeclaringClass().equals(Scene.v().getObjectType().getSootClass())) {
 			Local base = body.getThisLocal();
-			insertSpecialInvokeStatement(base,
+			insertSpecialInvokeStmt(base,
 					method.getDeclaringClass().getSuperclass().getMethod(Names.DEFAULT_CONSTRUCTOR_SIG));
 		}
 
@@ -224,16 +174,16 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	 * Insert the appropriate return statement.
 	 */
 	private void insertReturnStmt() {
-		if (body.getMethod().getReturnType() instanceof VoidType) {
+		if (method.getReturnType() instanceof VoidType) {
 			body.getUnits().add(Jimple.v().newReturnVoidStmt());
 		} else {
-			Value ret = getCompatibleValue(rta, body.getMethod().getReturnType());
+			Value ret = getCompatibleValue(getRtaSet(), method.getReturnType());
 			body.getUnits().add(Jimple.v().newReturnStmt(ret));
 		}
 	}
 
 	/**
-	 * Store a value to RTA.set after the insertPoint().
+	 * Store a value to RTA.set
 	 * 
 	 * @param value
 	 */
@@ -242,12 +192,22 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	}
 
 	/**
-	 * Load the RTA.set field before the given program point.
+	 * Store the return value of a method call to RTA.set
 	 * 
-	 * @param point
+	 * @param value
+	 */
+	private void storeMethodCallReturn(InvokeExpr expr) {
+		Local ret = localGenerator.generateLocal(expr.getMethod().getReturnType());
+		body.getUnits().add(Jimple.v().newAssignStmt(ret, expr));
+		storeToRtaSet(ret);
+	}
+
+	/**
+	 * Load the RTA.set field into a local variable, if not loaded before.
+	 * 
 	 * @return
 	 */
-	private Local getRtaSet(Unit point) {
+	private Local getRtaSet() {
 		if (rta != null) {
 			rta = loadStaticField(Scene.v().getField(Names.RTA_SET_FIELD_SIGNATURE));
 		}
@@ -282,7 +242,7 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 		if (type instanceof PrimType) {
 			return getPrimValue((PrimType) type);
 		} else {
-			return insertCastStatement(local, type);
+			return insertCastStmt(local, type);
 		}
 	}
 
@@ -292,8 +252,8 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	 * @param base
 	 * @param method
 	 */
-	protected void insertSpecialInvokeStatement(Local base, SootMethod method) {
-		List<Value> args = method.getParameterTypes().stream().map(p -> getCompatibleValue(rta, p))
+	protected void insertSpecialInvokeStmt(Local base, SootMethod method) {
+		List<Value> args = method.getParameterTypes().stream().map(p -> getCompatibleValue(getRtaSet(), p))
 				.collect(Collectors.toList());
 		body.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(base, method.makeRef(), args)));
 	}
@@ -303,20 +263,20 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	 * 
 	 * @param method
 	 */
-	protected void insertStaticInvokeStatement(SootMethod method) {
-		List<Value> args = method.getParameterTypes().stream().map(p -> getCompatibleValue(rta, p))
+	protected void insertStaticInvokeStmt(SootMethod method) {
+		List<Value> args = method.getParameterTypes().stream().map(p -> getCompatibleValue(getRtaSet(), p))
 				.collect(Collectors.toList());
 		body.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(method.makeRef(), args)));
 	}
 
 	/**
-	 * Transform the given invoke statement.
+	 * Insert a new invoke statement based on info in the given original invoke
+	 * experssion.
 	 * 
-	 * @param stmt
+	 * @param originalInvokeExpr
 	 */
-	protected void transformInvokeStmt(InvokeStmt stmt) {
-		InvokeExpr expr = transformInvokeExpr(stmt);
-		swapWith(stmt, Jimple.v().newInvokeStmt(expr));
+	protected void insertInvokeStmt(InvokeExpr originalInvokeExpr) {
+		body.getUnits().add(Jimple.v().newInvokeStmt(buildInvokeExpr(originalInvokeExpr)));
 	}
 
 	/**
@@ -330,62 +290,33 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	}
 
 	/**
-	 * Transform the given return statement.
-	 * 
-	 * @param stmt
-	 */
-	private void transformReturnStmt(ReturnStmt stmt) {
-		Local rta = loadRtaSet(stmt);
-		swapWith(stmt, Jimple.v().newReturnStmt(getCompatibleValue(rta, method.getReturnType(), stmt)));
-	}
-
-	/**
-	 * Transform the given invoke statement.
-	 * 
-	 * @param stmt
-	 */
-	private void transformAssignInvoke(AssignStmt stmt) {
-		// Transform the invoke expression
-		InvokeExpr expr = transformInvokeExpr(stmt);
-
-		// Replace the old statement and assign the return value to RTA.set
-		Local tmp = localGenerator.generateLocal(expr.getMethod().getReturnType());
-		AssignStmt assign = Jimple.v().newAssignStmt(tmp, expr);
-		swapWith(stmt, assign);
-		storeToRtaSet(tmp, stmt);
-	}
-
-	/**
-	 * Transform an invoke expression from the original method to its equivalent
-	 * according the definition of the library model.
+	 * Build the grammar of an invoke expression based on the given original
+	 * invoke expression. This method does not insert the grammar chunk into the
+	 * method body. It only inserts any code needed to prepare the arguments to
+	 * the call (i.e., casts of RTA.set).
 	 * 
 	 * @param originalInvokeExpr
 	 * @return
 	 */
-	private InvokeExpr transformInvokeExpr(Stmt stmt) {
-		InvokeExpr originalInvokeExpr = stmt.getInvokeExpr();
+	private InvokeExpr buildInvokeExpr(InvokeExpr originalInvokeExpr) {
 		SootMethod callee = originalInvokeExpr.getMethod();
 		InvokeExpr invokeExpr = null;
-		Local rta = loadRtaSet(stmt);
 
 		// Get the arguments to the call
-		List<Value> args = originalInvokeExpr.getArgs().stream().map(a -> getCompatibleValue(rta, a.getType(), stmt))
+		List<Value> args = originalInvokeExpr.getArgs().stream().map(a -> getCompatibleValue(getRtaSet(), a.getType()))
 				.collect(Collectors.toList());
 
 		// Build the invoke expression
 		if (originalInvokeExpr instanceof StaticInvokeExpr) {
 			invokeExpr = Jimple.v().newStaticInvokeExpr(callee.makeRef(), args);
 		} else if (originalInvokeExpr instanceof SpecialInvokeExpr) {
-			Local base = (Local) getCompatibleValue(rta, ((SpecialInvokeExpr) originalInvokeExpr).getBase().getType(),
-					stmt);
+			Local base = (Local) getCompatibleValue(getRtaSet(), ((SpecialInvokeExpr) originalInvokeExpr).getBase().getType());
 			invokeExpr = Jimple.v().newSpecialInvokeExpr(base, callee.makeRef(), args);
 		} else if (originalInvokeExpr instanceof InterfaceInvokeExpr) {
-			Local base = (Local) getCompatibleValue(rta,
-					((InterfaceInvokeExpr) originalInvokeExpr).getBase().getType(), stmt);
+			Local base = (Local) getCompatibleValue(getRtaSet(), ((InterfaceInvokeExpr) originalInvokeExpr).getBase().getType());
 			invokeExpr = Jimple.v().newInterfaceInvokeExpr(base, callee.makeRef(), args);
 		} else if (originalInvokeExpr instanceof VirtualInvokeExpr) {
-			Local base = (Local) getCompatibleValue(rta, ((VirtualInvokeExpr) originalInvokeExpr).getBase().getType(),
-					stmt);
+			Local base = (Local) getCompatibleValue(getRtaSet(), ((VirtualInvokeExpr) originalInvokeExpr).getBase().getType());
 			invokeExpr = Jimple.v().newVirtualInvokeExpr(base, callee.makeRef(), args);
 		} else {
 			logger.error("Cannot handle invoke expression of type: " + originalInvokeExpr.getClass());

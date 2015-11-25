@@ -54,8 +54,18 @@ public abstract class AbstractJimpleBody {
 	protected boolean writesArray = false;
 
 	// Various constructs collected from processing the original method body.
+	// Arrays created within the original method body.
 	protected Set<Type> arrayCreations = new HashSet<Type>();
+
+	// Objects, other than arrays, created within the original method body.
 	protected Set<SpecialInvokeExpr> objectCreations = new HashSet<SpecialInvokeExpr>();
+
+	// Invoke statements (i.e., return value not assigned to any local
+	// variables)
+	protected Set<InvokeExpr> invokeStmts = new HashSet<InvokeExpr>();
+
+	// Invoke expression (i.e., return value is assigned to some local variable)
+	protected Set<InvokeExpr> invokeExprs = new HashSet<InvokeExpr>();
 
 	/**
 	 * Generate the code for the underlying Soot method (which is assumed to be
@@ -85,25 +95,28 @@ public abstract class AbstractJimpleBody {
 		originalBody.getUnits().forEach(u -> u.apply(new AbstractStmtSwitch() {
 			@Override
 			public void caseAssignStmt(AssignStmt stmt) {
-				// 1. array creations
+				// array creations, reads, and writes
 				if (stmt.getRightOp() instanceof NewArrayExpr || stmt.getRightOp() instanceof NewMultiArrayExpr) {
 					arrayCreations.add(stmt.getRightOp().getType());
-				} else if (!readsArray && isArrayRead(stmt)) { // 2. array reads
+				} else if (!readsArray && isArrayRead(stmt)) {
 					readsArray = true;
-				} else if (!writesArray && isArrayWrite(stmt)) { // 3. array
-																	// writes
+				} else if (!writesArray && isArrayWrite(stmt)) {
 					writesArray = true;
+				} else if (isAssignInvoke(stmt)) {
+					invokeExprs.add((InvokeExpr) stmt.getRightOp());
 				}
-				// } else if (isAssignInvoke(stmt)) {
-				// transformAssignInvoke(stmt);
-				// }
 			}
 
 			@Override
 			public void caseInvokeStmt(InvokeStmt stmt) {
-				if (stmt.getInvokeExpr() instanceof SpecialInvokeExpr) {
-					objectCreations.add(SpecialInvokeExpr.class.cast(stmt.getInvokeExpr()));
+				// If it is a call to a constructor, then add it to
+				// objectCreations
+				if (stmt.getInvokeExpr().getMethod().isConstructor()) {
+					objectCreations.add((SpecialInvokeExpr) stmt.getInvokeExpr());
+				} else {
+					invokeStmts.add(stmt.getInvokeExpr());
 				}
+
 			}
 		}));
 	}
@@ -116,7 +129,7 @@ public abstract class AbstractJimpleBody {
 	 * @param type
 	 * @return temporary variable that holds the result of the cast expression
 	 */
-	protected Local insertCastStatement(Local local, Type type) {
+	protected Local insertCastStmt(Local local, Type type) {
 		// if (!casts.keySet().contains(type)) {
 		Local tmp = localGenerator.generateLocal(type);
 		body.getUnits().add(Jimple.v().newAssignStmt(tmp, Jimple.v().newCastExpr(local, type)));
@@ -133,9 +146,9 @@ public abstract class AbstractJimpleBody {
 	 * @param type
 	 * @return
 	 */
-	protected Local insertNewStatement(Type type) {
+	protected Local insertNewStmt(Type type) {
 		Local obj = localGenerator.generateLocal(type);
-		body.getUnits().add(Jimple.v().newAssignStmt(obj, buildNewExpression(type)));
+		body.getUnits().add(Jimple.v().newAssignStmt(obj, buildNewExpr(type)));
 		return obj;
 	}
 
@@ -291,7 +304,7 @@ public abstract class AbstractJimpleBody {
 	 * @param type
 	 * @return
 	 */
-	protected AnyNewExpr buildNewExpression(Type type) {
+	protected AnyNewExpr buildNewExpr(Type type) {
 		if (type instanceof RefType) {
 			return Jimple.v().newNewExpr((RefType) type);
 		} else if (type instanceof ArrayType) {
