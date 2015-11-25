@@ -1,19 +1,24 @@
 package averroes.frameworks.analysis;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import soot.ArrayType;
 import soot.FloatType;
 import soot.IntegerType;
 import soot.Local;
 import soot.LongType;
 import soot.PrimType;
+import soot.RefType;
 import soot.SootField;
 import soot.SootMethod;
 import soot.Type;
-import soot.Unit;
 import soot.Value;
 import soot.javaToJimple.LocalGenerator;
+import soot.jimple.AbstractStmtSwitch;
 import soot.jimple.AnyNewExpr;
 import soot.jimple.ArrayRef;
 import soot.jimple.AssignStmt;
@@ -26,6 +31,8 @@ import soot.jimple.InvokeStmt;
 import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
 import soot.jimple.LongConstant;
+import soot.jimple.NewArrayExpr;
+import soot.jimple.NewMultiArrayExpr;
 import soot.jimple.SpecialInvokeExpr;
 
 /**
@@ -36,20 +43,23 @@ import soot.jimple.SpecialInvokeExpr;
  */
 public abstract class AbstractJimpleBody {
 	protected SootMethod method;
+	protected JimpleBody originalBody;
 	protected JimpleBody body;
 	protected LocalGenerator localGenerator;
-
-	// protected Map<Type, Local> casts;
-
-	protected Map<Unit, Unit> swap;
-	protected Map<Unit, Unit> insertAfter;
-	protected Map<Unit, Unit> insertBefore;
 
 	protected static IntConstant ARRAY_LENGTH = IntConstant.v(1);
 	protected static IntConstant ARRAY_INDEX = IntConstant.v(0);
 
+	protected boolean readsArray = false;
+	protected boolean writesArray = false;
+
+	// Various constructs collected from processing the original method body.
+	protected Set<Type> arrayCreations = new HashSet<Type>();
+	protected Set<SpecialInvokeExpr> objectCreations = new HashSet<SpecialInvokeExpr>();
+
 	/**
-	 * Generate the code for the underlying Soot method.
+	 * Generate the code for the underlying Soot method (which is assumed to be
+	 * concrete).
 	 */
 	public abstract void generateCode();
 
@@ -60,54 +70,42 @@ public abstract class AbstractJimpleBody {
 	 */
 	protected AbstractJimpleBody(SootMethod method) {
 		this.method = method;
-		body = (JimpleBody) method.retrieveActiveBody();
+		originalBody = (JimpleBody) method.retrieveActiveBody();
+		body = Jimple.v().newBody(method);
 		localGenerator = new LocalGenerator(body);
 
-		// casts = new HashMap<Type, Local>();
-
-		swap = new HashMap<Unit, Unit>();
-		insertAfter = new HashMap<Unit, Unit>();
-		insertBefore = new HashMap<Unit, Unit>();
+		processOriginalMethodBody();
 	}
 
 	/**
-	 * Replace "out" in the underlying method body with "in".
-	 * 
-	 * @param out
-	 * @param in
+	 * Scan the original method body for stuff we are looking for so that we
+	 * loop over the instructions only once.
 	 */
-	protected void swapWith(Unit out, Unit in) {
-		swap.put(out, in);
-	}
+	private void processOriginalMethodBody() {
+		originalBody.getUnits().forEach(u -> u.apply(new AbstractStmtSwitch() {
+			@Override
+			public void caseAssignStmt(AssignStmt stmt) {
+				// 1. array creations
+				if (stmt.getRightOp() instanceof NewArrayExpr || stmt.getRightOp() instanceof NewMultiArrayExpr) {
+					arrayCreations.add(stmt.getRightOp().getType());
+				} else if (!readsArray && isArrayRead(stmt)) { // 2. array reads
+					readsArray = true;
+				} else if (!writesArray && isArrayWrite(stmt)) { // 3. array
+																	// writes
+					writesArray = true;
+				}
+				// } else if (isAssignInvoke(stmt)) {
+				// transformAssignInvoke(stmt);
+				// }
+			}
 
-	/**
-	 * Insert a new unit before the first non-identity statement.
-	 * 
-	 * @param in
-	 * @param out
-	 */
-	protected void insert(Unit toInsert) {
-		insertBefore(toInsert, insertPoint());
-	}
-
-	/**
-	 * Insert a new unit after a given point.
-	 * 
-	 * @param in
-	 * @param out
-	 */
-	protected void insertAfter(Unit toInsert, Unit point) {
-		insertAfter.put(toInsert, point);
-	}
-
-	/**
-	 * Insert a new unit before a given point.
-	 * 
-	 * @param in
-	 * @param out
-	 */
-	protected void insertBefore(Unit toInsert, Unit point) {
-		insertBefore.put(toInsert, point);
+			@Override
+			public void caseInvokeStmt(InvokeStmt stmt) {
+				if (stmt.getInvokeExpr() instanceof SpecialInvokeExpr) {
+					objectCreations.add(SpecialInvokeExpr.class.cast(stmt.getInvokeExpr()));
+				}
+			}
+		}));
 	}
 
 	/**
@@ -118,10 +116,10 @@ public abstract class AbstractJimpleBody {
 	 * @param type
 	 * @return temporary variable that holds the result of the cast expression
 	 */
-	protected Local insertCastStatement(Local local, Type type, Unit point) {
+	protected Local insertCastStatement(Local local, Type type) {
 		// if (!casts.keySet().contains(type)) {
 		Local tmp = localGenerator.generateLocal(type);
-		insertBefore(Jimple.v().newAssignStmt(tmp, Jimple.v().newCastExpr(local, type)), point);
+		body.getUnits().add(Jimple.v().newAssignStmt(tmp, Jimple.v().newCastExpr(local, type)));
 		// casts.put(type, tmp);
 		// }
 		return tmp;
@@ -130,19 +128,15 @@ public abstract class AbstractJimpleBody {
 	}
 
 	/**
-	 * The unit before which we insert new statements (mainly casts). If it's a
-	 * constructor then, the first non-identity statement is usually the call to
-	 * the super constructor. Statements should be inserted after that one.
-	 * Otherwise, the insert point is the first non-identity statement.
+	 * Insert a NEW statement.
 	 * 
+	 * @param type
 	 * @return
 	 */
-	protected Unit insertPoint() {
-		if (method.isConstructor()) {
-			return body.getUnits().getSuccOf(body.getFirstNonIdentityStmt());
-		} else {
-			return body.getFirstNonIdentityStmt();
-		}
+	protected Local insertNewStatement(Type type) {
+		Local obj = localGenerator.generateLocal(type);
+		body.getUnits().add(Jimple.v().newAssignStmt(obj, buildNewExpression(type)));
+		return obj;
 	}
 
 	/**
@@ -154,21 +148,7 @@ public abstract class AbstractJimpleBody {
 	 */
 	protected Local loadStaticField(SootField field) {
 		Local tmp = localGenerator.generateLocal(field.getType());
-		insert(Jimple.v().newAssignStmt(tmp, Jimple.v().newStaticFieldRef(field.makeRef())));
-		return tmp;
-	}
-
-	/**
-	 * Construct Jimple code that load the given static field before a given
-	 * program point and assign it to a new temporary local variable.
-	 * 
-	 * @param field
-	 * @param point
-	 * @return
-	 */
-	protected Local loadStaticField(SootField field, Unit point) {
-		Local tmp = localGenerator.generateLocal(field.getType());
-		insertBefore(Jimple.v().newAssignStmt(tmp, Jimple.v().newStaticFieldRef(field.makeRef())), point);
+		body.getUnits().add(Jimple.v().newAssignStmt(tmp, Jimple.v().newStaticFieldRef(field.makeRef())));
 		return tmp;
 	}
 
@@ -179,30 +159,7 @@ public abstract class AbstractJimpleBody {
 	 * @param from
 	 */
 	protected void storeStaticField(SootField field, Value from) {
-		insert(Jimple.v().newAssignStmt(Jimple.v().newStaticFieldRef(field.makeRef()), from));
-	}
-
-	/**
-	 * Store the given local field to a static soot field after a given program
-	 * point.
-	 * 
-	 * @param field
-	 * @param from
-	 * @param point
-	 */
-	protected void storeStaticField(SootField field, Value from, Unit point) {
-		insertAfter(Jimple.v().newAssignStmt(Jimple.v().newStaticFieldRef(field.makeRef()), from), point);
-	}
-
-	/**
-	 * Is this the call to a super constructor?
-	 * 
-	 * @param stmt
-	 * @return
-	 */
-	protected boolean isCallToSuperConstructor(InvokeStmt stmt) {
-		return method.isConstructor() && body.getFirstNonIdentityStmt().equals(stmt)
-				&& stmt.getInvokeExpr() instanceof SpecialInvokeExpr;
+		body.getUnits().add(Jimple.v().newAssignStmt(Jimple.v().newStaticFieldRef(field.makeRef()), from));
 	}
 
 	/**
@@ -236,6 +193,16 @@ public abstract class AbstractJimpleBody {
 	}
 
 	/**
+	 * Does the underlying method read an array in any of its statements?
+	 * 
+	 * @return
+	 */
+	protected boolean readsArray() {
+		return originalBody.getUnits().stream().filter(u -> u instanceof AssignStmt).map(AssignStmt.class::cast)
+				.filter(this::isArrayRead).findFirst().isPresent();
+	}
+
+	/**
 	 * Is this assignment an array write?
 	 * 
 	 * @param assign
@@ -243,6 +210,16 @@ public abstract class AbstractJimpleBody {
 	 */
 	protected boolean isArrayWrite(AssignStmt assign) {
 		return assign.getLeftOp() instanceof ArrayRef;
+	}
+
+	/**
+	 * Does the underlying method writes to an array in any of its statements?
+	 * 
+	 * @return
+	 */
+	protected boolean writesArray() {
+		return originalBody.getUnits().stream().filter(u -> u instanceof AssignStmt).map(AssignStmt.class::cast)
+				.filter(this::isArrayWrite).findFirst().isPresent();
 	}
 
 	/**
@@ -281,5 +258,52 @@ public abstract class AbstractJimpleBody {
 		} else {
 			return DoubleConstant.v(1);
 		}
+	}
+
+	/**
+	 * Return a list of all the object created through calls to constructors.
+	 * This does not include array creations. Those are collected and handled
+	 * somewhere else.
+	 * 
+	 * @return
+	 */
+	protected List<SpecialInvokeExpr> getObjectCreations() {
+		return originalBody.getUnits().stream().filter(u -> u instanceof InvokeStmt).map(InvokeStmt.class::cast)
+				.filter(s -> s.getInvokeExpr() instanceof SpecialInvokeExpr)
+				.map(s -> SpecialInvokeExpr.class.cast(s.getInvokeExpr())).collect(Collectors.toList());
+	}
+
+	/**
+	 * Return a list of all the created in the underlying method.
+	 * 
+	 * @return
+	 */
+	protected List<Type> getArrayCreations() {
+		return originalBody.getUnits().stream().filter(u -> u instanceof AssignStmt).map(AssignStmt.class::cast)
+				.filter(s -> s.getRightOp() instanceof NewArrayExpr || s.getRightOp() instanceof NewMultiArrayExpr)
+				.map(s -> s.getRightOp().getType()).collect(Collectors.toList());
+	}
+
+	/**
+	 * Construct the appropriate NEW expression depending on the given Soot
+	 * type. It handles RefType and ArrayType types.
+	 * 
+	 * @param type
+	 * @return
+	 */
+	protected AnyNewExpr buildNewExpression(Type type) {
+		if (type instanceof RefType) {
+			return Jimple.v().newNewExpr((RefType) type);
+		} else if (type instanceof ArrayType) {
+			ArrayType arrayType = (ArrayType) type;
+			if (arrayType.numDimensions <= 1) {
+				return Jimple.v().newNewArrayExpr(arrayType.baseType, ARRAY_LENGTH);
+			} else {
+				return Jimple.v().newNewMultiArrayExpr(arrayType,
+						Collections.nCopies(arrayType.numDimensions, ARRAY_LENGTH));
+			}
+		}
+
+		throw new IllegalArgumentException("Type " + type + " cannot be instantiated.");
 	}
 }

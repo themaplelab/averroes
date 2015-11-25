@@ -147,7 +147,7 @@ public class AverroesJimpleBody {
 	 * Assign actual parameters to LPT. This will make them flow from the
 	 * application to the library.
 	 * 
-	 * @param body
+	 * @param originalBody
 	 */
 	private void assignActualParametersToLpt() {
 		List<Local> params = getRefLikeParameterLocals();
@@ -160,7 +160,7 @@ public class AverroesJimpleBody {
 	 * Assign this parameter to LPT for all library methods, except for
 	 * java.lang.Object.<init>, assign it to FPT.
 	 * 
-	 * @param body
+	 * @param originalBody
 	 */
 	private void assignThisParameter() {
 		if (hasThis() && !isAverroesLibraryDoItAll()) {
@@ -205,7 +205,7 @@ public class AverroesJimpleBody {
 	 * Store a value to the LPT static field.
 	 * 
 	 * @param from
-	 * @param body
+	 * @param originalBody
 	 * @param numberer
 	 */
 	public void storeLibraryPointsToField(Value from) {
@@ -218,7 +218,7 @@ public class AverroesJimpleBody {
 	 * Store a value to the FPT static field.
 	 * 
 	 * @param from
-	 * @param body
+	 * @param originalBody
 	 * @param numberer
 	 */
 	public void storeFinalizePointsToField(Value from) {
@@ -233,7 +233,7 @@ public class AverroesJimpleBody {
 	 * @param base
 	 * @param field
 	 * @param from
-	 * @param body
+	 * @param originalBody
 	 */
 	public void storeInstanceField(Value base, SootField field, Value from) {
 		if (!field.isStatic()) {

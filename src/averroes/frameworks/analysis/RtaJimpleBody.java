@@ -11,12 +11,14 @@ import soot.Local;
 import soot.Modifier;
 import soot.PrimType;
 import soot.RefLikeType;
+import soot.RefType;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.Type;
 import soot.Unit;
 import soot.Value;
+import soot.VoidType;
 import soot.jimple.AbstractStmtSwitch;
 import soot.jimple.AssignStmt;
 import soot.jimple.IdentityStmt;
@@ -31,7 +33,6 @@ import soot.jimple.StaticInvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.ThrowStmt;
 import soot.jimple.VirtualInvokeExpr;
-import soot.jimple.toolkits.scalar.NopEliminator;
 import averroes.frameworks.soot.ClassWriter;
 import averroes.frameworks.soot.CodeGenerator;
 import averroes.frameworks.soot.Names;
@@ -49,8 +50,7 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 
 	private static SootClass averroesRta;
 
-	private boolean readsArray = false;
-	private boolean writesArray = false;
+	private Local rta = null;
 
 	// Create the singleton RTA class
 	static {
@@ -84,7 +84,27 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 		System.out.println("==========================");
 		System.out.println("BEFORE transformation");
 		System.out.println("==========================");
-		System.out.println(body);
+		System.out.println(method.retrieveActiveBody());
+
+		// Create the new Jimple body
+		insertJimpleBodyHeader();
+		createObjects();
+		callMethods();
+		handleArrays();
+		handleExceptions();
+		insertJimpleBodyFooter();
+
+		// Validate method Jimple body & assign it to the method
+		body.validate();
+		method.setActiveBody(body);
+
+		// TODO
+		System.out.println("==========================");
+		System.out.println("AFTER transformation");
+		System.out.println("==========================");
+		System.out.println(method.retrieveActiveBody());
+		System.out.println();
+		System.out.println();
 
 		// Loop over all the original method statements and transform them
 		// appropriately.
@@ -142,41 +162,74 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 				}
 			});
 		}
-
-		// Assign method parameters, including "this, if available, to the
-		// appropriate set
-		assignMethodParameters();
-
-		// Swap and insert all the units in the buffer
-		insertAfter.keySet().forEach(u -> body.getUnits().insertAfter(u, insertAfter.get(u)));
-		insertBefore.keySet().forEach(u -> body.getUnits().insertBefore(u, insertBefore.get(u)));
-		swap.keySet().forEach(u -> body.getUnits().swapWith(u, swap.get(u)));
-
-		// Eliminate NOP statements
-		NopEliminator.v().transform(body);
-
-//		// Validate method Jimple body
-//		body.validate();
-
-		// TODO
-		System.out.println("==========================");
-		System.out.println("AFTER transformation");
-		System.out.println("==========================");
-		System.out.println(body);
-		System.out.println();
-		System.out.println();
-		
-		body.validate();
 	}
 
 	/**
-	 * Store a value to RTA.set after a given program point.
-	 * 
-	 * @param value
-	 * @param point
+	 * Create all the objects that the library could possible instantiate. For
+	 * reference types, this includes inserting new statements, invoking
+	 * constructors, and static initializers if found. For arrays, we just have
+	 * the appropriate NEW instruction.
 	 */
-	private void storeToRtaSet(Value value, Unit point) {
-		storeStaticField(Scene.v().getField(Names.RTA_SET_FIELD_SIGNATURE), value, point);
+	private void createObjects() {
+		objectCreations.forEach(e -> {
+			SootMethod init = e.getMethod();
+			SootClass cls = init.getDeclaringClass();
+			Local obj = insertNewStatement(RefType.v(cls));
+			insertSpecialInvokeStatement(obj, init);
+			storeToRtaSet(obj);
+
+			// Call clinit if found
+				if (cls.declaresMethod(SootMethod.staticInitializerName)) {
+					insertStaticInvokeStatement(cls.getMethodByName(SootMethod.staticInitializerName));
+				}
+			});
+
+		arrayCreations.forEach(t -> {
+			Local obj = insertNewStatement(t);
+			storeToRtaSet(obj);
+		});
+	}
+
+	/**
+	 * Insert the identity statements, assigns actual parameters (if any) and
+	 * the this parameter (if any) to RTA.set
+	 */
+	private void insertJimpleBodyHeader() {
+		body.insertIdentityStmts();
+
+		/*
+		 * To generate correct bytecode, we need to initialize the object first
+		 * by calling the direct superclass default constructor before inserting
+		 * any more statements. That is if this method is for a constructor.
+		 * 
+		 * We do that for all constructors except that of java.lang.Object
+		 */
+		if (method.isConstructor() && !method.getDeclaringClass().equals(Scene.v().getObjectType().getSootClass())) {
+			Local base = body.getThisLocal();
+			insertSpecialInvokeStatement(base,
+					method.getDeclaringClass().getSuperclass().getMethod(Names.DEFAULT_CONSTRUCTOR_SIG));
+		}
+
+		assignMethodParameters();
+	}
+
+	/**
+	 * Insert the standard footer for a library method.
+	 */
+	private void insertJimpleBodyFooter() {
+		insertReturnStmt();
+	}
+
+	/**
+	 * Insert the appropriate return statement.
+	 */
+	private void insertReturnStmt() {
+		if (body.getMethod().getReturnType() instanceof VoidType) {
+			body.getUnits().add(Jimple.v().newReturnVoidStmt());
+		} else {
+			Value ret = getCompatibleValue(rta, body.getMethod().getReturnType());
+			body.getUnits().add(Jimple.v().newReturnStmt(ret));
+		}
 	}
 
 	/**
@@ -185,7 +238,7 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	 * @param value
 	 */
 	private void storeToRtaSet(Value value) {
-		storeToRtaSet(value, insertPoint());
+		storeStaticField(Scene.v().getField(Names.RTA_SET_FIELD_SIGNATURE), value);
 	}
 
 	/**
@@ -194,8 +247,11 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	 * @param point
 	 * @return
 	 */
-	private Local loadRtaSet(Unit point) {
-		return loadStaticField(Scene.v().getField(Names.RTA_SET_FIELD_SIGNATURE), point);
+	private Local getRtaSet(Unit point) {
+		if (rta != null) {
+			rta = loadStaticField(Scene.v().getField(Names.RTA_SET_FIELD_SIGNATURE));
+		}
+		return rta;
 	}
 
 	/**
@@ -208,9 +264,8 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 		body.getParameterLocals().stream().filter(l -> l.getType() instanceof RefLikeType)
 				.forEach(l -> storeToRtaSet(l));
 
-		// and the "this" parameter for java.lang.Object to capture all objects
-		// created throughout the program
-		if (method.isConstructor() && method.getDeclaringClass().equals(Scene.v().getObjectType().getSootClass())) {
+		// and the "this" parameter, if available
+		if (!method.isStatic()) {
 			storeToRtaSet(body.getThisLocal());
 		}
 	}
@@ -221,15 +276,37 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	 * RTA.set is returned.
 	 * 
 	 * @param type
-	 * @param point
 	 * @return
 	 */
-	private Value getCompatibleValue(Local local, Type type, Unit point) {
+	private Value getCompatibleValue(Local local, Type type) {
 		if (type instanceof PrimType) {
 			return getPrimValue((PrimType) type);
 		} else {
-			return insertCastStatement(local, type, point);
+			return insertCastStatement(local, type);
 		}
+	}
+
+	/**
+	 * Insert a special invoke statement.
+	 * 
+	 * @param base
+	 * @param method
+	 */
+	protected void insertSpecialInvokeStatement(Local base, SootMethod method) {
+		List<Value> args = method.getParameterTypes().stream().map(p -> getCompatibleValue(rta, p))
+				.collect(Collectors.toList());
+		body.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(base, method.makeRef(), args)));
+	}
+
+	/**
+	 * Insert a static invoke statement.
+	 * 
+	 * @param method
+	 */
+	protected void insertStaticInvokeStatement(SootMethod method) {
+		List<Value> args = method.getParameterTypes().stream().map(p -> getCompatibleValue(rta, p))
+				.collect(Collectors.toList());
+		body.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(method.makeRef(), args)));
 	}
 
 	/**
