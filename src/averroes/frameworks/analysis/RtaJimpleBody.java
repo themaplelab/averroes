@@ -141,11 +141,12 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 
 		invokeExprs.forEach(e -> {
 			InvokeExpr expr = buildInvokeExpr(e);
-			// Only store the return value if it's a reference, otherwise it's not relevant for us now.
-			if (expr.getMethod().getReturnType() instanceof RefLikeType) {
-				storeMethodCallReturn(expr);
-			}
-		});
+			// Only store the return value if it's a reference, otherwise it's
+			// not relevant for us now.
+				if (expr.getMethod().getReturnType() instanceof RefLikeType) {
+					storeMethodCallReturn(expr);
+				}
+			});
 	}
 
 	/**
@@ -245,12 +246,8 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	private void assignMethodParameters() {
 		// Loop over all parameters of reference type and create an assignment
 		// statement to the appropriate "expression".
-		getRefLikeParameterLocals().forEach(this::storeToRtaSet);
-
-		// This code is disabled due to a bug in Soot.
-		// body.getParameterLocals().stream().filter(l -> l.getType() instanceof
-		// RefLikeType)
-		// .forEach(l -> storeToRtaSet(l));
+		body.getParameterLocals().stream().filter(l -> l.getType() instanceof RefLikeType)
+				.forEach(l -> storeToRtaSet(l));
 
 		// and the "this" parameter, if available
 		if (!method.isStatic()) {

@@ -2,13 +2,13 @@ package averroes.frameworks;
 
 import java.io.File;
 import java.util.Collections;
-import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
 import soot.ClassProvider;
 import soot.G;
 import soot.Scene;
+import soot.SootClass;
 import soot.SootMethod;
 import soot.SourceLocator;
 import soot.options.Options;
@@ -57,7 +57,7 @@ public class Main {
 			SourceLocator.v().setClassProviders(Collections.singletonList((ClassProvider) provider));
 			Options.v().classes().addAll(provider.getClassNames());
 			System.out.println(Options.v().soot_classpath());
-//			Options.v().set_full_resolver(true);
+			Options.v().set_full_resolver(true);
 			Options.v().set_validate(true);
 
 			// Load the necessary classes
@@ -71,8 +71,15 @@ public class Main {
 			// Now let Averroes do its thing
 			TimeUtils.reset();
 			System.out.println("");
-			Scene.v().getClasses().stream().map(c -> c.getMethods()).flatMap(List::stream)
-					.filter(SootMethod::isConcrete).forEach(m -> CodeGenerator.getJimpleBodyCreator(m).generateCode());
+			for(SootClass c : Scene.v().getClasses()) {
+				for(SootMethod m : c.getMethods()) {
+					if(m.isConcrete()) {
+						CodeGenerator.getJimpleBodyCreator(m).generateCode();
+					}
+				}
+			}
+//			Scene.v().getClasses().stream().map(c -> c.getMethods()).flatMap(List::stream)
+//					.filter(SootMethod::isConcrete).forEach(m -> CodeGenerator.getJimpleBodyCreator(m).generateCode());
 
 		} catch (Exception e) {
 			e.printStackTrace();
