@@ -55,9 +55,10 @@ public class Main {
 
 			// Set some soot parameters
 			SourceLocator.v().setClassProviders(Collections.singletonList((ClassProvider) provider));
-			Options.v().classes().addAll(provider.getClassNames());
+//			Options.v().classes().addAll(provider.getClassNames());
+			Options.v().classes().add("simple.A");
 			System.out.println(Options.v().soot_classpath());
-			Options.v().set_full_resolver(true);
+//			Options.v().set_full_resolver(true);
 			Options.v().set_validate(true);
 
 			// Load the necessary classes
@@ -71,7 +72,9 @@ public class Main {
 			// Now let Averroes do its thing
 			TimeUtils.reset();
 			System.out.println("");
-			for(SootClass c : Scene.v().getClasses()) {
+			// TODO: do not call Scene.v().getClasses() here as it will throw concurrent modification error when new classes
+			// are added
+			for(SootClass c : Scene.v().getApplicationClasses()) {
 				for(SootMethod m : c.getMethods()) {
 					if(m.isConcrete()) {
 						CodeGenerator.getJimpleBodyCreator(m).generateCode();

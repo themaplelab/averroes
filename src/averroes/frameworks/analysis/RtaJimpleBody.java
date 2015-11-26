@@ -141,10 +141,12 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 
 		invokeExprs.forEach(e -> {
 			InvokeExpr expr = buildInvokeExpr(e);
-			// Only store the return value if it's a reference, otherwise it's
-			// not relevant for us now.
+			// Only store the return value if it's a reference, otherwise just
+			// call the method.
 				if (expr.getMethod().getReturnType() instanceof RefLikeType) {
 					storeMethodCallReturn(expr);
+				} else {
+					insertInvokeStmt(expr);
 				}
 			});
 	}
@@ -244,15 +246,15 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	 * "this" parameter, if available.
 	 */
 	private void assignMethodParameters() {
+		// Assign the "this" parameter, if available
+		if (!method.isStatic()) {
+			storeToRtaSet(body.getThisLocal());
+		}
+
 		// Loop over all parameters of reference type and create an assignment
 		// statement to the appropriate "expression".
 		body.getParameterLocals().stream().filter(l -> l.getType() instanceof RefLikeType)
 				.forEach(l -> storeToRtaSet(l));
-
-		// and the "this" parameter, if available
-		if (!method.isStatic()) {
-			storeToRtaSet(body.getThisLocal());
-		}
 	}
 
 	/**
