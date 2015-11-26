@@ -18,7 +18,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -46,7 +45,7 @@ import averroes.util.io.ZipEntryResource;
 public class FrameworksClassProvider implements ClassProvider {
 
 	private Map<String, Resource> classes;
-	private Map<String, Resource> mainLibraryClasses;
+	private List<String> classNames;
 
 	private static IOFileFilter classFileFilter = FileFilterUtils.suffixFileFilter("class");
 	private static IOFileFilter jarFileFilter = FileFilterUtils.suffixFileFilter("jar");
@@ -59,17 +58,7 @@ public class FrameworksClassProvider implements ClassProvider {
 	 */
 	public FrameworksClassProvider() {
 		classes = new HashMap<String, Resource>();
-		mainLibraryClasses = new HashMap<String, Resource>();
-	}
-
-	/**
-	 * Get the set of the main library class names (i.e., not in the library
-	 * dependencies).
-	 * 
-	 * @return
-	 */
-	public Set<String> getMainLibraryClassNames() {
-		return mainLibraryClasses.keySet();
+		classNames = new ArrayList<String>();
 	}
 
 	/**
@@ -77,8 +66,8 @@ public class FrameworksClassProvider implements ClassProvider {
 	 * 
 	 * @return
 	 */
-	public Set<String> getClassNames() {
-		return classes.keySet();
+	public List<String> getClassNames() {
+		return classNames;
 	}
 
 	/**
@@ -86,91 +75,12 @@ public class FrameworksClassProvider implements ClassProvider {
 	 * 
 	 */
 	public void prepareClasspath() {
-		FrameworksOptions.getInputs().stream().map(p -> new File(p)).forEach(this::add);
-		FrameworksOptions.getDependencies().stream().map(p -> new File(p)).forEach(this::add);
+		FrameworksOptions.getInputs().stream().map(p -> new File(p)).forEach(f -> add(f, true));
+		FrameworksOptions.getDependencies().stream().map(p -> new File(p)).forEach(f -> add(f, false));
 		FileUtils.listFiles(new File(FrameworksOptions.getJreDirectory()), jreFileFilter, null).stream()
-				.map(f -> new File(f.getAbsolutePath())).forEach(this::add);
+				.map(f -> new File(f.getAbsolutePath())).forEach(f -> add(f, false));
 	}
-
-	/**
-	 * Add the given file object to the classpath (it could be a class file, a
-	 * folder, or a JAR file).
-	 * 
-	 * @param p
-	 */
-	public void add(File p) {
-		if (classFileFilter.accept(p)) {
-			System.out.println("Adding class file: " + p);
-			addClass(p.getPath(), new ClassFileResource(p));
-		} else if (jarFileFilter.accept(p)) {
-			System.out.println("Adding archive: " + p.getAbsolutePath());
-			addArchive(p);
-		} else if (DirectoryFileFilter.DIRECTORY.accept(p)) {
-			FileUtils.listFiles(p, FileFilterUtils.or(classFileFilter, jarFileFilter), TrueFileFilter.TRUE).forEach(
-					file -> add(file));
-		}
-	}
-
-	/**
-	 * Add a class file from a resource.
-	 * 
-	 * @param path
-	 * @param resource
-	 * @return
-	 * @throws IOException
-	 */
-	public String addClass(String path, Resource resource) {
-		ClassFile c = new ClassFile(path);
-
-		try {
-			InputStream stream = resource.open();
-			c.loadClassFile(stream);
-			stream.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		String className = c.toString().replace('/', '.');
-
-		if (classes.containsKey(className)) {
-			// This means we encountered another copy of the class later on the
-			// path, this should never happen!
-			throw new RuntimeException("class " + className + " has already been added to this class provider.");
-		} else {
-			classes.put(className, resource);
-		}
-
-		return className;
-	}
-
-	/**
-	 * Add an archive to the class provider.
-	 * 
-	 * @param file
-	 * @return
-	 */
-	public List<String> addArchive(File file) {
-		List<String> result = new ArrayList<String>();
-
-		try {
-			ZipFile archive = new ZipFile(file);
-			Enumeration<? extends ZipEntry> entries = archive.entries();
-			while (entries.hasMoreElements()) {
-				ZipEntry entry = entries.nextElement();
-				if (entry.getName().endsWith(".class")) {
-					String className = addClass(entry.getName(), new ZipEntryResource(archive, entry));
-					result.add(className);
-				}
-			}
-		} catch (ZipException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return result;
-	}
-
+	
 	/**
 	 * Find the class for the given className. This method is invoked by
 	 * {@link soot.SourceLocator}.
@@ -196,6 +106,81 @@ public class FrameworksClassProvider implements ClassProvider {
 
 		} else {
 			return null;
+		}
+	}
+
+	/**
+	 * Add the given file object to the classpath (it could be a class file, a
+	 * folder, or a JAR file).
+	 * 
+	 * @param p
+	 */
+	private void add(File p, boolean collectClassName) {
+		if (classFileFilter.accept(p)) {
+			System.out.println("Adding class file: " + p);
+			addClass(p.getPath(), new ClassFileResource(p), collectClassName);
+		} else if (jarFileFilter.accept(p)) {
+			System.out.println("Adding archive: " + p.getAbsolutePath());
+			addArchive(p, collectClassName);
+		} else if (DirectoryFileFilter.DIRECTORY.accept(p)) {
+			FileUtils.listFiles(p, FileFilterUtils.or(classFileFilter, jarFileFilter), TrueFileFilter.TRUE).forEach(
+					file -> add(file, collectClassName));
+		}
+	}
+
+	/**
+	 * Add a class file from a resource.
+	 * 
+	 * @param path
+	 * @param resource
+	 * @param collectClassName
+	 * @throws IOException
+	 */
+	private void addClass(String path, Resource resource, boolean collectClassName) {
+		ClassFile c = new ClassFile(path);
+
+		try {
+			InputStream stream = resource.open();
+			c.loadClassFile(stream);
+			stream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		String className = c.toString().replace('/', '.');
+
+		if (classes.containsKey(className)) {
+			// This means we encountered another copy of the class later on the
+			// path, this should never happen!
+			throw new RuntimeException("class " + className + " has already been added to this class provider.");
+		} else {
+			classes.put(className, resource);
+			if(collectClassName) {
+				classNames.add(className);
+			}
+		}
+	}
+
+	/**
+	 * Add an archive to the class provider.
+	 * 
+	 * @param file
+	 * @param collectClassName
+	 */
+	private void addArchive(File file, boolean collectClassName) {
+		try {
+			ZipFile archive = new ZipFile(file);
+			Enumeration<? extends ZipEntry> entries = archive.entries();
+			while (entries.hasMoreElements()) {
+				ZipEntry entry = entries.nextElement();
+				if (entry.getName().endsWith(".class")) {
+					addClass(entry.getName(), new ZipEntryResource(archive, entry), collectClassName);
+				}
+			}
+		} catch (ZipException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 }
