@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import soot.ArrayType;
+import soot.BooleanType;
+import soot.IntType;
 import soot.Local;
 import soot.Modifier;
 import soot.PrimType;
@@ -42,7 +44,7 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 
 	private static SootClass averroesRta;
 
-	private Local rta = null;
+	private Local rtaSet = null;
 
 	// Create the singleton RTA class
 	static {
@@ -54,7 +56,10 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 		CodeGenerator.createEmptyDefaultConstructor(averroesRta);
 
 		// Add static field "set" to the class
-		CodeGenerator.createField(averroesRta, Names.RTA_SET_FIELD_NAME, Scene.v().getObjectType(), Modifier.PUBLIC
+		CodeGenerator.createField(averroesRta, Names.SET_FIELD_NAME, Scene.v().getObjectType(), Modifier.PUBLIC
+				| Modifier.STATIC);
+		CodeGenerator.createField(averroesRta, Names.INT_FIELD_NAME, IntType.v(), Modifier.PUBLIC | Modifier.STATIC);
+		CodeGenerator.createField(averroesRta, Names.BOOLEAN_FIELD_NAME, BooleanType.v(), Modifier.PUBLIC
 				| Modifier.STATIC);
 
 		// Write it to disk
@@ -132,12 +137,15 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	 * (invokeStmts).
 	 */
 	private void callMethods() {
-		invokeStmts.forEach(e -> {
-			InvokeExpr expr = buildInvokeExpr(e);
-			storeMethodCallReturn(expr);
-		});
+		invokeStmts.forEach(this::insertInvokeStmt);
 
-		invokeExprs.forEach(this::insertInvokeStmt);
+		invokeExprs.forEach(e -> {
+			InvokeExpr expr = buildInvokeExpr(e);
+			// Only store the return value if it's a reference, otherwise it's not relevant for us now.
+			if (expr.getMethod().getReturnType() instanceof RefLikeType) {
+				storeMethodCallReturn(expr);
+			}
+		});
 	}
 
 	/**
@@ -224,10 +232,10 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	 * @return
 	 */
 	private Local getRtaSet() {
-		if (rta != null) {
-			rta = loadStaticField(Scene.v().getField(Names.RTA_SET_FIELD_SIGNATURE));
+		if (rtaSet == null) {
+			rtaSet = loadStaticField(Scene.v().getField(Names.RTA_SET_FIELD_SIGNATURE));
 		}
-		return rta;
+		return rtaSet;
 	}
 
 	/**
@@ -237,8 +245,12 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	private void assignMethodParameters() {
 		// Loop over all parameters of reference type and create an assignment
 		// statement to the appropriate "expression".
-		body.getParameterLocals().stream().filter(l -> l.getType() instanceof RefLikeType)
-				.forEach(l -> storeToRtaSet(l));
+		getRefLikeParameterLocals().forEach(this::storeToRtaSet);
+
+		// This code is disabled due to a bug in Soot.
+		// body.getParameterLocals().stream().filter(l -> l.getType() instanceof
+		// RefLikeType)
+		// .forEach(l -> storeToRtaSet(l));
 
 		// and the "this" parameter, if available
 		if (!method.isStatic()) {
@@ -255,6 +267,9 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	 * @return
 	 */
 	private Value getCompatibleValue(Local local, Type type) {
+		if (type instanceof IntType) {
+
+		}
 		if (type instanceof PrimType) {
 			return getPrimValue((PrimType) type);
 		} else {

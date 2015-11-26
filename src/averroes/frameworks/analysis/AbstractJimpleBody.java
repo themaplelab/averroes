@@ -1,9 +1,11 @@
 package averroes.frameworks.analysis;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import soot.ArrayType;
@@ -12,6 +14,7 @@ import soot.IntegerType;
 import soot.Local;
 import soot.LongType;
 import soot.PrimType;
+import soot.RefLikeType;
 import soot.RefType;
 import soot.SootField;
 import soot.SootMethod;
@@ -53,19 +56,21 @@ public abstract class AbstractJimpleBody {
 	protected boolean readsArray = false;
 	protected boolean writesArray = false;
 
+	protected Map<Type, Local> casts;
+
 	// Various constructs collected from processing the original method body.
 	// Arrays created within the original method body.
-	protected Set<Type> arrayCreations = new HashSet<Type>();
+	protected LinkedHashSet<Type> arrayCreations = new LinkedHashSet<Type>();
 
 	// Objects, other than arrays, created within the original method body.
-	protected Set<SpecialInvokeExpr> objectCreations = new HashSet<SpecialInvokeExpr>();
+	protected LinkedHashSet<SpecialInvokeExpr> objectCreations = new LinkedHashSet<SpecialInvokeExpr>();
 
 	// Invoke statements (i.e., return value not assigned to any local
 	// variables)
-	protected Set<InvokeExpr> invokeStmts = new HashSet<InvokeExpr>();
+	protected LinkedHashSet<InvokeExpr> invokeStmts = new LinkedHashSet<InvokeExpr>();
 
 	// Invoke expression (i.e., return value is assigned to some local variable)
-	protected Set<InvokeExpr> invokeExprs = new HashSet<InvokeExpr>();
+	protected LinkedHashSet<InvokeExpr> invokeExprs = new LinkedHashSet<InvokeExpr>();
 
 	/**
 	 * Generate the code for the underlying Soot method (which is assumed to be
@@ -83,6 +88,8 @@ public abstract class AbstractJimpleBody {
 		originalBody = (JimpleBody) method.retrieveActiveBody();
 		body = Jimple.v().newBody(method);
 		localGenerator = new LocalGenerator(body);
+
+		casts = new HashMap<Type, Local>();
 
 		processOriginalMethodBody();
 	}
@@ -109,14 +116,11 @@ public abstract class AbstractJimpleBody {
 
 			@Override
 			public void caseInvokeStmt(InvokeStmt stmt) {
-				// If it is a call to a constructor, then add it to
-				// objectCreations
-				if (stmt.getInvokeExpr().getMethod().isConstructor()) {
+				if (isRelevantObjectCreation(stmt)) {
 					objectCreations.add((SpecialInvokeExpr) stmt.getInvokeExpr());
-				} else {
+				} else if (!isCallToSuperConstructor(stmt)) {
 					invokeStmts.add(stmt.getInvokeExpr());
 				}
-
 			}
 		}));
 	}
@@ -130,14 +134,14 @@ public abstract class AbstractJimpleBody {
 	 * @return temporary variable that holds the result of the cast expression
 	 */
 	protected Local insertCastStmt(Local local, Type type) {
-		// if (!casts.keySet().contains(type)) {
-		Local tmp = localGenerator.generateLocal(type);
-		body.getUnits().add(Jimple.v().newAssignStmt(tmp, Jimple.v().newCastExpr(local, type)));
-		// casts.put(type, tmp);
-		// }
-		return tmp;
+		if (!casts.keySet().contains(type)) {
+			Local tmp = localGenerator.generateLocal(type);
+			body.getUnits().add(Jimple.v().newAssignStmt(tmp, Jimple.v().newCastExpr(local, type)));
+			casts.put(type, tmp);
+		}
+		// return tmp;
 
-		// return casts.get(type);
+		return casts.get(type);
 	}
 
 	/**
@@ -183,6 +187,29 @@ public abstract class AbstractJimpleBody {
 	 */
 	protected boolean isAssignInvoke(AssignStmt assign) {
 		return assign.getRightOp() instanceof InvokeExpr;
+	}
+
+	/**
+	 * Is this a relevant object creation? (i.e., a call to a constructor that
+	 * is not the constructor of the direct super class)
+	 * 
+	 * @param stmt
+	 * @return
+	 */
+	protected boolean isRelevantObjectCreation(InvokeStmt stmt) {
+		return stmt.getInvokeExpr() instanceof SpecialInvokeExpr && stmt.getInvokeExpr().getMethod().isConstructor()
+				&& !originalBody.getFirstNonIdentityStmt().equals(stmt);
+	}
+
+	/**
+	 * Is this a call to the super constructor?
+	 * 
+	 * @param stmt
+	 * @return
+	 */
+	protected boolean isCallToSuperConstructor(InvokeStmt stmt) {
+		return stmt.getInvokeExpr() instanceof SpecialInvokeExpr && stmt.getInvokeExpr().getMethod().isConstructor()
+				&& originalBody.getFirstNonIdentityStmt().equals(stmt);
 	}
 
 	/**
@@ -295,6 +322,23 @@ public abstract class AbstractJimpleBody {
 		return originalBody.getUnits().stream().filter(u -> u instanceof AssignStmt).map(AssignStmt.class::cast)
 				.filter(s -> s.getRightOp() instanceof NewArrayExpr || s.getRightOp() instanceof NewMultiArrayExpr)
 				.map(s -> s.getRightOp().getType()).collect(Collectors.toList());
+	}
+
+	/**
+	 * Get all the LHS local variables for the RefLikeType parameters of the
+	 * newly created Jimple body.
+	 * 
+	 * @param method
+	 * @return
+	 */
+	protected List<Local> getRefLikeParameterLocals() {
+		List<Local> result = new ArrayList<Local>();
+		for (int i = 0; i < body.getMethod().getParameterCount(); i++) {
+			if (body.getMethod().getParameterType(i) instanceof RefLikeType) {
+				result.add(body.getParameterLocal(i));
+			}
+		}
+		return result;
 	}
 
 	/**

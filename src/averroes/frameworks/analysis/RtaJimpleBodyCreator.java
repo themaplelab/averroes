@@ -38,7 +38,7 @@ public class RtaJimpleBodyCreator extends TypeBasedJimpleBodyCreator {
 		CodeGenerator.createEmptyDefaultConstructor(averroesRta);
 
 		// Add static field "set" to the class
-		CodeGenerator.createField(averroesRta, Names.RTA_SET_FIELD_NAME, Scene
+		CodeGenerator.createField(averroesRta, Names.SET_FIELD_NAME, Scene
 				.v().getObjectType(), Modifier.PUBLIC | Modifier.STATIC);
 
 		// Write it to disk
