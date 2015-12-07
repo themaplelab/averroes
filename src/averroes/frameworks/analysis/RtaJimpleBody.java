@@ -29,7 +29,7 @@ import soot.jimple.StaticInvokeExpr;
 import soot.jimple.VirtualInvokeExpr;
 import averroes.frameworks.soot.ClassWriter;
 import averroes.frameworks.soot.CodeGenerator;
-import averroes.frameworks.soot.Names;
+import averroes.soot.Names;
 
 /**
  * RTA Jimple body creator that over-approximates all objects in the library by
@@ -42,29 +42,7 @@ import averroes.frameworks.soot.Names;
 public class RtaJimpleBody extends AbstractJimpleBody {
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-	private static SootClass averroesRta;
-
 	private Local rtaSet = null;
-
-	// Create the singleton RTA class
-	static {
-		// Create a public class and set its super class to java.lang.Object
-		averroesRta = CodeGenerator.createEmptyClass(Names.RTA_CLASS, Modifier.PUBLIC, Scene.v().getObjectType()
-				.getSootClass());
-
-		// Add a default constructor to it
-		CodeGenerator.createEmptyDefaultConstructor(averroesRta);
-
-		// Add static field "set" to the class
-		CodeGenerator.createField(averroesRta, Names.SET_FIELD_NAME, Scene.v().getObjectType(), Modifier.PUBLIC
-				| Modifier.STATIC);
-		CodeGenerator.createField(averroesRta, Names.INT_FIELD_NAME, IntType.v(), Modifier.PUBLIC | Modifier.STATIC);
-		CodeGenerator.createField(averroesRta, Names.BOOLEAN_FIELD_NAME, BooleanType.v(), Modifier.PUBLIC
-				| Modifier.STATIC);
-
-		// Write it to disk
-		ClassWriter.writeLibraryClassFile(averroesRta);
-	}
 
 	/**
 	 * Create a new RTA Jimple body creator for method M.
@@ -82,6 +60,9 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 		System.out.println("BEFORE transformation");
 		System.out.println("==========================");
 		System.out.println(method.retrieveActiveBody());
+
+		// Create RTA Class
+		ensureRtaClassExists();
 
 		// Create the new Jimple body
 		insertJimpleBodyHeader();
@@ -105,24 +86,54 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	}
 
 	/**
+	 * Ensure that the RTA class has been created, along with its fields.
+	 */
+	private void ensureRtaClassExists() {
+		if (Scene.v().containsClass(Names.RTA_CLASS)) {
+			return;
+		}
+
+		// Create a public class and set its super class to java.lang.Object
+		SootClass averroesRta = CodeGenerator.createEmptyClass(Names.RTA_CLASS,
+				Modifier.PUBLIC, Scene.v().getObjectType().getSootClass());
+
+		// Add a default constructor to it
+		CodeGenerator.createEmptyDefaultConstructor(averroesRta);
+
+		// Add static field "set" to the class
+		CodeGenerator.createField(averroesRta, Names.SET_FIELD_NAME, Scene.v()
+				.getObjectType(), Modifier.PUBLIC | Modifier.STATIC);
+		CodeGenerator.createField(averroesRta, Names.INT_FIELD_NAME,
+				IntType.v(), Modifier.PUBLIC | Modifier.STATIC);
+		CodeGenerator.createField(averroesRta, Names.BOOLEAN_FIELD_NAME,
+				BooleanType.v(), Modifier.PUBLIC | Modifier.STATIC);
+
+		// Write it to disk
+		ClassWriter.writeLibraryClassFile(averroesRta);
+		System.out.println("************* Created RTA class *************");
+	}
+
+	/**
 	 * Create all the objects that the library could possible instantiate. For
 	 * reference types, this includes inserting new statements, invoking
 	 * constructors, and static initializers if found. For arrays, we just have
 	 * the appropriate NEW instruction.
 	 */
 	private void createObjects() {
-		objectCreations.forEach(e -> {
-			SootMethod init = e.getMethod();
-			SootClass cls = init.getDeclaringClass();
-			Local obj = insertNewStmt(RefType.v(cls));
-			insertSpecialInvokeStmt(obj, init);
-			storeToRtaSet(obj);
+		objectCreations
+				.forEach(e -> {
+					SootMethod init = e.getMethod();
+					SootClass cls = init.getDeclaringClass();
+					Local obj = insertNewStmt(RefType.v(cls));
+					insertSpecialInvokeStmt(obj, init);
+					storeToRtaSet(obj);
 
-			// Call <clinit> if found
-				if (cls.declaresMethod(SootMethod.staticInitializerName)) {
-					insertStaticInvokeStmt(cls.getMethodByName(SootMethod.staticInitializerName));
-				}
-			});
+					// Call <clinit> if found
+					if (cls.declaresMethod(SootMethod.staticInitializerName)) {
+						insertStaticInvokeStmt(cls
+								.getMethodByName(SootMethod.staticInitializerName));
+					}
+				});
 
 		arrayCreations.forEach(t -> {
 			Local obj = insertNewStmt(t);
@@ -156,13 +167,16 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	 */
 	private void handleArrays() {
 		if (readsArray || writesArray) {
-			Local cast = (Local) getCompatibleValue(getRtaSet(), ArrayType.v(getRtaSet().getType(), ARRAY_LENGTH.value));
+			Local cast = (Local) getCompatibleValue(getRtaSet(),
+					ArrayType.v(getRtaSet().getType(), ARRAY_LENGTH.value));
 			ArrayRef arrayRef = Jimple.v().newArrayRef(cast, ARRAY_INDEX);
 
 			if (readsArray) {
-				body.getUnits().add(Jimple.v().newAssignStmt(getRtaSet(), arrayRef));
+				body.getUnits().add(
+						Jimple.v().newAssignStmt(getRtaSet(), arrayRef));
 			} else {
-				body.getUnits().add(Jimple.v().newAssignStmt(arrayRef, getRtaSet()));
+				body.getUnits().add(
+						Jimple.v().newAssignStmt(arrayRef, getRtaSet()));
 			}
 		}
 	}
@@ -181,10 +195,12 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 		 * 
 		 * We do that for all constructors except that of java.lang.Object
 		 */
-		if (method.isConstructor() && !method.getDeclaringClass().equals(Scene.v().getObjectType().getSootClass())) {
+		if (method.isConstructor()
+				&& !method.getDeclaringClass().equals(
+						Scene.v().getObjectType().getSootClass())) {
 			Local base = body.getThisLocal();
-			insertSpecialInvokeStmt(base,
-					method.getDeclaringClass().getSuperclass().getMethod(Names.DEFAULT_CONSTRUCTOR_SIG));
+			insertSpecialInvokeStmt(base, method.getDeclaringClass()
+					.getSuperclass().getMethod(Names.DEFAULT_CONSTRUCTOR_SIG));
 		}
 
 		assignMethodParameters();
@@ -215,7 +231,8 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	 * @param value
 	 */
 	private void storeToRtaSet(Value value) {
-		storeStaticField(Scene.v().getField(Names.RTA_SET_FIELD_SIGNATURE), value);
+		storeStaticField(Scene.v().getField(Names.RTA_SET_FIELD_SIGNATURE),
+				value);
 	}
 
 	/**
@@ -224,7 +241,8 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	 * @param value
 	 */
 	private void storeMethodCallReturn(InvokeExpr expr) {
-		Local ret = localGenerator.generateLocal(expr.getMethod().getReturnType());
+		Local ret = localGenerator.generateLocal(expr.getMethod()
+				.getReturnType());
 		body.getUnits().add(Jimple.v().newAssignStmt(ret, expr));
 		storeToRtaSet(ret);
 	}
@@ -236,7 +254,8 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	 */
 	private Local getRtaSet() {
 		if (rtaSet == null) {
-			rtaSet = loadStaticField(Scene.v().getField(Names.RTA_SET_FIELD_SIGNATURE));
+			rtaSet = loadStaticField(Scene.v().getField(
+					Names.RTA_SET_FIELD_SIGNATURE));
 		}
 		return rtaSet;
 	}
@@ -253,7 +272,8 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 
 		// Loop over all parameters of reference type and create an assignment
 		// statement to the appropriate "expression".
-		body.getParameterLocals().stream().filter(l -> l.getType() instanceof RefLikeType)
+		body.getParameterLocals().stream()
+				.filter(l -> l.getType() instanceof RefLikeType)
 				.forEach(l -> storeToRtaSet(l));
 	}
 
@@ -283,9 +303,13 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	 * @param method
 	 */
 	protected void insertSpecialInvokeStmt(Local base, SootMethod method) {
-		List<Value> args = method.getParameterTypes().stream().map(p -> getCompatibleValue(getRtaSet(), p))
+		List<Value> args = method.getParameterTypes().stream()
+				.map(p -> getCompatibleValue(getRtaSet(), p))
 				.collect(Collectors.toList());
-		body.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(base, method.makeRef(), args)));
+		body.getUnits().add(
+				Jimple.v().newInvokeStmt(
+						Jimple.v().newSpecialInvokeExpr(base, method.makeRef(),
+								args)));
 	}
 
 	/**
@@ -294,9 +318,12 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	 * @param method
 	 */
 	protected void insertStaticInvokeStmt(SootMethod method) {
-		List<Value> args = method.getParameterTypes().stream().map(p -> getCompatibleValue(getRtaSet(), p))
+		List<Value> args = method.getParameterTypes().stream()
+				.map(p -> getCompatibleValue(getRtaSet(), p))
 				.collect(Collectors.toList());
-		body.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(method.makeRef(), args)));
+		body.getUnits()
+				.add(Jimple.v().newInvokeStmt(
+						Jimple.v().newStaticInvokeExpr(method.makeRef(), args)));
 	}
 
 	/**
@@ -306,7 +333,8 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	 * @param originalInvokeExpr
 	 */
 	protected void insertInvokeStmt(InvokeExpr originalInvokeExpr) {
-		body.getUnits().add(Jimple.v().newInvokeStmt(buildInvokeExpr(originalInvokeExpr)));
+		body.getUnits().add(
+				Jimple.v().newInvokeStmt(buildInvokeExpr(originalInvokeExpr)));
 	}
 
 	/**
@@ -323,26 +351,34 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 		InvokeExpr invokeExpr = null;
 
 		// Get the arguments to the call
-		List<Value> args = originalInvokeExpr.getArgs().stream().map(a -> getCompatibleValue(getRtaSet(), a.getType()))
+		List<Value> args = originalInvokeExpr.getArgs().stream()
+				.map(a -> getCompatibleValue(getRtaSet(), a.getType()))
 				.collect(Collectors.toList());
 
 		// Build the invoke expression
 		if (originalInvokeExpr instanceof StaticInvokeExpr) {
 			invokeExpr = Jimple.v().newStaticInvokeExpr(callee.makeRef(), args);
 		} else if (originalInvokeExpr instanceof SpecialInvokeExpr) {
-			Local base = (Local) getCompatibleValue(getRtaSet(), ((SpecialInvokeExpr) originalInvokeExpr).getBase()
-					.getType());
-			invokeExpr = Jimple.v().newSpecialInvokeExpr(base, callee.makeRef(), args);
+			Local base = (Local) getCompatibleValue(getRtaSet(),
+					((SpecialInvokeExpr) originalInvokeExpr).getBase()
+							.getType());
+			invokeExpr = Jimple.v().newSpecialInvokeExpr(base,
+					callee.makeRef(), args);
 		} else if (originalInvokeExpr instanceof InterfaceInvokeExpr) {
-			Local base = (Local) getCompatibleValue(getRtaSet(), ((InterfaceInvokeExpr) originalInvokeExpr).getBase()
-					.getType());
-			invokeExpr = Jimple.v().newInterfaceInvokeExpr(base, callee.makeRef(), args);
+			Local base = (Local) getCompatibleValue(getRtaSet(),
+					((InterfaceInvokeExpr) originalInvokeExpr).getBase()
+							.getType());
+			invokeExpr = Jimple.v().newInterfaceInvokeExpr(base,
+					callee.makeRef(), args);
 		} else if (originalInvokeExpr instanceof VirtualInvokeExpr) {
-			Local base = (Local) getCompatibleValue(getRtaSet(), ((VirtualInvokeExpr) originalInvokeExpr).getBase()
-					.getType());
-			invokeExpr = Jimple.v().newVirtualInvokeExpr(base, callee.makeRef(), args);
+			Local base = (Local) getCompatibleValue(getRtaSet(),
+					((VirtualInvokeExpr) originalInvokeExpr).getBase()
+							.getType());
+			invokeExpr = Jimple.v().newVirtualInvokeExpr(base,
+					callee.makeRef(), args);
 		} else {
-			logger.error("Cannot handle invoke expression of type: " + originalInvokeExpr.getClass());
+			logger.error("Cannot handle invoke expression of type: "
+					+ originalInvokeExpr.getClass());
 		}
 
 		return invokeExpr;

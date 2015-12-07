@@ -15,6 +15,7 @@ import soot.jimple.Jimple;
  * @author Karim Ali
  *
  */
+@Deprecated
 public class XtaJimpleBodyCreator extends TypeBasedJimpleBodyCreator {
 
 	// private final Logger logger = LoggerFactory.getLogger(getClass());

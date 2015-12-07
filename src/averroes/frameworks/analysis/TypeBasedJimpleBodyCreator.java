@@ -54,6 +54,7 @@ import soot.jimple.VirtualInvokeExpr;
  * @author Karim Ali
  *
  */
+@Deprecated
 public abstract class TypeBasedJimpleBodyCreator {
 
 	protected final Logger logger = LoggerFactory.getLogger(getClass());

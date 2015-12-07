@@ -10,7 +10,7 @@ import soot.jimple.FieldRef;
 import soot.jimple.Jimple;
 import averroes.frameworks.soot.ClassWriter;
 import averroes.frameworks.soot.CodeGenerator;
-import averroes.frameworks.soot.Names;
+import averroes.soot.Names;
 
 /**
  * RTA Jimple body creator that over-approximates all objects in the library by
@@ -20,6 +20,7 @@ import averroes.frameworks.soot.Names;
  * @author Karim Ali
  *
  */
+@Deprecated
 public class RtaJimpleBodyCreator extends TypeBasedJimpleBodyCreator {
 
 	// private final Logger logger = LoggerFactory.getLogger(getClass());
