@@ -36,6 +36,23 @@ public class Paths {
 	}
 
 	/**
+	 * The path to the RTA debug file where we dump Jimple code for before,
+	 * after, and expected output.
+	 * 
+	 * @return
+	 */
+	public static File rtaDebugFile() {
+		return java.nio.file.Paths
+				.get(FrameworksOptions.getOutputDirectory())
+				.toAbsolutePath()
+				.getParent()
+				.getParent()
+				.resolve(
+						java.nio.file.Paths.get("averroes.tests", "dumps")
+								.resolve("RTA.txt")).toFile();
+	}
+
+	/**
 	 * The path to the output class files.
 	 * 
 	 * @return

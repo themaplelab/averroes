@@ -1,0 +1,69 @@
+package averroes.frameworks;
+
+import java.util.Collections;
+import java.util.List;
+
+import soot.ClassProvider;
+import soot.G;
+import soot.Scene;
+import soot.SootMethod;
+import soot.SourceLocator;
+import soot.options.Options;
+import averroes.frameworks.options.FrameworksOptions;
+import averroes.frameworks.soot.FrameworksClassProvider;
+import averroes.util.io.Printers;
+
+/**
+ * A simple Jimple printer.
+ * 
+ * @author Karim Ali
+ * 
+ */
+public class JimplePrinter {
+
+	/**
+	 * The main Averroes method.
+	 * 
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		try {
+			// Process the arguments
+			FrameworksOptions.processArguments(args);
+
+			// Reset Soot
+			G.reset();
+
+			// Prepare the soot classpath
+			FrameworksClassProvider provider = new FrameworksClassProvider();
+			provider.prepareClasspath();
+
+			// Set some soot parameters
+			SourceLocator.v().setClassProviders(
+					Collections.singletonList((ClassProvider) provider));
+			Options.v().classes().addAll(provider.getClassNames());
+
+			// Load the necessary classes
+			Scene.v().loadNecessaryClasses();
+
+			// Print out files
+			Scene.v()
+					.getApplicationClasses()
+					.stream()
+					.map(c -> c.getMethods())
+					.flatMap(List::stream)
+					.filter(SootMethod::isConcrete)
+					.forEach(
+							m -> {
+								Printers.getPrintStream().println("==========================");
+								Printers.getPrintStream().println("EXPECTED output");
+								Printers.getPrintStream().println("==========================");
+								Printers.getPrintStream().println(m.retrieveActiveBody());
+							});
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+}

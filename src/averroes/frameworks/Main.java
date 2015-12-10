@@ -56,8 +56,6 @@ public class Main {
 			// Set some soot parameters
 			SourceLocator.v().setClassProviders(Collections.singletonList((ClassProvider) provider));
 			Options.v().classes().addAll(provider.getClassNames());
-			System.out.println(Options.v().soot_classpath());
-			// Options.v().set_full_resolver(true);
 			Options.v().set_validate(true);
 
 			// Load the necessary classes

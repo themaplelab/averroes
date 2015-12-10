@@ -30,6 +30,7 @@ import soot.jimple.VirtualInvokeExpr;
 import averroes.frameworks.soot.ClassWriter;
 import averroes.frameworks.soot.CodeGenerator;
 import averroes.soot.Names;
+import averroes.util.io.Printers;
 
 /**
  * RTA Jimple body creator that over-approximates all objects in the library by
@@ -56,10 +57,10 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	@Override
 	public void generateCode() {
 		// TODO
-		System.out.println("==========================");
-		System.out.println("BEFORE transformation");
-		System.out.println("==========================");
-		System.out.println(method.retrieveActiveBody());
+		Printers.getPrintStream().println("==========================");
+		Printers.getPrintStream().println("BEFORE transformation");
+		Printers.getPrintStream().println("==========================");
+		Printers.getPrintStream().println(method.retrieveActiveBody());
 
 		// Create RTA Class
 		ensureRtaClassExists();
@@ -77,12 +78,12 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 		method.setActiveBody(body);
 
 		// TODO
-		System.out.println("==========================");
-		System.out.println("AFTER transformation");
-		System.out.println("==========================");
-		System.out.println(method.retrieveActiveBody());
-		System.out.println();
-		System.out.println();
+		Printers.getPrintStream().println("==========================");
+		Printers.getPrintStream().println("AFTER transformation");
+		Printers.getPrintStream().println("==========================");
+		Printers.getPrintStream().println(method.retrieveActiveBody());
+		Printers.getPrintStream().println();
+		Printers.getPrintStream().println();
 	}
 
 	/**
