@@ -9,8 +9,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import soot.ArrayType;
+import soot.DoubleType;
 import soot.FloatType;
-import soot.IntegerType;
 import soot.Local;
 import soot.LongType;
 import soot.PrimType;
@@ -103,7 +103,8 @@ public abstract class AbstractJimpleBody {
 			@Override
 			public void caseAssignStmt(AssignStmt stmt) {
 				// array creations, reads, and writes
-				if (stmt.getRightOp() instanceof NewArrayExpr || stmt.getRightOp() instanceof NewMultiArrayExpr) {
+				if (stmt.getRightOp() instanceof NewArrayExpr
+						|| stmt.getRightOp() instanceof NewMultiArrayExpr) {
 					arrayCreations.add(stmt.getRightOp().getType());
 				} else if (!readsArray && isArrayRead(stmt)) {
 					readsArray = true;
@@ -117,7 +118,8 @@ public abstract class AbstractJimpleBody {
 			@Override
 			public void caseInvokeStmt(InvokeStmt stmt) {
 				if (isRelevantObjectCreation(stmt)) {
-					objectCreations.add((SpecialInvokeExpr) stmt.getInvokeExpr());
+					objectCreations.add((SpecialInvokeExpr) stmt
+							.getInvokeExpr());
 				} else if (!isCallToSuperConstructor(stmt)) {
 					invokeStmts.add(stmt.getInvokeExpr());
 				}
@@ -136,7 +138,9 @@ public abstract class AbstractJimpleBody {
 	protected Local insertCastStmt(Local local, Type type) {
 		if (!casts.keySet().contains(type)) {
 			Local tmp = localGenerator.generateLocal(type);
-			body.getUnits().add(Jimple.v().newAssignStmt(tmp, Jimple.v().newCastExpr(local, type)));
+			body.getUnits().add(
+					Jimple.v().newAssignStmt(tmp,
+							Jimple.v().newCastExpr(local, type)));
 			casts.put(type, tmp);
 		}
 		// return tmp;
@@ -165,7 +169,9 @@ public abstract class AbstractJimpleBody {
 	 */
 	protected Local loadStaticField(SootField field) {
 		Local tmp = localGenerator.generateLocal(field.getType());
-		body.getUnits().add(Jimple.v().newAssignStmt(tmp, Jimple.v().newStaticFieldRef(field.makeRef())));
+		body.getUnits().add(
+				Jimple.v().newAssignStmt(tmp,
+						Jimple.v().newStaticFieldRef(field.makeRef())));
 		return tmp;
 	}
 
@@ -176,7 +182,9 @@ public abstract class AbstractJimpleBody {
 	 * @param from
 	 */
 	protected void storeStaticField(SootField field, Value from) {
-		body.getUnits().add(Jimple.v().newAssignStmt(Jimple.v().newStaticFieldRef(field.makeRef()), from));
+		body.getUnits().add(
+				Jimple.v().newAssignStmt(
+						Jimple.v().newStaticFieldRef(field.makeRef()), from));
 	}
 
 	/**
@@ -197,8 +205,10 @@ public abstract class AbstractJimpleBody {
 	 * @return
 	 */
 	protected boolean isRelevantObjectCreation(InvokeStmt stmt) {
-		return stmt.getInvokeExpr() instanceof SpecialInvokeExpr && stmt.getInvokeExpr().getMethod().isConstructor()
-				&& !originalBody.getFirstNonIdentityStmt().equals(stmt);
+		return stmt.getInvokeExpr() instanceof SpecialInvokeExpr
+				&& stmt.getInvokeExpr().getMethod().isConstructor()
+				&& !isCallToSuperConstructor(stmt);
+		// && !originalBody.getFirstNonIdentityStmt().equals(stmt);
 	}
 
 	/**
@@ -208,8 +218,15 @@ public abstract class AbstractJimpleBody {
 	 * @return
 	 */
 	protected boolean isCallToSuperConstructor(InvokeStmt stmt) {
-		return stmt.getInvokeExpr() instanceof SpecialInvokeExpr && stmt.getInvokeExpr().getMethod().isConstructor()
-				&& originalBody.getFirstNonIdentityStmt().equals(stmt);
+		return !method.getDeclaringClass().hasSuperclass() ? false : stmt
+				.getInvokeExpr() instanceof SpecialInvokeExpr
+				&& stmt.getInvokeExpr().getMethod().isConstructor()
+				&& method
+						.getDeclaringClass()
+						.getSuperclass()
+						.declaresMethod(
+								stmt.getInvokeExpr().getMethod()
+										.getNumberedSubSignature());
 	}
 
 	/**
@@ -238,8 +255,10 @@ public abstract class AbstractJimpleBody {
 	 * @return
 	 */
 	protected boolean readsArray() {
-		return originalBody.getUnits().stream().filter(u -> u instanceof AssignStmt).map(AssignStmt.class::cast)
-				.filter(this::isArrayRead).findFirst().isPresent();
+		return originalBody.getUnits().stream()
+				.filter(u -> u instanceof AssignStmt)
+				.map(AssignStmt.class::cast).filter(this::isArrayRead)
+				.findFirst().isPresent();
 	}
 
 	/**
@@ -258,8 +277,10 @@ public abstract class AbstractJimpleBody {
 	 * @return
 	 */
 	protected boolean writesArray() {
-		return originalBody.getUnits().stream().filter(u -> u instanceof AssignStmt).map(AssignStmt.class::cast)
-				.filter(this::isArrayWrite).findFirst().isPresent();
+		return originalBody.getUnits().stream()
+				.filter(u -> u instanceof AssignStmt)
+				.map(AssignStmt.class::cast).filter(this::isArrayWrite)
+				.findFirst().isPresent();
 	}
 
 	/**
@@ -289,14 +310,14 @@ public abstract class AbstractJimpleBody {
 	 * @return
 	 */
 	protected Value getPrimValue(PrimType type) {
-		if (type instanceof IntegerType) {
-			return IntConstant.v(1);
-		} else if (type instanceof LongType) {
+		if (type instanceof LongType) {
 			return LongConstant.v(1);
 		} else if (type instanceof FloatType) {
 			return FloatConstant.v(1);
-		} else {
+		} else if (type instanceof DoubleType) {
 			return DoubleConstant.v(1);
+		} else {
+			return IntConstant.v(1);
 		}
 	}
 
@@ -308,9 +329,12 @@ public abstract class AbstractJimpleBody {
 	 * @return
 	 */
 	protected List<SpecialInvokeExpr> getObjectCreations() {
-		return originalBody.getUnits().stream().filter(u -> u instanceof InvokeStmt).map(InvokeStmt.class::cast)
+		return originalBody.getUnits().stream()
+				.filter(u -> u instanceof InvokeStmt)
+				.map(InvokeStmt.class::cast)
 				.filter(s -> s.getInvokeExpr() instanceof SpecialInvokeExpr)
-				.map(s -> SpecialInvokeExpr.class.cast(s.getInvokeExpr())).collect(Collectors.toList());
+				.map(s -> SpecialInvokeExpr.class.cast(s.getInvokeExpr()))
+				.collect(Collectors.toList());
 	}
 
 	/**
@@ -319,9 +343,15 @@ public abstract class AbstractJimpleBody {
 	 * @return
 	 */
 	protected List<Type> getArrayCreations() {
-		return originalBody.getUnits().stream().filter(u -> u instanceof AssignStmt).map(AssignStmt.class::cast)
-				.filter(s -> s.getRightOp() instanceof NewArrayExpr || s.getRightOp() instanceof NewMultiArrayExpr)
-				.map(s -> s.getRightOp().getType()).collect(Collectors.toList());
+		return originalBody
+				.getUnits()
+				.stream()
+				.filter(u -> u instanceof AssignStmt)
+				.map(AssignStmt.class::cast)
+				.filter(s -> s.getRightOp() instanceof NewArrayExpr
+						|| s.getRightOp() instanceof NewMultiArrayExpr)
+				.map(s -> s.getRightOp().getType())
+				.collect(Collectors.toList());
 	}
 
 	/**
@@ -354,13 +384,17 @@ public abstract class AbstractJimpleBody {
 		} else if (type instanceof ArrayType) {
 			ArrayType arrayType = (ArrayType) type;
 			if (arrayType.numDimensions <= 1) {
-				return Jimple.v().newNewArrayExpr(arrayType.baseType, ARRAY_LENGTH);
+				return Jimple.v().newNewArrayExpr(arrayType.baseType,
+						ARRAY_LENGTH);
 			} else {
-				return Jimple.v().newNewMultiArrayExpr(arrayType,
-						Collections.nCopies(arrayType.numDimensions, ARRAY_LENGTH));
+				return Jimple.v().newNewMultiArrayExpr(
+						arrayType,
+						Collections.nCopies(arrayType.numDimensions,
+								ARRAY_LENGTH));
 			}
 		}
 
-		throw new IllegalArgumentException("Type " + type + " cannot be instantiated.");
+		throw new IllegalArgumentException("Type " + type
+				+ " cannot be instantiated.");
 	}
 }

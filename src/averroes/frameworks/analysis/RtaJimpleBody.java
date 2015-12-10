@@ -110,7 +110,6 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 
 		// Write it to disk
 		ClassWriter.writeLibraryClassFile(averroesRta);
-		System.out.println("************* Created RTA class *************");
 	}
 
 	/**
@@ -191,13 +190,11 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 		/*
 		 * To generate correct bytecode, we need to initialize the object first
 		 * by calling the direct superclass default constructor before inserting
-		 * any more statements. That is if this method is for a constructor.
-		 * 
-		 * We do that for all constructors except that of java.lang.Object
+		 * any more statements. That is if this method is for a constructor and
+		 * its declaring class has a superclass.
 		 */
 		if (method.isConstructor()
-				&& !method.getDeclaringClass().equals(
-						Scene.v().getObjectType().getSootClass())) {
+				&& method.getDeclaringClass().hasSuperclass()) {
 			Local base = body.getThisLocal();
 			insertSpecialInvokeStmt(base, method.getDeclaringClass()
 					.getSuperclass().getMethod(Names.DEFAULT_CONSTRUCTOR_SIG));
@@ -286,9 +283,6 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	 * @return
 	 */
 	private Value getCompatibleValue(Local local, Type type) {
-		if (type instanceof IntType) {
-
-		}
 		if (type instanceof PrimType) {
 			return getPrimValue((PrimType) type);
 		} else {
