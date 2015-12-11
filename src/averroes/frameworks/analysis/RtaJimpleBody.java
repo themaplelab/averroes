@@ -58,10 +58,16 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	@Override
 	public void generateCode() {
 		// TODO
-		Printers.getPrintStream(PrinterType.BEFORE).println("==========================");
-		Printers.getPrintStream(PrinterType.BEFORE).println("BEFORE transformation");
-		Printers.getPrintStream(PrinterType.BEFORE).println("==========================");
-		Printers.getPrintStream(PrinterType.BEFORE).println(method.retrieveActiveBody());
+		Printers.getPrintStream(PrinterType.BEFORE).println(
+				"==========================");
+		Printers.getPrintStream(PrinterType.BEFORE).println(
+				"BEFORE transformation");
+		Printers.getPrintStream(PrinterType.BEFORE).println(
+				"==========================");
+		Printers.getPrintStream(PrinterType.BEFORE).println(
+				method.getSignature());
+		Printers.getPrintStream(PrinterType.BEFORE).println(
+				method.retrieveActiveBody());
 
 		// Create RTA Class
 		ensureRtaClassExists();
@@ -71,7 +77,7 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 		createObjects();
 		callMethods();
 		handleArrays();
-		// handleExceptions();
+		handleExceptions();
 		insertJimpleBodyFooter();
 
 		// Validate method Jimple body & assign it to the method
@@ -79,10 +85,16 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 		method.setActiveBody(body);
 
 		// TODO
-		Printers.getPrintStream(PrinterType.AFTER).println("==========================");
-		Printers.getPrintStream(PrinterType.AFTER).println("AFTER transformation");
-		Printers.getPrintStream(PrinterType.AFTER).println("==========================");
-		Printers.getPrintStream(PrinterType.AFTER).println(method.retrieveActiveBody());
+		Printers.getPrintStream(PrinterType.AFTER).println(
+				"==========================");
+		Printers.getPrintStream(PrinterType.AFTER).println(
+				"AFTER transformation");
+		Printers.getPrintStream(PrinterType.AFTER).println(
+				"==========================");
+		Printers.getPrintStream(PrinterType.AFTER).println(
+				method.getSignature());
+		Printers.getPrintStream(PrinterType.AFTER).println(
+				method.retrieveActiveBody());
 		Printers.getPrintStream(PrinterType.AFTER).println();
 		Printers.getPrintStream(PrinterType.AFTER).println();
 	}
@@ -183,6 +195,13 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	}
 
 	/**
+	 * Handle throwing exceptions and try-catch blocks.
+	 */
+	private void handleExceptions() {
+		throwables.forEach(this::insertThrowStmt);
+	}
+
+	/**
 	 * Insert the identity statements, assigns actual parameters (if any) and
 	 * the this parameter (if any) to RTA.set
 	 */
@@ -209,7 +228,14 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	 * Insert the standard footer for a library method.
 	 */
 	private void insertJimpleBodyFooter() {
-		insertReturnStmt();
+		/*
+		 * Insert the return statement, only if there are no throwables to
+		 * throw. Otherwise, it's dead code and the Jimple validator will choke
+		 * on it!
+		 */
+		if (throwables.isEmpty()) {
+			insertReturnStmt();
+		}
 	}
 
 	/**
@@ -290,6 +316,16 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 		} else {
 			return insertCastStmt(local, type);
 		}
+	}
+
+	/**
+	 * Insert a throw statement that throws an exception of the given type.
+	 * 
+	 * @param type
+	 */
+	protected void insertThrowStmt(Type type) {
+		Local tmp = insertCastStmt(getRtaSet(), type);
+		body.getUnits().add(Jimple.v().newThrowStmt(tmp));
 	}
 
 	/**

@@ -10,6 +10,7 @@ import soot.Scene;
 import soot.SootMethod;
 import soot.options.Options;
 import averroes.frameworks.options.FrameworksOptions;
+import averroes.frameworks.soot.ClassWriter;
 import averroes.frameworks.soot.CodeGenerator;
 import averroes.util.TimeUtils;
 
@@ -42,18 +43,9 @@ public class Main {
 			FileUtils.forceMkdir(new File(FrameworksOptions.getOutputDirectory()));
 			FileUtils.cleanDirectory(new File(FrameworksOptions.getOutputDirectory()));
 
-			// Prepare the soot classpath
-//			TimeUtils.reset();
-//			System.out.println("");
-//			System.out.println("Preparing Averroes ...");
-//			FrameworksClassProvider provider = new FrameworksClassProvider();
-//			provider.prepareClasspath();
-
 			// Set some soot parameters
-//			SourceLocator.v().setClassProviders(Collections.singletonList((ClassProvider) provider));
 			Options.v().set_process_dir(FrameworksOptions.getInputs());
 			Options.v().set_soot_classpath(FrameworksOptions.getSootClassPath());
-//			Options.v().classes().addAll(provider.getClassNames());
 			Options.v().set_validate(true);
 
 			// Load the necessary classes
@@ -67,15 +59,18 @@ public class Main {
 			// Now let Averroes do its thing
 			TimeUtils.reset();
 			System.out.println("");
-			// TODO: do not call Scene.v().getClasses() here as it will throw
-			// concurrent modification error when new classes
-			// are added
+			/* Note: do not call Scene.v().getClasses() here as it will throw
+			 * concurrent modification error when new classes
+			 * are added.
+			 */
 			Scene.v()
 					.getApplicationClasses()
 					.stream()
 					.map(c -> c.getMethods())
 					.flatMap(List::stream)
 					.filter(SootMethod::isConcrete).forEach(m -> CodeGenerator.getJimpleBodyCreator(m).generateCode());
+			
+			Scene.v().getApplicationClasses().forEach(ClassWriter::writeLibraryClassFile);
 
 		} catch (Exception e) {
 			e.printStackTrace();

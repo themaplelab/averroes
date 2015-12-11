@@ -37,6 +37,7 @@ import soot.jimple.LongConstant;
 import soot.jimple.NewArrayExpr;
 import soot.jimple.NewMultiArrayExpr;
 import soot.jimple.SpecialInvokeExpr;
+import soot.jimple.ThrowStmt;
 
 /**
  * Abstract Jimple body creator that declares some common fields and methods.
@@ -71,6 +72,9 @@ public abstract class AbstractJimpleBody {
 
 	// Invoke expression (i.e., return value is assigned to some local variable)
 	protected LinkedHashSet<InvokeExpr> invokeExprs = new LinkedHashSet<InvokeExpr>();
+	
+	// Thrown types
+	protected LinkedHashSet<Type> throwables = new LinkedHashSet<Type>();
 
 	/**
 	 * Generate the code for the underlying Soot method (which is assumed to be
@@ -123,6 +127,11 @@ public abstract class AbstractJimpleBody {
 				} else if (!isCallToSuperConstructor(stmt)) {
 					invokeStmts.add(stmt.getInvokeExpr());
 				}
+			}
+			
+			@Override
+			public void caseThrowStmt(ThrowStmt stmt) {
+				throwables.add(stmt.getOp().getType());
 			}
 		}));
 	}

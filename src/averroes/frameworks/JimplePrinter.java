@@ -31,19 +31,11 @@ public class JimplePrinter {
 			// Reset Soot
 			G.reset();
 
-			// Prepare the soot classpath
-			// FrameworksClassProvider provider = new FrameworksClassProvider();
-			// provider.prepareClasspath();
-
 			// Set some soot parameters
-			// SourceLocator.v().setClassProviders(
-			// Collections.singletonList((ClassProvider) provider));
-			// Options.v().classes().addAll(provider.getClassNames());
 			Options.v().set_process_dir(FrameworksOptions.getInputs());
 			Options.v().set_soot_classpath(FrameworksOptions.getSootClassPath());
 
 			// Load the necessary classes
-			System.out.println(Scene.v().getSootClassPath());
 			Scene.v().loadNecessaryClasses();
 
 			// Print out files
@@ -58,6 +50,7 @@ public class JimplePrinter {
 								Printers.getPrintStream(PrinterType.EXPECTED).println("==========================");
 								Printers.getPrintStream(PrinterType.EXPECTED).println("EXPECTED output");
 								Printers.getPrintStream(PrinterType.EXPECTED).println("==========================");
+								Printers.getPrintStream(PrinterType.EXPECTED).println(m.getSignature());
 								Printers.getPrintStream(PrinterType.EXPECTED).println(m.retrieveActiveBody());
 							});
 
