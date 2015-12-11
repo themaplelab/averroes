@@ -129,9 +129,9 @@ public abstract class AbstractJimpleBody {
 
 	/**
 	 * Insert a statement that casts the given local to the given type and
-	 * assign it to a new temporary local variable. If the local is of the same
-	 * type as type, then return that local instead of using a temporary
-	 * variable.
+	 * assign it to a new temporary local variable. If {@code local} is of the
+	 * same type as {@code type}, then return that local instead of using a
+	 * temporary variable.
 	 * 
 	 * @param local
 	 * @param type
@@ -149,7 +149,6 @@ public abstract class AbstractJimpleBody {
 				casts.put(type, tmp);
 			}
 		}
-		// return tmp;
 
 		return casts.get(type);
 	}

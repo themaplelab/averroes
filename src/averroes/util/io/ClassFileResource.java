@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
  * @author Karim Ali
  * 
  */
+@Deprecated
 public class ClassFileResource implements Resource {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());

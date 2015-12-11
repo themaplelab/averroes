@@ -42,6 +42,7 @@ import averroes.util.io.ZipEntryResource;
  * 
  * @author Karim Ali
  */
+@Deprecated
 public class FrameworksClassProvider implements ClassProvider {
 
 	private Map<String, Resource> classes;

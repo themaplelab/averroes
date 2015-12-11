@@ -49,7 +49,7 @@ public class Paths {
 				.getParent()
 				.getParent()
 				.resolve(
-						java.nio.file.Paths.get("averroes.tests", "dumps")
+						java.nio.file.Paths.get("averroes.tests", "jimple")
 								.resolve(
 										FrameworksOptions.getAnalysis().toUpperCase() + "-"
 												+ printerType.toString().toLowerCase()

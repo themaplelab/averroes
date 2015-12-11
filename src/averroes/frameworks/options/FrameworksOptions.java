@@ -3,12 +3,16 @@ package averroes.frameworks.options;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.io.FileUtils;
+
+import averroes.util.io.FileFilters;
 
 /**
  * A class that holds all the properties required by Averroes to run.
@@ -85,6 +89,23 @@ public final class FrameworksOptions {
 	public static List<String> getDependencies() {
 		return Arrays.asList(cmd.getOptionValue(deps.getOpt(), "").split(
 				File.pathSeparator));
+	}
+
+	/**
+	 * Get the classpath used to configure Soot.
+	 * 
+	 * @return
+	 */
+	public static String getSootClassPath() {
+		String deps = getDependencies().stream().collect(
+				Collectors.joining(File.pathSeparator));
+		String std = FileUtils
+				.listFiles(new File(getJreDirectory()),
+						FileFilters.jreFileFilter, null).stream()
+				.map(f -> f.getAbsolutePath())
+				.collect(Collectors.joining(File.pathSeparator));
+
+		return deps.isEmpty() ? std : deps + File.pathSeparator + std;
 	}
 
 	/**

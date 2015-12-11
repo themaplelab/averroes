@@ -1,16 +1,12 @@
 package averroes.frameworks;
 
-import java.util.Collections;
 import java.util.List;
 
-import soot.ClassProvider;
 import soot.G;
 import soot.Scene;
 import soot.SootMethod;
-import soot.SourceLocator;
 import soot.options.Options;
 import averroes.frameworks.options.FrameworksOptions;
-import averroes.frameworks.soot.FrameworksClassProvider;
 import averroes.util.io.Printers;
 import averroes.util.io.Printers.PrinterType;
 
@@ -36,15 +32,18 @@ public class JimplePrinter {
 			G.reset();
 
 			// Prepare the soot classpath
-			FrameworksClassProvider provider = new FrameworksClassProvider();
-			provider.prepareClasspath();
+			// FrameworksClassProvider provider = new FrameworksClassProvider();
+			// provider.prepareClasspath();
 
 			// Set some soot parameters
-			SourceLocator.v().setClassProviders(
-					Collections.singletonList((ClassProvider) provider));
-			Options.v().classes().addAll(provider.getClassNames());
+			// SourceLocator.v().setClassProviders(
+			// Collections.singletonList((ClassProvider) provider));
+			// Options.v().classes().addAll(provider.getClassNames());
+			Options.v().set_process_dir(FrameworksOptions.getInputs());
+			Options.v().set_soot_classpath(FrameworksOptions.getSootClassPath());
 
 			// Load the necessary classes
+			System.out.println(Scene.v().getSootClassPath());
 			Scene.v().loadNecessaryClasses();
 
 			// Print out files
