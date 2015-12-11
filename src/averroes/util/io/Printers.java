@@ -24,11 +24,16 @@ import java.io.PrintStream;
  * 
  */
 public class Printers {
-	
-	public static PrintStream getPrintStream() {
+
+	public enum PrinterType {
+		EXPECTED, BEFORE, AFTER;
+	}
+
+	public static PrintStream getPrintStream(PrinterType printerType) {
 		PrintStream result = null;
 		try {
-			result = new PrintStream(new FileOutputStream(Paths.rtaDebugFile(), true), true);
+			result = new PrintStream(new FileOutputStream(
+					Paths.rtaDebugFile(printerType), true), true);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}

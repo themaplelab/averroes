@@ -129,7 +129,9 @@ public abstract class AbstractJimpleBody {
 
 	/**
 	 * Insert a statement that casts the given local to the given type and
-	 * assign it to a new temporary local variable.
+	 * assign it to a new temporary local variable. If the local is of the same
+	 * type as type, then return that local instead of using a temporary
+	 * variable.
 	 * 
 	 * @param local
 	 * @param type
@@ -137,11 +139,15 @@ public abstract class AbstractJimpleBody {
 	 */
 	protected Local insertCastStmt(Local local, Type type) {
 		if (!casts.keySet().contains(type)) {
-			Local tmp = localGenerator.generateLocal(type);
-			body.getUnits().add(
-					Jimple.v().newAssignStmt(tmp,
-							Jimple.v().newCastExpr(local, type)));
-			casts.put(type, tmp);
+			if (local.getType().equals(type)) {
+				casts.put(type, local);
+			} else {
+				Local tmp = localGenerator.generateLocal(type);
+				body.getUnits().add(
+						Jimple.v().newAssignStmt(tmp,
+								Jimple.v().newCastExpr(local, type)));
+				casts.put(type, tmp);
+			}
 		}
 		// return tmp;
 

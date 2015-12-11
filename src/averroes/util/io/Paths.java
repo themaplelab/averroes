@@ -17,6 +17,7 @@ import java.io.File;
 
 import averroes.frameworks.options.FrameworksOptions;
 import averroes.options.AverroesOptions;
+import averroes.util.io.Printers.PrinterType;
 
 /**
  * Utility class for file-related operations.
@@ -41,7 +42,7 @@ public class Paths {
 	 * 
 	 * @return
 	 */
-	public static File rtaDebugFile() {
+	public static File rtaDebugFile(PrinterType printerType) {
 		return java.nio.file.Paths
 				.get(FrameworksOptions.getOutputDirectory())
 				.toAbsolutePath()
@@ -49,7 +50,10 @@ public class Paths {
 				.getParent()
 				.resolve(
 						java.nio.file.Paths.get("averroes.tests", "dumps")
-								.resolve("RTA.txt")).toFile();
+								.resolve(
+										FrameworksOptions.getAnalysis().toUpperCase() + "-"
+												+ printerType.toString().toLowerCase()
+												+ ".txt")).toFile();
 	}
 
 	/**

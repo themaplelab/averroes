@@ -12,6 +12,7 @@ import soot.options.Options;
 import averroes.frameworks.options.FrameworksOptions;
 import averroes.frameworks.soot.FrameworksClassProvider;
 import averroes.util.io.Printers;
+import averroes.util.io.Printers.PrinterType;
 
 /**
  * A simple Jimple printer.
@@ -55,10 +56,10 @@ public class JimplePrinter {
 					.filter(SootMethod::isConcrete)
 					.forEach(
 							m -> {
-								Printers.getPrintStream().println("==========================");
-								Printers.getPrintStream().println("EXPECTED output");
-								Printers.getPrintStream().println("==========================");
-								Printers.getPrintStream().println(m.retrieveActiveBody());
+								Printers.getPrintStream(PrinterType.EXPECTED).println("==========================");
+								Printers.getPrintStream(PrinterType.EXPECTED).println("EXPECTED output");
+								Printers.getPrintStream(PrinterType.EXPECTED).println("==========================");
+								Printers.getPrintStream(PrinterType.EXPECTED).println(m.retrieveActiveBody());
 							});
 
 		} catch (Exception e) {
