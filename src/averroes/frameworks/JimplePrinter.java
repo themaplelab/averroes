@@ -33,26 +33,18 @@ public class JimplePrinter {
 
 			// Set some soot parameters
 			Options.v().set_process_dir(FrameworksOptions.getInputs());
-			Options.v().set_soot_classpath(FrameworksOptions.getSootClassPath());
+			Options.v()
+					.set_soot_classpath(FrameworksOptions.getSootClassPath());
 
 			// Load the necessary classes
 			Scene.v().loadNecessaryClasses();
 
 			// Print out files
-			Scene.v()
-					.getApplicationClasses()
-					.stream()
-					.map(c -> c.getMethods())
-					.flatMap(List::stream)
-					.filter(SootMethod::isConcrete)
-					.forEach(
-							m -> {
-								Printers.getPrintStream(PrinterType.EXPECTED).println("==========================");
-								Printers.getPrintStream(PrinterType.EXPECTED).println("EXPECTED output");
-								Printers.getPrintStream(PrinterType.EXPECTED).println("==========================");
-								Printers.getPrintStream(PrinterType.EXPECTED).println(m.getSignature());
-								Printers.getPrintStream(PrinterType.EXPECTED).println(m.retrieveActiveBody());
-							});
+			Scene.v().getApplicationClasses().stream().map(c -> c.getMethods())
+					.flatMap(List::stream).filter(SootMethod::isConcrete)
+					.forEach(m -> {
+						Printers.print(PrinterType.EXPECTED, m);
+					});
 
 		} catch (Exception e) {
 			e.printStackTrace();

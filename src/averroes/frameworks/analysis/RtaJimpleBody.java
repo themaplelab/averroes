@@ -58,16 +58,7 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	@Override
 	public void generateCode() {
 		// TODO
-		Printers.getPrintStream(PrinterType.BEFORE).println(
-				"==========================");
-		Printers.getPrintStream(PrinterType.BEFORE).println(
-				"BEFORE transformation");
-		Printers.getPrintStream(PrinterType.BEFORE).println(
-				"==========================");
-		Printers.getPrintStream(PrinterType.BEFORE).println(
-				method.getSignature());
-		Printers.getPrintStream(PrinterType.BEFORE).println(
-				method.retrieveActiveBody());
+		Printers.print(PrinterType.ORIGINAL, method);
 
 		// Create RTA Class
 		ensureRtaClassExists();
@@ -85,18 +76,7 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 		method.setActiveBody(body);
 
 		// TODO
-		Printers.getPrintStream(PrinterType.AFTER).println(
-				"==========================");
-		Printers.getPrintStream(PrinterType.AFTER).println(
-				"AFTER transformation");
-		Printers.getPrintStream(PrinterType.AFTER).println(
-				"==========================");
-		Printers.getPrintStream(PrinterType.AFTER).println(
-				method.getSignature());
-		Printers.getPrintStream(PrinterType.AFTER).println(
-				method.retrieveActiveBody());
-		Printers.getPrintStream(PrinterType.AFTER).println();
-		Printers.getPrintStream(PrinterType.AFTER).println();
+		Printers.print(PrinterType.GENERATED, method);
 	}
 
 	/**

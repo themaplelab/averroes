@@ -17,6 +17,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
+import soot.SootMethod;
+
 /**
  * Utility class for printing-related operations.
  * 
@@ -26,19 +28,30 @@ import java.io.PrintStream;
 public class Printers {
 
 	public enum PrinterType {
-		EXPECTED, BEFORE, AFTER;
+		EXPECTED, ORIGINAL, GENERATED, OPTIMIZED;
 	}
 
-	public static PrintStream getPrintStream(PrinterType printerType) {
+	private static PrintStream getPrintStream(PrinterType printerType, SootMethod method) {
 		PrintStream result = null;
+		
 		try {
 			result = new PrintStream(new FileOutputStream(
-					Paths.rtaDebugFile(printerType), true), true);
+					Paths.rtaDebugFile(printerType, method), true), true);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 
 		return result;
+	}
+	
+	public static void print(PrinterType printerType, SootMethod method) {
+		getPrintStream(printerType, method).println("==========================");
+		getPrintStream(printerType, method).println(printerType.toString() + " code");
+		getPrintStream(printerType, method).println("==========================");
+		getPrintStream(printerType, method).println(method.getSignature());
+		getPrintStream(printerType, method).println(method.retrieveActiveBody());
+		getPrintStream(printerType, method).println();
+		getPrintStream(printerType, method).println();
 	}
 
 }

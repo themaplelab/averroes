@@ -14,7 +14,12 @@
 package averroes.util.io;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 
+import org.apache.commons.io.FileUtils;
+
+import soot.SootMethod;
 import averroes.frameworks.options.FrameworksOptions;
 import averroes.options.AverroesOptions;
 import averroes.util.io.Printers.PrinterType;
@@ -42,18 +47,27 @@ public class Paths {
 	 * 
 	 * @return
 	 */
-	public static File rtaDebugFile(PrinterType printerType) {
-		return java.nio.file.Paths
-				.get(FrameworksOptions.getOutputDirectory())
-				.toAbsolutePath()
-				.getParent()
-				.getParent()
-				.resolve(
-						java.nio.file.Paths.get("averroes.tests", "jimple")
-								.resolve(
-										FrameworksOptions.getAnalysis().toUpperCase() + "-"
-												+ printerType.toString().toLowerCase()
-												+ ".txt")).toFile();
+	public static File rtaDebugFile(PrinterType printerType, SootMethod method) {
+		String pkg = method.getDeclaringClass().getPackageName()
+				.replace(".", File.pathSeparator);
+		String file = method.getDeclaringClass().getShortName() + ".jimple";
+
+		Path prefix = java.nio.file.Paths
+				.get(FrameworksOptions.getOutputDirectory()).toAbsolutePath()
+				.getParent().getParent()
+				.resolve(java.nio.file.Paths.get("averroes.tests", "jimple"));
+
+		Path dir = java.nio.file.Paths
+				.get(FrameworksOptions.getInputs().get(0)).getParent()
+				.getFileName().resolve(pkg);
+
+		try {
+			FileUtils.forceMkdir(prefix.resolve(dir).toFile());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return prefix.resolve(dir).resolve(file).toFile();
 	}
 
 	/**
