@@ -51,23 +51,29 @@ public class Paths {
 		String pkg = method.getDeclaringClass().getPackageName()
 				.replace(".", File.pathSeparator);
 		String file = method.getDeclaringClass().getShortName() + ".jimple";
+		String input = FrameworksOptions.getInputs().get(0);
+		String project = input.replace(File.separator + "bin", "."
+				+ printerType.toString().toLowerCase());
+
+		if (printerType != PrinterType.ORIGINAL) {
+			project = project.replace("input",
+					"output." + FrameworksOptions.getAnalysis());
+		}
 
 		Path prefix = java.nio.file.Paths
 				.get(FrameworksOptions.getOutputDirectory()).toAbsolutePath()
 				.getParent().getParent()
 				.resolve(java.nio.file.Paths.get("averroes.tests", "jimple"));
 
-		Path dir = java.nio.file.Paths
-				.get(FrameworksOptions.getInputs().get(0)).getParent()
-				.getFileName().resolve(pkg);
+		Path dir = java.nio.file.Paths.get(project).getFileName();
 
 		try {
-			FileUtils.forceMkdir(prefix.resolve(dir).toFile());
+			FileUtils.forceMkdir(prefix.resolve(dir).resolve(pkg).toFile());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		return prefix.resolve(dir).resolve(file).toFile();
+		return prefix.resolve(dir).resolve(pkg).resolve(file).toFile();
 	}
 
 	/**

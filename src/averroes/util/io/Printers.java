@@ -45,9 +45,9 @@ public class Printers {
 	}
 	
 	public static void print(PrinterType printerType, SootMethod method) {
-		getPrintStream(printerType, method).println("==========================");
-		getPrintStream(printerType, method).println(printerType.toString() + " code");
-		getPrintStream(printerType, method).println("==========================");
+//		getPrintStream(printerType, method).println("==========================");
+//		getPrintStream(printerType, method).println(printerType.toString() + " code");
+//		getPrintStream(printerType, method).println("==========================");
 		getPrintStream(printerType, method).println(method.getSignature());
 		getPrintStream(printerType, method).println(method.retrieveActiveBody());
 		getPrintStream(printerType, method).println();
