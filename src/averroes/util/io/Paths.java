@@ -55,6 +55,13 @@ public class Paths {
 		String project = input.replace(File.separator + "bin", "."
 				+ printerType.toString().toLowerCase());
 
+		/*
+		 * separating output based on project
+		 * input + original => input.original
+		 * input + generated => output.rta.generated
+		 * output + expected => output.rta.expected
+		 * output + optimized => output.rta.optimized
+		 */
 		if (printerType != PrinterType.ORIGINAL) {
 			project = project.replace("input",
 					"output." + FrameworksOptions.getAnalysis());
