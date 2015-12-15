@@ -234,13 +234,9 @@ public abstract class AbstractJimpleBody {
 	protected boolean isCallToSuperConstructor(InvokeStmt stmt) {
 		return !method.getDeclaringClass().hasSuperclass() ? false : stmt
 				.getInvokeExpr() instanceof SpecialInvokeExpr
+				&& method.isConstructor()
 				&& stmt.getInvokeExpr().getMethod().isConstructor()
-				&& method
-						.getDeclaringClass()
-						.getSuperclass()
-						.declaresMethod(
-								stmt.getInvokeExpr().getMethod()
-										.getNumberedSubSignature());
+				&& method.getDeclaringClass().getSuperclass().getMethods().contains(stmt.getInvokeExpr().getMethod());
 	}
 
 	/**
