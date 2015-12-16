@@ -21,11 +21,16 @@ import soot.Type;
 import soot.Value;
 import soot.VoidType;
 import soot.jimple.ArrayRef;
+import soot.jimple.IntConstant;
 import soot.jimple.InterfaceInvokeExpr;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Jimple;
+import soot.jimple.NeExpr;
+import soot.jimple.NopStmt;
 import soot.jimple.SpecialInvokeExpr;
 import soot.jimple.StaticInvokeExpr;
+import soot.jimple.Stmt;
+import soot.jimple.ThrowStmt;
 import soot.jimple.VirtualInvokeExpr;
 import averroes.frameworks.soot.ClassWriter;
 import averroes.frameworks.soot.CodeGenerator;
@@ -178,7 +183,7 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	 * Handle throwing exceptions and try-catch blocks.
 	 */
 	private void handleExceptions() {
-		throwables.forEach(this::insertThrowStmt);
+		throwables.forEach(x -> insertThrowStmt(x, throwables.size() > 1));
 	}
 
 	/**
@@ -299,13 +304,34 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	}
 
 	/**
+	 * Guard a statement by an if-statement whose condition always evaluates to
+	 * true. This helps inserting multiple {@link ThrowStmt} for example in a
+	 * Jimple method.
+	 * 
+	 * @param stmt
+	 * @return
+	 */
+	protected void insertAndGuardStmt(Stmt stmt) {
+		NeExpr cond = Jimple.v().newNeExpr(IntConstant.v(1), IntConstant.v(1));
+		NopStmt nop = Jimple.v().newNopStmt();
+		
+		body.getUnits().add(Jimple.v().newIfStmt(cond, nop));
+		body.getUnits().add(stmt);
+		body.getUnits().add(nop);
+	}
+
+	/**
 	 * Insert a throw statement that throws an exception of the given type.
 	 * 
 	 * @param type
 	 */
-	protected void insertThrowStmt(Type type) {
+	protected void insertThrowStmt(Type type, boolean guard) {
 		Local tmp = insertCastStmt(getRtaSet(), type);
-		body.getUnits().add(Jimple.v().newThrowStmt(tmp));
+		if(guard) {
+			insertAndGuardStmt(Jimple.v().newThrowStmt(tmp));
+		} else {
+			body.getUnits().add(Jimple.v().newThrowStmt(tmp));
+		}
 	}
 
 	/**
