@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import soot.ArrayType;
 import soot.BooleanType;
-import soot.IntType;
 import soot.Local;
 import soot.Modifier;
 import soot.PrimType;
@@ -21,18 +20,17 @@ import soot.Type;
 import soot.Value;
 import soot.VoidType;
 import soot.jimple.ArrayRef;
+import soot.jimple.EqExpr;
 import soot.jimple.IntConstant;
 import soot.jimple.InterfaceInvokeExpr;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Jimple;
-import soot.jimple.NeExpr;
 import soot.jimple.NopStmt;
 import soot.jimple.SpecialInvokeExpr;
 import soot.jimple.StaticInvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.ThrowStmt;
 import soot.jimple.VirtualInvokeExpr;
-import averroes.frameworks.soot.ClassWriter;
 import averroes.frameworks.soot.CodeGenerator;
 import averroes.soot.Names;
 import averroes.util.io.Printers;
@@ -50,6 +48,7 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private Local rtaSet = null;
+	private Local rtaGuard = null;
 
 	/**
 	 * Create a new RTA Jimple body creator for method M.
@@ -105,13 +104,17 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 		// Add static field "set" to the class
 		CodeGenerator.createField(averroesRta, Names.SET_FIELD_NAME, Scene.v()
 				.getObjectType(), Modifier.PUBLIC | Modifier.STATIC);
-		CodeGenerator.createField(averroesRta, Names.INT_FIELD_NAME,
-				IntType.v(), Modifier.PUBLIC | Modifier.STATIC);
-		CodeGenerator.createField(averroesRta, Names.BOOLEAN_FIELD_NAME,
+		CodeGenerator.createField(averroesRta, Names.GUARD_FIELD_NAME,
 				BooleanType.v(), Modifier.PUBLIC | Modifier.STATIC);
 
-		// Write it to disk
-		ClassWriter.writeLibraryClassFile(averroesRta);
+		// Add a static initializer to it (it also initializes the static fields
+		// with default values
+		CodeGenerator.createStaticInitializer(averroesRta);
+
+		// TODO: Write it to disk
+		averroesRta.getMethods().forEach(
+				m -> Printers.print(PrinterType.GENERATED, m));
+		// ClassWriter.writeLibraryClassFile(averroesRta);
 	}
 
 	/**
@@ -119,7 +122,7 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	 * reference types, this includes inserting new statements, invoking
 	 * constructors, and static initializers if found. For arrays, we just have
 	 * the appropriate NEW instruction. For checked exceptions, we create the
-	 * object, call the constructor, and, if avaiable, call the static
+	 * object, call the constructor, and, if available, call the static
 	 * initializer.
 	 */
 	private void createObjects() {
@@ -321,6 +324,19 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	}
 
 	/**
+	 * Load the RTA.guard field into a local variable, if not loaded before.
+	 * 
+	 * @return
+	 */
+	private Local getGuard() {
+		if (rtaGuard == null) {
+			rtaGuard = loadStaticField(Scene.v().getField(
+					Names.RTA_GUARD_FIELD_SIGNATURE));
+		}
+		return rtaGuard;
+	}
+
+	/**
 	 * Construct Jimple code that assigns method parameters, including the
 	 * "this" parameter, if available.
 	 */
@@ -362,7 +378,11 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	 * @return
 	 */
 	protected void insertAndGuardStmt(Stmt stmt) {
-		NeExpr cond = Jimple.v().newNeExpr(IntConstant.v(1), IntConstant.v(1));
+		// TODO: this condition can produce dead code. That's why we should use
+		// the RTA.guard field as a condition instead.
+		// NeExpr cond = Jimple.v().newNeExpr(IntConstant.v(1),
+		// IntConstant.v(1));
+		EqExpr cond = Jimple.v().newEqExpr(getGuard(), IntConstant.v(0));
 		NopStmt nop = Jimple.v().newNopStmt();
 
 		body.getUnits().add(Jimple.v().newIfStmt(cond, nop));

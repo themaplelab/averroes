@@ -2,7 +2,11 @@ package averroes.frameworks.soot;
 
 import java.util.Collections;
 
+import soot.DoubleType;
+import soot.FloatType;
+import soot.LongType;
 import soot.Modifier;
+import soot.PrimType;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootField;
@@ -10,8 +14,13 @@ import soot.SootMethod;
 import soot.Type;
 import soot.Value;
 import soot.VoidType;
+import soot.jimple.DoubleConstant;
+import soot.jimple.FloatConstant;
+import soot.jimple.IntConstant;
 import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
+import soot.jimple.LongConstant;
+import soot.jimple.NullConstant;
 import averroes.frameworks.analysis.AbstractJimpleBody;
 import averroes.frameworks.analysis.RtaJimpleBody;
 import averroes.frameworks.options.FrameworksOptions;
@@ -50,7 +59,8 @@ public class CodeGenerator {
 	 * @param fieldType
 	 * @param modifiers
 	 */
-	public static void createField(SootClass cls, String fieldName, Type fieldType, int modifiers) {
+	public static void createField(SootClass cls, String fieldName,
+			Type fieldType, int modifiers) {
 		SootField field = new SootField(fieldName, fieldType, modifiers);
 		cls.addField(field);
 	}
@@ -64,7 +74,8 @@ public class CodeGenerator {
 	 * @param superClass
 	 * @return
 	 */
-	public static SootClass createEmptyClass(String className, int modifiers, SootClass superClass) {
+	public static SootClass createEmptyClass(String className, int modifiers,
+			SootClass superClass) {
 		SootClass cls = new SootClass(className, modifiers);
 		cls.setSuperclass(superClass);
 		Scene.v().addClass(cls);
@@ -87,7 +98,10 @@ public class CodeGenerator {
 		body.insertIdentityStmts();
 		body.getUnits().add(
 				Jimple.v().newInvokeStmt(
-						Jimple.v().newSpecialInvokeExpr(body.getThisLocal(), getDefaultConstructor(cls).makeRef(),
+						Jimple.v().newSpecialInvokeExpr(
+								body.getThisLocal(),
+								getDefaultConstructor(cls.getSuperclass())
+										.makeRef(),
 								Collections.<Value> emptyList())));
 
 		// Add return statement
@@ -95,6 +109,60 @@ public class CodeGenerator {
 
 		// Finally validate the Jimple body
 		body.validate();
+	}
+
+	/**
+	 * Add a static initializer to the given class.
+	 * 
+	 * @param cls
+	 */
+	public static void createStaticInitializer(SootClass cls) {
+		SootMethod clinit = makeStaticInitializer();
+		JimpleBody body = Jimple.v().newBody(clinit);
+		clinit.setActiveBody(body);
+		cls.addMethod(clinit);
+
+		// Initialize the static fields
+		body.insertIdentityStmts();
+		cls.getFields()
+				.stream()
+				.filter(SootField::isStatic)
+				.forEach(
+						f -> {
+							body.getUnits().add(
+									Jimple.v().newAssignStmt(
+											Jimple.v().newStaticFieldRef(
+													f.makeRef()),
+											getDefaultValue(f.getType())));
+						});
+
+		// Add return statement
+		body.getUnits().addLast(Jimple.v().newReturnVoidStmt());
+
+		// Finally validate the Jimple body
+		body.validate();
+	}
+
+	/**
+	 * Get the default value we should use for the given type.
+	 * 
+	 * @param type
+	 * @return
+	 */
+	private static Value getDefaultValue(Type type) {
+		if (type instanceof PrimType) {
+			if (type instanceof LongType) {
+				return LongConstant.v(1);
+			} else if (type instanceof FloatType) {
+				return FloatConstant.v(1);
+			} else if (type instanceof DoubleType) {
+				return DoubleConstant.v(1);
+			} else {
+				return IntConstant.v(1);
+			}
+		} else {
+			return NullConstant.v();
+		}
 	}
 
 	/**
@@ -113,7 +181,19 @@ public class CodeGenerator {
 	 * @return
 	 */
 	private static SootMethod makeDefaultConstructor() {
-		return new SootMethod(SootMethod.constructorName, Collections.<Type> emptyList(), VoidType.v(), Modifier.PUBLIC);
+		return new SootMethod(SootMethod.constructorName,
+				Collections.<Type> emptyList(), VoidType.v(), Modifier.PUBLIC);
+	}
+
+	/**
+	 * Get a new static initializer method.
+	 * 
+	 * @return
+	 */
+	private static SootMethod makeStaticInitializer() {
+		return new SootMethod(SootMethod.staticInitializerName,
+				Collections.<Type> emptyList(), VoidType.v(), Modifier.PUBLIC
+						| Modifier.STATIC);
 	}
 
 }

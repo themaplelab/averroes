@@ -17,8 +17,8 @@ public class Names {
 	public static final String AVERROES_LIBRARY_CLASS = "averroes.Library";
 	public static final String AVERROES_LIBRARY_CLASS_BC_SIG = "averroes/Library";
 	public static final String AVERROES_ABSTRACT_LIBRARY_CLASS = "averroes.AbstractLibrary";
-	public static final String RTA_CLASS = "averroes.Rta";
-	public static final String XTA_CLASS = "averroes.Xta";
+	public static final String RTA_CLASS = "rta.RTA";
+	public static final String XTA_CLASS = "xta.XTA";
 
 	// Classes
 	public static final String JAVA_LANG_OBJECT = "java.lang.Object";
@@ -41,9 +41,11 @@ public class Names {
 	public static final String SET_FIELD_NAME = "set";
 	public static final String INT_FIELD_NAME = "integer";
 	public static final String BOOLEAN_FIELD_NAME = "bool";
+	public static final String GUARD_FIELD_NAME = "guard";
 	public static final String RTA_SET_FIELD_SIGNATURE = "<" + RTA_CLASS + ": java.lang.Object " + SET_FIELD_NAME + ">";
-	public static final String RTA_INT_FIELD_SIGNATURE = "<" + RTA_CLASS + ": I " + INT_FIELD_NAME + ">";
-	public static final String RTA_BOOLEAN_FIELD_SIGNATURE = "<" + RTA_CLASS + ": Z " + BOOLEAN_FIELD_NAME + ">";
+	public static final String RTA_INT_FIELD_SIGNATURE = "<" + RTA_CLASS + ": int " + INT_FIELD_NAME + ">";
+	public static final String RTA_BOOLEAN_FIELD_SIGNATURE = "<" + RTA_CLASS + ": boolean " + BOOLEAN_FIELD_NAME + ">";
+	public static final String RTA_GUARD_FIELD_SIGNATURE = "<" + RTA_CLASS + ": boolean " + GUARD_FIELD_NAME + ">";
 
 	// Methods
 	public static final String AVERROES_DO_IT_ALL_METHOD_NAME = "doItAll";
