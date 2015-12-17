@@ -38,6 +38,8 @@ import soot.jimple.NewArrayExpr;
 import soot.jimple.NewMultiArrayExpr;
 import soot.jimple.SpecialInvokeExpr;
 import soot.jimple.ThrowStmt;
+import soot.jimple.toolkits.scalar.LocalNameStandardizer;
+import soot.jimple.toolkits.scalar.NopEliminator;
 
 /**
  * Abstract Jimple body creator that declares some common fields and methods.
@@ -72,7 +74,7 @@ public abstract class AbstractJimpleBody {
 
 	// Invoke expression (i.e., return value is assigned to some local variable)
 	protected LinkedHashSet<InvokeExpr> invokeExprs = new LinkedHashSet<InvokeExpr>();
-	
+
 	// Thrown types
 	protected LinkedHashSet<Type> throwables = new LinkedHashSet<Type>();
 
@@ -96,6 +98,21 @@ public abstract class AbstractJimpleBody {
 		casts = new HashMap<Type, Local>();
 
 		processOriginalMethodBody();
+	}
+
+	/**
+	 * Perform some code cleanup.
+	 * <ul>
+	 * <li>{@link LocalNameStandardizer} standardizes the names of local
+	 * variables (including "this" and method parameters. This makes Jimple code
+	 * comparisons easier.</li>
+	 * <li>using {@link NopEliminator} eliminates the NOP statements introduced
+	 * by guards.</li>
+	 * </ul>
+	 */
+	protected void cleanup() {
+		LocalNameStandardizer.v().transform(body);
+		NopEliminator.v().transform(body);
 	}
 
 	/**
@@ -128,7 +145,7 @@ public abstract class AbstractJimpleBody {
 					invokeStmts.add(stmt.getInvokeExpr());
 				}
 			}
-			
+
 			@Override
 			public void caseThrowStmt(ThrowStmt stmt) {
 				throwables.add(stmt.getOp().getType());
@@ -236,7 +253,8 @@ public abstract class AbstractJimpleBody {
 				.getInvokeExpr() instanceof SpecialInvokeExpr
 				&& method.isConstructor()
 				&& stmt.getInvokeExpr().getMethod().isConstructor()
-				&& method.getDeclaringClass().getSuperclass().getMethods().contains(stmt.getInvokeExpr().getMethod());
+				&& method.getDeclaringClass().getSuperclass().getMethods()
+						.contains(stmt.getInvokeExpr().getMethod());
 	}
 
 	/**

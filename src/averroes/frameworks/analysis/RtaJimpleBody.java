@@ -75,6 +75,9 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 		handleArrays();
 		handleExceptions();
 		insertJimpleBodyFooter();
+		
+		// Cleanup the generated body
+		cleanup();
 
 		// Validate method Jimple body & assign it to the method
 		body.validate();
@@ -187,7 +190,33 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	}
 
 	/**
-	 * Insert the identity statements, assigns actual parameters (if any) and
+	 * Insert identity statements. The version in {@link JimpleBody} does not
+	 * use the {@link LocalGenerator} class to generate locals (it actually
+	 * can't because it doesn't have a reference to the {@link LocalGenerator}
+	 * that was used to generated this method body). This causes inconsistency
+	 * in the names of the generated local variables and this method tries to
+	 * fix that.
+	 */
+//	private void insertIdentityStmts() {
+//		// Add "this" before anything else
+//		if (!method.isStatic()) {
+//			Local r0 = localGenerator.generateLocal(method.getDeclaringClass()
+//					.getType());
+//			ThisRef thisRef = Jimple.v().newThisRef((RefType) r0.getType());
+//			body.getUnits().addFirst(
+//					Jimple.v().newIdentityStmt(thisRef, thisRef));
+//		}
+//
+//		// Add identity statements for any method parameters next
+//		for (int i = 0; i < method.getParameterCount(); i++) {
+//			Local p = localGenerator.generateLocal(method.getParameterType(i));
+//			ParameterRef paramRef = Jimple.v().newParameterRef(p.getType(), i);
+//			body.getUnits().add(Jimple.v().newIdentityStmt(p, paramRef));
+//		}
+//	}
+
+	/**
+	 * Insert the identity statements, and assign actual parameters (if any) and
 	 * the this parameter (if any) to RTA.set
 	 */
 	private void insertJimpleBodyHeader() {
@@ -314,7 +343,7 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	protected void insertAndGuardStmt(Stmt stmt) {
 		NeExpr cond = Jimple.v().newNeExpr(IntConstant.v(1), IntConstant.v(1));
 		NopStmt nop = Jimple.v().newNopStmt();
-		
+
 		body.getUnits().add(Jimple.v().newIfStmt(cond, nop));
 		body.getUnits().add(stmt);
 		body.getUnits().add(nop);
@@ -327,7 +356,7 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	 */
 	protected void insertThrowStmt(Type type, boolean guard) {
 		Local tmp = insertCastStmt(getRtaSet(), type);
-		if(guard) {
+		if (guard) {
 			insertAndGuardStmt(Jimple.v().newThrowStmt(tmp));
 		} else {
 			body.getUnits().add(Jimple.v().newThrowStmt(tmp));
