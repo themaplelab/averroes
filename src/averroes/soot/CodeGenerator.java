@@ -476,7 +476,7 @@ public class CodeGenerator {
 		Local instance = body.insertNewStatement(RefType
 				.v(averroesLibraryClass));
 		body.insertSpecialInvokeStatement(instance,
-				averroesLibraryClass.getMethod(Names.DEFAULT_CONSTRUCTOR_SIG));
+				averroesLibraryClass.getMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG));
 
 		// Now assign this instance to AverroesAbstractLibrary.instance
 		body.storeStaticField(CodeGenerator.v().getAverroesInstanceField(),
@@ -998,7 +998,7 @@ public class CodeGenerator {
 		if (!generatedClass.isInterface()) {
 			if (Hierarchy.hasDefaultConstructor(generatedClass)) {
 				Hierarchy.makePublic(generatedClass
-						.getMethod(Names.DEFAULT_CONSTRUCTOR_SIG));
+						.getMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG));
 			} else {
 				addMethodToGeneratedClass(generatedClass,
 						Hierarchy.getNewDefaultConstructor());

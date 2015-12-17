@@ -75,7 +75,7 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 		handleArrays();
 		handleExceptions();
 		insertJimpleBodyFooter();
-		
+
 		// Cleanup the generated body
 		cleanup();
 
@@ -118,28 +118,48 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	 * Create all the objects that the library could possible instantiate. For
 	 * reference types, this includes inserting new statements, invoking
 	 * constructors, and static initializers if found. For arrays, we just have
-	 * the appropriate NEW instruction.
+	 * the appropriate NEW instruction. For checked exceptions, we create the
+	 * object, call the constructor, and, if avaiable, call the static
+	 * initializer.
 	 */
 	private void createObjects() {
-		objectCreations
-				.forEach(e -> {
-					SootMethod init = e.getMethod();
-					SootClass cls = init.getDeclaringClass();
-					Local obj = insertNewStmt(RefType.v(cls));
-					insertSpecialInvokeStmt(obj, init);
-					storeToRtaSet(obj);
-
-					// Call <clinit> if found
-					if (cls.declaresMethod(SootMethod.staticInitializerName)) {
-						insertStaticInvokeStmt(cls
-								.getMethodByName(SootMethod.staticInitializerName));
-					}
-				});
+		objectCreations.forEach(e -> {
+			SootMethod init = e.getMethod();
+			SootClass cls = init.getDeclaringClass();
+			Local obj = createObjectByMethod(cls, init);
+			storeToRtaSet(obj);
+		});
 
 		arrayCreations.forEach(t -> {
 			Local obj = insertNewStmt(t);
 			storeToRtaSet(obj);
 		});
+
+		checkedExceptions.forEach(cls -> {
+			SootMethod init = cls.getMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG);
+			Local obj = createObjectByMethod(cls, init);
+			storeToRtaSet(obj);
+		});
+	}
+
+	/**
+	 * Create an object by calling that specific constructor.
+	 * 
+	 * @param cls
+	 * @param init
+	 * @return
+	 */
+	private Local createObjectByMethod(SootClass cls, SootMethod init) {
+		Local obj = insertNewStmt(RefType.v(cls));
+		insertSpecialInvokeStmt(obj, init);
+
+		// Call <clinit> if found
+		if (cls.declaresMethod(SootMethod.staticInitializerName)) {
+			insertStaticInvokeStmt(cls
+					.getMethodByName(SootMethod.staticInitializerName));
+		}
+
+		return obj;
 	}
 
 	/**
@@ -197,23 +217,23 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	 * in the names of the generated local variables and this method tries to
 	 * fix that.
 	 */
-//	private void insertIdentityStmts() {
-//		// Add "this" before anything else
-//		if (!method.isStatic()) {
-//			Local r0 = localGenerator.generateLocal(method.getDeclaringClass()
-//					.getType());
-//			ThisRef thisRef = Jimple.v().newThisRef((RefType) r0.getType());
-//			body.getUnits().addFirst(
-//					Jimple.v().newIdentityStmt(thisRef, thisRef));
-//		}
-//
-//		// Add identity statements for any method parameters next
-//		for (int i = 0; i < method.getParameterCount(); i++) {
-//			Local p = localGenerator.generateLocal(method.getParameterType(i));
-//			ParameterRef paramRef = Jimple.v().newParameterRef(p.getType(), i);
-//			body.getUnits().add(Jimple.v().newIdentityStmt(p, paramRef));
-//		}
-//	}
+	// private void insertIdentityStmts() {
+	// // Add "this" before anything else
+	// if (!method.isStatic()) {
+	// Local r0 = localGenerator.generateLocal(method.getDeclaringClass()
+	// .getType());
+	// ThisRef thisRef = Jimple.v().newThisRef((RefType) r0.getType());
+	// body.getUnits().addFirst(
+	// Jimple.v().newIdentityStmt(thisRef, thisRef));
+	// }
+	//
+	// // Add identity statements for any method parameters next
+	// for (int i = 0; i < method.getParameterCount(); i++) {
+	// Local p = localGenerator.generateLocal(method.getParameterType(i));
+	// ParameterRef paramRef = Jimple.v().newParameterRef(p.getType(), i);
+	// body.getUnits().add(Jimple.v().newIdentityStmt(p, paramRef));
+	// }
+	// }
 
 	/**
 	 * Insert the identity statements, and assign actual parameters (if any) and
@@ -232,7 +252,8 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 				&& method.getDeclaringClass().hasSuperclass()) {
 			Local base = body.getThisLocal();
 			insertSpecialInvokeStmt(base, method.getDeclaringClass()
-					.getSuperclass().getMethod(Names.DEFAULT_CONSTRUCTOR_SIG));
+					.getSuperclass()
+					.getMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG));
 		}
 
 		assignMethodParameters();

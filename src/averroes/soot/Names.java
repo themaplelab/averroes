@@ -63,7 +63,7 @@ public class Names {
 	public static final String FINALIZE_SIG = "<java.lang.Object: void finalize()>";
 
 	// Soot-specific constants
-	public static final String DEFAULT_CONSTRUCTOR_SIG = "void <init>()";
+	public static final String DEFAULT_CONSTRUCTOR_SUBSIG = "void <init>()";
 
 	// Other
 	public static final String BLOB = "blob";

@@ -104,7 +104,7 @@ public class CodeGenerator {
 	 * @return
 	 */
 	private static SootMethod getDefaultConstructor(SootClass cls) {
-		return cls.getMethod(Names.DEFAULT_CONSTRUCTOR_SIG);
+		return cls.getMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG);
 	}
 
 	/**

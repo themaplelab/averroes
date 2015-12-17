@@ -16,8 +16,10 @@ import soot.LongType;
 import soot.PrimType;
 import soot.RefLikeType;
 import soot.RefType;
+import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
+import soot.Trap;
 import soot.Type;
 import soot.Value;
 import soot.javaToJimple.LocalGenerator;
@@ -77,6 +79,9 @@ public abstract class AbstractJimpleBody {
 
 	// Thrown types
 	protected LinkedHashSet<Type> throwables = new LinkedHashSet<Type>();
+
+	// Checked exceptions (declared in the method signature)
+	protected LinkedHashSet<SootClass> checkedExceptions = new LinkedHashSet<SootClass>();
 
 	/**
 	 * Generate the code for the underlying Soot method (which is assumed to be
@@ -151,6 +156,18 @@ public abstract class AbstractJimpleBody {
 				throwables.add(stmt.getOp().getType());
 			}
 		}));
+
+		processTraps();
+	}
+
+	/**
+	 * Process the traps of a method (i.e., catch blocks) to simulate the
+	 * creation and assignment of the caught-exception to a local variable that
+	 * could be used in the catch block.
+	 */
+	private void processTraps() {
+		originalBody.getTraps().stream().map(Trap::getException)
+				.forEach(checkedExceptions::add);
 	}
 
 	/**
