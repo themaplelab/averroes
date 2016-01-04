@@ -85,6 +85,11 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 		Printers.print(PrinterType.GENERATED, method);
 	}
 
+	@Override
+	public Local setToCast() {
+		return getRtaSet();
+	}
+
 	/**
 	 * Ensure that the RTA class has been created, along with its fields.
 	 */
@@ -190,8 +195,8 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	 */
 	private void handleArrays() {
 		if (readsArray || writesArray) {
-			Local cast = (Local) getCompatibleValue(getRtaSet(),
-					ArrayType.v(getRtaSet().getType(), ARRAY_LENGTH.value));
+			Local cast = (Local) getCompatibleValue(ArrayType.v(getRtaSet()
+					.getType(), ARRAY_LENGTH.value));
 			ArrayRef arrayRef = Jimple.v().newArrayRef(cast, ARRAY_INDEX);
 
 			if (readsArray) {
@@ -282,7 +287,7 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 		if (method.getReturnType() instanceof VoidType) {
 			body.getUnits().add(Jimple.v().newReturnVoidStmt());
 		} else {
-			Value ret = getCompatibleValue(getRtaSet(), method.getReturnType());
+			Value ret = getCompatibleValue(method.getReturnType());
 			body.getUnits().add(Jimple.v().newReturnStmt(ret));
 		}
 	}
@@ -351,7 +356,7 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 				.filter(l -> l.getType() instanceof RefLikeType)
 				.forEach(l -> storeToRtaSet(l));
 	}
-	
+
 	/**
 	 * Guard a statement by an if-statement whose condition always evaluates to
 	 * true. This helps inserting multiple {@link ThrowStmt} for example in a
@@ -395,8 +400,7 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	 */
 	protected void insertSpecialInvokeStmt(Local base, SootMethod method) {
 		List<Value> args = method.getParameterTypes().stream()
-				.map(p -> getCompatibleValue(getRtaSet(), p))
-				.collect(Collectors.toList());
+				.map(p -> getCompatibleValue(p)).collect(Collectors.toList());
 		body.getUnits().add(
 				Jimple.v().newInvokeStmt(
 						Jimple.v().newSpecialInvokeExpr(base, method.makeRef(),
@@ -410,8 +414,7 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	 */
 	protected void insertStaticInvokeStmt(SootMethod method) {
 		List<Value> args = method.getParameterTypes().stream()
-				.map(p -> getCompatibleValue(getRtaSet(), p))
-				.collect(Collectors.toList());
+				.map(p -> getCompatibleValue(p)).collect(Collectors.toList());
 		body.getUnits()
 				.add(Jimple.v().newInvokeStmt(
 						Jimple.v().newStaticInvokeExpr(method.makeRef(), args)));
@@ -443,28 +446,25 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 
 		// Get the arguments to the call
 		List<Value> args = originalInvokeExpr.getArgs().stream()
-				.map(a -> getCompatibleValue(getRtaSet(), a.getType()))
+				.map(a -> getCompatibleValue(a.getType()))
 				.collect(Collectors.toList());
 
 		// Build the invoke expression
 		if (originalInvokeExpr instanceof StaticInvokeExpr) {
 			invokeExpr = Jimple.v().newStaticInvokeExpr(callee.makeRef(), args);
 		} else if (originalInvokeExpr instanceof SpecialInvokeExpr) {
-			Local base = (Local) getCompatibleValue(getRtaSet(),
-					((SpecialInvokeExpr) originalInvokeExpr).getBase()
-							.getType());
+			Local base = (Local) getCompatibleValue(((SpecialInvokeExpr) originalInvokeExpr)
+					.getBase().getType());
 			invokeExpr = Jimple.v().newSpecialInvokeExpr(base,
 					callee.makeRef(), args);
 		} else if (originalInvokeExpr instanceof InterfaceInvokeExpr) {
-			Local base = (Local) getCompatibleValue(getRtaSet(),
-					((InterfaceInvokeExpr) originalInvokeExpr).getBase()
-							.getType());
+			Local base = (Local) getCompatibleValue(((InterfaceInvokeExpr) originalInvokeExpr)
+					.getBase().getType());
 			invokeExpr = Jimple.v().newInterfaceInvokeExpr(base,
 					callee.makeRef(), args);
 		} else if (originalInvokeExpr instanceof VirtualInvokeExpr) {
-			Local base = (Local) getCompatibleValue(getRtaSet(),
-					((VirtualInvokeExpr) originalInvokeExpr).getBase()
-							.getType());
+			Local base = (Local) getCompatibleValue(((VirtualInvokeExpr) originalInvokeExpr)
+					.getBase().getType());
 			invokeExpr = Jimple.v().newVirtualInvokeExpr(base,
 					callee.makeRef(), args);
 		} else {

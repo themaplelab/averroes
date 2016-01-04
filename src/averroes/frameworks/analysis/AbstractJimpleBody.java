@@ -90,6 +90,14 @@ public abstract class AbstractJimpleBody {
 	public abstract void generateCode();
 
 	/**
+	 * Get the set that will be cast to a certain type for various operations.
+	 * This is RTA.set for the RTA analysis and set_m for XTA.
+	 * 
+	 * @return
+	 */
+	public abstract Local setToCast();
+
+	/**
 	 * Create a new type-based Jimple body creator for method M.
 	 * 
 	 * @param method
@@ -214,10 +222,9 @@ public abstract class AbstractJimpleBody {
 	 * @param base
 	 * @param method
 	 */
-	protected void insertSpecialInvokeStmt(Local base, SootMethod method,
-			Local setToCast) {
+	protected void insertSpecialInvokeStmt(Local base, SootMethod method) {
 		List<Value> args = method.getParameterTypes().stream()
-				.map(p -> getCompatibleValue(setToCast, p))
+				.map(p -> getCompatibleValue(p))
 				.collect(Collectors.toList());
 		body.getUnits().add(
 				Jimple.v().newInvokeStmt(
@@ -364,20 +371,20 @@ public abstract class AbstractJimpleBody {
 	protected boolean isFieldWrite(AssignStmt assign) {
 		return assign.getLeftOp() instanceof FieldRef;
 	}
-	
+
 	/**
 	 * Find the compatible value to the given Soot type. If it's a primary type,
-	 * a constant is returned. Otherwise, a cast to the given type from the
-	 * RTA.set is returned.
+	 * a constant is returned. Otherwise, the methods returns a cast of 
+	 * {@link setToCast()} to the given type.
 	 * 
 	 * @param type
 	 * @return
 	 */
-	protected Value getCompatibleValue(Local local, Type type) {
+	protected Value getCompatibleValue(Type type) {
 		if (type instanceof PrimType) {
 			return getPrimValue((PrimType) type);
 		} else {
-			return insertCastStmt(local, type);
+			return insertCastStmt(setToCast(), type);
 		}
 	}
 
