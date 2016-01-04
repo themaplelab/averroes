@@ -23,6 +23,7 @@ import soot.jimple.LongConstant;
 import soot.jimple.NullConstant;
 import averroes.frameworks.analysis.AbstractJimpleBody;
 import averroes.frameworks.analysis.RtaJimpleBody;
+import averroes.frameworks.analysis.XtaJimpleBody;
 import averroes.frameworks.options.FrameworksOptions;
 import averroes.soot.Names;
 
@@ -43,9 +44,8 @@ public class CodeGenerator {
 	public static AbstractJimpleBody getJimpleBodyCreator(SootMethod method) {
 		if (FrameworksOptions.getAnalysis().equalsIgnoreCase("rta")) {
 			return new RtaJimpleBody(method);
-			// } else if
-			// (FrameworksOptions.getAnalysis().equalsIgnoreCase("xta")) {
-			// return new XtaJimpleBodyCreator(method);
+		} else if (FrameworksOptions.getAnalysis().equalsIgnoreCase("xta")) {
+			return new XtaJimpleBody(method);
 		} else {
 			return new RtaJimpleBody(method);
 		}

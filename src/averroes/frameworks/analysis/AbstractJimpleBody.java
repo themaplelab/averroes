@@ -209,6 +209,23 @@ public abstract class AbstractJimpleBody {
 	}
 
 	/**
+	 * Insert a special invoke statement.
+	 * 
+	 * @param base
+	 * @param method
+	 */
+	protected void insertSpecialInvokeStmt(Local base, SootMethod method,
+			Local setToCast) {
+		List<Value> args = method.getParameterTypes().stream()
+				.map(p -> getCompatibleValue(setToCast, p))
+				.collect(Collectors.toList());
+		body.getUnits().add(
+				Jimple.v().newInvokeStmt(
+						Jimple.v().newSpecialInvokeExpr(base, method.makeRef(),
+								args)));
+	}
+
+	/**
 	 * Construct Jimple code that load the given static field and assign it to a
 	 * new temporary local variable.
 	 * 
@@ -346,6 +363,22 @@ public abstract class AbstractJimpleBody {
 	 */
 	protected boolean isFieldWrite(AssignStmt assign) {
 		return assign.getLeftOp() instanceof FieldRef;
+	}
+	
+	/**
+	 * Find the compatible value to the given Soot type. If it's a primary type,
+	 * a constant is returned. Otherwise, a cast to the given type from the
+	 * RTA.set is returned.
+	 * 
+	 * @param type
+	 * @return
+	 */
+	protected Value getCompatibleValue(Local local, Type type) {
+		if (type instanceof PrimType) {
+			return getPrimValue((PrimType) type);
+		} else {
+			return insertCastStmt(local, type);
+		}
 	}
 
 	/**
