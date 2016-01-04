@@ -561,13 +561,11 @@ public abstract class AbstractJimpleBody {
 									Jimple.v().newStaticFieldRef(
 											field.makeRef()), from));
 		} else {
-			Local tmp = localGenerator.generateLocal(field.getType());
-			body.getUnits().add(Jimple.v().newAssignStmt(tmp, from));
 			body.getUnits().add(
 					Jimple.v().newAssignStmt(
 							Jimple.v().newInstanceFieldRef(
 									getCompatibleValue(field.getType()),
-									field.makeRef()), tmp));
+									field.makeRef()), from));
 		}
 	}
 

@@ -27,7 +27,7 @@ import averroes.util.io.Printers.PrinterType;
  */
 public class XtaJimpleBody extends AbstractJimpleBody {
 	private Local xtaGuard = null;
-	private Local setM;
+	private Local setM = null;
 	private HashMap<SootField, Local> fieldToSetF = new HashMap<SootField, Local>();
 
 	/**
@@ -37,7 +37,6 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 	 */
 	public XtaJimpleBody(SootMethod method) {
 		super(method);
-		setM = localGenerator.generateLocal(Scene.v().getObjectType());
 	}
 
 	@Override
@@ -103,6 +102,9 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 	 * @return
 	 */
 	private Local getSetM() {
+		if(setM == null) {
+			setM = localGenerator.generateLocal(Scene.v().getObjectType());
+		}
 		return setM;
 	}
 
