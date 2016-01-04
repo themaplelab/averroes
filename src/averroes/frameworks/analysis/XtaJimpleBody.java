@@ -42,6 +42,7 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 	 */
 	public XtaJimpleBody(SootMethod method) {
 		super(method);
+		setM = localGenerator.generateLocal(Scene.v().getObjectType());
 	}
 
 	@Override
