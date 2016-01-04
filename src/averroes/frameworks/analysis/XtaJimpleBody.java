@@ -1,6 +1,5 @@
 package averroes.frameworks.analysis;
 
-import soot.ArrayType;
 import soot.BooleanType;
 import soot.Local;
 import soot.Modifier;
@@ -10,7 +9,6 @@ import soot.SootMethod;
 import soot.Type;
 import soot.Value;
 import soot.VoidType;
-import soot.jimple.ArrayRef;
 import soot.jimple.EqExpr;
 import soot.jimple.IntConstant;
 import soot.jimple.Jimple;
@@ -109,25 +107,6 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 		averroesXta.getMethods().forEach(
 				m -> Printers.print(PrinterType.GENERATED, m));
 		// ClassWriter.writeLibraryClassFile(averroesRta);
-	}
-
-	/**
-	 * Handle array reads and writes.
-	 */
-	private void handleArrays() {
-		if (readsArray || writesArray) {
-			Local cast = (Local) getCompatibleValue(ArrayType.v(getSetM()
-					.getType(), ARRAY_LENGTH.value));
-			ArrayRef arrayRef = Jimple.v().newArrayRef(cast, ARRAY_INDEX);
-
-			if (readsArray) {
-				body.getUnits().add(
-						Jimple.v().newAssignStmt(getSetM(), arrayRef));
-			} else {
-				body.getUnits().add(
-						Jimple.v().newAssignStmt(arrayRef, getSetM()));
-			}
-		}
 	}
 
 	/**

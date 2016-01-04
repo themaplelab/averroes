@@ -287,6 +287,25 @@ public abstract class AbstractJimpleBody {
 				}
 			});
 	}
+	
+	/**
+	 * Handle array reads and writes.
+	 */
+	protected void handleArrays() {
+		if (readsArray || writesArray) {
+			Local cast = (Local) getCompatibleValue(ArrayType.v(setToCast()
+					.getType(), ARRAY_LENGTH.value));
+			ArrayRef arrayRef = Jimple.v().newArrayRef(cast, ARRAY_INDEX);
+
+			if (readsArray) {
+				body.getUnits().add(
+						Jimple.v().newAssignStmt(setToCast(), arrayRef));
+			} else {
+				body.getUnits().add(
+						Jimple.v().newAssignStmt(arrayRef, setToCast()));
+			}
+		}
+	}
 
 	/**
 	 * Insert a statement that casts the given local to the given type and
