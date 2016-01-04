@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import averroes.soot.Names;
 import soot.ArrayType;
 import soot.DoubleType;
 import soot.FloatType;
@@ -98,6 +99,14 @@ public abstract class AbstractJimpleBody {
 	public abstract Local setToCast();
 
 	/**
+	 * Store the given value to the set that is used to over-approximate objects
+	 * in the library. This could be set_m for XTA or RTA.set for RTA.
+	 * 
+	 * @param from
+	 */
+	public abstract void storeToSet(Value from);
+
+	/**
 	 * Create a new type-based Jimple body creator for method M.
 	 * 
 	 * @param method
@@ -179,6 +188,30 @@ public abstract class AbstractJimpleBody {
 	}
 
 	/**
+	 * Insert the identity statements, and assign actual parameters (if any) and
+	 * the this parameter (if any) to set_m
+	 */
+	protected void insertJimpleBodyHeader() {
+		body.insertIdentityStmts();
+
+		/*
+		 * To generate correct bytecode, we need to initialize the object first
+		 * by calling the direct superclass default constructor before inserting
+		 * any more statements. That is if this method is for a constructor and
+		 * its declaring class has a superclass.
+		 */
+		if (method.isConstructor()
+				&& method.getDeclaringClass().hasSuperclass()) {
+			Local base = body.getThisLocal();
+			insertSpecialInvokeStmt(base, method.getDeclaringClass()
+					.getSuperclass()
+					.getMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG));
+		}
+
+		assignMethodParameters();
+	}
+
+	/**
 	 * Insert a statement that casts the given local to the given type and
 	 * assign it to a new temporary local variable. If {@code local} is of the
 	 * same type as {@code type}, then return that local instead of using a
@@ -224,8 +257,7 @@ public abstract class AbstractJimpleBody {
 	 */
 	protected void insertSpecialInvokeStmt(Local base, SootMethod method) {
 		List<Value> args = method.getParameterTypes().stream()
-				.map(p -> getCompatibleValue(p))
-				.collect(Collectors.toList());
+				.map(p -> getCompatibleValue(p)).collect(Collectors.toList());
 		body.getUnits().add(
 				Jimple.v().newInvokeStmt(
 						Jimple.v().newSpecialInvokeExpr(base, method.makeRef(),
@@ -257,6 +289,23 @@ public abstract class AbstractJimpleBody {
 		body.getUnits().add(
 				Jimple.v().newAssignStmt(
 						Jimple.v().newStaticFieldRef(field.makeRef()), from));
+	}
+
+	/**
+	 * Construct Jimple code that assigns method parameters, including the
+	 * "this" parameter, if available.
+	 */
+	protected void assignMethodParameters() {
+		// Assign the "this" parameter, if available
+		if (!method.isStatic()) {
+			storeToSet(body.getThisLocal());
+		}
+
+		// Loop over all parameters of reference type and create an assignment
+		// statement to the appropriate "expression".
+		body.getParameterLocals().stream()
+				.filter(l -> l.getType() instanceof RefLikeType)
+				.forEach(l -> storeToSet(l));
 	}
 
 	/**
@@ -374,8 +423,8 @@ public abstract class AbstractJimpleBody {
 
 	/**
 	 * Find the compatible value to the given Soot type. If it's a primary type,
-	 * a constant is returned. Otherwise, the methods returns a cast of 
-	 * {@link setToCast()} to the given type.
+	 * a constant is returned. Otherwise, the methods returns a cast of {@link
+	 * setToCast()} to the given type.
 	 * 
 	 * @param type
 	 * @return

@@ -90,6 +90,12 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 		return getRtaSet();
 	}
 
+	@Override
+	public void storeToSet(Value from) {
+		storeStaticField(Scene.v().getField(Names.RTA_SET_FIELD_SIGNATURE),
+				from);
+	}
+
 	/**
 	 * Ensure that the RTA class has been created, along with its fields.
 	 */
@@ -134,18 +140,18 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 			SootMethod init = e.getMethod();
 			SootClass cls = init.getDeclaringClass();
 			Local obj = createObjectByMethod(cls, init);
-			storeToRtaSet(obj);
+			storeToSet(obj);
 		});
 
 		arrayCreations.forEach(t -> {
 			Local obj = insertNewStmt(t);
-			storeToRtaSet(obj);
+			storeToSet(obj);
 		});
 
 		checkedExceptions.forEach(cls -> {
 			SootMethod init = cls.getMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG);
 			Local obj = createObjectByMethod(cls, init);
-			storeToRtaSet(obj);
+			storeToSet(obj);
 		});
 	}
 
@@ -243,30 +249,6 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	// }
 
 	/**
-	 * Insert the identity statements, and assign actual parameters (if any) and
-	 * the this parameter (if any) to RTA.set
-	 */
-	private void insertJimpleBodyHeader() {
-		body.insertIdentityStmts();
-
-		/*
-		 * To generate correct bytecode, we need to initialize the object first
-		 * by calling the direct superclass default constructor before inserting
-		 * any more statements. That is if this method is for a constructor and
-		 * its declaring class has a superclass.
-		 */
-		if (method.isConstructor()
-				&& method.getDeclaringClass().hasSuperclass()) {
-			Local base = body.getThisLocal();
-			insertSpecialInvokeStmt(base, method.getDeclaringClass()
-					.getSuperclass()
-					.getMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG));
-		}
-
-		assignMethodParameters();
-	}
-
-	/**
 	 * Insert the standard footer for a library method.
 	 */
 	private void insertJimpleBodyFooter() {
@@ -293,16 +275,6 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	}
 
 	/**
-	 * Store a value to RTA.set
-	 * 
-	 * @param value
-	 */
-	private void storeToRtaSet(Value value) {
-		storeStaticField(Scene.v().getField(Names.RTA_SET_FIELD_SIGNATURE),
-				value);
-	}
-
-	/**
 	 * Store the return value of a method call to RTA.set
 	 * 
 	 * @param value
@@ -311,7 +283,7 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 		Local ret = localGenerator.generateLocal(expr.getMethod()
 				.getReturnType());
 		body.getUnits().add(Jimple.v().newAssignStmt(ret, expr));
-		storeToRtaSet(ret);
+		storeToSet(ret);
 	}
 
 	/**
@@ -338,23 +310,6 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 					Names.RTA_GUARD_FIELD_SIGNATURE));
 		}
 		return rtaGuard;
-	}
-
-	/**
-	 * Construct Jimple code that assigns method parameters, including the
-	 * "this" parameter, if available.
-	 */
-	private void assignMethodParameters() {
-		// Assign the "this" parameter, if available
-		if (!method.isStatic()) {
-			storeToRtaSet(body.getThisLocal());
-		}
-
-		// Loop over all parameters of reference type and create an assignment
-		// statement to the appropriate "expression".
-		body.getParameterLocals().stream()
-				.filter(l -> l.getType() instanceof RefLikeType)
-				.forEach(l -> storeToRtaSet(l));
 	}
 
 	/**

@@ -85,10 +85,15 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 		// TODO
 		Printers.print(PrinterType.GENERATED, method);
 	}
-	
+
 	@Override
 	public Local setToCast() {
 		return getSetM();
+	}
+
+	@Override
+	public void storeToSet(Value from) {
+		body.getUnits().add(Jimple.v().newAssignStmt(getSetM(), from));
 	}
 
 	/**
@@ -133,18 +138,18 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 			SootMethod init = e.getMethod();
 			SootClass cls = init.getDeclaringClass();
 			Local obj = createObjectByMethod(cls, init);
-			storeToRtaSet(obj);
+			storeToSet(obj);
 		});
 
 		arrayCreations.forEach(t -> {
 			Local obj = insertNewStmt(t);
-			storeToRtaSet(obj);
+			storeToSet(obj);
 		});
 
 		checkedExceptions.forEach(cls -> {
 			SootMethod init = cls.getMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG);
 			Local obj = createObjectByMethod(cls, init);
-			storeToRtaSet(obj);
+			storeToSet(obj);
 		});
 	}
 
@@ -242,30 +247,6 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 	// }
 
 	/**
-	 * Insert the identity statements, and assign actual parameters (if any) and
-	 * the this parameter (if any) to set_m
-	 */
-	private void insertJimpleBodyHeader() {
-		body.insertIdentityStmts();
-
-		/*
-		 * To generate correct bytecode, we need to initialize the object first
-		 * by calling the direct superclass default constructor before inserting
-		 * any more statements. That is if this method is for a constructor and
-		 * its declaring class has a superclass.
-		 */
-		if (method.isConstructor()
-				&& method.getDeclaringClass().hasSuperclass()) {
-			Local base = body.getThisLocal();
-			insertSpecialInvokeStmt(base, method.getDeclaringClass()
-					.getSuperclass()
-					.getMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG));
-		}
-
-		assignMethodParameters();
-	}
-
-	/**
 	 * Insert the standard footer for a library method.
 	 */
 	private void insertJimpleBodyFooter() {
@@ -292,16 +273,6 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 	}
 
 	/**
-	 * Store a value to RTA.set
-	 * 
-	 * @param value
-	 */
-	private void storeToRtaSet(Value value) {
-		storeStaticField(Scene.v().getField(Names.RTA_SET_FIELD_SIGNATURE),
-				value);
-	}
-
-	/**
 	 * Store the return value of a method call to RTA.set
 	 * 
 	 * @param value
@@ -310,7 +281,7 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 		Local ret = localGenerator.generateLocal(expr.getMethod()
 				.getReturnType());
 		body.getUnits().add(Jimple.v().newAssignStmt(ret, expr));
-		storeToRtaSet(ret);
+		storeToSet(ret);
 	}
 
 	/**
@@ -333,23 +304,6 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 					Names.RTA_GUARD_FIELD_SIGNATURE));
 		}
 		return xtaGuard;
-	}
-
-	/**
-	 * Construct Jimple code that assigns method parameters, including the
-	 * "this" parameter, if available.
-	 */
-	private void assignMethodParameters() {
-		// Assign the "this" parameter, if available
-		if (!method.isStatic()) {
-			storeToRtaSet(body.getThisLocal());
-		}
-
-		// Loop over all parameters of reference type and create an assignment
-		// statement to the appropriate "expression".
-		body.getParameterLocals().stream()
-				.filter(l -> l.getType() instanceof RefLikeType)
-				.forEach(l -> storeToRtaSet(l));
 	}
 
 	/**
@@ -394,8 +348,7 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 	 */
 	protected void insertStaticInvokeStmt(SootMethod method) {
 		List<Value> args = method.getParameterTypes().stream()
-				.map(p -> getCompatibleValue(p))
-				.collect(Collectors.toList());
+				.map(p -> getCompatibleValue(p)).collect(Collectors.toList());
 		body.getUnits()
 				.add(Jimple.v().newInvokeStmt(
 						Jimple.v().newStaticInvokeExpr(method.makeRef(), args)));
@@ -434,21 +387,18 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 		if (originalInvokeExpr instanceof StaticInvokeExpr) {
 			invokeExpr = Jimple.v().newStaticInvokeExpr(callee.makeRef(), args);
 		} else if (originalInvokeExpr instanceof SpecialInvokeExpr) {
-			Local base = (Local) getCompatibleValue(
-					((SpecialInvokeExpr) originalInvokeExpr).getBase()
-							.getType());
+			Local base = (Local) getCompatibleValue(((SpecialInvokeExpr) originalInvokeExpr)
+					.getBase().getType());
 			invokeExpr = Jimple.v().newSpecialInvokeExpr(base,
 					callee.makeRef(), args);
 		} else if (originalInvokeExpr instanceof InterfaceInvokeExpr) {
-			Local base = (Local) getCompatibleValue(
-					((InterfaceInvokeExpr) originalInvokeExpr).getBase()
-							.getType());
+			Local base = (Local) getCompatibleValue(((InterfaceInvokeExpr) originalInvokeExpr)
+					.getBase().getType());
 			invokeExpr = Jimple.v().newInterfaceInvokeExpr(base,
 					callee.makeRef(), args);
 		} else if (originalInvokeExpr instanceof VirtualInvokeExpr) {
-			Local base = (Local) getCompatibleValue(
-					((VirtualInvokeExpr) originalInvokeExpr).getBase()
-							.getType());
+			Local base = (Local) getCompatibleValue(((VirtualInvokeExpr) originalInvokeExpr)
+					.getBase().getType());
 			invokeExpr = Jimple.v().newVirtualInvokeExpr(base,
 					callee.makeRef(), args);
 		} else {
