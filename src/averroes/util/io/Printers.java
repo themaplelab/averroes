@@ -36,7 +36,7 @@ public class Printers {
 		
 		try {
 			result = new PrintStream(new FileOutputStream(
-					Paths.rtaDebugFile(printerType, method), true), true);
+					Paths.jimpleDumpFile(printerType, method), true), true);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -45,9 +45,6 @@ public class Printers {
 	}
 	
 	public static void print(PrinterType printerType, SootMethod method) {
-//		getPrintStream(printerType, method).println("==========================");
-//		getPrintStream(printerType, method).println(printerType.toString() + " code");
-//		getPrintStream(printerType, method).println("==========================");
 		getPrintStream(printerType, method).println(method.getSignature());
 		getPrintStream(printerType, method).println(method.retrieveActiveBody());
 		getPrintStream(printerType, method).println();

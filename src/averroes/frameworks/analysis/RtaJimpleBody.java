@@ -39,33 +39,6 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	}
 
 	@Override
-	public void generateCode() {
-		// TODO
-		Printers.print(PrinterType.ORIGINAL, method);
-
-		// Create RTA Class
-		ensureRtaClassExists();
-
-		// Create the new Jimple body
-		insertJimpleBodyHeader();
-		createObjects();
-		callMethods();
-		handleArrays();
-		handleExceptions();
-		insertJimpleBodyFooter();
-
-		// Cleanup the generated body
-		cleanup();
-
-		// Validate method Jimple body & assign it to the method
-		body.validate();
-		method.setActiveBody(body);
-
-		// TODO
-		Printers.print(PrinterType.GENERATED, method);
-	}
-
-	@Override
 	public Local setToCast() {
 		return getRtaSet();
 	}
@@ -85,10 +58,8 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 		return rtaGuard;
 	}
 
-	/**
-	 * Ensure that the RTA class has been created, along with its fields.
-	 */
-	private void ensureRtaClassExists() {
+	@Override
+	public void ensureCommonClassExists() {
 		if (Scene.v().containsClass(Names.RTA_CLASS)) {
 			return;
 		}
@@ -114,6 +85,11 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 		averroesRta.getMethods().forEach(
 				m -> Printers.print(PrinterType.GENERATED, m));
 		// ClassWriter.writeLibraryClassFile(averroesRta);
+	}
+	
+	@Override
+	public void handleFields() {
+		
 	}
 
 	/**

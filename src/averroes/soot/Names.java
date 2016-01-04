@@ -38,6 +38,7 @@ public class Names {
 	public static final String INSTANCE_FIELD_SIGNATURE = "<" + AVERROES_ABSTRACT_LIBRARY_CLASS + ": "
 			+ AVERROES_ABSTRACT_LIBRARY_CLASS + " " + INSTANCE + ">";
 	
+	public static final String SET_FIELD_PREFIX = "set_";
 	public static final String SET_FIELD_NAME = "set";
 	public static final String INT_FIELD_NAME = "integer";
 	public static final String BOOLEAN_FIELD_NAME = "bool";
@@ -46,6 +47,7 @@ public class Names {
 	public static final String RTA_INT_FIELD_SIGNATURE = "<" + RTA_CLASS + ": int " + INT_FIELD_NAME + ">";
 	public static final String RTA_BOOLEAN_FIELD_SIGNATURE = "<" + RTA_CLASS + ": boolean " + BOOLEAN_FIELD_NAME + ">";
 	public static final String RTA_GUARD_FIELD_SIGNATURE = "<" + RTA_CLASS + ": boolean " + GUARD_FIELD_NAME + ">";
+	public static final String XTA_GUARD_FIELD_SIGNATURE = "<" + XTA_CLASS + ": boolean " + GUARD_FIELD_NAME + ">";
 
 	// Methods
 	public static final String AVERROES_DO_IT_ALL_METHOD_NAME = "doItAll";

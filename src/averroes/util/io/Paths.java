@@ -42,12 +42,12 @@ public class Paths {
 	}
 
 	/**
-	 * The path to the RTA debug file where we dump Jimple code for before,
-	 * after, and expected output.
+	 * The path to the debug file where we dump Jimple code for before, after,
+	 * and expected output.
 	 * 
 	 * @return
 	 */
-	public static File rtaDebugFile(PrinterType printerType, SootMethod method) {
+	public static File jimpleDumpFile(PrinterType printerType, SootMethod method) {
 		String pkg = method.getDeclaringClass().getPackageName()
 				.replace(".", File.pathSeparator);
 		String file = method.getDeclaringClass().getShortName() + ".jimple";
@@ -56,10 +56,10 @@ public class Paths {
 				+ printerType.toString().toLowerCase());
 
 		/*
-		 * separating output based on project
+		 * Separating output based on the project. For example: 
 		 * input + original => input.original
-		 * input + generated => output.rta.generated
-		 * output + expected => output.rta.expected
+		 * input + generated => output.rta.generated 
+		 * output + expected => output.rta.expected 
 		 * output + optimized => output.rta.optimized
 		 */
 		if (printerType != PrinterType.ORIGINAL) {

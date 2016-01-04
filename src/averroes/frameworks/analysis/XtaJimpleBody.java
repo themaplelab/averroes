@@ -1,10 +1,13 @@
 package averroes.frameworks.analysis;
 
+import java.util.HashMap;
+
 import soot.BooleanType;
 import soot.Local;
 import soot.Modifier;
 import soot.Scene;
 import soot.SootClass;
+import soot.SootField;
 import soot.SootMethod;
 import soot.Value;
 import soot.jimple.Jimple;
@@ -23,8 +26,9 @@ import averroes.util.io.Printers.PrinterType;
  *
  */
 public class XtaJimpleBody extends AbstractJimpleBody {
-	private Local setM = null;
 	private Local xtaGuard = null;
+	private Local setM;
+	private HashMap<SootField, Local> fieldToSetF = new HashMap<SootField, Local>();
 
 	/**
 	 * Create a new XTA Jimple body creator for method M.
@@ -34,34 +38,6 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 	public XtaJimpleBody(SootMethod method) {
 		super(method);
 		setM = localGenerator.generateLocal(Scene.v().getObjectType());
-	}
-
-	@Override
-	public void generateCode() {
-		// TODO
-		Printers.print(PrinterType.ORIGINAL, method);
-
-		// Create XTA Class
-		ensureXtaClassExists();
-
-		// Create the new Jimple body
-		insertJimpleBodyHeader();
-		createObjects();
-		callMethods();
-		handleArrays();
-		// handleFields();
-		handleExceptions();
-		insertJimpleBodyFooter();
-
-		// Cleanup the generated body
-		cleanup();
-
-		// Validate method Jimple body & assign it to the method
-		body.validate();
-		method.setActiveBody(body);
-
-		// TODO
-		Printers.print(PrinterType.GENERATED, method);
 	}
 
 	@Override
@@ -78,15 +54,13 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 	public Local getGuard() {
 		if (xtaGuard == null) {
 			xtaGuard = loadStaticField(Scene.v().getField(
-					Names.RTA_GUARD_FIELD_SIGNATURE));
+					Names.XTA_GUARD_FIELD_SIGNATURE));
 		}
 		return xtaGuard;
 	}
 
-	/**
-	 * Ensure that the XTA class has been created, along with its fields.
-	 */
-	private void ensureXtaClassExists() {
+	@Override
+	public void ensureCommonClassExists() {
 		if (Scene.v().containsClass(Names.XTA_CLASS)) {
 			return;
 		}
@@ -109,15 +83,81 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 		// TODO: Write it to disk
 		averroesXta.getMethods().forEach(
 				m -> Printers.print(PrinterType.GENERATED, m));
-		// ClassWriter.writeLibraryClassFile(averroesRta);
+		// ClassWriter.writeLibraryClassFile(averroesXta);
+	}
+
+	@Override
+	public void handleFields() {
+		fieldReads.forEach(f -> {
+			storeToSet(getSetF(f));
+		});
+
+		fieldWrites.forEach(f -> {
+			storeToSetF(f);
+		});
 	}
 
 	/**
-	 * Return the local for set_m.
+	 * Get the local representing set_m.
 	 * 
 	 * @return
 	 */
 	private Local getSetM() {
 		return setM;
+	}
+
+	/**
+	 * Get the local representing set_f for the given field.
+	 * 
+	 * @param field
+	 * @return
+	 */
+	private Local getSetF(SootField field) {
+		if (!fieldToSetF.containsKey(field)) {
+			ensureSetFExists(field);
+			Local local = loadField(field.getDeclaringClass().getFieldByName(
+					setFName(field)));
+			fieldToSetF.put(field, local);
+		}
+
+		return fieldToSetF.get(field);
+	}
+
+	/**
+	 * Model the statement set_f = (Type(f) set_m)
+	 * 
+	 * @param field
+	 */
+	private void storeToSetF(SootField field) {
+		ensureSetFExists(field);
+		Value from = getCompatibleValue(field.getType());
+		storeField(field.getDeclaringClass().getFieldByName(setFName(field)),
+				from);
+	}
+
+	/**
+	 * Ensures that the declaring class of the given Soot field declares the
+	 * set_f field.
+	 * 
+	 * @param field
+	 */
+	private void ensureSetFExists(SootField field) {
+		SootClass cls = field.getDeclaringClass();
+		String name = setFName(field);
+
+		if (!cls.declaresFieldByName(name)) {
+			cls.addField(new SootField(name, field.getType(), field
+					.getModifiers()));
+		}
+	}
+
+	/**
+	 * The name of the set_f field for the given Soot field.
+	 * 
+	 * @param field
+	 * @return
+	 */
+	private String setFName(SootField field) {
+		return Names.SET_FIELD_PREFIX + field.getName();
 	}
 }

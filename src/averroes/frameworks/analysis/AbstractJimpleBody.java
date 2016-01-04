@@ -53,6 +53,8 @@ import soot.jimple.VirtualInvokeExpr;
 import soot.jimple.toolkits.scalar.LocalNameStandardizer;
 import soot.jimple.toolkits.scalar.NopEliminator;
 import averroes.soot.Names;
+import averroes.util.io.Printers;
+import averroes.util.io.Printers.PrinterType;
 
 /**
  * Abstract Jimple body creator that declares some common fields and methods.
@@ -96,11 +98,45 @@ public abstract class AbstractJimpleBody {
 	// Checked exceptions (declared in the method signature)
 	protected LinkedHashSet<SootClass> checkedExceptions = new LinkedHashSet<SootClass>();
 
+	// Field reads
+	protected LinkedHashSet<SootField> fieldReads = new LinkedHashSet<SootField>();
+
+	// Field writes
+	protected LinkedHashSet<SootField> fieldWrites = new LinkedHashSet<SootField>();
+
 	/**
 	 * Generate the code for the underlying Soot method (which is assumed to be
 	 * concrete).
 	 */
-	public abstract void generateCode();
+	public void generateCode() {
+		Printers.print(PrinterType.ORIGINAL, method);
+
+		// Create Common Class
+		ensureCommonClassExists();
+
+		// Create the new Jimple body
+		insertJimpleBodyHeader();
+		createObjects();
+		callMethods();
+		handleArrays();
+		handleFields();
+		handleExceptions();
+		insertJimpleBodyFooter();
+
+		// Cleanup the generated body
+		cleanup();
+
+		// Validate method Jimple body & assign it to the method
+		body.validate();
+		method.setActiveBody(body);
+
+		Printers.print(PrinterType.GENERATED, method);
+	}
+
+	/**
+	 * Handle field reads and writes.
+	 */
+	public abstract void handleFields();
 
 	/**
 	 * Get the set that will be cast to a certain type for various operations.
@@ -125,6 +161,12 @@ public abstract class AbstractJimpleBody {
 	 * @return
 	 */
 	public abstract Local getGuard();
+
+	/**
+	 * Ensure that the common class has been created, along with its fields. For
+	 * example, this class is rta.RTA for the RTA analysis.
+	 */
+	public abstract void ensureCommonClassExists();
 
 	/**
 	 * Create a new type-based Jimple body creator for method M.
@@ -169,6 +211,10 @@ public abstract class AbstractJimpleBody {
 				if (stmt.getRightOp() instanceof NewArrayExpr
 						|| stmt.getRightOp() instanceof NewMultiArrayExpr) {
 					arrayCreations.add(stmt.getRightOp().getType());
+				} else if (isFieldRead(stmt) && stmt.getRightOp().getType() instanceof RefLikeType) {
+					fieldReads.add(((FieldRef) stmt.getRightOp()).getField());
+				} else if (isFieldWrite(stmt) && stmt.getLeftOp().getType() instanceof RefLikeType) {
+					fieldWrites.add(((FieldRef) stmt.getLeftOp()).getField());
 				} else if (!readsArray && isArrayRead(stmt)) {
 					readsArray = true;
 				} else if (!writesArray && isArrayWrite(stmt)) {
@@ -230,7 +276,7 @@ public abstract class AbstractJimpleBody {
 
 		assignMethodParameters();
 	}
-	
+
 	/**
 	 * Insert the standard footer for a library method.
 	 */
@@ -477,8 +523,8 @@ public abstract class AbstractJimpleBody {
 	}
 
 	/**
-	 * Construct Jimple code that load the given static field and assign it to a
-	 * new temporary local variable.
+	 * Construct Jimple code that loads the given static field and assigns it to
+	 * a new temporary local variable.
 	 * 
 	 * @param field
 	 * @return
@@ -492,7 +538,33 @@ public abstract class AbstractJimpleBody {
 	}
 
 	/**
-	 * Store the given local field to a static soot field.
+	 * Construct Jimple code that loads a given field and assigns it to a new
+	 * temporary local variable.
+	 * 
+	 * @param field
+	 * @return
+	 */
+	protected Local loadField(SootField field) {
+		Local tmp = localGenerator.generateLocal(field.getType());
+
+		if (field.isStatic()) {
+			body.getUnits().add(
+					Jimple.v().newAssignStmt(tmp,
+							Jimple.v().newStaticFieldRef(field.makeRef())));
+		} else {
+			body.getUnits().add(
+					Jimple.v().newAssignStmt(
+							tmp,
+							Jimple.v().newInstanceFieldRef(
+									getCompatibleValue(field.getType()),
+									field.makeRef())));
+		}
+
+		return tmp;
+	}
+
+	/**
+	 * Store the given value to a static soot field.
 	 * 
 	 * @param field
 	 * @param from
@@ -501,6 +573,29 @@ public abstract class AbstractJimpleBody {
 		body.getUnits().add(
 				Jimple.v().newAssignStmt(
 						Jimple.v().newStaticFieldRef(field.makeRef()), from));
+	}
+
+	/**
+	 * Store the given value to a Soot field.
+	 * @param field
+	 * @param from
+	 */
+	protected void storeField(SootField field, Value from) {
+		if (field.isStatic()) {
+			body.getUnits().add(
+					Jimple.v()
+							.newAssignStmt(
+									Jimple.v().newStaticFieldRef(
+											field.makeRef()), from));
+		} else {
+			Local tmp = localGenerator.generateLocal(field.getType());
+			body.getUnits().add(Jimple.v().newAssignStmt(tmp, from));
+			body.getUnits().add(
+					Jimple.v().newAssignStmt(
+							Jimple.v().newInstanceFieldRef(
+									getCompatibleValue(field.getType()),
+									field.makeRef()), tmp));
+		}
 	}
 
 	/**
