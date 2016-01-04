@@ -10,7 +10,6 @@ import soot.ArrayType;
 import soot.BooleanType;
 import soot.Local;
 import soot.Modifier;
-import soot.RefLikeType;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
@@ -20,15 +19,10 @@ import soot.VoidType;
 import soot.jimple.ArrayRef;
 import soot.jimple.EqExpr;
 import soot.jimple.IntConstant;
-import soot.jimple.InterfaceInvokeExpr;
-import soot.jimple.InvokeExpr;
 import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
-import soot.jimple.SpecialInvokeExpr;
-import soot.jimple.StaticInvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.ThrowStmt;
-import soot.jimple.VirtualInvokeExpr;
 import averroes.frameworks.soot.CodeGenerator;
 import averroes.soot.Names;
 import averroes.util.io.Printers;
@@ -127,27 +121,6 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	}
 
 	/**
-	 * Call the methods that are called in the original method body. Averroes
-	 * preserves the fact that the return value of some method calls
-	 * (invokeExprs) is stored locally, while it's not for other calls
-	 * (invokeStmts).
-	 */
-	private void callMethods() {
-		invokeStmts.forEach(this::insertInvokeStmt);
-
-		invokeExprs.forEach(e -> {
-			InvokeExpr expr = buildInvokeExpr(e);
-			// Only store the return value if it's a reference, otherwise just
-			// call the method.
-				if (expr.getMethod().getReturnType() instanceof RefLikeType) {
-					storeMethodCallReturn(expr);
-				} else {
-					insertInvokeStmt(expr);
-				}
-			});
-	}
-
-	/**
 	 * Handle array reads and writes.
 	 */
 	private void handleArrays() {
@@ -223,18 +196,6 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 			Value ret = getCompatibleValue(method.getReturnType());
 			body.getUnits().add(Jimple.v().newReturnStmt(ret));
 		}
-	}
-
-	/**
-	 * Store the return value of a method call to RTA.set
-	 * 
-	 * @param value
-	 */
-	private void storeMethodCallReturn(InvokeExpr expr) {
-		Local ret = localGenerator.generateLocal(expr.getMethod()
-				.getReturnType());
-		body.getUnits().add(Jimple.v().newAssignStmt(ret, expr));
-		storeToSet(ret);
 	}
 
 	/**
@@ -324,60 +285,5 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 		body.getUnits()
 				.add(Jimple.v().newInvokeStmt(
 						Jimple.v().newStaticInvokeExpr(method.makeRef(), args)));
-	}
-
-	/**
-	 * Insert a new invoke statement based on info in the given original invoke
-	 * experssion.
-	 * 
-	 * @param originalInvokeExpr
-	 */
-	protected void insertInvokeStmt(InvokeExpr originalInvokeExpr) {
-		body.getUnits().add(
-				Jimple.v().newInvokeStmt(buildInvokeExpr(originalInvokeExpr)));
-	}
-
-	/**
-	 * Build the grammar of an invoke expression based on the given original
-	 * invoke expression. This method does not insert the grammar chunk into the
-	 * method body. It only inserts any code needed to prepare the arguments to
-	 * the call (i.e., casts of RTA.set).
-	 * 
-	 * @param originalInvokeExpr
-	 * @return
-	 */
-	private InvokeExpr buildInvokeExpr(InvokeExpr originalInvokeExpr) {
-		SootMethod callee = originalInvokeExpr.getMethod();
-		InvokeExpr invokeExpr = null;
-
-		// Get the arguments to the call
-		List<Value> args = originalInvokeExpr.getArgs().stream()
-				.map(a -> getCompatibleValue(a.getType()))
-				.collect(Collectors.toList());
-
-		// Build the invoke expression
-		if (originalInvokeExpr instanceof StaticInvokeExpr) {
-			invokeExpr = Jimple.v().newStaticInvokeExpr(callee.makeRef(), args);
-		} else if (originalInvokeExpr instanceof SpecialInvokeExpr) {
-			Local base = (Local) getCompatibleValue(((SpecialInvokeExpr) originalInvokeExpr)
-					.getBase().getType());
-			invokeExpr = Jimple.v().newSpecialInvokeExpr(base,
-					callee.makeRef(), args);
-		} else if (originalInvokeExpr instanceof InterfaceInvokeExpr) {
-			Local base = (Local) getCompatibleValue(((InterfaceInvokeExpr) originalInvokeExpr)
-					.getBase().getType());
-			invokeExpr = Jimple.v().newInterfaceInvokeExpr(base,
-					callee.makeRef(), args);
-		} else if (originalInvokeExpr instanceof VirtualInvokeExpr) {
-			Local base = (Local) getCompatibleValue(((VirtualInvokeExpr) originalInvokeExpr)
-					.getBase().getType());
-			invokeExpr = Jimple.v().newVirtualInvokeExpr(base,
-					callee.makeRef(), args);
-		} else {
-			logger.error("Cannot handle invoke expression of type: "
-					+ originalInvokeExpr.getClass());
-		}
-
-		return invokeExpr;
 	}
 }

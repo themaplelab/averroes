@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import soot.ArrayType;
 import soot.DoubleType;
 import soot.FloatType;
@@ -31,6 +34,7 @@ import soot.jimple.DoubleConstant;
 import soot.jimple.FieldRef;
 import soot.jimple.FloatConstant;
 import soot.jimple.IntConstant;
+import soot.jimple.InterfaceInvokeExpr;
 import soot.jimple.InvokeExpr;
 import soot.jimple.InvokeStmt;
 import soot.jimple.Jimple;
@@ -39,7 +43,9 @@ import soot.jimple.LongConstant;
 import soot.jimple.NewArrayExpr;
 import soot.jimple.NewMultiArrayExpr;
 import soot.jimple.SpecialInvokeExpr;
+import soot.jimple.StaticInvokeExpr;
 import soot.jimple.ThrowStmt;
+import soot.jimple.VirtualInvokeExpr;
 import soot.jimple.toolkits.scalar.LocalNameStandardizer;
 import soot.jimple.toolkits.scalar.NopEliminator;
 import averroes.soot.Names;
@@ -51,6 +57,8 @@ import averroes.soot.Names;
  *
  */
 public abstract class AbstractJimpleBody {
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	protected SootMethod method;
 	protected JimpleBody originalBody;
 	protected JimpleBody body;
@@ -210,7 +218,7 @@ public abstract class AbstractJimpleBody {
 
 		assignMethodParameters();
 	}
-	
+
 	/**
 	 * Create all the objects that the library could possible instantiate. For
 	 * reference types, this includes inserting new statements, invoking
@@ -260,6 +268,27 @@ public abstract class AbstractJimpleBody {
 	}
 
 	/**
+	 * Call the methods that are called in the original method body. Averroes
+	 * preserves the fact that the return value of some method calls
+	 * (invokeExprs) is stored locally, while it's not for other calls
+	 * (invokeStmts).
+	 */
+	protected void callMethods() {
+		invokeStmts.forEach(this::insertInvokeStmt);
+
+		invokeExprs.forEach(e -> {
+			InvokeExpr expr = buildInvokeExpr(e);
+			// Only store the return value if it's a reference, otherwise just
+			// call the method.
+				if (expr.getMethod().getReturnType() instanceof RefLikeType) {
+					storeMethodCallReturn(expr);
+				} else {
+					insertInvokeStmt(expr);
+				}
+			});
+	}
+
+	/**
 	 * Insert a statement that casts the given local to the given type and
 	 * assign it to a new temporary local variable. If {@code local} is of the
 	 * same type as {@code type}, then return that local instead of using a
@@ -298,6 +327,17 @@ public abstract class AbstractJimpleBody {
 	}
 
 	/**
+	 * Insert a new invoke statement based on info in the given original invoke
+	 * expression.
+	 * 
+	 * @param originalInvokeExpr
+	 */
+	protected void insertInvokeStmt(InvokeExpr originalInvokeExpr) {
+		body.getUnits().add(
+				Jimple.v().newInvokeStmt(buildInvokeExpr(originalInvokeExpr)));
+	}
+
+	/**
 	 * Insert a special invoke statement.
 	 * 
 	 * @param base
@@ -323,6 +363,19 @@ public abstract class AbstractJimpleBody {
 		body.getUnits()
 				.add(Jimple.v().newInvokeStmt(
 						Jimple.v().newStaticInvokeExpr(method.makeRef(), args)));
+	}
+
+	/**
+	 * Store the return value of a method call to
+	 * {@link #storeToSet(Value)}
+	 * 
+	 * @param value
+	 */
+	protected void storeMethodCallReturn(InvokeExpr expr) {
+		Local ret = localGenerator.generateLocal(expr.getMethod()
+				.getReturnType());
+		body.getUnits().add(Jimple.v().newAssignStmt(ret, expr));
+		storeToSet(ret);
 	}
 
 	/**
@@ -354,7 +407,7 @@ public abstract class AbstractJimpleBody {
 
 	/**
 	 * Construct Jimple code that assigns method parameters, including the
-	 * "this" parameter, if available.
+	 * "this" parameter, if available, to {@link #storeToSet(Value)}.
 	 */
 	protected void assignMethodParameters() {
 		// Assign the "this" parameter, if available
@@ -591,5 +644,49 @@ public abstract class AbstractJimpleBody {
 
 		throw new IllegalArgumentException("Type " + type
 				+ " cannot be instantiated.");
+	}
+
+	/**
+	 * Build the grammar of an invoke expression based on the given original
+	 * invoke expression. This method does not insert the grammar chunk into the
+	 * method body. It only inserts any code needed to prepare the arguments to
+	 * the call (i.e., casts of RTA.set).
+	 * 
+	 * @param originalInvokeExpr
+	 * @return
+	 */
+	protected InvokeExpr buildInvokeExpr(InvokeExpr originalInvokeExpr) {
+		SootMethod callee = originalInvokeExpr.getMethod();
+		InvokeExpr invokeExpr = null;
+
+		// Get the arguments to the call
+		List<Value> args = originalInvokeExpr.getArgs().stream()
+				.map(a -> getCompatibleValue(a.getType()))
+				.collect(Collectors.toList());
+
+		// Build the invoke expression
+		if (originalInvokeExpr instanceof StaticInvokeExpr) {
+			invokeExpr = Jimple.v().newStaticInvokeExpr(callee.makeRef(), args);
+		} else if (originalInvokeExpr instanceof SpecialInvokeExpr) {
+			Local base = (Local) getCompatibleValue(((SpecialInvokeExpr) originalInvokeExpr)
+					.getBase().getType());
+			invokeExpr = Jimple.v().newSpecialInvokeExpr(base,
+					callee.makeRef(), args);
+		} else if (originalInvokeExpr instanceof InterfaceInvokeExpr) {
+			Local base = (Local) getCompatibleValue(((InterfaceInvokeExpr) originalInvokeExpr)
+					.getBase().getType());
+			invokeExpr = Jimple.v().newInterfaceInvokeExpr(base,
+					callee.makeRef(), args);
+		} else if (originalInvokeExpr instanceof VirtualInvokeExpr) {
+			Local base = (Local) getCompatibleValue(((VirtualInvokeExpr) originalInvokeExpr)
+					.getBase().getType());
+			invokeExpr = Jimple.v().newVirtualInvokeExpr(base,
+					callee.makeRef(), args);
+		} else {
+			logger.error("Cannot handle invoke expression of type: "
+					+ originalInvokeExpr.getClass());
+		}
+
+		return invokeExpr;
 	}
 }
