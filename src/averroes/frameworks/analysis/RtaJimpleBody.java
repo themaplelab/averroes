@@ -45,14 +45,13 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 
 	@Override
 	public void storeToSet(Value from) {
-		storeStaticField(Scene.v().getField(Names.RTA_SET_FIELD_SIGNATURE),
-				from);
+		storeField(Scene.v().getField(Names.RTA_SET_FIELD_SIGNATURE), from);
 	}
 
 	@Override
 	public Local getGuard() {
 		if (rtaGuard == null) {
-			rtaGuard = loadStaticField(Scene.v().getField(
+			rtaGuard = loadField(Scene.v().getField(
 					Names.RTA_GUARD_FIELD_SIGNATURE));
 		}
 		return rtaGuard;
@@ -86,10 +85,10 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 				m -> Printers.print(PrinterType.GENERATED, m));
 		// ClassWriter.writeLibraryClassFile(averroesRta);
 	}
-	
+
 	@Override
 	public void handleFields() {
-		
+
 	}
 
 	/**
@@ -99,8 +98,8 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	 */
 	private Local getRtaSet() {
 		if (rtaSet == null) {
-			rtaSet = loadStaticField(Scene.v().getField(
-					Names.RTA_SET_FIELD_SIGNATURE));
+			rtaSet = loadField(Scene.v()
+					.getField(Names.RTA_SET_FIELD_SIGNATURE));
 		}
 		return rtaSet;
 	}

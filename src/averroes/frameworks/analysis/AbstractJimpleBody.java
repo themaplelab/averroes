@@ -523,21 +523,6 @@ public abstract class AbstractJimpleBody {
 	}
 
 	/**
-	 * Construct Jimple code that loads the given static field and assigns it to
-	 * a new temporary local variable.
-	 * 
-	 * @param field
-	 * @return
-	 */
-	protected Local loadStaticField(SootField field) {
-		Local tmp = localGenerator.generateLocal(field.getType());
-		body.getUnits().add(
-				Jimple.v().newAssignStmt(tmp,
-						Jimple.v().newStaticFieldRef(field.makeRef())));
-		return tmp;
-	}
-
-	/**
 	 * Construct Jimple code that loads a given field and assigns it to a new
 	 * temporary local variable.
 	 * 
@@ -561,18 +546,6 @@ public abstract class AbstractJimpleBody {
 		}
 
 		return tmp;
-	}
-
-	/**
-	 * Store the given value to a static soot field.
-	 * 
-	 * @param field
-	 * @param from
-	 */
-	protected void storeStaticField(SootField field, Value from) {
-		body.getUnits().add(
-				Jimple.v().newAssignStmt(
-						Jimple.v().newStaticFieldRef(field.makeRef()), from));
 	}
 
 	/**
