@@ -31,6 +31,7 @@ import soot.jimple.AnyNewExpr;
 import soot.jimple.ArrayRef;
 import soot.jimple.AssignStmt;
 import soot.jimple.DoubleConstant;
+import soot.jimple.EqExpr;
 import soot.jimple.FieldRef;
 import soot.jimple.FloatConstant;
 import soot.jimple.IntConstant;
@@ -42,8 +43,10 @@ import soot.jimple.JimpleBody;
 import soot.jimple.LongConstant;
 import soot.jimple.NewArrayExpr;
 import soot.jimple.NewMultiArrayExpr;
+import soot.jimple.NopStmt;
 import soot.jimple.SpecialInvokeExpr;
 import soot.jimple.StaticInvokeExpr;
+import soot.jimple.Stmt;
 import soot.jimple.ThrowStmt;
 import soot.jimple.VirtualInvokeExpr;
 import soot.jimple.toolkits.scalar.LocalNameStandardizer;
@@ -113,6 +116,14 @@ public abstract class AbstractJimpleBody {
 	 * @param from
 	 */
 	public abstract void storeToSet(Value from);
+
+	/**
+	 * Load the guard field that is used to guard conditionals. See
+	 * {@link #insertAndGuardStmt(Stmt) for more details}.
+	 * 
+	 * @return
+	 */
+	public abstract Local getGuard();
 
 	/**
 	 * Create a new type-based Jimple body creator for method M.
@@ -287,7 +298,7 @@ public abstract class AbstractJimpleBody {
 				}
 			});
 	}
-	
+
 	/**
 	 * Handle array reads and writes.
 	 */
@@ -305,6 +316,13 @@ public abstract class AbstractJimpleBody {
 						Jimple.v().newAssignStmt(arrayRef, setToCast()));
 			}
 		}
+	}
+	
+	/**
+	 * Handle throwing exceptions and try-catch blocks.
+	 */
+	protected void handleExceptions() {
+		throwables.forEach(x -> insertThrowStmt(x, throwables.size() > 1));
 	}
 
 	/**
@@ -385,8 +403,42 @@ public abstract class AbstractJimpleBody {
 	}
 
 	/**
-	 * Store the return value of a method call to
-	 * {@link #storeToSet(Value)}
+	 * Insert a throw statement that throws an exception of the given type.
+	 * 
+	 * @param type
+	 */
+	protected void insertThrowStmt(Type type, boolean guard) {
+		Local tmp = (Local) getCompatibleValue(type);
+		if (guard) {
+			insertAndGuardStmt(Jimple.v().newThrowStmt(tmp));
+		} else {
+			body.getUnits().add(Jimple.v().newThrowStmt(tmp));
+		}
+	}
+
+	/**
+	 * Guard a statement by an if-statement whose condition always evaluates to
+	 * true. This helps inserting multiple {@link ThrowStmt}, for example, in a
+	 * Jimple method.
+	 * 
+	 * @param stmt
+	 * @return
+	 */
+	protected void insertAndGuardStmt(Stmt stmt) {
+		// TODO: this condition can produce dead code. That's why we should use
+		// the RTA.guard field as a condition instead.
+		// NeExpr cond = Jimple.v().newNeExpr(IntConstant.v(1),
+		// IntConstant.v(1));
+		EqExpr cond = Jimple.v().newEqExpr(getGuard(), IntConstant.v(0));
+		NopStmt nop = Jimple.v().newNopStmt();
+
+		body.getUnits().add(Jimple.v().newIfStmt(cond, nop));
+		body.getUnits().add(stmt);
+		body.getUnits().add(nop);
+	}
+
+	/**
+	 * Store the return value of a method call to {@link #storeToSet(Value)}
 	 * 
 	 * @param value
 	 */

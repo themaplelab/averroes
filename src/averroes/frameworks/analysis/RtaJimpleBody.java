@@ -1,8 +1,5 @@
 package averroes.frameworks.analysis;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,15 +9,9 @@ import soot.Modifier;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
-import soot.Type;
 import soot.Value;
 import soot.VoidType;
-import soot.jimple.EqExpr;
-import soot.jimple.IntConstant;
 import soot.jimple.Jimple;
-import soot.jimple.NopStmt;
-import soot.jimple.Stmt;
-import soot.jimple.ThrowStmt;
 import averroes.frameworks.soot.CodeGenerator;
 import averroes.soot.Names;
 import averroes.util.io.Printers;
@@ -87,6 +78,15 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 				from);
 	}
 
+	@Override
+	public Local getGuard() {
+		if (rtaGuard == null) {
+			rtaGuard = loadStaticField(Scene.v().getField(
+					Names.RTA_GUARD_FIELD_SIGNATURE));
+		}
+		return rtaGuard;
+	}
+
 	/**
 	 * Ensure that the RTA class has been created, along with its fields.
 	 */
@@ -116,13 +116,6 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 		averroesRta.getMethods().forEach(
 				m -> Printers.print(PrinterType.GENERATED, m));
 		// ClassWriter.writeLibraryClassFile(averroesRta);
-	}
-
-	/**
-	 * Handle throwing exceptions and try-catch blocks.
-	 */
-	private void handleExceptions() {
-		throwables.forEach(x -> insertThrowStmt(x, throwables.size() > 1));
 	}
 
 	/**
@@ -188,81 +181,5 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 					Names.RTA_SET_FIELD_SIGNATURE));
 		}
 		return rtaSet;
-	}
-
-	/**
-	 * Load the RTA.guard field into a local variable, if not loaded before.
-	 * 
-	 * @return
-	 */
-	private Local getGuard() {
-		if (rtaGuard == null) {
-			rtaGuard = loadStaticField(Scene.v().getField(
-					Names.RTA_GUARD_FIELD_SIGNATURE));
-		}
-		return rtaGuard;
-	}
-
-	/**
-	 * Guard a statement by an if-statement whose condition always evaluates to
-	 * true. This helps inserting multiple {@link ThrowStmt} for example in a
-	 * Jimple method.
-	 * 
-	 * @param stmt
-	 * @return
-	 */
-	protected void insertAndGuardStmt(Stmt stmt) {
-		// TODO: this condition can produce dead code. That's why we should use
-		// the RTA.guard field as a condition instead.
-		// NeExpr cond = Jimple.v().newNeExpr(IntConstant.v(1),
-		// IntConstant.v(1));
-		EqExpr cond = Jimple.v().newEqExpr(getGuard(), IntConstant.v(0));
-		NopStmt nop = Jimple.v().newNopStmt();
-
-		body.getUnits().add(Jimple.v().newIfStmt(cond, nop));
-		body.getUnits().add(stmt);
-		body.getUnits().add(nop);
-	}
-
-	/**
-	 * Insert a throw statement that throws an exception of the given type.
-	 * 
-	 * @param type
-	 */
-	protected void insertThrowStmt(Type type, boolean guard) {
-		Local tmp = insertCastStmt(getRtaSet(), type);
-		if (guard) {
-			insertAndGuardStmt(Jimple.v().newThrowStmt(tmp));
-		} else {
-			body.getUnits().add(Jimple.v().newThrowStmt(tmp));
-		}
-	}
-
-	/**
-	 * Insert a special invoke statement.
-	 * 
-	 * @param base
-	 * @param method
-	 */
-	protected void insertSpecialInvokeStmt(Local base, SootMethod method) {
-		List<Value> args = method.getParameterTypes().stream()
-				.map(p -> getCompatibleValue(p)).collect(Collectors.toList());
-		body.getUnits().add(
-				Jimple.v().newInvokeStmt(
-						Jimple.v().newSpecialInvokeExpr(base, method.makeRef(),
-								args)));
-	}
-
-	/**
-	 * Insert a static invoke statement.
-	 * 
-	 * @param method
-	 */
-	protected void insertStaticInvokeStmt(SootMethod method) {
-		List<Value> args = method.getParameterTypes().stream()
-				.map(p -> getCompatibleValue(p)).collect(Collectors.toList());
-		body.getUnits()
-				.add(Jimple.v().newInvokeStmt(
-						Jimple.v().newStaticInvokeExpr(method.makeRef(), args)));
 	}
 }

@@ -6,7 +6,6 @@ import soot.Modifier;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
-import soot.Type;
 import soot.Value;
 import soot.VoidType;
 import soot.jimple.EqExpr;
@@ -56,6 +55,7 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 		createObjects();
 		callMethods();
 		handleArrays();
+		// handleFields();
 		handleExceptions();
 		insertJimpleBodyFooter();
 
@@ -78,6 +78,15 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 	@Override
 	public void storeToSet(Value from) {
 		body.getUnits().add(Jimple.v().newAssignStmt(getSetM(), from));
+	}
+
+	@Override
+	public Local getGuard() {
+		if (xtaGuard == null) {
+			xtaGuard = loadStaticField(Scene.v().getField(
+					Names.RTA_GUARD_FIELD_SIGNATURE));
+		}
+		return xtaGuard;
 	}
 
 	/**
@@ -107,13 +116,6 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 		averroesXta.getMethods().forEach(
 				m -> Printers.print(PrinterType.GENERATED, m));
 		// ClassWriter.writeLibraryClassFile(averroesRta);
-	}
-
-	/**
-	 * Handle throwing exceptions and try-catch blocks.
-	 */
-	private void handleExceptions() {
-		throwables.forEach(x -> insertThrowStmt(x, throwables.size() > 1));
 	}
 
 	/**
@@ -178,19 +180,6 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 	}
 
 	/**
-	 * Load the RTA.guard field into a local variable, if not loaded before.
-	 * 
-	 * @return
-	 */
-	private Local getGuard() {
-		if (xtaGuard == null) {
-			xtaGuard = loadStaticField(Scene.v().getField(
-					Names.RTA_GUARD_FIELD_SIGNATURE));
-		}
-		return xtaGuard;
-	}
-
-	/**
 	 * Guard a statement by an if-statement whose condition always evaluates to
 	 * true. This helps inserting multiple {@link ThrowStmt} for example in a
 	 * Jimple method.
@@ -209,19 +198,5 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 		body.getUnits().add(Jimple.v().newIfStmt(cond, nop));
 		body.getUnits().add(stmt);
 		body.getUnits().add(nop);
-	}
-
-	/**
-	 * Insert a throw statement that throws an exception of the given type.
-	 * 
-	 * @param type
-	 */
-	protected void insertThrowStmt(Type type, boolean guard) {
-		Local tmp = insertCastStmt(getSetM(), type);
-		if (guard) {
-			insertAndGuardStmt(Jimple.v().newThrowStmt(tmp));
-		} else {
-			body.getUnits().add(Jimple.v().newThrowStmt(tmp));
-		}
 	}
 }
