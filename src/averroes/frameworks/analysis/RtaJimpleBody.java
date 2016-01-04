@@ -11,7 +11,6 @@ import soot.BooleanType;
 import soot.Local;
 import soot.Modifier;
 import soot.RefLikeType;
-import soot.RefType;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
@@ -125,54 +124,6 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 		averroesRta.getMethods().forEach(
 				m -> Printers.print(PrinterType.GENERATED, m));
 		// ClassWriter.writeLibraryClassFile(averroesRta);
-	}
-
-	/**
-	 * Create all the objects that the library could possible instantiate. For
-	 * reference types, this includes inserting new statements, invoking
-	 * constructors, and static initializers if found. For arrays, we just have
-	 * the appropriate NEW instruction. For checked exceptions, we create the
-	 * object, call the constructor, and, if available, call the static
-	 * initializer.
-	 */
-	private void createObjects() {
-		objectCreations.forEach(e -> {
-			SootMethod init = e.getMethod();
-			SootClass cls = init.getDeclaringClass();
-			Local obj = createObjectByMethod(cls, init);
-			storeToSet(obj);
-		});
-
-		arrayCreations.forEach(t -> {
-			Local obj = insertNewStmt(t);
-			storeToSet(obj);
-		});
-
-		checkedExceptions.forEach(cls -> {
-			SootMethod init = cls.getMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG);
-			Local obj = createObjectByMethod(cls, init);
-			storeToSet(obj);
-		});
-	}
-
-	/**
-	 * Create an object by calling that specific constructor.
-	 * 
-	 * @param cls
-	 * @param init
-	 * @return
-	 */
-	private Local createObjectByMethod(SootClass cls, SootMethod init) {
-		Local obj = insertNewStmt(RefType.v(cls));
-		insertSpecialInvokeStmt(obj, init);
-
-		// Call <clinit> if found
-		if (cls.declaresMethod(SootMethod.staticInitializerName)) {
-			insertStaticInvokeStmt(cls
-					.getMethodByName(SootMethod.staticInitializerName));
-		}
-
-		return obj;
 	}
 
 	/**

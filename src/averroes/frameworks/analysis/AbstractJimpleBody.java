@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import averroes.soot.Names;
 import soot.ArrayType;
 import soot.DoubleType;
 import soot.FloatType;
@@ -43,6 +42,7 @@ import soot.jimple.SpecialInvokeExpr;
 import soot.jimple.ThrowStmt;
 import soot.jimple.toolkits.scalar.LocalNameStandardizer;
 import soot.jimple.toolkits.scalar.NopEliminator;
+import averroes.soot.Names;
 
 /**
  * Abstract Jimple body creator that declares some common fields and methods.
@@ -210,6 +210,54 @@ public abstract class AbstractJimpleBody {
 
 		assignMethodParameters();
 	}
+	
+	/**
+	 * Create all the objects that the library could possible instantiate. For
+	 * reference types, this includes inserting new statements, invoking
+	 * constructors, and static initializers if found. For arrays, we just have
+	 * the appropriate NEW instruction. For checked exceptions, we create the
+	 * object, call the constructor, and, if available, call the static
+	 * initializer.
+	 */
+	protected void createObjects() {
+		objectCreations.forEach(e -> {
+			SootMethod init = e.getMethod();
+			Local obj = createObjectByMethod(init);
+			storeToSet(obj);
+		});
+
+		arrayCreations.forEach(t -> {
+			Local obj = insertNewStmt(t);
+			storeToSet(obj);
+		});
+
+		checkedExceptions.forEach(cls -> {
+			SootMethod init = cls.getMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG);
+			Local obj = createObjectByMethod(init);
+			storeToSet(obj);
+		});
+	}
+
+	/**
+	 * Create an object by calling that specific constructor.
+	 * 
+	 * @param cls
+	 * @param init
+	 * @return
+	 */
+	protected Local createObjectByMethod(SootMethod init) {
+		SootClass cls = init.getDeclaringClass();
+		Local obj = insertNewStmt(RefType.v(cls));
+		insertSpecialInvokeStmt(obj, init);
+
+		// Call <clinit> if found
+		if (cls.declaresMethod(SootMethod.staticInitializerName)) {
+			insertStaticInvokeStmt(cls
+					.getMethodByName(SootMethod.staticInitializerName));
+		}
+
+		return obj;
+	}
 
 	/**
 	 * Insert a statement that casts the given local to the given type and
@@ -262,6 +310,19 @@ public abstract class AbstractJimpleBody {
 				Jimple.v().newInvokeStmt(
 						Jimple.v().newSpecialInvokeExpr(base, method.makeRef(),
 								args)));
+	}
+
+	/**
+	 * Insert a static invoke statement.
+	 * 
+	 * @param method
+	 */
+	protected void insertStaticInvokeStmt(SootMethod method) {
+		List<Value> args = method.getParameterTypes().stream()
+				.map(p -> getCompatibleValue(p)).collect(Collectors.toList());
+		body.getUnits()
+				.add(Jimple.v().newInvokeStmt(
+						Jimple.v().newStaticInvokeExpr(method.makeRef(), args)));
 	}
 
 	/**
