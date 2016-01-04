@@ -25,6 +25,7 @@ import soot.SootMethod;
 import soot.Trap;
 import soot.Type;
 import soot.Value;
+import soot.VoidType;
 import soot.javaToJimple.LocalGenerator;
 import soot.jimple.AbstractStmtSwitch;
 import soot.jimple.AnyNewExpr;
@@ -229,6 +230,20 @@ public abstract class AbstractJimpleBody {
 
 		assignMethodParameters();
 	}
+	
+	/**
+	 * Insert the standard footer for a library method.
+	 */
+	protected void insertJimpleBodyFooter() {
+		/*
+		 * Insert the return statement, only if there are no exceptions to
+		 * throw. Otherwise, it's dead code and the Jimple validator will choke
+		 * on it!
+		 */
+		if (throwables.isEmpty()) {
+			insertReturnStmt();
+		}
+	}
 
 	/**
 	 * Create all the objects that the library could possible instantiate. For
@@ -317,7 +332,7 @@ public abstract class AbstractJimpleBody {
 			}
 		}
 	}
-	
+
 	/**
 	 * Handle throwing exceptions and try-catch blocks.
 	 */
@@ -413,6 +428,18 @@ public abstract class AbstractJimpleBody {
 			insertAndGuardStmt(Jimple.v().newThrowStmt(tmp));
 		} else {
 			body.getUnits().add(Jimple.v().newThrowStmt(tmp));
+		}
+	}
+
+	/**
+	 * Insert the appropriate return statement.
+	 */
+	protected void insertReturnStmt() {
+		if (method.getReturnType() instanceof VoidType) {
+			body.getUnits().add(Jimple.v().newReturnVoidStmt());
+		} else {
+			Value ret = getCompatibleValue(method.getReturnType());
+			body.getUnits().add(Jimple.v().newReturnStmt(ret));
 		}
 	}
 

@@ -10,8 +10,6 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.Value;
-import soot.VoidType;
-import soot.jimple.Jimple;
 import averroes.frameworks.soot.CodeGenerator;
 import averroes.soot.Names;
 import averroes.util.io.Printers;
@@ -143,32 +141,6 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	// body.getUnits().add(Jimple.v().newIdentityStmt(p, paramRef));
 	// }
 	// }
-
-	/**
-	 * Insert the standard footer for a library method.
-	 */
-	private void insertJimpleBodyFooter() {
-		/*
-		 * Insert the return statement, only if there are no throwables to
-		 * throw. Otherwise, it's dead code and the Jimple validator will choke
-		 * on it!
-		 */
-		if (throwables.isEmpty()) {
-			insertReturnStmt();
-		}
-	}
-
-	/**
-	 * Insert the appropriate return statement.
-	 */
-	private void insertReturnStmt() {
-		if (method.getReturnType() instanceof VoidType) {
-			body.getUnits().add(Jimple.v().newReturnVoidStmt());
-		} else {
-			Value ret = getCompatibleValue(method.getReturnType());
-			body.getUnits().add(Jimple.v().newReturnStmt(ret));
-		}
-	}
 
 	/**
 	 * Load the RTA.set field into a local variable, if not loaded before.

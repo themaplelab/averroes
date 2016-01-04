@@ -7,13 +7,7 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.Value;
-import soot.VoidType;
-import soot.jimple.EqExpr;
-import soot.jimple.IntConstant;
 import soot.jimple.Jimple;
-import soot.jimple.NopStmt;
-import soot.jimple.Stmt;
-import soot.jimple.ThrowStmt;
 import averroes.frameworks.soot.CodeGenerator;
 import averroes.soot.Names;
 import averroes.util.io.Printers;
@@ -145,58 +139,11 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 	// }
 
 	/**
-	 * Insert the standard footer for a library method.
-	 */
-	private void insertJimpleBodyFooter() {
-		/*
-		 * Insert the return statement, only if there are no throwables to
-		 * throw. Otherwise, it's dead code and the Jimple validator will choke
-		 * on it!
-		 */
-		if (throwables.isEmpty()) {
-			insertReturnStmt();
-		}
-	}
-
-	/**
-	 * Insert the appropriate return statement.
-	 */
-	private void insertReturnStmt() {
-		if (method.getReturnType() instanceof VoidType) {
-			body.getUnits().add(Jimple.v().newReturnVoidStmt());
-		} else {
-			Value ret = getCompatibleValue(method.getReturnType());
-			body.getUnits().add(Jimple.v().newReturnStmt(ret));
-		}
-	}
-
-	/**
 	 * Return the local for set_m.
 	 * 
 	 * @return
 	 */
 	private Local getSetM() {
 		return setM;
-	}
-
-	/**
-	 * Guard a statement by an if-statement whose condition always evaluates to
-	 * true. This helps inserting multiple {@link ThrowStmt} for example in a
-	 * Jimple method.
-	 * 
-	 * @param stmt
-	 * @return
-	 */
-	protected void insertAndGuardStmt(Stmt stmt) {
-		// TODO: this condition can produce dead code. That's why we should use
-		// the RTA.guard field as a condition instead.
-		// NeExpr cond = Jimple.v().newNeExpr(IntConstant.v(1),
-		// IntConstant.v(1));
-		EqExpr cond = Jimple.v().newEqExpr(getGuard(), IntConstant.v(0));
-		NopStmt nop = Jimple.v().newNopStmt();
-
-		body.getUnits().add(Jimple.v().newIfStmt(cond, nop));
-		body.getUnits().add(stmt);
-		body.getUnits().add(nop);
 	}
 }
