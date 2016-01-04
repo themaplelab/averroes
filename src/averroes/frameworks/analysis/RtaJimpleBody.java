@@ -117,32 +117,6 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	}
 
 	/**
-	 * Insert identity statements. The version in {@link JimpleBody} does not
-	 * use the {@link LocalGenerator} class to generate locals (it actually
-	 * can't because it doesn't have a reference to the {@link LocalGenerator}
-	 * that was used to generated this method body). This causes inconsistency
-	 * in the names of the generated local variables and this method tries to
-	 * fix that.
-	 */
-	// private void insertIdentityStmts() {
-	// // Add "this" before anything else
-	// if (!method.isStatic()) {
-	// Local r0 = localGenerator.generateLocal(method.getDeclaringClass()
-	// .getType());
-	// ThisRef thisRef = Jimple.v().newThisRef((RefType) r0.getType());
-	// body.getUnits().addFirst(
-	// Jimple.v().newIdentityStmt(thisRef, thisRef));
-	// }
-	//
-	// // Add identity statements for any method parameters next
-	// for (int i = 0; i < method.getParameterCount(); i++) {
-	// Local p = localGenerator.generateLocal(method.getParameterType(i));
-	// ParameterRef paramRef = Jimple.v().newParameterRef(p.getType(), i);
-	// body.getUnits().add(Jimple.v().newIdentityStmt(p, paramRef));
-	// }
-	// }
-
-	/**
 	 * Load the RTA.set field into a local variable, if not loaded before.
 	 * 
 	 * @return
