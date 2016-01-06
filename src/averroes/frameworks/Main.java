@@ -1,17 +1,16 @@
 package averroes.frameworks;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
+import averroes.frameworks.soot.*;
+import averroes.util.io.Printers;
 import org.apache.commons.io.FileUtils;
 
-import soot.G;
-import soot.Scene;
-import soot.SootMethod;
+import soot.*;
 import soot.options.Options;
 import averroes.frameworks.options.FrameworksOptions;
-import averroes.frameworks.soot.ClassWriter;
-import averroes.frameworks.soot.CodeGenerator;
 import averroes.util.TimeUtils;
 
 /**
@@ -48,6 +47,10 @@ public class Main {
 			Options.v().set_soot_classpath(FrameworksOptions.getSootClassPath());
 			Options.v().set_validate(true);
 
+			Options.v().setPhaseOption("wjtp", "enabled");
+			PackManager.v().getPack("wjtp").add(new StaticInlineTransform("wjtp.si"));
+			Options.v().setPhaseOption("wjtp.si", "enabled");
+
 			// Load the necessary classes
 			TimeUtils.reset();
 			System.out.println("");
@@ -69,10 +72,20 @@ public class Main {
 					.map(c -> c.getMethods())
 					.flatMap(List::stream)
 					.filter(SootMethod::isConcrete).forEach(m -> CodeGenerator.getJimpleBodyCreator(m).generateCode());
-			
+
+
+			new Optimizer().optimize();
+
+			Scene.v()
+					.getApplicationClasses()
+					.stream()
+					.map(c -> c.getMethods())
+					.flatMap(List::stream)
+					.filter(SootMethod::isConcrete).forEach(m -> Printers.print(Printers.PrinterType.OPTIMIZED, m));
+
 			Scene.v().getApplicationClasses().forEach(ClassWriter::writeLibraryClassFile);
 
-		} catch (Exception e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
