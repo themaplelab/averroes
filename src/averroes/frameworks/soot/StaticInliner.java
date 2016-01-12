@@ -67,6 +67,7 @@ public class StaticInliner extends SceneTransformer
             TopologicalOrderer orderer = new TopologicalOrderer(cg);
             orderer.go();
             List<SootMethod> order = orderer.order();
+            Collections.reverse(order);
             ListIterator<SootMethod> it = order.listIterator(order.size());
     
             while (it.hasPrevious())
