@@ -1,6 +1,5 @@
 package averroes.frameworks.soot;
 
-import averroes.soot.CHABuilder;
 import soot.PackManager;
 import soot.Transform;
 

@@ -1,4 +1,4 @@
-package averroes.soot;
+package averroes.frameworks.soot;
 
 import soot.*;
 import soot.jimple.*;
