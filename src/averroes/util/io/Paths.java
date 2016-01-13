@@ -37,8 +37,7 @@ public class Paths {
 	 * @return
 	 */
 	public static File framewokrsLibraryClassesOutputDirectory() {
-		return java.nio.file.Paths.get(FrameworksOptions.getOutputDirectory(),
-				"classes", "lib").toFile();
+		return java.nio.file.Paths.get(FrameworksOptions.getOutputDirectory(), "classes", "lib").toFile();
 	}
 
 	/**
@@ -48,29 +47,50 @@ public class Paths {
 	 * @return
 	 */
 	public static File jimpleDumpFile(PrinterType printerType, SootMethod method) {
-		String pkg = method.getDeclaringClass().getPackageName()
-				.replace(".", File.pathSeparator);
+		String pkg = method.getDeclaringClass().getPackageName().replace(".", File.pathSeparator);
 		String file = method.getDeclaringClass().getShortName() + ".jimple";
 		String input = FrameworksOptions.getInputs().get(0);
-		String project = input.replace(File.separator + "bin", "."
-				+ printerType.toString().toLowerCase());
+		String project = input.replace(File.separator + "bin", "." + printerType.toString().toLowerCase());
 
 		/*
-		 * Separating output based on the project. For example: 
-		 * input + original => input.original
-		 * input + generated => output.rta.generated 
-		 * output + expected => output.rta.expected 
-		 * output + optimized => output.rta.optimized
+		 * Separating output based on the project. For example: input + original
+		 * => input.original input + generated => output.rta.generated output +
+		 * expected => output.rta.expected output + optimized =>
+		 * output.rta.optimized
 		 */
 		if (printerType != PrinterType.ORIGINAL) {
-			project = project.replace("input",
-					"output." + FrameworksOptions.getAnalysis());
+			project = project.replace("input", "output." + FrameworksOptions.getAnalysis());
 		}
 
-		Path prefix = java.nio.file.Paths
-				.get(FrameworksOptions.getOutputDirectory()).toAbsolutePath()
-				.getParent().getParent()
-				.resolve(java.nio.file.Paths.get("averroes.tests", "jimple"));
+		Path prefix = java.nio.file.Paths.get(FrameworksOptions.getOutputDirectory()).toAbsolutePath().getParent()
+				.getParent().resolve(java.nio.file.Paths.get("averroes.tests", "jimple"));
+
+		Path dir = java.nio.file.Paths.get(project).getFileName();
+
+		try {
+			FileUtils.forceMkdir(prefix.resolve(dir).resolve(pkg).toFile());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return prefix.resolve(dir).resolve(pkg).resolve(file).toFile();
+	}
+
+	/**
+	 * The path to the debug file where we dump Jimple code for before, after,
+	 * and expected output.
+	 * 
+	 * @return
+	 */
+	public static File inlinerDumpFile(SootMethod method) {
+		String pkg = method.getDeclaringClass().getPackageName().replace(".", File.pathSeparator);
+		String file = method.getDeclaringClass().getShortName() + "-inliner.txt";
+		String input = FrameworksOptions.getInputs().get(0);
+		String project = input.replace(File.separator + "bin", "." + PrinterType.OPTIMIZED.toString().toLowerCase())
+				.replace("input", "output." + FrameworksOptions.getAnalysis());
+
+		Path prefix = java.nio.file.Paths.get(FrameworksOptions.getOutputDirectory()).toAbsolutePath().getParent()
+				.getParent().resolve(java.nio.file.Paths.get("averroes.tests", "jimple"));
 
 		Path dir = java.nio.file.Paths.get(project).getFileName();
 
@@ -107,8 +127,7 @@ public class Paths {
 	 * @return
 	 */
 	public static File placeholderLibraryJarFile() {
-		return new File(AverroesOptions.getOutputDirectory(),
-				"placeholder-lib.jar");
+		return new File(AverroesOptions.getOutputDirectory(), "placeholder-lib.jar");
 	}
 
 	/**
@@ -117,8 +136,7 @@ public class Paths {
 	 * @return
 	 */
 	public static File averroesLibraryClassJarFile() {
-		return new File(AverroesOptions.getOutputDirectory(),
-				"averroes-lib-class.jar");
+		return new File(AverroesOptions.getOutputDirectory(), "averroes-lib-class.jar");
 	}
 
 	/**
@@ -127,8 +145,7 @@ public class Paths {
 	 * @return
 	 */
 	public static File organizedApplicationJarFile() {
-		return new File(AverroesOptions.getOutputDirectory(),
-				"organized-app.jar");
+		return new File(AverroesOptions.getOutputDirectory(), "organized-app.jar");
 	}
 
 	/**
@@ -137,7 +154,6 @@ public class Paths {
 	 * @return
 	 */
 	public static File organizedLibraryJarFile() {
-		return new File(AverroesOptions.getOutputDirectory(),
-				"organized-lib.jar");
+		return new File(AverroesOptions.getOutputDirectory(), "organized-lib.jar");
 	}
 }

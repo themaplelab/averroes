@@ -34,6 +34,8 @@ import soot.jimple.toolkits.callgraph.*;
 import soot.tagkit.Host;
 import java.util.*;
 
+import averroes.util.io.Printers;
+
 /** Uses the Scene's currently-active InvokeGraph to inline monomorphic call sites. */
 public class StaticInliner extends SceneTransformer
 {
@@ -145,7 +147,8 @@ public class StaticInliner extends SceneTransformer
                     // Not that it is important to check right before inlining if the site is still valid.
 
                     SiteInliner.inlineSite(inlinee, invokeStmt, container, options);
-                    System.out.println("inlined "+inlinee+" into "+container);
+                    Printers.logInliningInfo("inlined "+inlinee+" into "+container, container);
+                    //System.out.println("inlined "+inlinee+" into "+container);
                     containers.add(container);
                 }
             }
