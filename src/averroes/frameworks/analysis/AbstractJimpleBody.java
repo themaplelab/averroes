@@ -52,6 +52,7 @@ import soot.jimple.ThrowStmt;
 import soot.jimple.VirtualInvokeExpr;
 import soot.jimple.toolkits.scalar.LocalNameStandardizer;
 import soot.jimple.toolkits.scalar.NopEliminator;
+import soot.toolkits.scalar.UnusedLocalEliminator;
 import averroes.soot.Names;
 import averroes.util.io.Printers;
 import averroes.util.io.Printers.PrinterType;
@@ -187,6 +188,8 @@ public abstract class AbstractJimpleBody {
 	/**
 	 * Perform some code cleanup.
 	 * <ul>
+	 * <li>{@link UnusedLocalEliminator} removes local variables that are
+	 * defined but never used.
 	 * <li>{@link LocalNameStandardizer} standardizes the names of local
 	 * variables (including "this" and method parameters. This makes Jimple code
 	 * comparisons easier.</li>
@@ -195,6 +198,7 @@ public abstract class AbstractJimpleBody {
 	 * </ul>
 	 */
 	protected void cleanup() {
+//		UnusedLocalEliminator.v().transform(body);
 		LocalNameStandardizer.v().transform(body);
 		NopEliminator.v().transform(body);
 	}
@@ -211,9 +215,11 @@ public abstract class AbstractJimpleBody {
 				if (stmt.getRightOp() instanceof NewArrayExpr
 						|| stmt.getRightOp() instanceof NewMultiArrayExpr) {
 					arrayCreations.add(stmt.getRightOp().getType());
-				} else if (isFieldRead(stmt) && stmt.getRightOp().getType() instanceof RefLikeType) {
+				} else if (isFieldRead(stmt)
+						&& stmt.getRightOp().getType() instanceof RefLikeType) {
 					fieldReads.add(((FieldRef) stmt.getRightOp()).getField());
-				} else if (isFieldWrite(stmt) && stmt.getLeftOp().getType() instanceof RefLikeType) {
+				} else if (isFieldWrite(stmt)
+						&& stmt.getLeftOp().getType() instanceof RefLikeType) {
 					fieldWrites.add(((FieldRef) stmt.getLeftOp()).getField());
 				} else if (!readsArray && isArrayRead(stmt)) {
 					readsArray = true;
@@ -541,7 +547,8 @@ public abstract class AbstractJimpleBody {
 					Jimple.v().newAssignStmt(
 							tmp,
 							Jimple.v().newInstanceFieldRef(
-									getCompatibleValue(field.getType()),
+									getCompatibleValue(field
+											.getDeclaringClass().getType()),
 									field.makeRef())));
 		}
 
@@ -550,6 +557,7 @@ public abstract class AbstractJimpleBody {
 
 	/**
 	 * Store the given value to a Soot field.
+	 * 
 	 * @param field
 	 * @param from
 	 */
@@ -564,7 +572,8 @@ public abstract class AbstractJimpleBody {
 			body.getUnits().add(
 					Jimple.v().newAssignStmt(
 							Jimple.v().newInstanceFieldRef(
-									getCompatibleValue(field.getType()),
+									getCompatibleValue(field
+											.getDeclaringClass().getType()),
 									field.makeRef()), from));
 		}
 	}

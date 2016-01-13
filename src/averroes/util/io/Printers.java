@@ -17,7 +17,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
+import soot.Body;
 import soot.SootMethod;
+import soot.jimple.toolkits.scalar.LocalNameStandardizer;
+import soot.jimple.toolkits.scalar.NopEliminator;
 
 /**
  * Utility class for printing-related operations.
@@ -31,24 +34,37 @@ public class Printers {
 		EXPECTED, ORIGINAL, GENERATED, OPTIMIZED;
 	}
 
-	private static PrintStream getPrintStream(PrinterType printerType, SootMethod method) {
+	private static PrintStream getPrintStream(PrinterType printerType,
+			SootMethod method) {
 		PrintStream result = null;
-		
+
 		try {
-			result = new PrintStream(new FileOutputStream(
-					Paths.jimpleDumpFile(printerType, method), true), true);
+			result = new PrintStream(new FileOutputStream(Paths.jimpleDumpFile(
+					printerType, method), true), true);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 
 		return result;
 	}
-	
+
 	public static void print(PrinterType printerType, SootMethod method) {
+		if (printerType == PrinterType.EXPECTED) {
+			cleanup(method.retrieveActiveBody());
+		}
+
 		getPrintStream(printerType, method).println(method.getSignature());
-		getPrintStream(printerType, method).println(method.retrieveActiveBody());
+		getPrintStream(printerType, method)
+				.println(method.retrieveActiveBody());
 		getPrintStream(printerType, method).println();
 		getPrintStream(printerType, method).println();
+	}
+
+	// Apply the same cleanups we do in AbstractJimpleBody
+	private static void cleanup(Body body) {
+//		UnusedLocalEliminator.v().transform(body);
+		LocalNameStandardizer.v().transform(body);
+		NopEliminator.v().transform(body);
 	}
 
 }
