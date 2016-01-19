@@ -35,6 +35,7 @@ public class JimplePrinter {
 			Options.v().set_process_dir(FrameworksOptions.getInputs());
 			Options.v()
 					.set_soot_classpath(FrameworksOptions.getSootClassPath());
+//			Options.v().setPhaseOption("jb.tr", "use-older-type-assigner:true");
 
 			// Load the necessary classes
 			Scene.v().loadNecessaryClasses();
