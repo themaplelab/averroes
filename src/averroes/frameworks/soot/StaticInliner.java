@@ -99,6 +99,8 @@ public class StaticInliner extends SceneTransformer
                     if( !targets.hasNext() ) continue;
                     SootMethod target = (SootMethod)targets.next();
                     if( targets.hasNext() ) continue;
+
+                    if(Optimizer.isOverridable(target)) continue;
     
                     if (!target.getDeclaringClass().isApplicationClass() || !target.isConcrete())
                         continue;
