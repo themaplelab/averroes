@@ -77,12 +77,18 @@ public class Optimizer {
     }
 
     public void removeUnreachableMethods() {
+        Set<String> signaturesToBeKept = new HashSet();
+        signaturesToBeKept.add("void writeObject(java.io.ObjectOutputStream)");
+        signaturesToBeKept.add("void readObject(java.io.ObjectInputStream)");
+        signaturesToBeKept.add("void readObjectNoData()");
+
         Set<SootMethod> reachables = new ReachableMethodsFinder().apply();
         for(SootClass cls: Scene.v().getApplicationClasses()) {
 //            System.out.println("removing unreachable methods in "+cls);
             for (SootMethod method : cls.getMethods()) {
+//                System.out.println(method.getSubSignature());
 //                System.out.println(method+" is reachable? "+reachables.contains(method));
-                if (!reachables.contains(method)) {
+                if (!reachables.contains(method) && !signaturesToBeKept.contains(method.getSubSignature())) {
                     Printers.logInliningInfo("removing unreachable method "+method+" from class "+cls, method);
                     cls.removeMethod(method);
                 }
