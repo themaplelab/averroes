@@ -5,6 +5,7 @@ import java.util.List;
 import soot.G;
 import soot.Scene;
 import soot.SootMethod;
+import soot.jimple.toolkits.scalar.DeadAssignmentEliminator;
 import soot.options.Options;
 import averroes.frameworks.options.FrameworksOptions;
 import averroes.util.io.Printers;
@@ -35,7 +36,8 @@ public class JimplePrinter {
 			Options.v().set_process_dir(FrameworksOptions.getInputs());
 			Options.v()
 					.set_soot_classpath(FrameworksOptions.getSootClassPath());
-//			Options.v().setPhaseOption("jb.tr", "use-older-type-assigner:true");
+			Options.v().setPhaseOption("jb.dae", "enabled:false");
+			Options.v().set_verbose(true);
 
 			// Load the necessary classes
 			Scene.v().loadNecessaryClasses();
