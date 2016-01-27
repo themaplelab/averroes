@@ -2,17 +2,17 @@ package averroes.frameworks.soot;
 
 import averroes.util.io.Printers;
 import soot.*;
+import soot.jimple.FieldRef;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Stmt;
-import soot.jimple.toolkits.callgraph.CallGraph;
-import soot.jimple.toolkits.callgraph.Edge;
+import soot.jimple.internal.*;
+import soot.jimple.toolkits.invoke.SiteInliner;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Optimizer {
+    final static boolean DEBUG = false;
+
     public void optimize() {
         for(int i = 0; i < 5; i++) {
             new CHABuilder().run();
@@ -20,7 +20,14 @@ public class Optimizer {
         }
 
         new CHABuilder().run();
+
         removeUnreachableMethods();
+
+        removeUnusedFields();
+
+        replaceEmptyClasses();
+
+        validate();
     }
 
     /** Return true if it is possible for the application to override this library method. */
@@ -94,5 +101,220 @@ public class Optimizer {
                 }
             }
         }
+    }
+
+    void removeUnusedFields() {
+        Set<SootField> usedFields = new HashSet<SootField>();
+        for(SootClass cls: Scene.v().getApplicationClasses()) {
+            for (SootMethod method : cls.getMethods()) {
+                if (method.hasActiveBody()) {
+                    Body body = method.getActiveBody();
+                    for (ValueBox box : body.getUseAndDefBoxes()) {
+                        Value v = box.getValue();
+                        if (v instanceof FieldRef) {
+                            FieldRef fieldRef = (FieldRef) v;
+                            usedFields.add(fieldRef.getField());
+                        }
+                    }
+                }
+            }
+        }
+        for(SootClass cls: Scene.v().getApplicationClasses()) {
+            for(SootField fld: new ArrayList<SootField>(cls.getFields())) {
+                if(fld.isPublic() || usedFields.contains(fld)) continue;
+                cls.removeField(fld);
+            }
+        }
+    }
+
+    private boolean hasMethodsOrFields(SootClass cls) {
+        if(!cls.getFields().isEmpty()) {
+//            System.out.println("class "+cls+" has fields "+cls.getFields());
+            return true;
+        }
+        for(SootMethod method: cls.getMethods()) {
+            if (method.isConstructor()) continue;
+//            System.out.println("class "+cls+" has method "+method);
+            return true;
+        }
+        return false;
+    }
+    public void replaceEmptyClasses() {
+        for(SootClass cls: new ArrayList<SootClass>(Scene.v().getApplicationClasses())) {
+            if(!cls.isPublic() && !hasMethodsOrFields(cls)) {
+                if(DEBUG) System.out.println("folding class "+cls+" into "+cls.getSuperclass());
+                inlineConstructorCalls(cls);
+                new ClassReplacer(cls, cls.getSuperclass()).apply();
+            }
+        }
+    }
+
+    public void inlineConstructorCalls(SootClass toRemove) {
+//        System.out.println("inlining constructors of empty class "+toRemove);
+
+        for (SootClass cls : Scene.v().getApplicationClasses()) {
+            for (SootMethod method : cls.getMethods()) {
+                if (method.isConcrete()) {
+                    ArrayList<Stmt> sites = new ArrayList<Stmt>();
+                    ArrayList<SootMethod> targets = new ArrayList<SootMethod>();
+                    Body body = method.getActiveBody();
+                    for(Unit u: body.getUnits()) {
+                        Stmt s = (Stmt) u;
+                        if(s.containsInvokeExpr()) {
+                            InvokeExpr ie = s.getInvokeExpr();
+                            SootMethod target = ie.getMethod();
+                            if(target.isConstructor() && target.getDeclaringClass().equals(toRemove)) {
+                                sites.add(s);
+                                targets.add(target);
+                            }
+                        }
+                    }
+                    for (int i = 0; i < sites.size(); i++) {
+                        Printers.logInliningInfo("inlining constructor call " + sites.get(i) + " into " + method, method);
+                        SiteInliner.inlineSite(targets.get(i), sites.get(i), method);
+                    }
+                }
+            }
+        }
+    }
+
+    void validate() {
+        for(SootClass cls: Scene.v().getApplicationClasses()) {
+            cls.validate();
+            for(SootMethod method: cls.getMethods()) {
+                if(method.hasActiveBody()) {
+                    method.getActiveBody().validate();
+                }
+            }
+        }
+    }
+}
+
+class ClassReplacer {
+    SootClass original;
+    SootClass replacement;
+    ClassReplacer(SootClass original, SootClass replacement) {
+        this.original = original;
+        this.replacement = replacement;
+    }
+    private Type replacementType(Type originalType) {
+        if(original.getType().equals(originalType)) return replacement.getType();
+        else if(originalType instanceof ArrayType) {
+            ArrayType arrayType = (ArrayType) originalType;
+            if(original.getType().equals(arrayType.getArrayElementType()))
+                return ArrayType.v(replacement.getType(), arrayType.numDimensions);
+        }
+        return null;
+    }
+    private Type replacementOrOriginal(Type originalType) {
+        Type ret = replacementType(originalType);
+        if(ret == null) return originalType; else return ret;
+    }
+    private SootClass replacementOrOriginal(SootClass originalClass) {
+        if(original.equals(originalClass)) return replacement; else return originalClass;
+    }
+    void apply() {
+        Scene.v().removeClass(original);
+        for(SootClass cls: Scene.v().getApplicationClasses()) {
+            apply(cls);
+        }
+    }
+    void apply(SootClass cls) {
+        if(cls.hasOuterClass() && original.equals(cls.getOuterClass())) cls.setOuterClass(replacement);
+        if(original.equals(cls.getSuperclass())) cls.setSuperclass(replacement);
+        if(cls.implementsInterface(original.getName())) {
+            cls.removeInterface(original);
+            if(!cls.implementsInterface(replacement.getName())) cls.addInterface(replacement);
+        }
+        for(SootMethod method: cls.getMethods()) {
+            apply(method);
+        }
+        for(SootField field: cls.getFields()) {
+            apply(field);
+        }
+    }
+    void apply(SootMethod method) {
+        if(method.throwsException(original)) {
+            method.removeException(original);
+            method.addExceptionIfAbsent(replacement);
+        }
+
+        Type type = replacementType(method.getReturnType());
+        if(type != null) method.setReturnType(type);
+
+        method.setParameterTypes(apply(method.getParameterTypes()));
+
+        if(method.hasActiveBody()) {
+            apply(method.getActiveBody());
+        }
+    }
+    List<Type> apply(List<Type> types) {
+        List<Type> ret = new ArrayList<>();
+        for(Type type: types) {
+            ret.add(replacementOrOriginal(type));
+        }
+        return ret;
+    }
+    void apply(Body body) {
+        for(Local local: body.getLocals()) apply(local);
+        for(Unit unit: body.getUnits()) apply((Stmt) unit);
+        for(Trap trap: body.getTraps()) apply(trap);
+    }
+    void apply(Local local) {
+        Type type = replacementType(local.getType());
+        if(type != null) local.setType(type);
+    }
+    void apply(Stmt s) {
+        for(ValueBox box: s.getUseAndDefBoxes()) apply(box);
+    }
+    void apply(Trap trap) {
+        if(trap.getException().equals(original)) trap.setException(replacement);
+    }
+    void apply(ValueBox box) {
+        Value v = box.getValue();
+        if(v instanceof JCastExpr) {
+            JCastExpr jce = (JCastExpr) v;
+            Type type = replacementType(jce.getCastType());
+            if(type != null) box.setValue(new JCastExpr(jce.getOp(), type));
+        } else if(v instanceof JInstanceOfExpr) {
+            JInstanceOfExpr jioe = (JInstanceOfExpr) v;
+            Type type = replacementType(jioe.getCheckType());
+            if(type != null) box.setValue(new JInstanceOfExpr(jioe.getOp(), type));
+        } else if(v instanceof JNewExpr) {
+            JNewExpr jne = (JNewExpr) v;
+            Type type = replacementType(jne.getType());
+            if(type != null) box.setValue(new JNewExpr((RefType) type));
+        } else if(v instanceof JNewArrayExpr) {
+            JNewArrayExpr jnae = (JNewArrayExpr) v;
+            Type type = replacementType(jnae.getType());
+            if(type != null) box.setValue(new JNewArrayExpr(type, jnae.getSize()));
+        } else if(v instanceof JNewMultiArrayExpr) {
+            JNewMultiArrayExpr jnmae = (JNewMultiArrayExpr) v;
+            Type type = replacementType(jnmae.getType());
+            if(type != null) box.setValue(new JNewMultiArrayExpr((ArrayType) type, jnmae.getSizes()));
+        } else if(v instanceof InvokeExpr) {
+            InvokeExpr invokeExpr = (InvokeExpr) v;
+            SootMethodRef methodRef = invokeExpr.getMethodRef();
+            invokeExpr.setMethodRef(Scene.v().makeMethodRef(
+                    replacementOrOriginal(methodRef.declaringClass()),
+                    methodRef.name(),
+                    apply(methodRef.parameterTypes()),
+                    replacementOrOriginal(methodRef.returnType()),
+                    methodRef.isStatic()
+                    ));
+        } else if(v instanceof FieldRef) {
+            FieldRef fieldRef = (FieldRef) v;
+            SootFieldRef sfr = fieldRef.getFieldRef();
+            fieldRef.setFieldRef(Scene.v().makeFieldRef(
+                    replacementOrOriginal(sfr.declaringClass()),
+                    sfr.name(),
+                    replacementOrOriginal(sfr.type()),
+                    sfr.isStatic()
+            ));
+        }
+    }
+    void apply(SootField field) {
+        Type type = replacementType(field.getType());
+        if(type != null) field.setType(type);
     }
 }
