@@ -18,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 
 import soot.Body;
+import soot.SootClass;
 import soot.SootMethod;
 import soot.jimple.toolkits.scalar.LocalNameStandardizer;
 import soot.jimple.toolkits.scalar.NopEliminator;
@@ -45,12 +46,12 @@ public class Printers {
 
 		return result;
 	}
-
-	private static PrintStream getInlinerPrintStream(SootMethod method) {
+	
+	private static PrintStream getInlinerPrintStream(SootClass cls) {
 		PrintStream result = null;
 
 		try {
-			result = new PrintStream(new FileOutputStream(Paths.inlinerDumpFile(method), true), true);
+			result = new PrintStream(new FileOutputStream(Paths.inlinerDumpFile(cls), true), true);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -70,7 +71,11 @@ public class Printers {
 	}
 
 	public static void logInliningInfo(String message, SootMethod method) {
-		getInlinerPrintStream(method).println(message);
+		getInlinerPrintStream(method.getDeclaringClass()).println(message);
+	}
+	
+	public static void logInliningInfo(String message, SootClass cls) {
+		getInlinerPrintStream(cls).println(message);
 	}
 
 	// Apply the same cleanups we do in AbstractJimpleBody

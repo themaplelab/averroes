@@ -19,10 +19,11 @@ import java.nio.file.Path;
 
 import org.apache.commons.io.FileUtils;
 
-import soot.SootMethod;
 import averroes.frameworks.options.FrameworksOptions;
 import averroes.options.AverroesOptions;
 import averroes.util.io.Printers.PrinterType;
+import soot.SootClass;
+import soot.SootMethod;
 
 /**
  * Utility class for file-related operations.
@@ -75,16 +76,16 @@ public class Paths {
 
 		return prefix.resolve(dir).resolve(pkg).resolve(file).toFile();
 	}
-
+	
 	/**
 	 * The path to the debug file where we dump Jimple code for before, after,
 	 * and expected output.
 	 * 
 	 * @return
 	 */
-	public static File inlinerDumpFile(SootMethod method) {
-		String pkg = method.getDeclaringClass().getPackageName().replace(".", File.pathSeparator);
-		String file = method.getDeclaringClass().getShortName() + "-inliner.txt";
+	public static File inlinerDumpFile(SootClass cls) {
+		String pkg = cls.getPackageName().replace(".", File.pathSeparator);
+		String file = cls.getShortName() + "-inliner.txt";
 		String input = FrameworksOptions.getInputs().get(0);
 		String project = input.replace(File.separator + "bin", "." + PrinterType.OPTIMIZED.toString().toLowerCase())
 				.replace("input", "output." + FrameworksOptions.getAnalysis());
