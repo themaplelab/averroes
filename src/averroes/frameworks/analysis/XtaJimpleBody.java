@@ -2,6 +2,10 @@ package averroes.frameworks.analysis;
 
 import java.util.HashMap;
 
+import averroes.frameworks.soot.CodeGenerator;
+import averroes.soot.Names;
+import averroes.util.io.Printers;
+import averroes.util.io.Printers.PrinterType;
 import soot.BooleanType;
 import soot.Local;
 import soot.Modifier;
@@ -11,10 +15,6 @@ import soot.SootField;
 import soot.SootMethod;
 import soot.Value;
 import soot.jimple.Jimple;
-import averroes.frameworks.soot.CodeGenerator;
-import averroes.soot.Names;
-import averroes.util.io.Printers;
-import averroes.util.io.Printers.PrinterType;
 
 /**
  * XTA Jimple body creator that over-approximates objects in the library by
@@ -27,7 +27,8 @@ import averroes.util.io.Printers.PrinterType;
  */
 public class XtaJimpleBody extends AbstractJimpleBody {
 	private Local xtaGuard = null;
-	private Local setM = null;
+	private Local setMLocal = null;
+	private SootField setM = null;
 	private HashMap<SootField, Local> fieldToSetF = new HashMap<SootField, Local>();
 
 	/**
@@ -41,19 +42,18 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 
 	@Override
 	public Local setToCast() {
-		return getSetM();
+		return getSetMLocal();
 	}
 
 	@Override
 	public void storeToSet(Value from) {
-		body.getUnits().add(Jimple.v().newAssignStmt(getSetM(), from));
+		storeField(getSetM(), from);
 	}
 
 	@Override
 	public Local getGuard() {
 		if (xtaGuard == null) {
-			xtaGuard = loadField(Scene.v().getField(
-					Names.XTA_GUARD_FIELD_SIGNATURE));
+			xtaGuard = loadField(Scene.v().getField(Names.XTA_GUARD_FIELD_SIGNATURE));
 		}
 		return xtaGuard;
 	}
@@ -65,23 +65,22 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 		}
 
 		// Create a public class and set its super class to java.lang.Object
-		SootClass averroesXta = CodeGenerator.createEmptyClass(Names.XTA_CLASS,
-				Modifier.PUBLIC, Scene.v().getObjectType().getSootClass());
+		SootClass averroesXta = CodeGenerator.createEmptyClass(Names.XTA_CLASS, Modifier.PUBLIC,
+				Scene.v().getObjectType().getSootClass());
 
 		// Add a default constructor to it
 		CodeGenerator.createEmptyDefaultConstructor(averroesXta);
 
 		// Add static field "guard" to the class
-		CodeGenerator.createField(averroesXta, Names.GUARD_FIELD_NAME,
-				BooleanType.v(), Modifier.PUBLIC | Modifier.STATIC);
+		CodeGenerator.createField(averroesXta, Names.GUARD_FIELD_NAME, BooleanType.v(),
+				Modifier.PUBLIC | Modifier.STATIC);
 
 		// Add a static initializer to it (it also initializes the static fields
 		// with default values
 		CodeGenerator.createStaticInitializer(averroesXta);
 
 		// TODO: Write it to disk
-		averroesXta.getMethods().forEach(
-				m -> Printers.print(PrinterType.GENERATED, m));
+		averroesXta.getMethods().forEach(m -> Printers.print(PrinterType.GENERATED, m));
 		// ClassWriter.writeLibraryClassFile(averroesXta);
 	}
 
@@ -97,14 +96,52 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 	}
 
 	/**
+	 * Load the set_m field. This is different from the
+	 * {@link AbstractJimpleBody#loadField(SootField)} method in that here we
+	 * use the {@code this} variable for loading set_m if it's instance field.
+	 * In {@link AbstractJimpleBody#loadField(SootField)}, we use a cast of the
+	 * summary set used (e.g., RTA.set in case of RTA, and set_m in case of
+	 * XTA). However, using this summary set here raises a StackOverFlowError
+	 * since {@link #getSetMLocal()} will call
+	 * {@link #getCompatibleValue(soot.Type)} and vice versa.
+	 * 
+	 * @return
+	 */
+	private Local loadSetMField() {
+		Local tmp = localGenerator.generateLocal(getSetM().getType());
+
+		if (getSetM().isStatic()) {
+			body.getUnits().add(Jimple.v().newAssignStmt(tmp, Jimple.v().newStaticFieldRef(getSetM().makeRef())));
+		} else {
+			body.getUnits().add(Jimple.v().newAssignStmt(tmp,
+					Jimple.v().newInstanceFieldRef(body.getThisLocal(), getSetM().makeRef())));
+		}
+
+		return tmp;
+	}
+
+	/**
 	 * Get the local representing set_m.
 	 * 
 	 * @return
 	 */
-	private Local getSetM() {
-		if(setM == null) {
-			setM = localGenerator.generateLocal(Scene.v().getObjectType());
+	private Local getSetMLocal() {
+		if (setMLocal == null) {
+			setMLocal = loadSetMField();
 		}
+		return setMLocal;
+	}
+
+	/**
+	 * Get the Soot field representing set_m.
+	 * 
+	 * @return
+	 */
+	private SootField getSetM() {
+		if (setM == null) {
+			ensureSetMExists();
+		}
+
 		return setM;
 	}
 
@@ -117,8 +154,7 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 	private Local getSetF(SootField field) {
 		if (!fieldToSetF.containsKey(field)) {
 			ensureSetFExists(field);
-			Local local = loadField(field.getDeclaringClass().getFieldByName(
-					setFName(field)));
+			Local local = loadField(field.getDeclaringClass().getFieldByName(setFName(field)));
 			fieldToSetF.put(field, local);
 		}
 
@@ -133,8 +169,7 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 	private void storeToSetF(SootField field) {
 		ensureSetFExists(field);
 		Value from = getCompatibleValue(field.getType());
-		storeField(field.getDeclaringClass().getFieldByName(setFName(field)),
-				from);
+		storeField(field.getDeclaringClass().getFieldByName(setFName(field)), from);
 	}
 
 	/**
@@ -148,8 +183,22 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 		String name = setFName(field);
 
 		if (!cls.declaresFieldByName(name)) {
-			cls.addField(new SootField(name, field.getType(), field
-					.getModifiers()));
+			cls.addField(new SootField(name, field.getType(), field.getModifiers()));
+		}
+	}
+
+	/**
+	 * Ensures that the declaring class of the given Soot method declares the
+	 * set_m field.
+	 * 
+	 */
+	private void ensureSetMExists() {
+		SootClass cls = method.getDeclaringClass();
+		String name = setMName();
+
+		if (!cls.declaresFieldByName(name)) {
+			cls.addField(new SootField(name, Scene.v().getObjectType(), method.getModifiers()));
+			setM = cls.getFieldByName(setMName());
 		}
 	}
 
@@ -161,5 +210,18 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 	 */
 	private String setFName(SootField field) {
 		return Names.SET_FIELD_PREFIX + field.getName();
+	}
+
+	/**
+	 * The name of the set_m field for the given Soot method. We're using the
+	 * index of the method here instead of its name because it could be an
+	 * overloaded method. In such case, using the name will raise an exception
+	 * when we try to add a field for the 2nd overload of the method because a
+	 * field with the name set_m_methodname has already been added to the class.
+	 * 
+	 * @return
+	 */
+	private String setMName() {
+		return Names.SET_METHOD_PREFIX + method.getDeclaringClass().getMethods().indexOf(method);
 	}
 }

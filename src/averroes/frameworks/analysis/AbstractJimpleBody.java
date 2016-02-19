@@ -856,8 +856,7 @@ public abstract class AbstractJimpleBody {
 			invokeExpr = Jimple.v().newVirtualInvokeExpr(base,
 					callee.makeRef(), args);
 		} else {
-			logger.error("Cannot handle invoke expression of type: "
-					+ originalInvokeExpr.getClass());
+			logger.error("Cannot handle invoke expression of type: " + originalInvokeExpr.getClass());
 		}
 
 		return invokeExpr;

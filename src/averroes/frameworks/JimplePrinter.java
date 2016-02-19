@@ -36,8 +36,8 @@ public class JimplePrinter {
 			Options.v().set_process_dir(FrameworksOptions.getInputs());
 			Options.v()
 					.set_soot_classpath(FrameworksOptions.getSootClassPath());
-			Options.v().setPhaseOption("jb.dae", "enabled:false");
-			Options.v().set_verbose(true);
+//			Options.v().setPhaseOption("jb.dae", "enabled:false");
+//			Options.v().set_verbose(true);
 
 			// Load the necessary classes
 			Scene.v().loadNecessaryClasses();
