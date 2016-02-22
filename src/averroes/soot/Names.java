@@ -38,8 +38,8 @@ public class Names {
 	public static final String INSTANCE_FIELD_SIGNATURE = "<" + AVERROES_ABSTRACT_LIBRARY_CLASS + ": "
 			+ AVERROES_ABSTRACT_LIBRARY_CLASS + " " + INSTANCE + ">";
 	
-	public static final String SET_FIELD_PREFIX = "set_f_";
-	public static final String SET_METHOD_PREFIX = "set_m_";
+	public static final String SET_FIELD_PREFIX = "set_";
+	public static final String SET_METHOD_PREFIX = "set_m";
 	public static final String SET_FIELD_NAME = "set";
 	public static final String INT_FIELD_NAME = "integer";
 	public static final String BOOLEAN_FIELD_NAME = "bool";

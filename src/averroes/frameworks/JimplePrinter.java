@@ -2,14 +2,13 @@ package averroes.frameworks;
 
 import java.util.List;
 
-import soot.G;
-import soot.Scene;
-import soot.SootMethod;
-import soot.jimple.toolkits.scalar.DeadAssignmentEliminator;
-import soot.options.Options;
 import averroes.frameworks.options.FrameworksOptions;
 import averroes.util.io.Printers;
 import averroes.util.io.Printers.PrinterType;
+import soot.G;
+import soot.Scene;
+import soot.SootMethod;
+import soot.options.Options;
 
 /**
  * A simple Jimple printer.

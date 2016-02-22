@@ -17,6 +17,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
+import averroes.frameworks.soot.LocalVariableRenamer;
 import soot.Body;
 import soot.SootClass;
 import soot.SootMethod;
@@ -83,6 +84,7 @@ public class Printers {
 		// UnusedLocalEliminator.v().transform(body);
 		LocalNameStandardizer.v().transform(body);
 		NopEliminator.v().transform(body);
+		LocalVariableRenamer.transform(body);
 	}
 
 }

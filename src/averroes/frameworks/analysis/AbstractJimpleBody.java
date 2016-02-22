@@ -53,6 +53,7 @@ import soot.jimple.VirtualInvokeExpr;
 import soot.jimple.toolkits.scalar.LocalNameStandardizer;
 import soot.jimple.toolkits.scalar.NopEliminator;
 import soot.toolkits.scalar.UnusedLocalEliminator;
+import averroes.frameworks.soot.LocalVariableRenamer;
 import averroes.soot.Names;
 import averroes.util.io.Printers;
 import averroes.util.io.Printers.PrinterType;
@@ -201,6 +202,7 @@ public abstract class AbstractJimpleBody {
 //		UnusedLocalEliminator.v().transform(body);
 		LocalNameStandardizer.v().transform(body);
 		NopEliminator.v().transform(body);
+		LocalVariableRenamer.transform(body);
 	}
 
 	/**

@@ -183,7 +183,8 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 		String name = setFName(field);
 
 		if (!cls.declaresFieldByName(name)) {
-			cls.addField(new SootField(name, field.getType(), field.getModifiers()));
+			int modifiers = Modifier.PRIVATE | (field.isStatic() ? Modifier.STATIC : 0);
+			cls.addField(new SootField(name, field.getType(), modifiers));
 		}
 	}
 
@@ -197,7 +198,8 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 		String name = setMName();
 
 		if (!cls.declaresFieldByName(name)) {
-			cls.addField(new SootField(name, Scene.v().getObjectType(), method.getModifiers()));
+			int modifiers = Modifier.PRIVATE | (method.isStatic() ? Modifier.STATIC : 0);
+			cls.addField(new SootField(name, Scene.v().getObjectType(), modifiers));
 			setM = cls.getFieldByName(setMName());
 		}
 	}
