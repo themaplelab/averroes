@@ -1,6 +1,7 @@
 package averroes.frameworks.analysis;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -11,6 +12,10 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import averroes.frameworks.soot.LocalVariableRenamer;
+import averroes.soot.Names;
+import averroes.util.io.Printers;
+import averroes.util.io.Printers.PrinterType;
 import soot.ArrayType;
 import soot.DoubleType;
 import soot.FloatType;
@@ -53,10 +58,6 @@ import soot.jimple.VirtualInvokeExpr;
 import soot.jimple.toolkits.scalar.LocalNameStandardizer;
 import soot.jimple.toolkits.scalar.NopEliminator;
 import soot.toolkits.scalar.UnusedLocalEliminator;
-import averroes.frameworks.soot.LocalVariableRenamer;
-import averroes.soot.Names;
-import averroes.util.io.Printers;
-import averroes.util.io.Printers.PrinterType;
 
 /**
  * Abstract Jimple body creator that declares some common fields and methods.
@@ -199,7 +200,7 @@ public abstract class AbstractJimpleBody {
 	 * </ul>
 	 */
 	protected void cleanup() {
-//		UnusedLocalEliminator.v().transform(body);
+		// UnusedLocalEliminator.v().transform(body);
 		LocalNameStandardizer.v().transform(body);
 		NopEliminator.v().transform(body);
 		LocalVariableRenamer.transform(body);
@@ -214,14 +215,11 @@ public abstract class AbstractJimpleBody {
 			@Override
 			public void caseAssignStmt(AssignStmt stmt) {
 				// array creations, reads, and writes
-				if (stmt.getRightOp() instanceof NewArrayExpr
-						|| stmt.getRightOp() instanceof NewMultiArrayExpr) {
+				if (stmt.getRightOp() instanceof NewArrayExpr || stmt.getRightOp() instanceof NewMultiArrayExpr) {
 					arrayCreations.add(stmt.getRightOp().getType());
-				} else if (isFieldRead(stmt)
-						&& stmt.getRightOp().getType() instanceof RefLikeType) {
+				} else if (isFieldRead(stmt) && stmt.getRightOp().getType() instanceof RefLikeType) {
 					fieldReads.add(((FieldRef) stmt.getRightOp()).getField());
-				} else if (isFieldWrite(stmt)
-						&& stmt.getLeftOp().getType() instanceof RefLikeType) {
+				} else if (isFieldWrite(stmt) && stmt.getLeftOp().getType() instanceof RefLikeType) {
 					fieldWrites.add(((FieldRef) stmt.getLeftOp()).getField());
 				} else if (!readsArray && isArrayRead(stmt)) {
 					readsArray = true;
@@ -235,8 +233,7 @@ public abstract class AbstractJimpleBody {
 			@Override
 			public void caseInvokeStmt(InvokeStmt stmt) {
 				if (isRelevantObjectCreation(stmt)) {
-					objectCreations.add((SpecialInvokeExpr) stmt
-							.getInvokeExpr());
+					objectCreations.add((SpecialInvokeExpr) stmt.getInvokeExpr());
 				} else if (!isCallToSuperConstructor(stmt)) {
 					invokeStmts.add(stmt.getInvokeExpr());
 				}
@@ -257,8 +254,7 @@ public abstract class AbstractJimpleBody {
 	 * could be used in the catch block.
 	 */
 	private void processTraps() {
-		originalBody.getTraps().stream().map(Trap::getException)
-				.forEach(checkedExceptions::add);
+		originalBody.getTraps().stream().map(Trap::getException).forEach(checkedExceptions::add);
 	}
 
 	/**
@@ -274,12 +270,10 @@ public abstract class AbstractJimpleBody {
 		 * any more statements. That is if this method is for a constructor and
 		 * its declaring class has a superclass.
 		 */
-		if (method.isConstructor()
-				&& method.getDeclaringClass().hasSuperclass()) {
+		if (method.isConstructor() && method.getDeclaringClass().hasSuperclass()) {
 			Local base = body.getThisLocal();
-			insertSpecialInvokeStmt(base, method.getDeclaringClass()
-					.getSuperclass()
-					.getMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG));
+			insertSpecialInvokeStmt(base,
+					method.getDeclaringClass().getSuperclass().getMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG));
 		}
 
 		assignMethodParameters();
@@ -340,8 +334,7 @@ public abstract class AbstractJimpleBody {
 
 		// Call <clinit> if found
 		if (cls.declaresMethod(SootMethod.staticInitializerName)) {
-			insertStaticInvokeStmt(cls
-					.getMethodByName(SootMethod.staticInitializerName));
+			insertStaticInvokeStmt(cls.getMethodByName(SootMethod.staticInitializerName));
 		}
 
 		return obj;
@@ -360,12 +353,12 @@ public abstract class AbstractJimpleBody {
 			InvokeExpr expr = buildInvokeExpr(e);
 			// Only store the return value if it's a reference, otherwise just
 			// call the method.
-				if (expr.getMethod().getReturnType() instanceof RefLikeType) {
-					storeMethodCallReturn(expr);
-				} else {
-					insertInvokeStmt(expr);
-				}
-			});
+			if (expr.getMethod().getReturnType() instanceof RefLikeType) {
+				storeMethodCallReturn(expr);
+			} else {
+				insertInvokeStmt(expr);
+			}
+		});
 	}
 
 	/**
@@ -373,16 +366,13 @@ public abstract class AbstractJimpleBody {
 	 */
 	protected void handleArrays() {
 		if (readsArray || writesArray) {
-			Local cast = (Local) getCompatibleValue(ArrayType.v(setToCast()
-					.getType(), ARRAY_LENGTH.value));
+			Local cast = (Local) getCompatibleValue(ArrayType.v(setToCast().getType(), ARRAY_LENGTH.value));
 			ArrayRef arrayRef = Jimple.v().newArrayRef(cast, ARRAY_INDEX);
 
 			if (readsArray) {
-				body.getUnits().add(
-						Jimple.v().newAssignStmt(setToCast(), arrayRef));
+				body.getUnits().add(Jimple.v().newAssignStmt(setToCast(), arrayRef));
 			} else {
-				body.getUnits().add(
-						Jimple.v().newAssignStmt(arrayRef, setToCast()));
+				body.getUnits().add(Jimple.v().newAssignStmt(arrayRef, setToCast()));
 			}
 		}
 	}
@@ -410,9 +400,7 @@ public abstract class AbstractJimpleBody {
 				casts.put(type, local);
 			} else {
 				Local tmp = localGenerator.generateLocal(type);
-				body.getUnits().add(
-						Jimple.v().newAssignStmt(tmp,
-								Jimple.v().newCastExpr(local, type)));
+				body.getUnits().add(Jimple.v().newAssignStmt(tmp, Jimple.v().newCastExpr(local, type)));
 				casts.put(type, tmp);
 			}
 		}
@@ -439,36 +427,37 @@ public abstract class AbstractJimpleBody {
 	 * @param originalInvokeExpr
 	 */
 	protected void insertInvokeStmt(InvokeExpr originalInvokeExpr) {
-		body.getUnits().add(
-				Jimple.v().newInvokeStmt(buildInvokeExpr(originalInvokeExpr)));
+		body.getUnits().add(Jimple.v().newInvokeStmt(buildInvokeExpr(originalInvokeExpr)));
 	}
 
 	/**
 	 * Insert a special invoke statement.
 	 * 
 	 * @param base
-	 * @param method
+	 * @param toInvoke
 	 */
-	protected void insertSpecialInvokeStmt(Local base, SootMethod method) {
-		List<Value> args = method.getParameterTypes().stream()
-				.map(p -> getCompatibleValue(p)).collect(Collectors.toList());
-		body.getUnits().add(
-				Jimple.v().newInvokeStmt(
-						Jimple.v().newSpecialInvokeExpr(base, method.makeRef(),
-								args)));
+	protected void insertSpecialInvokeStmt(Local base, SootMethod toInvoke) {
+		List<Value> args = null;
+
+		// If this is a call to the constructor of an anonymous class, we should
+		// use "this" instead of the regular casting.
+		if (isCallToAnonymousClassConstructor(toInvoke) && toInvoke.getParameterCount() > 0) {
+			args = Arrays.asList(body.getThisLocal());
+		} else {
+			args = toInvoke.getParameterTypes().stream().map(p -> getCompatibleValue(p)).collect(Collectors.toList());
+		}
+		body.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(base, toInvoke.makeRef(), args)));
 	}
 
 	/**
 	 * Insert a static invoke statement.
 	 * 
-	 * @param method
+	 * @param toInvoke
 	 */
-	protected void insertStaticInvokeStmt(SootMethod method) {
-		List<Value> args = method.getParameterTypes().stream()
-				.map(p -> getCompatibleValue(p)).collect(Collectors.toList());
-		body.getUnits()
-				.add(Jimple.v().newInvokeStmt(
-						Jimple.v().newStaticInvokeExpr(method.makeRef(), args)));
+	protected void insertStaticInvokeStmt(SootMethod toInvoke) {
+		List<Value> args = toInvoke.getParameterTypes().stream().map(p -> getCompatibleValue(p))
+				.collect(Collectors.toList());
+		body.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(toInvoke.makeRef(), args)));
 	}
 
 	/**
@@ -524,8 +513,7 @@ public abstract class AbstractJimpleBody {
 	 * @param value
 	 */
 	protected void storeMethodCallReturn(InvokeExpr expr) {
-		Local ret = localGenerator.generateLocal(expr.getMethod()
-				.getReturnType());
+		Local ret = localGenerator.generateLocal(expr.getMethod().getReturnType());
 		body.getUnits().add(Jimple.v().newAssignStmt(ret, expr));
 		storeToSet(ret);
 	}
@@ -541,17 +529,10 @@ public abstract class AbstractJimpleBody {
 		Local tmp = localGenerator.generateLocal(field.getType());
 
 		if (field.isStatic()) {
-			body.getUnits().add(
-					Jimple.v().newAssignStmt(tmp,
-							Jimple.v().newStaticFieldRef(field.makeRef())));
+			body.getUnits().add(Jimple.v().newAssignStmt(tmp, Jimple.v().newStaticFieldRef(field.makeRef())));
 		} else {
-			body.getUnits().add(
-					Jimple.v().newAssignStmt(
-							tmp,
-							Jimple.v().newInstanceFieldRef(
-									getCompatibleValue(field
-											.getDeclaringClass().getType()),
-									field.makeRef())));
+			body.getUnits().add(Jimple.v().newAssignStmt(tmp, Jimple.v()
+					.newInstanceFieldRef(getCompatibleValue(field.getDeclaringClass().getType()), field.makeRef())));
 		}
 
 		return tmp;
@@ -565,18 +546,14 @@ public abstract class AbstractJimpleBody {
 	 */
 	protected void storeField(SootField field, Value from) {
 		if (field.isStatic()) {
-			body.getUnits().add(
-					Jimple.v()
-							.newAssignStmt(
-									Jimple.v().newStaticFieldRef(
-											field.makeRef()), from));
+			body.getUnits().add(Jimple.v().newAssignStmt(Jimple.v().newStaticFieldRef(field.makeRef()), from));
 		} else {
-			body.getUnits().add(
-					Jimple.v().newAssignStmt(
-							Jimple.v().newInstanceFieldRef(
-									getCompatibleValue(field
-											.getDeclaringClass().getType()),
-									field.makeRef()), from));
+			body.getUnits()
+					.add(Jimple.v()
+							.newAssignStmt(
+									Jimple.v().newInstanceFieldRef(
+											getCompatibleValue(field.getDeclaringClass().getType()), field.makeRef()),
+							from));
 		}
 	}
 
@@ -592,9 +569,7 @@ public abstract class AbstractJimpleBody {
 
 		// Loop over all parameters of reference type and create an assignment
 		// statement to the appropriate "expression".
-		body.getParameterLocals().stream()
-				.filter(l -> l.getType() instanceof RefLikeType)
-				.forEach(l -> storeToSet(l));
+		body.getParameterLocals().stream().filter(l -> l.getType() instanceof RefLikeType).forEach(l -> storeToSet(l));
 	}
 
 	/**
@@ -615,8 +590,7 @@ public abstract class AbstractJimpleBody {
 	 * @return
 	 */
 	protected boolean isRelevantObjectCreation(InvokeStmt stmt) {
-		return stmt.getInvokeExpr() instanceof SpecialInvokeExpr
-				&& stmt.getInvokeExpr().getMethod().isConstructor()
+		return stmt.getInvokeExpr() instanceof SpecialInvokeExpr && stmt.getInvokeExpr().getMethod().isConstructor()
 				&& !isCallToSuperConstructor(stmt);
 		// && !originalBody.getFirstNonIdentityStmt().equals(stmt);
 	}
@@ -628,12 +602,24 @@ public abstract class AbstractJimpleBody {
 	 * @return
 	 */
 	protected boolean isCallToSuperConstructor(InvokeStmt stmt) {
-		return !method.getDeclaringClass().hasSuperclass() ? false : stmt
-				.getInvokeExpr() instanceof SpecialInvokeExpr
-				&& method.isConstructor()
-				&& stmt.getInvokeExpr().getMethod().isConstructor()
-				&& method.getDeclaringClass().getSuperclass().getMethods()
-						.contains(stmt.getInvokeExpr().getMethod());
+		return !method.getDeclaringClass().hasSuperclass() ? false
+				: stmt.getInvokeExpr() instanceof SpecialInvokeExpr && method.isConstructor()
+						&& stmt.getInvokeExpr().getMethod().isConstructor() && method.getDeclaringClass()
+								.getSuperclass().getMethods().contains(stmt.getInvokeExpr().getMethod());
+	}
+
+	/**
+	 * Is this a call to an anonymous class constructor? Such methods have
+	 * either 0 or 1 parameter depending on whether the method that declares the
+	 * anonymous class is static or not. Anonymous classes are also inner
+	 * classes of the declaring class of the enclosing method.
+	 * 
+	 * @param toInvoke
+	 * @return
+	 */
+	protected boolean isCallToAnonymousClassConstructor(SootMethod toInvoke) {
+		return toInvoke.getParameterCount() <= 1 && toInvoke.getDeclaringClass().hasOuterClass()
+				&& toInvoke.getDeclaringClass().getOuterClass().equals(method.getDeclaringClass());
 	}
 
 	/**
@@ -662,10 +648,8 @@ public abstract class AbstractJimpleBody {
 	 * @return
 	 */
 	protected boolean readsArray() {
-		return originalBody.getUnits().stream()
-				.filter(u -> u instanceof AssignStmt)
-				.map(AssignStmt.class::cast).filter(this::isArrayRead)
-				.findFirst().isPresent();
+		return originalBody.getUnits().stream().filter(u -> u instanceof AssignStmt).map(AssignStmt.class::cast)
+				.filter(this::isArrayRead).findFirst().isPresent();
 	}
 
 	/**
@@ -684,10 +668,8 @@ public abstract class AbstractJimpleBody {
 	 * @return
 	 */
 	protected boolean writesArray() {
-		return originalBody.getUnits().stream()
-				.filter(u -> u instanceof AssignStmt)
-				.map(AssignStmt.class::cast).filter(this::isArrayWrite)
-				.findFirst().isPresent();
+		return originalBody.getUnits().stream().filter(u -> u instanceof AssignStmt).map(AssignStmt.class::cast)
+				.filter(this::isArrayWrite).findFirst().isPresent();
 	}
 
 	/**
@@ -712,8 +694,8 @@ public abstract class AbstractJimpleBody {
 
 	/**
 	 * Find the compatible value to the given Soot type. If it's a primary type,
-	 * a constant is returned. Otherwise, the methods returns a cast of {@link
-	 * setToCast()} to the given type.
+	 * a constant is returned. Otherwise, the methods returns a cast of
+	 * {@link setToCast()} to the given type.
 	 * 
 	 * @param type
 	 * @return
@@ -752,12 +734,9 @@ public abstract class AbstractJimpleBody {
 	 * @return
 	 */
 	protected List<SpecialInvokeExpr> getObjectCreations() {
-		return originalBody.getUnits().stream()
-				.filter(u -> u instanceof InvokeStmt)
-				.map(InvokeStmt.class::cast)
+		return originalBody.getUnits().stream().filter(u -> u instanceof InvokeStmt).map(InvokeStmt.class::cast)
 				.filter(s -> s.getInvokeExpr() instanceof SpecialInvokeExpr)
-				.map(s -> SpecialInvokeExpr.class.cast(s.getInvokeExpr()))
-				.collect(Collectors.toList());
+				.map(s -> SpecialInvokeExpr.class.cast(s.getInvokeExpr())).collect(Collectors.toList());
 	}
 
 	/**
@@ -766,15 +745,9 @@ public abstract class AbstractJimpleBody {
 	 * @return
 	 */
 	protected List<Type> getArrayCreations() {
-		return originalBody
-				.getUnits()
-				.stream()
-				.filter(u -> u instanceof AssignStmt)
-				.map(AssignStmt.class::cast)
-				.filter(s -> s.getRightOp() instanceof NewArrayExpr
-						|| s.getRightOp() instanceof NewMultiArrayExpr)
-				.map(s -> s.getRightOp().getType())
-				.collect(Collectors.toList());
+		return originalBody.getUnits().stream().filter(u -> u instanceof AssignStmt).map(AssignStmt.class::cast)
+				.filter(s -> s.getRightOp() instanceof NewArrayExpr || s.getRightOp() instanceof NewMultiArrayExpr)
+				.map(s -> s.getRightOp().getType()).collect(Collectors.toList());
 	}
 
 	/**
@@ -807,18 +780,14 @@ public abstract class AbstractJimpleBody {
 		} else if (type instanceof ArrayType) {
 			ArrayType arrayType = (ArrayType) type;
 			if (arrayType.numDimensions <= 1) {
-				return Jimple.v().newNewArrayExpr(arrayType.baseType,
-						ARRAY_LENGTH);
+				return Jimple.v().newNewArrayExpr(arrayType.baseType, ARRAY_LENGTH);
 			} else {
-				return Jimple.v().newNewMultiArrayExpr(
-						arrayType,
-						Collections.nCopies(arrayType.numDimensions,
-								ARRAY_LENGTH));
+				return Jimple.v().newNewMultiArrayExpr(arrayType,
+						Collections.nCopies(arrayType.numDimensions, ARRAY_LENGTH));
 			}
 		}
 
-		throw new IllegalArgumentException("Type " + type
-				+ " cannot be instantiated.");
+		throw new IllegalArgumentException("Type " + type + " cannot be instantiated.");
 	}
 
 	/**
@@ -835,28 +804,21 @@ public abstract class AbstractJimpleBody {
 		InvokeExpr invokeExpr = null;
 
 		// Get the arguments to the call
-		List<Value> args = originalInvokeExpr.getArgs().stream()
-				.map(a -> getCompatibleValue(a.getType()))
+		List<Value> args = originalInvokeExpr.getArgs().stream().map(a -> getCompatibleValue(a.getType()))
 				.collect(Collectors.toList());
 
 		// Build the invoke expression
 		if (originalInvokeExpr instanceof StaticInvokeExpr) {
 			invokeExpr = Jimple.v().newStaticInvokeExpr(callee.makeRef(), args);
 		} else if (originalInvokeExpr instanceof SpecialInvokeExpr) {
-			Local base = (Local) getCompatibleValue(((SpecialInvokeExpr) originalInvokeExpr)
-					.getBase().getType());
-			invokeExpr = Jimple.v().newSpecialInvokeExpr(base,
-					callee.makeRef(), args);
+			Local base = (Local) getCompatibleValue(((SpecialInvokeExpr) originalInvokeExpr).getBase().getType());
+			invokeExpr = Jimple.v().newSpecialInvokeExpr(base, callee.makeRef(), args);
 		} else if (originalInvokeExpr instanceof InterfaceInvokeExpr) {
-			Local base = (Local) getCompatibleValue(((InterfaceInvokeExpr) originalInvokeExpr)
-					.getBase().getType());
-			invokeExpr = Jimple.v().newInterfaceInvokeExpr(base,
-					callee.makeRef(), args);
+			Local base = (Local) getCompatibleValue(((InterfaceInvokeExpr) originalInvokeExpr).getBase().getType());
+			invokeExpr = Jimple.v().newInterfaceInvokeExpr(base, callee.makeRef(), args);
 		} else if (originalInvokeExpr instanceof VirtualInvokeExpr) {
-			Local base = (Local) getCompatibleValue(((VirtualInvokeExpr) originalInvokeExpr)
-					.getBase().getType());
-			invokeExpr = Jimple.v().newVirtualInvokeExpr(base,
-					callee.makeRef(), args);
+			Local base = (Local) getCompatibleValue(((VirtualInvokeExpr) originalInvokeExpr).getBase().getType());
+			invokeExpr = Jimple.v().newVirtualInvokeExpr(base, callee.makeRef(), args);
 		} else {
 			logger.error("Cannot handle invoke expression of type: " + originalInvokeExpr.getClass());
 		}
