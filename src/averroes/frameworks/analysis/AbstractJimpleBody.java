@@ -1,7 +1,6 @@
 package averroes.frameworks.analysis;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -24,6 +23,7 @@ import soot.LongType;
 import soot.PrimType;
 import soot.RefLikeType;
 import soot.RefType;
+import soot.Scene;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
@@ -139,7 +139,7 @@ public abstract class AbstractJimpleBody {
 	/**
 	 * Handle field reads and writes.
 	 */
-	public abstract void handleFields();
+	protected abstract void handleFields();
 
 	/**
 	 * Get the set that will be cast to a certain type for various operations.
@@ -147,7 +147,7 @@ public abstract class AbstractJimpleBody {
 	 * 
 	 * @return
 	 */
-	public abstract Local setToCast();
+	protected abstract Local setToCast();
 
 	/**
 	 * Store the given value to the set that is used to over-approximate objects
@@ -155,7 +155,7 @@ public abstract class AbstractJimpleBody {
 	 * 
 	 * @param from
 	 */
-	public abstract void storeToSet(Value from);
+	protected abstract void storeToSet(Value from);
 
 	/**
 	 * Load the guard field that is used to guard conditionals. See
@@ -163,13 +163,13 @@ public abstract class AbstractJimpleBody {
 	 * 
 	 * @return
 	 */
-	public abstract Local getGuard();
+	protected abstract Local getGuard();
 
 	/**
 	 * Ensure that the common class has been created, along with its fields. For
 	 * example, this class is rta.RTA for the RTA analysis.
 	 */
-	public abstract void ensureCommonClassExists();
+	protected abstract void ensureCommonClassExists();
 
 	/**
 	 * Create a new type-based Jimple body creator for method M.
@@ -370,7 +370,9 @@ public abstract class AbstractJimpleBody {
 			ArrayRef arrayRef = Jimple.v().newArrayRef(cast, ARRAY_INDEX);
 
 			if (readsArray) {
-				body.getUnits().add(Jimple.v().newAssignStmt(setToCast(), arrayRef));
+				Local elem = localGenerator.generateLocal(Scene.v().getObjectType());
+				body.getUnits().add(Jimple.v().newAssignStmt(elem, arrayRef));
+				storeToSet(elem);
 			} else {
 				body.getUnits().add(Jimple.v().newAssignStmt(arrayRef, setToCast()));
 			}
@@ -437,15 +439,8 @@ public abstract class AbstractJimpleBody {
 	 * @param toInvoke
 	 */
 	protected void insertSpecialInvokeStmt(Local base, SootMethod toInvoke) {
-		List<Value> args = null;
-
-		// If this is a call to the constructor of an anonymous class, we should
-		// use "this" instead of the regular casting.
-		if (isCallToAnonymousClassConstructor(toInvoke) && toInvoke.getParameterCount() > 0) {
-			args = Arrays.asList(body.getThisLocal());
-		} else {
-			args = toInvoke.getParameterTypes().stream().map(p -> getCompatibleValue(p)).collect(Collectors.toList());
-		}
+		List<Value> args = toInvoke.getParameterTypes().stream().map(p -> getCompatibleValue(p))
+				.collect(Collectors.toList());
 		body.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(base, toInvoke.makeRef(), args)));
 	}
 
@@ -609,20 +604,6 @@ public abstract class AbstractJimpleBody {
 	}
 
 	/**
-	 * Is this a call to an anonymous class constructor? Such methods have
-	 * either 0 or 1 parameter depending on whether the method that declares the
-	 * anonymous class is static or not. Anonymous classes are also inner
-	 * classes of the declaring class of the enclosing method.
-	 * 
-	 * @param toInvoke
-	 * @return
-	 */
-	protected boolean isCallToAnonymousClassConstructor(SootMethod toInvoke) {
-		return toInvoke.getParameterCount() <= 1 && toInvoke.getDeclaringClass().hasOuterClass()
-				&& toInvoke.getDeclaringClass().getOuterClass().equals(method.getDeclaringClass());
-	}
-
-	/**
 	 * Is this assignment an object creation?
 	 * 
 	 * @param assign
@@ -695,7 +676,10 @@ public abstract class AbstractJimpleBody {
 	/**
 	 * Find the compatible value to the given Soot type. If it's a primary type,
 	 * a constant is returned. Otherwise, the methods returns a cast of
-	 * {@link setToCast()} to the given type.
+	 * {@link setToCast()} to the given type. In the case that the cast is to
+	 * the same type as the class declaring this method, then return the
+	 * {@code this} variable. This is used in calls to the constructors of
+	 * anonymous classes, as well as accessing fields in the same class.
 	 * 
 	 * @param type
 	 * @return
@@ -703,6 +687,8 @@ public abstract class AbstractJimpleBody {
 	protected Value getCompatibleValue(Type type) {
 		if (type instanceof PrimType) {
 			return getPrimValue((PrimType) type);
+		} else if (type.equals(method.getDeclaringClass().getType())) {
+			return body.getThisLocal();
 		} else {
 			return insertCastStmt(setToCast(), type);
 		}
