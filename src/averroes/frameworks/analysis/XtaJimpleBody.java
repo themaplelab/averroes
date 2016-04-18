@@ -147,8 +147,9 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 	 */
 	private SootField getSetF(SootField field) {
 		if (!setF.containsKey(field)) {
-			ensureSetFExists(field);
-			setF.put(field, field.getDeclaringClass().getFieldByName(setFName(field)));
+			//ensureSetFExists(field);
+//			setF.put(field, field.getDeclaringClass().getFieldByName(setFName(field)));
+			setF.put(field, field.getDeclaringClass().getFieldByName(field.getName()));
 		}
 
 		return setF.get(field);
