@@ -236,7 +236,7 @@ public abstract class AbstractJimpleBody {
 			public void caseInvokeStmt(InvokeStmt stmt) {
 				if (isRelevantObjectCreation(stmt)) {
 					objectCreations.add((SpecialInvokeExpr) stmt.getInvokeExpr());
-				} else if (!isCallToSuperConstructor(stmt)) {
+				} else if (!isCallToSuperOrOverloadedConstructor(stmt)) {
 					invokeStmts.add(stmt.getInvokeExpr());
 				}
 			}
@@ -274,10 +274,17 @@ public abstract class AbstractJimpleBody {
 		 * any more statements. That is if this method is for a constructor and
 		 * its declaring class has a superclass.
 		 */
-		if (method.isConstructor() && method.getDeclaringClass().hasSuperclass()) {
+		if (method.isConstructor()) {
 			Local base = body.getThisLocal();
-			insertSpecialInvokeStmt(base,
-					method.getDeclaringClass().getSuperclass().getMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG));
+			Stmt firstNonIdentity = originalBody.getFirstNonIdentityStmt();
+
+			if (isCallToSuperOrOverloadedConstructor(firstNonIdentity)) {
+				InvokeStmt stmt = (InvokeStmt) firstNonIdentity;
+				insertSpecialInvokeStmt(base, stmt.getInvokeExpr().getMethod());
+			} else if (method.getDeclaringClass().hasSuperclass()) {
+				insertSpecialInvokeStmt(base,
+						method.getDeclaringClass().getSuperclass().getMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG));
+			}
 		}
 
 		assignMethodParameters();
@@ -612,12 +619,12 @@ public abstract class AbstractJimpleBody {
 	 */
 	protected boolean isRelevantObjectCreation(InvokeStmt stmt) {
 		return stmt.getInvokeExpr() instanceof SpecialInvokeExpr && stmt.getInvokeExpr().getMethod().isConstructor()
-				&& !isCallToSuperConstructor(stmt);
+				&& !isCallToSuperOrOverloadedConstructor(stmt);
 		// && !originalBody.getFirstNonIdentityStmt().equals(stmt);
 	}
 
 	/**
-	 * Is this a call to the super constructor?
+	 * Is this a call to the super constructor? (e.g., super(e)).
 	 * 
 	 * @param stmt
 	 * @return
@@ -627,6 +634,33 @@ public abstract class AbstractJimpleBody {
 				: stmt.getInvokeExpr() instanceof SpecialInvokeExpr && method.isConstructor()
 						&& stmt.getInvokeExpr().getMethod().isConstructor() && method.getDeclaringClass()
 								.getSuperclass().getMethods().contains(stmt.getInvokeExpr().getMethod());
+	}
+
+	/**
+	 * Is this a call to another overloaded constructor? (e.g., this(e)).
+	 * 
+	 * @param stmt
+	 * @return
+	 */
+	protected boolean isCallToOverloadedConstructor(InvokeStmt stmt) {
+		return stmt.getInvokeExpr() instanceof SpecialInvokeExpr && method.isConstructor()
+				&& stmt.getInvokeExpr().getMethod().isConstructor()
+				&& method.getDeclaringClass().getMethods().contains(stmt.getInvokeExpr().getMethod());
+	}
+
+	/**
+	 * Is this stmt a call to a super or overloaded constructor?
+	 * 
+	 * @param stmt
+	 * @return
+	 */
+	protected boolean isCallToSuperOrOverloadedConstructor(Stmt stmt) {
+		if (stmt instanceof InvokeStmt) {
+			InvokeStmt invoke = (InvokeStmt) stmt;
+			return isCallToSuperConstructor(invoke) || isCallToOverloadedConstructor(invoke);
+		}
+
+		return false;
 	}
 
 	/**
