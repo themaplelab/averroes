@@ -296,10 +296,10 @@ public abstract class AbstractJimpleBody {
 	protected void insertJimpleBodyFooter() {
 		/*
 		 * Insert the return statement, only if there are no exceptions to
-		 * throw. Otherwise, it's dead code and the Jimple validator will choke
+		 * throw or they are guarded. Otherwise, it's dead code and the Jimple validator will choke
 		 * on it!
 		 */
-		if (throwables.isEmpty()) {
+		if (throwables.isEmpty() || guardThrowStatements()) {
 			insertReturnStmt();
 		}
 	}
@@ -392,10 +392,23 @@ public abstract class AbstractJimpleBody {
 	}
 
 	/**
-	 * Handle throwing exceptions and try-catch blocks.
+	 * Handle throwing exceptions and try-catch blocks. The throw statements
+	 * should always be guarded, regardless of how many there are. This way, the
+	 * return statement, that is inserted later, is never unreachable.
 	 */
 	protected void handleExceptions() {
-		throwables.forEach(x -> insertThrowStmt(x, throwables.size() > 1));
+		throwables.forEach(x -> insertThrowStmt(x, guardThrowStatements()));
+	}
+
+	/**
+	 * Should throw statements be guarded by a boolean condition? They should if
+	 * there is more than one throw statement, or if there's only one throw
+	 * statement and the method has a non-void return type.
+	 * 
+	 * @return
+	 */
+	protected boolean guardThrowStatements() {
+		return throwables.size() > 1 || (throwables.size() == 1 && !(method.getReturnType() instanceof VoidType));
 	}
 
 	/**
@@ -524,7 +537,7 @@ public abstract class AbstractJimpleBody {
 	 */
 	protected void insertAndGuardStmt(Stmt stmt) {
 		// TODO: this condition can produce dead code. That's why we should use
-		// the RTA.guard field as a condition instead.
+		// the "guard" field as a condition instead.
 		// NeExpr cond = Jimple.v().newNeExpr(IntConstant.v(1),
 		// IntConstant.v(1));
 		EqExpr cond = Jimple.v().newEqExpr(getGuard(), IntConstant.v(0));
