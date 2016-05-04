@@ -295,9 +295,9 @@ public abstract class AbstractJimpleBody {
 	 */
 	protected void insertJimpleBodyFooter() {
 		/*
-		 * Insert the return statement, only if there are no exceptions to
-		 * throw or they are guarded. Otherwise, it's dead code and the Jimple validator will choke
-		 * on it!
+		 * Insert the return statement, only if there are no exceptions to throw
+		 * or they are guarded. Otherwise, it's dead code and the Jimple
+		 * validator will choke on it!
 		 */
 		if (throwables.isEmpty() || guardThrowStatements()) {
 			insertReturnStmt();
@@ -567,15 +567,17 @@ public abstract class AbstractJimpleBody {
 	 * @return
 	 */
 	protected Local loadField(SootField field) {
-		Local tmp = localGenerator.generateLocal(field.getType());
+		Value fieldRef;
 
 		if (field.isStatic()) {
-			body.getUnits().add(Jimple.v().newAssignStmt(tmp, Jimple.v().newStaticFieldRef(field.makeRef())));
+			fieldRef = Jimple.v().newStaticFieldRef(field.makeRef());
 		} else {
-			body.getUnits().add(Jimple.v().newAssignStmt(tmp, Jimple.v()
-					.newInstanceFieldRef(getCompatibleValue(field.getDeclaringClass().getType()), field.makeRef())));
+			fieldRef = Jimple.v()
+					.newInstanceFieldRef(getCompatibleValue(field.getDeclaringClass().getType()), field.makeRef());
 		}
 
+		Local tmp = localGenerator.generateLocal(field.getType());
+		body.getUnits().add(Jimple.v().newAssignStmt(tmp, fieldRef));
 		return tmp;
 	}
 
