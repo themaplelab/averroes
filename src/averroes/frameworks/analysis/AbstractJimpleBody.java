@@ -770,7 +770,8 @@ public abstract class AbstractJimpleBody {
 	 * @return
 	 */
 	protected boolean isFieldRead(AssignStmt assign) {
-		return assign.getRightOp() instanceof FieldRef;
+		return assign.getRightOp() instanceof FieldRef && !(isDeclaringClassInnerClass()
+				&& ((FieldRef) assign.getRightOp()).getField().getName().equals("this$0"));
 	}
 
 	/**
