@@ -17,12 +17,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
-import averroes.frameworks.soot.LocalVariableRenamer;
-import soot.Body;
+import averroes.util.SootUtils;
 import soot.SootClass;
 import soot.SootMethod;
-import soot.jimple.toolkits.scalar.LocalNameStandardizer;
-import soot.jimple.toolkits.scalar.NopEliminator;
 
 /**
  * Utility class for printing-related operations.
@@ -47,7 +44,7 @@ public class Printers {
 
 		return result;
 	}
-	
+
 	private static PrintStream getInlinerPrintStream(SootClass cls) {
 		PrintStream result = null;
 
@@ -62,7 +59,7 @@ public class Printers {
 
 	public static void print(PrinterType printerType, SootMethod method) {
 		if (printerType == PrinterType.EXPECTED) {
-			cleanup(method.retrieveActiveBody());
+			SootUtils.cleanup(method.retrieveActiveBody());
 		}
 
 		getPrintStream(printerType, method).println(method.getSignature());
@@ -74,17 +71,8 @@ public class Printers {
 	public static void logInliningInfo(String message, SootMethod method) {
 		getInlinerPrintStream(method.getDeclaringClass()).println(message);
 	}
-	
+
 	public static void logInliningInfo(String message, SootClass cls) {
 		getInlinerPrintStream(cls).println(message);
 	}
-
-	// Apply the same cleanups we do in AbstractJimpleBody
-	private static void cleanup(Body body) {
-		// UnusedLocalEliminator.v().transform(body);
-		LocalNameStandardizer.v().transform(body);
-		NopEliminator.v().transform(body);
-		LocalVariableRenamer.transform(body);
-	}
-
 }

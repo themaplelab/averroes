@@ -1,4 +1,4 @@
-package averroes.frameworks.soot;
+package averroes.soot;
 
 import java.util.Iterator;
 

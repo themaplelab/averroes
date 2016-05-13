@@ -11,8 +11,9 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import averroes.frameworks.soot.LocalVariableRenamer;
+import averroes.soot.LocalVariableRenamer;
 import averroes.soot.Names;
+import averroes.util.SootUtils;
 import averroes.util.io.Printers;
 import averroes.util.io.Printers.PrinterType;
 import soot.ArrayType;
@@ -129,7 +130,7 @@ public abstract class AbstractJimpleBody {
 		insertJimpleBodyFooter();
 
 		// Cleanup the generated body
-		cleanup();
+		SootUtils.cleanup(body);
 
 		// Validate method Jimple body & assign it to the method
 		body.validate();
@@ -190,25 +191,6 @@ public abstract class AbstractJimpleBody {
 	}
 
 	/**
-	 * Perform some code cleanup.
-	 * <ul>
-	 * <li>{@link UnusedLocalEliminator} removes local variables that are
-	 * defined but never used.
-	 * <li>{@link LocalNameStandardizer} standardizes the names of local
-	 * variables (including "this" and method parameters. This makes Jimple code
-	 * comparisons easier.</li>
-	 * <li>using {@link NopEliminator} eliminates the NOP statements introduced
-	 * by guards.</li>
-	 * </ul>
-	 */
-	protected void cleanup() {
-		// UnusedLocalEliminator.v().transform(body);
-		LocalNameStandardizer.v().transform(body);
-		NopEliminator.v().transform(body);
-		LocalVariableRenamer.transform(body);
-	}
-
-	/**
 	 * Scan the original method body for stuff we are looking for so that we
 	 * loop over the instructions only once.
 	 */
@@ -243,6 +225,7 @@ public abstract class AbstractJimpleBody {
 
 			@Override
 			public void caseThrowStmt(ThrowStmt stmt) {
+				// Only consider throwables that are not handled locally
 				if (!TrapManager.getTrappedUnitsOf(originalBody).contains(stmt)) {
 					throwables.add(stmt.getOp().getType());
 				}
@@ -299,7 +282,7 @@ public abstract class AbstractJimpleBody {
 		 * or they are guarded. Otherwise, it's dead code and the Jimple
 		 * validator will choke on it!
 		 */
-		if (throwables.isEmpty() || guardThrowStatements()) {
+		if (throwables.isEmpty() || isThrowStatementGuardRequired()) {
 			insertReturnStmt();
 		}
 	}
@@ -397,7 +380,7 @@ public abstract class AbstractJimpleBody {
 	 * return statement, that is inserted later, is never unreachable.
 	 */
 	protected void handleExceptions() {
-		throwables.forEach(x -> insertThrowStmt(x, guardThrowStatements()));
+		throwables.forEach(x -> insertThrowStmt(x, isThrowStatementGuardRequired()));
 	}
 
 	/**
@@ -407,7 +390,7 @@ public abstract class AbstractJimpleBody {
 	 * 
 	 * @return
 	 */
-	protected boolean guardThrowStatements() {
+	protected boolean isThrowStatementGuardRequired() {
 		return throwables.size() > 1 || (throwables.size() == 1 && !(method.getReturnType() instanceof VoidType));
 	}
 
