@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import averroes.soot.LocalVariableRenamer;
 import averroes.soot.Names;
 import averroes.util.SootUtils;
 import averroes.util.io.Printers;
@@ -43,6 +42,7 @@ import soot.jimple.DoubleConstant;
 import soot.jimple.EqExpr;
 import soot.jimple.FieldRef;
 import soot.jimple.FloatConstant;
+import soot.jimple.InstanceFieldRef;
 import soot.jimple.IntConstant;
 import soot.jimple.InterfaceInvokeExpr;
 import soot.jimple.InvokeExpr;
@@ -58,9 +58,7 @@ import soot.jimple.StaticInvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.ThrowStmt;
 import soot.jimple.VirtualInvokeExpr;
-import soot.jimple.toolkits.scalar.LocalNameStandardizer;
-import soot.jimple.toolkits.scalar.NopEliminator;
-import soot.toolkits.scalar.UnusedLocalEliminator;
+import soot.tagkit.InnerClassTag;
 
 /**
  * Abstract Jimple body creator that declares some common fields and methods.
@@ -260,6 +258,17 @@ public abstract class AbstractJimpleBody {
 		if (method.isConstructor()) {
 			Local base = body.getThisLocal();
 			Stmt firstNonIdentity = originalBody.getFirstNonIdentityStmt();
+
+			/*
+			 * If this is the constructor of an inner class, insert an
+			 * assignment statement for the first parameter to the special
+			 * this$0 field.
+			 */
+			if (isDeclaringClassNonStaticInnerClass()) {
+				InstanceFieldRef fieldRef = Jimple.v().newInstanceFieldRef(base,
+						method.getDeclaringClass().getFieldByName("this$0").makeRef());
+				body.getUnits().add(Jimple.v().newAssignStmt(fieldRef, body.getParameterLocal(0)));
+			}
 
 			if (isCallToSuperOrOverloadedConstructor(firstNonIdentity)) {
 				InvokeStmt stmt = (InvokeStmt) firstNonIdentity;
@@ -555,8 +564,8 @@ public abstract class AbstractJimpleBody {
 		if (field.isStatic()) {
 			fieldRef = Jimple.v().newStaticFieldRef(field.makeRef());
 		} else {
-			fieldRef = Jimple.v()
-					.newInstanceFieldRef(getCompatibleValue(field.getDeclaringClass().getType()), field.makeRef());
+			fieldRef = Jimple.v().newInstanceFieldRef(getCompatibleValue(field.getDeclaringClass().getType()),
+					field.makeRef());
 		}
 
 		Local tmp = localGenerator.generateLocal(field.getType());
@@ -595,7 +604,21 @@ public abstract class AbstractJimpleBody {
 
 		// Loop over all parameters of reference type and create an assignment
 		// statement to the appropriate "expression".
-		body.getParameterLocals().stream().filter(l -> l.getType() instanceof RefLikeType).forEach(l -> storeToSet(l));
+		body.getParameterLocals().stream()
+				.filter(l -> !isConstructorOuterClassParameterLocal(l) && l.getType() instanceof RefLikeType)
+				.forEach(l -> storeToSet(l));
+	}
+
+	/**
+	 * Is this local variable the parameter of the outer class in the
+	 * constructor of the inner class?
+	 * 
+	 * @param local
+	 * @return
+	 */
+	protected boolean isConstructorOuterClassParameterLocal(Local local) {
+		return method.isConstructor() && isDeclaringClassNonStaticInnerClass()
+				&& local.equals(body.getParameterLocal(0));
 	}
 
 	/**
@@ -659,6 +682,35 @@ public abstract class AbstractJimpleBody {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Is this the constructor of an inner class. It's unfortunate we can't use
+	 * the method {@link SootClass#isInnerClass()} for that. We have to resort
+	 * to the class tags, hoping that they are parsed properly.
+	 * 
+	 * @return
+	 */
+	protected boolean isDeclaringClassInnerClass() {
+		return method.getDeclaringClass().getTags().stream().anyMatch(t -> t instanceof InnerClassTag);
+	}
+
+	/**
+	 * Checks if the declaring class of this method is a static inner class.
+	 * 
+	 * @return
+	 */
+	protected boolean isDeclaringClassStaticInnerClass() {
+		return isDeclaringClassInnerClass() && !method.getDeclaringClass().declaresFieldByName("this$0");
+	}
+
+	/**
+	 * Checks if the declaring class of this method is a non-static inner class.
+	 * 
+	 * @return
+	 */
+	protected boolean isDeclaringClassNonStaticInnerClass() {
+		return isDeclaringClassInnerClass() && method.getDeclaringClass().declaresFieldByName("this$0");
 	}
 
 	/**
@@ -728,7 +780,8 @@ public abstract class AbstractJimpleBody {
 	 * @return
 	 */
 	protected boolean isFieldWrite(AssignStmt assign) {
-		return assign.getLeftOp() instanceof FieldRef;
+		return assign.getLeftOp() instanceof FieldRef && !(isDeclaringClassInnerClass()
+				&& ((FieldRef) assign.getLeftOp()).getField().getName().equals("this$0"));
 	}
 
 	/**
