@@ -11,8 +11,8 @@ Averroes is Java bytecode generator that enables sound and precise analysis of t
 The code bas for Averroes is in the form of an Eclipse project. It is setup with the following dependencies:
 
 * Project dependencies (needs to be available in your Eclipse workspace)
-    - [Soot](you need to check out the `develop` branch from https://github.com/Sable/soot)
-    - [Probe](you need to check out the `master` branch from https://github.com/karimhamdanali/probe)
+    - [Soot](https://github.com/Sable/soot): you need to check out the `develop` branch
+    - [Probe](https://github.com/karimhamdanali/probe): you need to check out the `master` branch
 * Library dependencies (ships with Averroes)
      - [bcel](https://commons.apache.org/proper/commons-bcel/)
      - [commons-cli](https://commons.apache.org/proper/commons-cli/)
