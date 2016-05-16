@@ -1,4 +1,4 @@
-![Averroes logo](/logo/logo.tiff?raw=true)
+![Averroes logo](/logo/logo.png)
 
 Averroes is Java bytecode generator that enables sound and precise analysis of the application part of a program without analyzing its library dependencies. It achieves that by generating a placeholder/stub library for those dependencies that models the original library code with respect to:
 - class instantiations
