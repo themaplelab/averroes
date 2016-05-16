@@ -10,9 +10,7 @@ Averroes is Java bytecode generator that enables sound and precise analysis of t
 
 ``` bash
 jar -jar averroes.jar -a <path> [-d <file>] [-h] -j <directory> [-l <path>] -m <class> -o <directory> -r <regex> [-t <file>]
-```
 
-``` text
  -a,--application-jars <path>              a list of the application JAR
                                            files separated by
                                            File.pathSeparator
