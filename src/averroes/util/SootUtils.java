@@ -2,6 +2,7 @@ package averroes.util;
 
 import averroes.soot.LocalVariableRenamer;
 import averroes.soot.LocalVariableSorter;
+import averroes.soot.UnnecessaryMethodCallEliminator;
 import soot.Body;
 import soot.jimple.toolkits.scalar.LocalNameStandardizer;
 import soot.jimple.toolkits.scalar.NopEliminator;
@@ -34,7 +35,8 @@ public class SootUtils {
 	 * @param body
 	 */
 	public static void cleanup(Body body) {
-		// UnusedLocalEliminator.v().transform(body);
+//		UnnecessaryMethodCallEliminator.transform(body);
+//		UnusedLocalEliminator.v().transform(body);
 		LocalVariableSorter.transform(body);
 		LocalNameStandardizer.v().transform(body);
 		NopEliminator.v().transform(body);
