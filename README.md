@@ -12,6 +12,7 @@ Averroes is Java bytecode generator that enables sound and precise analysis of t
 jar -jar averroes.jar -a <path> [-d <file>] [-h] -j <directory> [-l <path>] -m <class> -o <directory> -r <regex> [-t <file>]
 ```
 
+``` text
  -a,--application-jars <path>              a list of the application JAR
                                            files separated by
                                            File.pathSeparator
@@ -41,7 +42,7 @@ jar -jar averroes.jar -a <path> [-d <file>] [-h] -j <directory> [-l <path>] -m <
                                            facts generated for this
                                            application in the TamiFlex
                                            format
-
+```
 
 ## License
 
