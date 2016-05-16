@@ -6,6 +6,18 @@ Averroes is Java bytecode generator that enables sound and precise analysis of t
 - handled exceptions (caught or thrown)
 - field and array accesses
 
+## Dependencies
+
+The code bas for Averroes is in the form of an Eclipse project. It is setup with the following dependencies:
+
+* Project dependencies (needs to be available in your Eclipse workspace)
+    - [Soot](you need to check out the `develop` branch from https://github.com/Sable/soot)
+    - [Probe](you need to check out the `master` branch from https://github.com/karimhamdanali/probe)
+* Library dependencies (ships with Averroes)
+     - [bcel](https://commons.apache.org/proper/commons-bcel/)
+     - [commons-cli](https://commons.apache.org/proper/commons-cli/)
+     - [commons-io](https://commons.apache.org/proper/commons-io/)
+
 ## Usage
 
 ``` text
