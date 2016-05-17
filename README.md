@@ -21,26 +21,15 @@ The code bas for Averroes is in the form of an Eclipse project. It is setup with
 ## Usage
 
 ``` text
-jar -jar averroes.jar -a <path> [-d <file>] [-h] -j <directory> [-l <path>] -m <class> -o <directory> -r <regex> [-t <file>]
+jar -jar averroes.jar <required parameters> [optional parameters]
 
+where required parameters include:
  -a,--application-jars <path>              A list of the application JAR
                                            files separated by path separator.
-                                           
- -d,--dynamic-classes-file <file>          A file that contains a list of
-                                           classes that are loaded
-                                           dynamically by Averroes (e.g.,
-                                           classes instantiated through
-                                           reflection).
-                                           
- -h,--help                                 Prints out this help message.
  
  -j,--java-runtime-directory <directory>   The directory that contains the
                                            Java runtime environment that
                                            Averroes should model.
-                                           
- -l,--library-jars <path>                  A list of the JAR files for
-                                           library dependencies separated
-                                           by path separator.
                                            
  -m,--main-class <class>                   The main class that runs the
                                            application when the program
@@ -58,6 +47,19 @@ jar -jar averroes.jar -a <path> [-d <file>] [-h] -j <directory> [-l <path>] -m <
                                            its subpackages, ** to include the 
                                            default package, <full_class_name> to 
                                            include a single class.
+
+and optional parameters include:
+ -d,--dynamic-classes-file <file>          A file that contains a list of
+                                           classes that are loaded
+                                           dynamically by Averroes (e.g.,
+                                           classes instantiated through
+                                           reflection).
+                                           
+ -h,--help                                 Prints out this help message.
+ 
+ -l,--library-jars <path>                  A list of the JAR files for
+                                           library dependencies separated
+                                           by path separator.
                                            
  -t,--tamiflex-facts-file <file>           A file that contains reflection
                                            facts generated for this application 
