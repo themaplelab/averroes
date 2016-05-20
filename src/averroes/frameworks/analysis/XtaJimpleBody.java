@@ -14,6 +14,7 @@ import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
 import soot.Value;
+import soot.jimple.Jimple;
 
 /**
  * XTA Jimple body creator that over-approximates objects in the library by
@@ -96,7 +97,7 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 			storeToSetF(f);
 		});
 	}
-	
+
 	/**
 	 * Get the local representing the set_m field of the underlying Soot method.
 	 * 
@@ -108,6 +109,28 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 		}
 
 		return setMLocal;
+	}
+
+	/**
+	 * This basically special cases the loadField grammar chunk for the set_m
+	 * and set_f field of the underlying method. For those loads, use the "this"
+	 * variable instead of the regular cast as long as the method is not static.
+	 * Otherwise, cyclic calls happen and the flying spaghetti monster will show
+	 * up on your doorstep.
+	 * 
+	 * @param field
+	 * @return
+	 */
+	@Override
+	protected Value getFieldRef(SootField field) {
+		if (field.isStatic()) {
+			return Jimple.v().newStaticFieldRef(field.makeRef());
+		} else if ((field.equals(getSetM()) || setF.containsValue(field)) && !method.isStatic()) {
+			return Jimple.v().newInstanceFieldRef(body.getThisLocal(), field.makeRef());
+		} else {
+			return Jimple.v().newInstanceFieldRef(getCompatibleValue(field.getDeclaringClass().getType()),
+					field.makeRef());
+		}
 	}
 
 	/**
@@ -147,8 +170,9 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 	 */
 	private SootField getSetF(SootField field) {
 		if (!setF.containsKey(field)) {
-			//ensureSetFExists(field);
-//			setF.put(field, field.getDeclaringClass().getFieldByName(setFName(field)));
+			// ensureSetFExists(field);
+			// setF.put(field,
+			// field.getDeclaringClass().getFieldByName(setFName(field)));
 			setF.put(field, field.getDeclaringClass().getFieldByName(field.getName()));
 		}
 
@@ -165,21 +189,22 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 		storeField(getSetF(field), from);
 	}
 
-	/**
-	 * Ensures that the declaring class of the given Soot field declares the
-	 * set_f field.
-	 * 
-	 * @param field
-	 */
-	private void ensureSetFExists(SootField field) {
-		SootClass cls = field.getDeclaringClass();
-		String name = setFName(field);
-
-		if (!cls.declaresFieldByName(name)) {
-			int modifiers = Modifier.PRIVATE | (field.isStatic() ? Modifier.STATIC : 0);
-			cls.addField(new SootField(name, field.getType(), modifiers));
-		}
-	}
+	// /**
+	// * Ensures that the declaring class of the given Soot field declares the
+	// * set_f field.
+	// *
+	// * @param field
+	// */
+	// private void ensureSetFExists(SootField field) {
+	// SootClass cls = field.getDeclaringClass();
+	// String name = setFName(field);
+	//
+	// if (!cls.declaresFieldByName(name)) {
+	// int modifiers = Modifier.PRIVATE | (field.isStatic() ? Modifier.STATIC :
+	// 0);
+	// cls.addField(new SootField(name, field.getType(), modifiers));
+	// }
+	// }
 
 	/**
 	 * Ensures that the declaring class of the given Soot method declares the
@@ -196,15 +221,15 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 		}
 	}
 
-	/**
-	 * The name of the set_f field for the given Soot field.
-	 * 
-	 * @param field
-	 * @return
-	 */
-	private String setFName(SootField field) {
-		return Names.SET_FIELD_PREFIX + field.getName();
-	}
+	// /**
+	// * The name of the set_f field for the given Soot field.
+	// *
+	// * @param field
+	// * @return
+	// */
+	// private String setFName(SootField field) {
+	// return Names.SET_FIELD_PREFIX + field.getName();
+	// }
 
 	/**
 	 * The name of the set_m field for the given Soot method. We're using the

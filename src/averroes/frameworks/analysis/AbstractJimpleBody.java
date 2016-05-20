@@ -43,6 +43,7 @@ import soot.jimple.EqExpr;
 import soot.jimple.FieldRef;
 import soot.jimple.FloatConstant;
 import soot.jimple.InstanceFieldRef;
+import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.IntConstant;
 import soot.jimple.InterfaceInvokeExpr;
 import soot.jimple.InvokeExpr;
@@ -306,8 +307,7 @@ public abstract class AbstractJimpleBody {
 	 */
 	protected void createObjects() {
 		objectCreations.forEach(e -> {
-			SootMethod init = e.getMethod();
-			Local obj = createObjectByMethod(init);
+			Local obj = createObjectByInvokeExpr(e);
 			storeToSet(obj);
 		});
 
@@ -326,14 +326,29 @@ public abstract class AbstractJimpleBody {
 	/**
 	 * Create an object by calling that specific constructor.
 	 * 
-	 * @param cls
+	 * @param init
+	 * @return
+	 */
+	protected Local createObjectByInvokeExpr(SpecialInvokeExpr invoke) {
+		SootClass cls = invoke.getMethod().getDeclaringClass();
+		Local obj = insertSpecialInvokeNewStmt(RefType.v(cls), invoke);
+
+		// Call <clinit> if found
+		if (cls.declaresMethod(SootMethod.staticInitializerName)) {
+			insertStaticInvokeStmt(cls.getMethodByName(SootMethod.staticInitializerName));
+		}
+
+		return obj;
+	}
+
+	/**
+	 * Create an object by calling that specific constructor.
+	 * 
 	 * @param init
 	 * @return
 	 */
 	protected Local createObjectByMethod(SootMethod init) {
 		SootClass cls = init.getDeclaringClass();
-		// Local obj = insertNewStmt(RefType.v(cls));
-		// insertSpecialInvokeStmt(obj, init);
 		Local obj = insertSpecialInvokeNewStmt(RefType.v(cls), init);
 
 		// Call <clinit> if found
@@ -483,6 +498,27 @@ public abstract class AbstractJimpleBody {
 	}
 
 	/**
+	 * Insert a code snippet that creates a new object and calls its
+	 * constructor. The order should be: prepare arguments, new instruction,
+	 * call to constructor.
+	 * 
+	 * @param type
+	 * @param originalInvokeExpression
+	 * @return
+	 */
+	protected Local insertSpecialInvokeNewStmt(Type type, SpecialInvokeExpr originalInvokeExpression) {
+		List<Value> args = prepareArguments(originalInvokeExpression);
+
+		Local base = localGenerator.generateLocal(type);
+		body.getUnits().add(Jimple.v().newAssignStmt(base, buildNewExpr(type)));
+
+		body.getUnits().add(Jimple.v().newInvokeStmt(
+				Jimple.v().newSpecialInvokeExpr(base, originalInvokeExpression.getMethod().makeRef(), args)));
+
+		return base;
+	}
+
+	/**
 	 * Insert a static invoke statement.
 	 * 
 	 * @param toInvoke
@@ -559,15 +595,7 @@ public abstract class AbstractJimpleBody {
 	 * @return
 	 */
 	protected Local loadField(SootField field) {
-		Value fieldRef;
-
-		if (field.isStatic()) {
-			fieldRef = Jimple.v().newStaticFieldRef(field.makeRef());
-		} else {
-			fieldRef = Jimple.v().newInstanceFieldRef(getCompatibleValue(field.getDeclaringClass().getType()),
-					field.makeRef());
-		}
-
+		Value fieldRef = getFieldRef(field);
 		Local tmp = localGenerator.generateLocal(field.getType());
 		body.getUnits().add(Jimple.v().newAssignStmt(tmp, fieldRef));
 		return tmp;
@@ -580,15 +608,21 @@ public abstract class AbstractJimpleBody {
 	 * @param from
 	 */
 	protected void storeField(SootField field, Value from) {
+		body.getUnits().add(Jimple.v().newAssignStmt(getFieldRef(field), from));
+	}
+
+	/**
+	 * Get the field reference for the given Soot field.
+	 * 
+	 * @param field
+	 * @return
+	 */
+	protected Value getFieldRef(SootField field) {
 		if (field.isStatic()) {
-			body.getUnits().add(Jimple.v().newAssignStmt(Jimple.v().newStaticFieldRef(field.makeRef()), from));
+			return Jimple.v().newStaticFieldRef(field.makeRef());
 		} else {
-			body.getUnits()
-					.add(Jimple.v()
-							.newAssignStmt(
-									Jimple.v().newInstanceFieldRef(
-											getCompatibleValue(field.getDeclaringClass().getType()), field.makeRef()),
-							from));
+			return Jimple.v().newInstanceFieldRef(getCompatibleValue(field.getDeclaringClass().getType()),
+					field.makeRef());
 		}
 	}
 
@@ -799,9 +833,11 @@ public abstract class AbstractJimpleBody {
 	protected Value getCompatibleValue(Type type) {
 		if (type instanceof PrimType) {
 			return getPrimValue((PrimType) type);
-		} else if (type.equals(method.getDeclaringClass().getType())) {
-			return body.getThisLocal();
-		} else {
+		}
+		// else if (type.equals(method.getDeclaringClass().getType())) {
+		// return body.getThisLocal();
+		// }
+		else {
 			return insertCastStmt(setToCast(), type);
 		}
 	}
@@ -823,6 +859,27 @@ public abstract class AbstractJimpleBody {
 			return IntConstant.v(1);
 		}
 	}
+
+	/**
+	 * Get the proper base for the given instance invoke. If the original invoke
+	 * expression uses {@code this}, then use the {@code this} variable of the
+	 * newly-constructed method. Otherwise, return the result of
+	 * {@link #getCompatibleValue(Type)}.
+	 * 
+	 * @param invoke
+	 * @return
+	 */
+	protected Value getInvokeReceiver(InstanceInvokeExpr invoke) {
+		if (!method.isStatic() && invoke.getBase().equals(originalBody.getThisLocal())) {
+			return body.getThisLocal();
+		} else {
+			return (Local) getCompatibleValue(invoke.getBase().getType());
+		}
+	}
+
+	// protected Value getFieldAccessReceiver(SootField field) {
+	// if()
+	// }
 
 	/**
 	 * Return a list of all the object created through calls to constructors.
@@ -902,25 +959,41 @@ public abstract class AbstractJimpleBody {
 		InvokeExpr invokeExpr = null;
 
 		// Get the arguments to the call
-		List<Value> args = originalInvokeExpr.getArgs().stream().map(a -> getCompatibleValue(a.getType()))
-				.collect(Collectors.toList());
+		List<Value> args = prepareArguments(originalInvokeExpr);
 
 		// Build the invoke expression
 		if (originalInvokeExpr instanceof StaticInvokeExpr) {
 			invokeExpr = Jimple.v().newStaticInvokeExpr(callee, args);
 		} else if (originalInvokeExpr instanceof SpecialInvokeExpr) {
-			Local base = (Local) getCompatibleValue(((SpecialInvokeExpr) originalInvokeExpr).getBase().getType());
+			Local base = (Local) getInvokeReceiver((SpecialInvokeExpr) originalInvokeExpr);
 			invokeExpr = Jimple.v().newSpecialInvokeExpr(base, callee, args);
 		} else if (originalInvokeExpr instanceof InterfaceInvokeExpr) {
-			Local base = (Local) getCompatibleValue(((InterfaceInvokeExpr) originalInvokeExpr).getBase().getType());
+			Local base = (Local) getInvokeReceiver((InterfaceInvokeExpr) originalInvokeExpr);
 			invokeExpr = Jimple.v().newInterfaceInvokeExpr(base, callee, args);
 		} else if (originalInvokeExpr instanceof VirtualInvokeExpr) {
-			Local base = (Local) getCompatibleValue(((VirtualInvokeExpr) originalInvokeExpr).getBase().getType());
+			Local base = (Local) getInvokeReceiver((VirtualInvokeExpr) originalInvokeExpr);
 			invokeExpr = Jimple.v().newVirtualInvokeExpr(base, callee, args);
 		} else {
 			logger.error("Cannot handle invoke expression of type: " + originalInvokeExpr.getClass());
 		}
 
 		return invokeExpr;
+	}
+
+	/**
+	 * Prepare the arguments to a call based on the information from the
+	 * original invoke expression.
+	 * 
+	 * @param originalInvokeExpr
+	 * @return
+	 */
+	protected List<Value> prepareArguments(InvokeExpr originalInvokeExpr) {
+		return originalInvokeExpr.getArgs().stream().map(a -> {
+			if (a.equals(originalBody.getThisLocal())) {
+				return body.getThisLocal();
+			} else {
+				return getCompatibleValue(a.getType());
+			}
+		}).collect(Collectors.toList());
 	}
 }
