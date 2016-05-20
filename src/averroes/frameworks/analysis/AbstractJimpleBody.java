@@ -988,12 +988,18 @@ public abstract class AbstractJimpleBody {
 	 * @return
 	 */
 	protected List<Value> prepareArguments(InvokeExpr originalInvokeExpr) {
-		return originalInvokeExpr.getArgs().stream().map(a -> {
-			if (a.equals(originalBody.getThisLocal())) {
-				return body.getThisLocal();
+		List<Value> result = new ArrayList<Value>();
+
+		// Do not use getCompatibleValue(a.getType). This causes errors as it
+		// will happily cast an object to the NullType.
+		for (int i = 0; i < originalInvokeExpr.getArgCount(); i++) {
+			if (!method.isStatic() && originalInvokeExpr.getArg(i).equals(originalBody.getThisLocal())) {
+				result.add(body.getThisLocal());
 			} else {
-				return getCompatibleValue(a.getType());
+				result.add(getCompatibleValue(originalInvokeExpr.getMethod().getParameterType(i)));
 			}
-		}).collect(Collectors.toList());
+		}
+
+		return result;
 	}
 }
