@@ -20,6 +20,7 @@ import soot.DoubleType;
 import soot.FloatType;
 import soot.Local;
 import soot.LongType;
+import soot.NullType;
 import soot.PrimType;
 import soot.RefLikeType;
 import soot.RefType;
@@ -995,8 +996,10 @@ public abstract class AbstractJimpleBody {
 		for (int i = 0; i < originalInvokeExpr.getArgCount(); i++) {
 			if (!method.isStatic() && originalInvokeExpr.getArg(i).equals(originalBody.getThisLocal())) {
 				result.add(body.getThisLocal());
-			} else {
+			} else if(originalInvokeExpr.getArg(i).getType().equals(NullType.v())){
 				result.add(getCompatibleValue(originalInvokeExpr.getMethod().getParameterType(i)));
+			} else {
+				result.add(getCompatibleValue(originalInvokeExpr.getArg(i).getType()));
 			}
 		}
 
