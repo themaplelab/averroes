@@ -88,6 +88,13 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 
 	@Override
 	public void handleFields() {
+		fieldReads.forEach(f -> {
+			storeToSet(loadField(f));
+		});
+		
+		fieldWrites.forEach(f -> {
+			storeField(f, getCompatibleValue(f.getType()));
+		});
 
 	}
 
