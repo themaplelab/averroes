@@ -16,5 +16,10 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/averroes/lib/commons-io-2.4-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/gson-2.6.2.jar" sourcepath="lib/gson-2.6.2-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/averroes/lib/gson-2.6.2-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
