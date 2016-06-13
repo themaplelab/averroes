@@ -83,7 +83,7 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 		CodeGenerator.createStaticInitializer(averroesXta);
 
 		// TODO: Write it to disk
-		averroesXta.getMethods().forEach(m -> Printers.print(PrinterType.GENERATED, m));
+		averroesXta.getMethods().forEach(m -> Printers.printJimple(PrinterType.GENERATED, m));
 		// ClassWriter.writeLibraryClassFile(averroesXta);
 	}
 

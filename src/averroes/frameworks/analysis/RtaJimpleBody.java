@@ -82,7 +82,7 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 
 		// TODO: Write it to disk
 		averroesRta.getMethods().forEach(
-				m -> Printers.print(PrinterType.GENERATED, m));
+				m -> Printers.printJimple(PrinterType.GENERATED, m));
 		// ClassWriter.writeLibraryClassFile(averroesRta);
 	}
 

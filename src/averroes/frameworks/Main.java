@@ -88,7 +88,7 @@ public class Main {
 					.stream()
 					.map(c -> c.getMethods())
 					.flatMap(List::stream)
-					.filter(SootMethod::isConcrete).forEach(m -> Printers.print(Printers.PrinterType.OPTIMIZED, m));
+					.filter(SootMethod::isConcrete).forEach(m -> Printers.printJimple(Printers.PrinterType.OPTIMIZED, m));
 
 			Scene.v().getApplicationClasses().forEach(ClassWriter::writeLibraryClassFile);
 

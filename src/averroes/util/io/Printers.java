@@ -15,9 +15,14 @@ package averroes.util.io;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import averroes.util.SootUtils;
+import averroes.util.json.JsonUtils;
 import soot.SootClass;
 import soot.SootMethod;
 
@@ -33,6 +38,16 @@ public class Printers {
 		EXPECTED, ORIGINAL, GENERATED, OPTIMIZED;
 	}
 
+	// The main Gson printer
+	private static Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
+
+	/**
+	 * Get the Jimple output file that corresponds to the given Soot method.
+	 * 
+	 * @param printerType
+	 * @param method
+	 * @return
+	 */
 	private static PrintStream getPrintStream(PrinterType printerType, SootMethod method) {
 		PrintStream result = null;
 
@@ -45,6 +60,32 @@ public class Printers {
 		return result;
 	}
 
+	/**
+	 * Get the JSON output file that corresponds to the given Soot class.
+	 * 
+	 * @param printerType
+	 * @param cls
+	 * @return
+	 */
+	private static PrintStream getJsonWriter(PrinterType printerType, SootClass cls) {
+		PrintStream result = null;
+
+		try {
+			result = new PrintStream(new FileOutputStream(Paths.jsonDumpFile(printerType, cls)), true);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return result;
+	}
+
+	/**
+	 * Get the output stream used to print the inliner info for the given Soot
+	 * class.
+	 * 
+	 * @param cls
+	 * @return
+	 */
 	private static PrintStream getInlinerPrintStream(SootClass cls) {
 		PrintStream result = null;
 
@@ -57,7 +98,13 @@ public class Printers {
 		return result;
 	}
 
-	public static void print(PrinterType printerType, SootMethod method) {
+	/**
+	 * Print out the Jimple representation of the given Soot method.
+	 * 
+	 * @param printerType
+	 * @param method
+	 */
+	public static void printJimple(PrinterType printerType, SootMethod method) {
 		if (printerType == PrinterType.EXPECTED) {
 			SootUtils.cleanup(method.retrieveActiveBody());
 		}
@@ -68,10 +115,32 @@ public class Printers {
 		getPrintStream(printerType, method).println();
 	}
 
+	/**
+	 * Print out the JSON representation of the given Soot class.
+	 * 
+	 * @param printerType
+	 * @param cls
+	 */
+	public static void printJson(PrinterType printerType, SootClass cls) {
+		getJsonWriter(printerType, cls).print(gson.toJson(JsonUtils.toJson(cls)));
+	}
+
+	/**
+	 * Log the given information from the inliner.
+	 * 
+	 * @param message
+	 * @param method
+	 */
 	public static void logInliningInfo(String message, SootMethod method) {
 		getInlinerPrintStream(method.getDeclaringClass()).println(message);
 	}
 
+	/**
+	 * Log the given information from the inliner.
+	 * 
+	 * @param message
+	 * @param cls
+	 */
 	public static void logInliningInfo(String message, SootClass cls) {
 		getInlinerPrintStream(cls).println(message);
 	}

@@ -42,9 +42,11 @@ public class Paths {
 	}
 
 	/**
-	 * The path to the debug file where we dump Jimple code for before, after,
+	 * The path to the output file where we dump Jimple code for before, after,
 	 * and expected output.
 	 * 
+	 * @param printerType
+	 * @param method
 	 * @return
 	 */
 	public static File jimpleDumpFile(PrinterType printerType, SootMethod method) {
@@ -76,11 +78,11 @@ public class Paths {
 
 		return prefix.resolve(dir).resolve(pkg).resolve(file).toFile();
 	}
-	
+
 	/**
-	 * The path to the debug file where we dump Jimple code for before, after,
-	 * and expected output.
+	 * The path to the output file where we dump inlining information.
 	 * 
+	 * @param cls
 	 * @return
 	 */
 	public static File inlinerDumpFile(SootClass cls) {
@@ -92,6 +94,44 @@ public class Paths {
 
 		Path prefix = java.nio.file.Paths.get(FrameworksOptions.getOutputDirectory()).toAbsolutePath().getParent()
 				.getParent().resolve(java.nio.file.Paths.get("averroes.tests", "jimple"));
+
+		Path dir = java.nio.file.Paths.get(project).getFileName();
+
+		try {
+			FileUtils.forceMkdir(prefix.resolve(dir).resolve(pkg).toFile());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return prefix.resolve(dir).resolve(pkg).resolve(file).toFile();
+	}
+
+	/**
+	 * The path to the debug file where we dump Jimple code for before, after,
+	 * and expected output.
+	 * 
+	 * @param printerType
+	 * @param cls
+	 * @return
+	 */
+	public static File jsonDumpFile(PrinterType printerType, SootClass cls) {
+		String pkg = cls.getPackageName().replace(".", File.pathSeparator);
+		String file = cls.getShortName() + ".json";
+		String input = FrameworksOptions.getInputs().get(0);
+		String project = input.replace(File.separator + "bin", "." + printerType.toString().toLowerCase());
+
+		/*
+		 * Separating output based on the project. For example: input + original
+		 * => input.original input + generated => output.rta.generated output +
+		 * expected => output.rta.expected output + optimized =>
+		 * output.rta.optimized
+		 */
+		if (printerType != PrinterType.ORIGINAL) {
+			project = project.replace("input", "output." + FrameworksOptions.getAnalysis());
+		}
+
+		Path prefix = java.nio.file.Paths.get(FrameworksOptions.getOutputDirectory()).toAbsolutePath().getParent()
+				.getParent().resolve(java.nio.file.Paths.get("averroes.tests", "json"));
 
 		Path dir = java.nio.file.Paths.get(project).getFileName();
 

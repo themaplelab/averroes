@@ -115,7 +115,7 @@ public abstract class AbstractJimpleBody {
 	 * concrete).
 	 */
 	public void generateCode() {
-		Printers.print(PrinterType.ORIGINAL, method);
+		Printers.printJimple(PrinterType.ORIGINAL, method);
 
 		// Create Common Class
 		ensureCommonClassExists();
@@ -136,7 +136,7 @@ public abstract class AbstractJimpleBody {
 		body.validate();
 		method.setActiveBody(body);
 
-		Printers.print(PrinterType.GENERATED, method);
+		Printers.printJimple(PrinterType.GENERATED, method);
 	}
 
 	/**
