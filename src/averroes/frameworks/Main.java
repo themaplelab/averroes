@@ -13,6 +13,7 @@ import averroes.frameworks.soot.Optimizer;
 import averroes.frameworks.soot.StaticInlineTransform;
 import averroes.util.TimeUtils;
 import averroes.util.io.Printers;
+import averroes.util.io.Printers.PrinterType;
 import soot.G;
 import soot.PackManager;
 import soot.Scene;
@@ -52,7 +53,8 @@ public class Main {
 			Options.v().set_process_dir(FrameworksOptions.getInputs());
 			Options.v().set_soot_classpath(FrameworksOptions.getSootClassPath());
 			Options.v().set_validate(true);
-//			Options.v().setPhaseOption("jb.tr", "use-older-type-assigner:true");
+			// Options.v().setPhaseOption("jb.tr",
+			// "use-older-type-assigner:true");
 
 			Options.v().setPhaseOption("wjtp", "enabled");
 			PackManager.v().getPack("wjtp").add(new StaticInlineTransform("wjtp.si"));
@@ -69,26 +71,28 @@ public class Main {
 			// Now let Averroes do its thing
 			TimeUtils.reset();
 			System.out.println("");
-			/* Note: do not call Scene.v().getClasses() here as it will throw
-			 * concurrent modification error when new classes
-			 * are added.
+			/*
+			 * Note: do not call Scene.v().getClasses() here as it will throw
+			 * concurrent modification error when new classes are added.
 			 */
-			Scene.v()
-					.getApplicationClasses()
-					.stream()
-					.map(c -> c.getMethods())
-					.flatMap(List::stream)
+			Scene.v().getApplicationClasses().stream().map(c -> c.getMethods()).flatMap(List::stream)
 					.filter(SootMethod::isConcrete).forEach(m -> CodeGenerator.getJimpleBodyCreator(m).generateCode());
 
+			// Print out JSON files
+			Scene.v().getApplicationClasses().forEach(c -> {
+				Printers.printJson(PrinterType.GENERATED, c);
+			});
 
 			new Optimizer().optimize();
 
-			Scene.v()
-					.getApplicationClasses()
-					.stream()
-					.map(c -> c.getMethods())
-					.flatMap(List::stream)
-					.filter(SootMethod::isConcrete).forEach(m -> Printers.printJimple(Printers.PrinterType.OPTIMIZED, m));
+			Scene.v().getApplicationClasses().stream().map(c -> c.getMethods()).flatMap(List::stream)
+					.filter(SootMethod::isConcrete)
+					.forEach(m -> Printers.printJimple(Printers.PrinterType.OPTIMIZED, m));
+
+			// Print out JSON files
+			Scene.v().getApplicationClasses().forEach(c -> {
+				Printers.printJson(PrinterType.OPTIMIZED, c);
+			});
 
 			Scene.v().getApplicationClasses().forEach(ClassWriter::writeLibraryClassFile);
 

@@ -21,5 +21,6 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/averroes/lib/gson-2.6.2-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/guava-19.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

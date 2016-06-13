@@ -1,6 +1,13 @@
 package averroes.util.json;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.stream.Collectors;
+
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.GsonBuilder;
 
 import soot.RefLikeType;
 import soot.SootClass;
@@ -62,6 +69,28 @@ public class JsonUtils {
 				}));
 			}
 		});
+
+		return sootClassJson;
+	}
+
+	/**
+	 * Create a SootClassJson from a JSON text file.
+	 * 
+	 * @param json
+	 * @return
+	 * @throws IOException
+	 */
+	public static SootClassJson fromJson(File json) throws IOException {
+		InputStreamReader reader = new InputStreamReader(new FileInputStream(json));
+
+		SootClassJson sootClassJson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.IDENTITY).create()
+				.fromJson(reader, SootClassJson.class);
+		reader.close();
+
+		// System.out.println(sootClassJson.getMethodToObjectCreations());
+		// System.out.println(sootClassJson.getMethodToInvocations());
+		// System.out.println(sootClassJson.getMethodToFieldReads());
+		// System.out.println(sootClassJson.getMethodToFieldWrites());
 
 		return sootClassJson;
 	}

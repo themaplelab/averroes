@@ -3,6 +3,8 @@ package averroes.util.json;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import com.google.common.collect.Maps;
+
 import soot.SootMethod;
 import soot.Type;
 import soot.jimple.FieldRef;
@@ -63,5 +65,35 @@ public class SootClassJson {
 	public void addFieldWrite(SootMethod method, FieldRef fieldRef) {
 		methodToFieldWrites.putIfAbsent(method.getSignature(), new HashSet<String>());
 		methodToFieldWrites.get(method.getSignature()).add(JsonUtils.toJson(fieldRef));
+	}
+
+	/**
+	 * Is this object equivalent to another SootClassJson (based on the contents
+	 * of the maps)?
+	 * 
+	 * @param other
+	 * @return
+	 */
+	public boolean isEquivalentTo(SootClassJson other) {
+		return Maps.difference(methodToObjectCreations, other.methodToObjectCreations).areEqual()
+				&& Maps.difference(methodToInvocations, other.methodToInvocations).areEqual()
+				&& Maps.difference(methodToFieldReads, other.methodToFieldReads).areEqual()
+				&& Maps.difference(methodToFieldWrites, other.methodToFieldWrites).areEqual();
+	}
+
+	public HashMap<String, HashSet<String>> getMethodToObjectCreations() {
+		return methodToObjectCreations;
+	}
+
+	public HashMap<String, HashSet<String>> getMethodToInvocations() {
+		return methodToInvocations;
+	}
+
+	public HashMap<String, HashSet<String>> getMethodToFieldReads() {
+		return methodToFieldReads;
+	}
+
+	public HashMap<String, HashSet<String>> getMethodToFieldWrites() {
+		return methodToFieldWrites;
 	}
 }
