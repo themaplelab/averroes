@@ -34,27 +34,34 @@ public class JsonUtils {
 	public static SootClassJson toJson(SootClass cls) {
 		SootClassJson sootClassJson = new SootClassJson();
 
-		cls.getMethods().forEach(m -> m.getActiveBody().getUnits().forEach(u -> u.apply(new AbstractStmtSwitch() {
-			@Override
-			public void caseAssignStmt(AssignStmt stmt) {
-				// array creations, reads, and writes
-				if (stmt.getRightOp() instanceof NewArrayExpr || stmt.getRightOp() instanceof NewMultiArrayExpr) {
-					sootClassJson.addObjectCreation(m, stmt.getRightOp().getType());
-				} else if (stmt.getRightOp() instanceof FieldRef
-						&& stmt.getRightOp().getType() instanceof RefLikeType) {
-					sootClassJson.addFieldRead(m, (FieldRef) stmt.getRightOp());
-				} else if (stmt.getLeftOp() instanceof FieldRef && stmt.getLeftOp().getType() instanceof RefLikeType) {
-					sootClassJson.addFieldWrite(m, (FieldRef) stmt.getLeftOp());
-				} else if (stmt.getRightOp() instanceof InvokeExpr) {
-					sootClassJson.addInvocation(m, (InvokeExpr) stmt.getRightOp());
-				}
-			}
+		cls.getMethods().forEach(m -> {
+			if (m.isConcrete()) {
+				m.getActiveBody().getUnits().forEach(u -> u.apply(new AbstractStmtSwitch() {
 
-			@Override
-			public void caseInvokeStmt(InvokeStmt stmt) {
-				sootClassJson.addInvocation(m, (InvokeExpr) stmt.getInvokeExpr());
+					@Override
+					public void caseAssignStmt(AssignStmt stmt) {
+						// array creations, reads, and writes
+						if (stmt.getRightOp() instanceof NewArrayExpr
+								|| stmt.getRightOp() instanceof NewMultiArrayExpr) {
+							sootClassJson.addObjectCreation(m, stmt.getRightOp().getType());
+						} else if (stmt.getRightOp() instanceof FieldRef
+								&& stmt.getRightOp().getType() instanceof RefLikeType) {
+							sootClassJson.addFieldRead(m, (FieldRef) stmt.getRightOp());
+						} else if (stmt.getLeftOp() instanceof FieldRef
+								&& stmt.getLeftOp().getType() instanceof RefLikeType) {
+							sootClassJson.addFieldWrite(m, (FieldRef) stmt.getLeftOp());
+						} else if (stmt.getRightOp() instanceof InvokeExpr) {
+							sootClassJson.addInvocation(m, (InvokeExpr) stmt.getRightOp());
+						}
+					}
+
+					@Override
+					public void caseInvokeStmt(InvokeStmt stmt) {
+						sootClassJson.addInvocation(m, (InvokeExpr) stmt.getInvokeExpr());
+					}
+				}));
 			}
-		})));
+		});
 
 		return sootClassJson;
 	}
