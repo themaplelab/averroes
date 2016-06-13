@@ -3,6 +3,7 @@ package averroes.util.json;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import com.google.common.collect.MapDifference;
 import com.google.common.collect.Maps;
 
 import soot.SootMethod;
@@ -75,10 +76,52 @@ public class SootClassJson {
 	 * @return
 	 */
 	public boolean isEquivalentTo(SootClassJson other) {
-		return Maps.difference(methodToObjectCreations, other.methodToObjectCreations).areEqual()
-				&& Maps.difference(methodToInvocations, other.methodToInvocations).areEqual()
-				&& Maps.difference(methodToFieldReads, other.methodToFieldReads).areEqual()
-				&& Maps.difference(methodToFieldWrites, other.methodToFieldWrites).areEqual();
+		
+		MapDifference<String, HashSet<String>> objectCreationsDifference = Maps.difference(methodToObjectCreations, other.methodToObjectCreations); 
+		if(!objectCreationsDifference.areEqual()) {
+			System.out.println("There are some differences in object creations.");
+			System.out.println("Methods with different object creations between generated and expected code: " + objectCreationsDifference.entriesDiffering());
+			System.out.println("Methods with object creations that only show up in generated code: " + objectCreationsDifference.entriesOnlyOnLeft());
+			System.out.println("Method with object creations that only show up in expected code: " + objectCreationsDifference.entriesOnlyOnRight());
+			System.out.println();
+			System.out.println();
+			return false;
+		}
+		
+		MapDifference<String, HashSet<String>> invocationsDifference = Maps.difference(methodToInvocations, other.methodToInvocations); 
+		if(!invocationsDifference.areEqual()) {
+			System.out.println("There are some differences in invocations.");
+			System.out.println("Methods with different invocations between generated and expected code: " + invocationsDifference.entriesDiffering());
+			System.out.println("Methods with invocations that only show up in generated code: " + invocationsDifference.entriesOnlyOnLeft());
+			System.out.println("Methods with invocations that only show up in expected code: " + invocationsDifference.entriesOnlyOnRight());
+			System.out.println();
+			System.out.println();
+			return false;
+		}
+		
+		MapDifference<String, HashSet<String>> fieldReadsDifference = Maps.difference(methodToFieldReads, other.methodToFieldReads);
+		if(!fieldReadsDifference.areEqual()) {
+			System.out.println("There are some differences in field reads.");
+			System.out.println("Methods with different field reads between generated and expected code: " + fieldReadsDifference.entriesDiffering());
+			System.out.println("Methods with field reads that only show up in generated code: " + fieldReadsDifference.entriesOnlyOnLeft());
+			System.out.println("Methods with field reads that only show up in expected code: " + fieldReadsDifference.entriesOnlyOnRight());
+			System.out.println();
+			System.out.println();
+			return false;
+		}
+		
+		MapDifference<String, HashSet<String>> fieldWritesDifference = Maps.difference(methodToFieldWrites, other.methodToFieldWrites);
+		if(!fieldWritesDifference.areEqual()) {
+			System.out.println("There are some differences in field writes.");
+			System.out.println("Methods with different field writes between generated and expected code: " + fieldWritesDifference.entriesDiffering());
+			System.out.println("Methods with field writes that only show up in generated code: " + fieldWritesDifference.entriesOnlyOnLeft());
+			System.out.println("Methods with field writes that only show up in expected code: " + fieldWritesDifference.entriesOnlyOnRight());
+			System.out.println();
+			System.out.println();
+			return false;
+		}
+		
+		return true;
 	}
 
 	public HashMap<String, HashSet<String>> getMethodToObjectCreations() {
