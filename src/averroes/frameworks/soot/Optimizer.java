@@ -23,6 +23,8 @@ public class Optimizer {
 
         removeUnreachableMethods();
 
+        LocalOptimizer.apply();
+
         removeUnusedFields();
 
         replaceEmptyClasses();
