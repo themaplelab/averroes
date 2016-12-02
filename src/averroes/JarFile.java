@@ -113,6 +113,39 @@ public class JarFile {
 			bcelClasses.add(cls);
 		}
 	}
+	
+	/**
+	 * Add all the generated framework class files to the Jar file.
+	 * 
+	 * @throws IOException
+	 */
+	public void addGeneratedFrameworkClassFiles() throws IOException {
+		Set<String> classFiles = new HashSet<String>();
+		File dir = Paths.framewokrsLibraryClassesOutputDirectory();
+		File placeholderJar = Paths.placeholderFrameworkJarFile();
+
+		// Add the class files to the crafted JAR file.
+		FileUtils.listFiles(dir, new String[] { "class" }, true).stream()
+				//.filter(f -> !relativize(dir, f).equals(Names.AVERROES_LIBRARY_CLASS_BC_SIG + ".class"))
+				.forEach(file -> {
+					try {
+						String className = relativize(dir, file);
+						add(dir, file);
+						classFiles.add(className);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				});
+		close();
+
+		// Now add all those class files in the crafted JAR file to the BCEL
+		// repository.
+		for (String classFile : classFiles) {
+			ClassParser parser = new ClassParser(placeholderJar.getPath(), classFile);
+			JavaClass cls = parser.parse();
+			bcelClasses.add(cls);
+		}
+	}
 
 	/**
 	 * Add the generated AverroesLibraryClass file to the Jar file.

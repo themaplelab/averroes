@@ -367,7 +367,7 @@ public abstract class AbstractJimpleBody {
 	 * (invokeStmts).
 	 */
 	protected void callMethods() {
-		invokeStmts.forEach(this::insertInvokeStmt);
+		invokeStmts.forEach(this::buildAndInsertInvokeStmt);
 
 		invokeExprs.forEach(e -> {
 			InvokeExpr expr = buildInvokeExpr(e);
@@ -456,13 +456,23 @@ public abstract class AbstractJimpleBody {
 	}
 
 	/**
-	 * Insert a new invoke statement based on info in the given original invoke
-	 * expression.
+	 * Builds a new invoke statement based on info in the given original invoke
+	 * expression and inserts it in the underlying Jimple body.
 	 * 
 	 * @param originalInvokeExpr
 	 */
-	protected void insertInvokeStmt(InvokeExpr originalInvokeExpr) {
-		body.getUnits().add(Jimple.v().newInvokeStmt(buildInvokeExpr(originalInvokeExpr)));
+	protected void buildAndInsertInvokeStmt(InvokeExpr originalInvokeExpr) {
+		InvokeExpr invokeExpr = buildInvokeExpr(originalInvokeExpr);
+		insertInvokeStmt(invokeExpr);
+	}
+	
+	/**
+	 * Insert an new invoke statement.
+	 * 
+	 * @param invokeExpr
+	 */
+	protected void insertInvokeStmt(InvokeExpr invokeExpr) {
+		body.getUnits().add(Jimple.v().newInvokeStmt(invokeExpr));
 	}
 
 	/**

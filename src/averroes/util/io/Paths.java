@@ -40,6 +40,15 @@ public class Paths {
 	public static File framewokrsLibraryClassesOutputDirectory() {
 		return java.nio.file.Paths.get(FrameworksOptions.getOutputDirectory(), "classes", "lib").toFile();
 	}
+	
+	/**
+	 * The path to the frameworks placeholder library JAR file.
+	 * 
+	 * @return
+	 */
+	public static File placeholderFrameworkJarFile() {
+		return java.nio.file.Paths.get(FrameworksOptions.getOutputDirectory(), "placeholder-fwk.jar").toFile();
+	}
 
 	/**
 	 * The path to the output file where we dump Jimple code for before, after,

@@ -6,12 +6,14 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
+import averroes.JarFile;
 import averroes.frameworks.options.FrameworksOptions;
 import averroes.frameworks.soot.ClassWriter;
 import averroes.frameworks.soot.CodeGenerator;
-import averroes.frameworks.soot.Optimizer;
 import averroes.frameworks.soot.StaticInlineTransform;
+import averroes.util.MathUtils;
 import averroes.util.TimeUtils;
+import averroes.util.io.Paths;
 import averroes.util.io.Printers;
 import averroes.util.io.Printers.PrinterType;
 import soot.G;
@@ -63,7 +65,7 @@ public class Main {
 			// Load the necessary classes
 			TimeUtils.reset();
 			System.out.println("");
-			System.out.println("Loading classes ...");
+			System.out.println("Loading classes...");
 			Scene.v().loadNecessaryClasses();
 			double soot = TimeUtils.elapsedTime();
 			System.out.println("Soot loaded the input classes in " + soot + " seconds.");
@@ -71,6 +73,7 @@ public class Main {
 			// Now let Averroes do its thing
 			TimeUtils.reset();
 			System.out.println("");
+			System.out.println("Creating Jimple bodies for framework methods...");
 			/*
 			 * Note: do not call Scene.v().getClasses() here as it will throw
 			 * concurrent modification error when new classes are added.
@@ -78,24 +81,49 @@ public class Main {
 			Scene.v().getApplicationClasses().stream().map(c -> c.getMethods()).flatMap(List::stream)
 					.filter(SootMethod::isConcrete).forEach(m -> CodeGenerator.getJimpleBodyCreator(m).generateCode());
 
+			System.out.println("Writing JSON files for framework methods...");
 			// Print out JSON files
 			Scene.v().getApplicationClasses().forEach(c -> {
 				Printers.printJson(PrinterType.GENERATED, c);
 			});
 
-			new Optimizer().optimize();
+			// System.out.println("Optimizing generated library methods...");
+			// new Optimizer().optimize();
 
-			Scene.v().getApplicationClasses().stream().map(c -> c.getMethods()).flatMap(List::stream)
-					.filter(SootMethod::isConcrete)
-					.forEach(m -> Printers.printJimple(Printers.PrinterType.OPTIMIZED, m));
+			// System.out.println("Creating optimized Jimple bodies for library
+			// methods...");
+			// Scene.v().getApplicationClasses().stream().map(c ->
+			// c.getMethods()).flatMap(List::stream)
+			// .filter(SootMethod::isConcrete)
+			// .forEach(m ->
+			// Printers.printJimple(Printers.PrinterType.OPTIMIZED, m));
 
 			// Print out JSON files
-			Scene.v().getApplicationClasses().forEach(c -> {
-				Printers.printJson(PrinterType.OPTIMIZED, c);
-			});
+			// System.out.println("Writing JSON files for optimized library
+			// methods...");
+			// Scene.v().getApplicationClasses().forEach(c -> {
+			// Printers.printJson(PrinterType.OPTIMIZED, c);
+			// });
 
+			System.out.println("Writing class files for framework methods...");
 			Scene.v().getApplicationClasses().forEach(ClassWriter::writeLibraryClassFile);
+			double averroes = TimeUtils.elapsedTime();
+			System.out.println("Placeholder framework classes created and validated in " + averroes + " seconds.");
 
+			// Create the jar file and add all the generated class files to it.
+			TimeUtils.reset();
+			JarFile frameworkJarFile = new JarFile(Paths.placeholderFrameworkJarFile());
+			frameworkJarFile.addGeneratedFrameworkClassFiles();
+			
+			double bcel = TimeUtils.elapsedTime();
+			System.out.println("Placeholder framework JAR file verified in " + bcel + " seconds.");
+			System.out
+					.println("Total time (without verification) is " + MathUtils.round(soot + averroes) + " seconds.");
+			System.out.println("Total time (with verification) is " + MathUtils.round(soot + averroes + bcel)
+					+ " seconds.");
+
+			double total = TimeUtils.elapsedSplitTime();
+			System.out.println("Elapsed time: " + total + " seconds.");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
