@@ -34,18 +34,14 @@ public class ClassWriter {
 	 * @throws IOException
 	 */
 	public static void writeLibraryClassFile(SootClass cls) {
-		Options.v().set_output_dir(
-				Paths.framewokrsLibraryClassesOutputDirectory().getPath());
+		Options.v().set_output_dir(Paths.framewokrsLibraryClassesOutputDirectory().getPath());
 
-		File file = new File(SourceLocator.v().getFileNameFor(cls,
-				Options.output_format_class));
+		File file = new File(SourceLocator.v().getFileNameFor(cls, Options.output_format_class));
 		file.getParentFile().mkdirs();
 
 		try {
-			OutputStream streamOut = new JasminOutputStream(
-					new FileOutputStream(file));
-			PrintWriter writerOut = new PrintWriter(new OutputStreamWriter(
-					streamOut));
+			OutputStream streamOut = new JasminOutputStream(new FileOutputStream(file));
+			PrintWriter writerOut = new PrintWriter(new OutputStreamWriter(streamOut));
 
 			if (cls.containsBafBody()) {
 				new soot.baf.JasminClass(cls).print(writerOut);
@@ -60,5 +56,4 @@ public class ClassWriter {
 			e.printStackTrace();
 		}
 	}
-
 }

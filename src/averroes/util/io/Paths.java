@@ -47,7 +47,7 @@ public class Paths {
 	 * @return
 	 */
 	public static File placeholderFrameworkJarFile() {
-		return java.nio.file.Paths.get(FrameworksOptions.getOutputDirectory(), "placeholder-fwk.jar").toFile();
+		return java.nio.file.Paths.get(FrameworksOptions.getOutputDirectory(), "placeholder-fwk-" + FrameworksOptions.getAnalysis() + ".jar").toFile();
 	}
 
 	/**

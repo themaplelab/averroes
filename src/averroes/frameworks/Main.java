@@ -1,6 +1,5 @@
 package averroes.frameworks;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -48,15 +47,14 @@ public class Main {
 			G.reset();
 
 			// Create the output directory and clean up any class files in there
-			FileUtils.forceMkdir(new File(FrameworksOptions.getOutputDirectory()));
-			FileUtils.cleanDirectory(new File(FrameworksOptions.getOutputDirectory()));
+			FileUtils.forceMkdir(Paths.framewokrsLibraryClassesOutputDirectory());
+			FileUtils.cleanDirectory(Paths.framewokrsLibraryClassesOutputDirectory());
 
 			// Set some soot parameters
 			Options.v().set_process_dir(FrameworksOptions.getInputs());
 			Options.v().set_soot_classpath(FrameworksOptions.getSootClassPath());
 			Options.v().set_validate(true);
-			// Options.v().setPhaseOption("jb.tr",
-			// "use-older-type-assigner:true");
+			// Options.v().setPhaseOption("jb.tr", "use-older-type-assigner:true");
 
 			Options.v().setPhaseOption("wjtp", "enabled");
 			PackManager.v().getPack("wjtp").add(new StaticInlineTransform("wjtp.si"));
@@ -115,7 +113,7 @@ public class Main {
 			TimeUtils.reset();
 			JarFile frameworkJarFile = new JarFile(Paths.placeholderFrameworkJarFile());
 			frameworkJarFile.addGeneratedFrameworkClassFiles();
-			
+
 			double bcel = TimeUtils.elapsedTime();
 			System.out.println("Placeholder framework JAR file verified in " + bcel + " seconds.");
 			System.out.println("");
