@@ -108,6 +108,7 @@ public class Main {
 			System.out.println("Writing class files for framework methods...");
 			Scene.v().getApplicationClasses().forEach(ClassWriter::writeLibraryClassFile);
 			double averroes = TimeUtils.elapsedTime();
+			System.out.println("");
 			System.out.println("Placeholder framework classes created and validated in " + averroes + " seconds.");
 
 			// Create the jar file and add all the generated class files to it.
@@ -117,12 +118,12 @@ public class Main {
 			
 			double bcel = TimeUtils.elapsedTime();
 			System.out.println("Placeholder framework JAR file verified in " + bcel + " seconds.");
-			System.out
-					.println("Total time (without verification) is " + MathUtils.round(soot + averroes) + " seconds.");
-			System.out.println("Total time (with verification) is " + MathUtils.round(soot + averroes + bcel)
-					+ " seconds.");
+			System.out.println("");
+			System.out.println("Total time (without verification) is " + MathUtils.round(soot + averroes) + " seconds.");
+			System.out.println("Total time (with verification) is " + MathUtils.round(soot + averroes + bcel) + " seconds.");
 
 			double total = TimeUtils.elapsedSplitTime();
+			System.out.println("");
 			System.out.println("Elapsed time: " + total + " seconds.");
 		} catch (IOException e) {
 			e.printStackTrace();
