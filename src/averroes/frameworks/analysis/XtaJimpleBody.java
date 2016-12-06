@@ -26,6 +26,8 @@ import soot.jimple.Jimple;
  *
  */
 public class XtaJimpleBody extends AbstractJimpleBody {
+	public static final String name = "xta";
+	
 	private Local xtaGuard = null;
 
 	private SootField setM = null;

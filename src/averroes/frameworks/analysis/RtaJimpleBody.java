@@ -24,6 +24,8 @@ import averroes.util.io.Printers.PrinterType;
  *
  */
 public class RtaJimpleBody extends AbstractJimpleBody {
+	public static final String name = "rta";
+	
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private Local rtaSet = null;
