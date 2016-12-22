@@ -121,6 +121,8 @@ public class SootClassJson {
 			return false;
 		}
 		
+		// TODO need to also compare array reads/writes
+		
 		return true;
 	}
 
