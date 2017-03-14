@@ -1,9 +1,8 @@
 /bin/
 /.DS_Store
-/benchmarks/
-/jre/
-/properties/
-/hello/
 /output/
 /benchmarks-averroes/
 /test/
+/hello
+/.cache
+/.cache-main
