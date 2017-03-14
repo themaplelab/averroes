@@ -58,7 +58,7 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 	@Override
 	protected Local getGuard() {
 		if (xtaGuard == null) {
-			xtaGuard = loadField(Scene.v().getField(Names.XTA_GUARD_FIELD_SIGNATURE));
+			xtaGuard = loadField(Scene.v().getField(Names.XTA_GUARD_FIELD_SIGNATURE), true);
 		}
 		return xtaGuard;
 	}

@@ -51,10 +51,16 @@ public final class FrameworksOptions {
 			.longOpt("analysis-model")
 			.desc("the analysis that Averroes should use to model the library stubs (one of rta, xta, cfa)")
 			.hasArg().argName("analysis").required().build();
+	
+	private static Option enableGuards = Option
+			.builder("g")
+			.longOpt("enable-guards")
+			.desc("setting this flag will make Averroes wrap a guard around any statement that is not a cast statement (or a local variable declaration)")
+			.hasArg(false).required(false).build();
 
 	private static Options options = new Options().addOption(input)
 			.addOption(deps).addOption(outputDirectory).addOption(jreDirectory)
-			.addOption(analysis);
+			.addOption(analysis).addOption(enableGuards);
 
 	private static CommandLine cmd;
 
@@ -135,5 +141,15 @@ public final class FrameworksOptions {
 	 */
 	public static String getAnalysis() {
 		return cmd.getOptionValue(analysis.getOpt());
+	}
+	
+	/**
+	 * Setting this flag will make Averroes wrap a guard around any statement
+	 * that is not a cast statement (or a local variable declaration).
+	 * 
+	 * @return
+	 */
+	public static boolean isEnableGuards() {
+		return cmd.hasOption(enableGuards.getOpt());
 	}
 }

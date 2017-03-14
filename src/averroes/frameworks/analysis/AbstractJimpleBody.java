@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import averroes.frameworks.options.FrameworksOptions;
 import averroes.soot.Names;
 import averroes.util.SootUtils;
 import averroes.util.io.Printers;
@@ -39,6 +40,7 @@ import soot.jimple.AbstractStmtSwitch;
 import soot.jimple.AnyNewExpr;
 import soot.jimple.ArrayRef;
 import soot.jimple.AssignStmt;
+import soot.jimple.CastExpr;
 import soot.jimple.DoubleConstant;
 import soot.jimple.EqExpr;
 import soot.jimple.FieldRef;
@@ -55,6 +57,7 @@ import soot.jimple.LongConstant;
 import soot.jimple.NewArrayExpr;
 import soot.jimple.NewMultiArrayExpr;
 import soot.jimple.NopStmt;
+import soot.jimple.ReturnStmt;
 import soot.jimple.SpecialInvokeExpr;
 import soot.jimple.StaticInvokeExpr;
 import soot.jimple.Stmt;
@@ -118,6 +121,8 @@ public abstract class AbstractJimpleBody {
 		Printers.printJimple(PrinterType.ORIGINAL, method);
 
 		// Create Common Class
+		// NOTE: we will skip guarding any statements in this class 
+		//       because it contains the guard
 		ensureCommonClassExists();
 
 		// Create the new Jimple body
@@ -269,7 +274,7 @@ public abstract class AbstractJimpleBody {
 			if (isDeclaringClassNonStaticInnerClass()) {
 				InstanceFieldRef fieldRef = Jimple.v().newInstanceFieldRef(base,
 						method.getDeclaringClass().getFieldByName("this$0").makeRef());
-				body.getUnits().add(Jimple.v().newAssignStmt(fieldRef, body.getParameterLocal(0)));
+				insertStmt(Jimple.v().newAssignStmt(fieldRef, body.getParameterLocal(0)));
 			}
 
 			if (isCallToSuperOrOverloadedConstructor(firstNonIdentity)) {
@@ -391,10 +396,11 @@ public abstract class AbstractJimpleBody {
 
 			if (readsArray) {
 				Local elem = localGenerator.generateLocal(Scene.v().getObjectType());
-				body.getUnits().add(Jimple.v().newAssignStmt(elem, arrayRef));
+				
+				insertStmt(Jimple.v().newAssignStmt(elem, arrayRef));
 				storeToSet(elem);
 			} else {
-				body.getUnits().add(Jimple.v().newAssignStmt(arrayRef, setToCast()));
+				insertStmt(Jimple.v().newAssignStmt(arrayRef, setToCast()));
 			}
 		}
 	}
@@ -435,7 +441,7 @@ public abstract class AbstractJimpleBody {
 				casts.put(type, local);
 			} else {
 				Local tmp = localGenerator.generateLocal(type);
-				body.getUnits().add(Jimple.v().newAssignStmt(tmp, Jimple.v().newCastExpr(local, type)));
+				insertStmt(Jimple.v().newAssignStmt(tmp, Jimple.v().newCastExpr(local, type)));
 				casts.put(type, tmp);
 			}
 		}
@@ -451,7 +457,7 @@ public abstract class AbstractJimpleBody {
 	 */
 	protected Local insertNewStmt(Type type) {
 		Local obj = localGenerator.generateLocal(type);
-		body.getUnits().add(Jimple.v().newAssignStmt(obj, buildNewExpr(type)));
+		insertStmt(Jimple.v().newAssignStmt(obj, buildNewExpr(type)));
 		return obj;
 	}
 
@@ -472,7 +478,7 @@ public abstract class AbstractJimpleBody {
 	 * @param invokeExpr
 	 */
 	protected void insertInvokeStmt(InvokeExpr invokeExpr) {
-		body.getUnits().add(Jimple.v().newInvokeStmt(invokeExpr));
+		insertStmt(Jimple.v().newInvokeStmt(invokeExpr));
 	}
 
 	/**
@@ -484,7 +490,7 @@ public abstract class AbstractJimpleBody {
 	protected void insertSpecialInvokeStmt(Local base, SootMethod toInvoke) {
 		List<Value> args = toInvoke.getParameterTypes().stream().map(p -> getCompatibleValue(p))
 				.collect(Collectors.toList());
-		body.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(base, toInvoke.makeRef(), args)));
+		insertStmt(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(base, toInvoke.makeRef(), args)));
 	}
 
 	/**
@@ -501,9 +507,9 @@ public abstract class AbstractJimpleBody {
 				.collect(Collectors.toList());
 
 		Local base = localGenerator.generateLocal(type);
-		body.getUnits().add(Jimple.v().newAssignStmt(base, buildNewExpr(type)));
+		insertStmt(Jimple.v().newAssignStmt(base, buildNewExpr(type)));
 
-		body.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(base, toInvoke.makeRef(), args)));
+		insertStmt(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(base, toInvoke.makeRef(), args)));
 
 		return base;
 	}
@@ -521,9 +527,9 @@ public abstract class AbstractJimpleBody {
 		List<Value> args = prepareArguments(originalInvokeExpression);
 
 		Local base = localGenerator.generateLocal(type);
-		body.getUnits().add(Jimple.v().newAssignStmt(base, buildNewExpr(type)));
+		insertStmt(Jimple.v().newAssignStmt(base, buildNewExpr(type)));
 
-		body.getUnits().add(Jimple.v().newInvokeStmt(
+		insertStmt(Jimple.v().newInvokeStmt(
 				Jimple.v().newSpecialInvokeExpr(base, originalInvokeExpression.getMethod().makeRef(), args)));
 
 		return base;
@@ -537,7 +543,7 @@ public abstract class AbstractJimpleBody {
 	protected void insertStaticInvokeStmt(SootMethod toInvoke) {
 		List<Value> args = toInvoke.getParameterTypes().stream().map(p -> getCompatibleValue(p))
 				.collect(Collectors.toList());
-		body.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(toInvoke.makeRef(), args)));
+		insertStmt(Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(toInvoke.makeRef(), args)));
 	}
 
 	/**
@@ -550,7 +556,7 @@ public abstract class AbstractJimpleBody {
 		if (guard) {
 			insertAndGuardStmt(Jimple.v().newThrowStmt(tmp));
 		} else {
-			body.getUnits().add(Jimple.v().newThrowStmt(tmp));
+			insertStmt(Jimple.v().newThrowStmt(tmp));
 		}
 	}
 
@@ -559,10 +565,10 @@ public abstract class AbstractJimpleBody {
 	 */
 	protected void insertReturnStmt() {
 		if (method.getReturnType() instanceof VoidType) {
-			body.getUnits().add(Jimple.v().newReturnVoidStmt());
+			insertStmt(Jimple.v().newReturnVoidStmt());
 		} else {
 			Value ret = getCompatibleValue(method.getReturnType());
-			body.getUnits().add(Jimple.v().newReturnStmt(ret));
+			insertStmt(Jimple.v().newReturnStmt(ret));
 		}
 	}
 
@@ -586,6 +592,42 @@ public abstract class AbstractJimpleBody {
 		body.getUnits().add(stmt);
 		body.getUnits().add(nop);
 	}
+	
+	/**
+	 * Inserts a statement to the body of the underlying method. The statement
+	 * will be protected by a guard if
+	 * {@link FrameworksOptions#isEnableGuards()} returns true, as long as it is
+	 * not a return statement or a cast statement.
+	 * 
+	 * @param stmt
+	 */
+	protected void insertStmt(Stmt stmt) {
+		stmt.apply(new AbstractStmtSwitch() {
+			@Override
+			public void caseReturnStmt(ReturnStmt stmt) {
+				body.getUnits().add(stmt);
+			}
+			
+			@Override
+			public void caseAssignStmt(AssignStmt stmt) {
+				// cast statements
+				if (stmt.getRightOp() instanceof CastExpr) {
+					body.getUnits().add(stmt);
+				} else {
+					insertAndGuardStmt(stmt);
+				}
+			}
+			
+			@Override
+			public void defaultCase(Object obj) {
+				if(FrameworksOptions.isEnableGuards()) {
+					insertAndGuardStmt((Stmt) obj);
+				} else {
+					body.getUnits().add((Stmt) obj);
+				}
+			}
+		});
+	}
 
 	/**
 	 * Store the return value of a method call to {@link #storeToSet(Value)}
@@ -594,7 +636,7 @@ public abstract class AbstractJimpleBody {
 	 */
 	protected void storeMethodCallReturn(InvokeExpr expr) {
 		Local ret = localGenerator.generateLocal(expr.getMethod().getReturnType());
-		body.getUnits().add(Jimple.v().newAssignStmt(ret, expr));
+		insertStmt(Jimple.v().newAssignStmt(ret, expr));
 		storeToSet(ret);
 	}
 
@@ -606,9 +648,25 @@ public abstract class AbstractJimpleBody {
 	 * @return
 	 */
 	protected Local loadField(SootField field) {
+		return loadField(field, false);
+	}
+	
+	/**
+	 * Construct Jimple code that loads a given field and assigns it to a new
+	 * temporary local variable.
+	 * 
+	 * @param field
+	 * @param overrideGuard
+	 * @return
+	 */
+	protected Local loadField(SootField field, boolean overrideGuard) {
 		Value fieldRef = getFieldRef(field);
 		Local tmp = localGenerator.generateLocal(field.getType());
-		body.getUnits().add(Jimple.v().newAssignStmt(tmp, fieldRef));
+		if(overrideGuard) {
+			body.getUnits().add(Jimple.v().newAssignStmt(tmp, fieldRef));
+		} else {
+			insertStmt(Jimple.v().newAssignStmt(tmp, fieldRef));
+		}
 		return tmp;
 	}
 
@@ -619,7 +677,7 @@ public abstract class AbstractJimpleBody {
 	 * @param from
 	 */
 	protected void storeField(SootField field, Value from) {
-		body.getUnits().add(Jimple.v().newAssignStmt(getFieldRef(field), from));
+		insertStmt(Jimple.v().newAssignStmt(getFieldRef(field), from));
 	}
 
 	/**

@@ -54,7 +54,7 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	public Local getGuard() {
 		if (rtaGuard == null) {
 			rtaGuard = loadField(Scene.v().getField(
-					Names.RTA_GUARD_FIELD_SIGNATURE));
+					Names.RTA_GUARD_FIELD_SIGNATURE), true);
 		}
 		return rtaGuard;
 	}
