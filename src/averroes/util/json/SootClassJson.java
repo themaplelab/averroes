@@ -1,7 +1,9 @@
 package averroes.util.json;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.Maps;
@@ -100,7 +102,7 @@ public class SootClassJson {
 		}
 		
 		MapDifference<String, HashSet<String>> fieldReadsDifference = Maps.difference(methodToFieldReads, other.methodToFieldReads);
-		if(!fieldReadsDifference.areEqual()) {
+		if(!fieldReadsDifference.areEqual()) {// && !onlyGuardReadIsMissing(fieldReadsDifference.entriesOnlyOnLeft())) {
 			System.out.println("There are some differences in field reads.");
 			System.out.println("Methods with different field reads between generated and expected code: " + fieldReadsDifference.entriesDiffering());
 			System.out.println("Methods with field reads that only show up in generated code: " + fieldReadsDifference.entriesOnlyOnLeft());
@@ -141,4 +143,8 @@ public class SootClassJson {
 	public HashMap<String, HashSet<String>> getMethodToFieldWrites() {
 		return methodToFieldWrites;
 	}
+	
+//	private boolean onlyGuardReadIsMissing(Map<String, HashSet<String>> fieldReadsInGeneratedCode) {
+//		fieldReadsInGeneratedCode.values().stream().flatMap(Collection::stream).allMatch(s -> s.equalsIgnoreCase(anotherString) || s.equals)
+//	}
 }
