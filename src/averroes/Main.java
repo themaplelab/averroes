@@ -148,10 +148,8 @@ public class Main {
 			aveJarFile.addAverroesLibraryClassFile();
 			double bcel = TimeUtils.elapsedTime();
 			System.out.println("Placeholder library JAR file verified in " + bcel + " seconds.");
-			System.out
-					.println("Total time (without verification) is " + MathUtils.round(soot + averroes) + " seconds.");
-			System.out.println("Total time (with verification) is " + MathUtils.round(soot + averroes + bcel)
-					+ " seconds.");
+			System.out.println("Total time (without verification) is " + MathUtils.round(soot + averroes) + " seconds.");
+			System.out.println("Total time (with verification) is " + MathUtils.round(soot + averroes + bcel) + " seconds.");
 
 			double total = TimeUtils.elapsedSplitTime();
 			System.out.println("Elapsed time: " + total + " seconds.");
