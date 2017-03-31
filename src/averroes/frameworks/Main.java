@@ -8,15 +8,14 @@ import org.apache.commons.io.FileUtils;
 import averroes.JarFile;
 import averroes.frameworks.options.FrameworksOptions;
 import averroes.frameworks.soot.ClassWriter;
+import averroes.frameworks.soot.Cleanup;
 import averroes.frameworks.soot.CodeGenerator;
-import averroes.frameworks.soot.StaticInlineTransform;
 import averroes.util.MathUtils;
 import averroes.util.TimeUtils;
 import averroes.util.io.Paths;
 import averroes.util.io.Printers;
 import averroes.util.io.Printers.PrinterType;
 import soot.G;
-import soot.PackManager;
 import soot.Scene;
 import soot.SootMethod;
 import soot.options.Options;
@@ -56,9 +55,9 @@ public class Main {
 			Options.v().set_validate(true);
 			// Options.v().setPhaseOption("jb.tr", "use-older-type-assigner:true");
 
-			Options.v().setPhaseOption("wjtp", "enabled");
-			PackManager.v().getPack("wjtp").add(new StaticInlineTransform("wjtp.si"));
-			Options.v().setPhaseOption("wjtp.si", "enabled");
+//			Options.v().setPhaseOption("wjtp", "enabled");
+//			PackManager.v().getPack("wjtp").add(new StaticInlineTransform("wjtp.si"));
+//			Options.v().setPhaseOption("wjtp.si", "enabled");
 
 			// Load the necessary classes
 			TimeUtils.reset();
@@ -102,7 +101,11 @@ public class Main {
 			// Scene.v().getApplicationClasses().forEach(c -> {
 			// Printers.printJson(PrinterType.OPTIMIZED, c);
 			// });
+			
+			// Perform code cleanup
+			Cleanup.cleanupClasses();
 
+			// Write class files for the generate model
 			System.out.println("Writing class files for framework methods...");
 			Scene.v().getApplicationClasses().forEach(ClassWriter::writeLibraryClassFile);
 			double averroes = TimeUtils.elapsedTime();

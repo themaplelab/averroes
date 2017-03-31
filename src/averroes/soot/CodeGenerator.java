@@ -79,7 +79,7 @@ public class CodeGenerator {
 	}
 
 	/**
-	 * Create a new code generator with the given class Hierarchy.v().
+	 * Create a new code generator with the given class Cleanup.v().
 	 */
 	private CodeGenerator() {
 		libraryInterfaceToConcreteImplementationClass = new HashMap<SootClass, SootClass>();
@@ -520,7 +520,7 @@ public class CodeGenerator {
 	private void callApplicationMethodsReflectively() {
 		for (SootMethod toCall : getAllMethodsToCallReflectively()) {
 			SootClass cls = toCall.getDeclaringClass();
-			// SootClass cls = Hierarchy.v().getClass(toCall.getSignature());
+			// SootClass cls = Cleanup.v().getClass(toCall.getSignature());
 			SootMethodRef methodRef = toCall.makeRef();
 
 			// Prepare the method base, and actual args
@@ -571,7 +571,7 @@ public class CodeGenerator {
 		// Get those methods specified in the apk resource xml files that handle
 		// onClick events.
 		// if (Options.v().src_prec() == Options.src_prec_apk) {
-		// result.addAll(Hierarchy.v().getOnClickApplicationMethods());
+		// result.addAll(Cleanup.v().getOnClickApplicationMethods());
 		// }
 
 		return result;

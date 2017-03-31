@@ -83,21 +83,21 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 		CodeGenerator.createStaticInitializer(averroesRta);
 
 		// TODO: Write it to disk
-		averroesRta.getMethods().forEach(
-				m -> Printers.printJimple(PrinterType.GENERATED, m));
+		averroesRta.getMethods().forEach(m -> Printers.printJimple(PrinterType.GENERATED, m));
 		// ClassWriter.writeLibraryClassFile(averroesRta);
 	}
 
 	@Override
 	public void handleFields() {
-		fieldReads.forEach(f -> {
+		// For RTA, we ignore all private fields, since we have one location in the library
+		fieldReads.stream().filter(f -> f.isPrivate() == false).forEach(f -> {
 			storeToSet(loadField(f));
 		});
 		
-		fieldWrites.forEach(f -> {
+		// For RTA, we ignore all private fields, since we have one location in the library
+		fieldWrites.stream().filter(f -> f.isPrivate() == false).forEach(f -> {
 			storeField(f, getCompatibleValue(f.getType()));
 		});
-
 	}
 
 	/**

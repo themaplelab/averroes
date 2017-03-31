@@ -104,7 +104,7 @@ public class Hierarchy {
 	private int removedLibraryFieldCount;
 
 	/**
-	 * Get the Hierarchy singleton.
+	 * Get the Cleanup singleton.
 	 * 
 	 * @return
 	 */
