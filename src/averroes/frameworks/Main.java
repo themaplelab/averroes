@@ -8,9 +8,9 @@ import org.apache.commons.io.FileUtils;
 import averroes.JarFile;
 import averroes.frameworks.options.FrameworksOptions;
 import averroes.frameworks.soot.ClassWriter;
-import averroes.frameworks.soot.Cleanup;
 import averroes.frameworks.soot.CodeGenerator;
 import averroes.util.MathUtils;
+import averroes.util.SootUtils;
 import averroes.util.TimeUtils;
 import averroes.util.io.Paths;
 import averroes.util.io.Printers;
@@ -103,7 +103,7 @@ public class Main {
 			// });
 			
 			// Perform code cleanup
-			Cleanup.cleanupClasses();
+			SootUtils.cleanupClasses();
 
 			// Write class files for the generate model
 			System.out.println("Writing class files for framework methods...");
