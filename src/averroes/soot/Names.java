@@ -47,6 +47,7 @@ public class Names {
 	public static final String RTA_SET_FIELD_SIGNATURE = "<" + RTA_CLASS + ": java.lang.Object " + SET_FIELD_NAME + ">";
 	public static final String RTA_INT_FIELD_SIGNATURE = "<" + RTA_CLASS + ": int " + INT_FIELD_NAME + ">";
 	public static final String RTA_BOOLEAN_FIELD_SIGNATURE = "<" + RTA_CLASS + ": boolean " + BOOLEAN_FIELD_NAME + ">";
+	public static final String AVE_GUARD_FIELD_SIGNATURE = "<" + AVERROES_ABSTRACT_LIBRARY_CLASS + ": boolean " + GUARD_FIELD_NAME + ">";
 	public static final String RTA_GUARD_FIELD_SIGNATURE = "<" + RTA_CLASS + ": boolean " + GUARD_FIELD_NAME + ">";
 	public static final String XTA_GUARD_FIELD_SIGNATURE = "<" + XTA_CLASS + ": boolean " + GUARD_FIELD_NAME + ">";
 

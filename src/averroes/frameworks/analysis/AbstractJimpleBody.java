@@ -507,9 +507,14 @@ public abstract class AbstractJimpleBody {
 				.collect(Collectors.toList());
 
 		Local base = localGenerator.generateLocal(type);
-		insertStmt(Jimple.v().newAssignStmt(base, buildNewExpr(type)));
 
-		insertStmt(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(base, toInvoke.makeRef(), args)));
+		if (FrameworksOptions.isEnableGuards()) {
+			insertAndGuardStmt(Jimple.v().newAssignStmt(base, buildNewExpr(type)),
+					Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(base, toInvoke.makeRef(), args)));
+		} else {
+			body.getUnits().add(Jimple.v().newAssignStmt(base, buildNewExpr(type)));
+			body.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(base, toInvoke.makeRef(), args)));
+		}
 
 		return base;
 	}
@@ -527,11 +532,15 @@ public abstract class AbstractJimpleBody {
 		List<Value> args = prepareArguments(originalInvokeExpression);
 
 		Local base = localGenerator.generateLocal(type);
-		insertStmt(Jimple.v().newAssignStmt(base, buildNewExpr(type)));
-
-		insertStmt(Jimple.v().newInvokeStmt(
-				Jimple.v().newSpecialInvokeExpr(base, originalInvokeExpression.getMethod().makeRef(), args)));
-
+		
+		if (FrameworksOptions.isEnableGuards()) {
+			insertAndGuardStmt(Jimple.v().newAssignStmt(base, buildNewExpr(type)),
+					Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(base, originalInvokeExpression.getMethod().makeRef(), args)));
+		} else {
+			body.getUnits().add(Jimple.v().newAssignStmt(base, buildNewExpr(type)));
+			body.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(base, originalInvokeExpression.getMethod().makeRef(), args)));
+		}
+		
 		return base;
 	}
 
@@ -581,7 +590,7 @@ public abstract class AbstractJimpleBody {
 	 * @return
 	 */
 	protected void insertAndGuardStmt(Stmt stmt) {
-		// TODO: this condition can produce dead code. That's why we should use
+		// This condition can produce dead code. That's why we should use
 		// the "guard" field as a condition instead.
 		// NeExpr cond = Jimple.v().newNeExpr(IntConstant.v(1),
 		// IntConstant.v(1));
@@ -590,6 +599,28 @@ public abstract class AbstractJimpleBody {
 
 		body.getUnits().add(Jimple.v().newIfStmt(cond, nop));
 		body.getUnits().add(stmt);
+		body.getUnits().add(nop);
+	}
+	
+	/**
+	 * Guard an object creation. This is different from guarding regular
+	 * statements. An object creation requires 2 statements: new statement and
+	 * an invocation to the constructor if the created object is not an array.
+	 * 
+	 * @param stmt
+	 * @return
+	 */
+	protected void insertAndGuardStmt(Stmt newStmt, Stmt invokeStmt) {
+		// This condition can produce dead code. That's why we should use
+		// the "guard" field as a condition instead.
+		// NeExpr cond = Jimple.v().newNeExpr(IntConstant.v(1),
+		// IntConstant.v(1));
+		EqExpr cond = Jimple.v().newEqExpr(getGuard(), IntConstant.v(0));
+		NopStmt nop = Jimple.v().newNopStmt();
+
+		body.getUnits().add(Jimple.v().newIfStmt(cond, nop));
+		body.getUnits().add(newStmt);
+		body.getUnits().add(invokeStmt);
 		body.getUnits().add(nop);
 	}
 	

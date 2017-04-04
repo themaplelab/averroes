@@ -29,6 +29,7 @@ import averroes.options.AverroesOptions;
 import averroes.tamiflex.TamiFlexFactsDatabase;
 import averroes.util.io.Paths;
 import soot.ArrayType;
+import soot.BooleanType;
 import soot.Local;
 import soot.Modifier;
 import soot.RefLikeType;
@@ -41,10 +42,12 @@ import soot.SourceLocator;
 import soot.Type;
 import soot.Value;
 import soot.VoidType;
+import soot.jimple.AssignStmt;
 import soot.jimple.IntConstant;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
+import soot.jimple.toolkits.scalar.NopEliminator;
 import soot.options.Options;
 import soot.util.JasminOutputStream;
 
@@ -175,6 +178,15 @@ public class CodeGenerator {
 	public SootField getAverroesInstanceField() {
 		return averroesAbstractLibraryClass.getField(Hierarchy.signatureToSubsignature(Names.INSTANCE_FIELD_SIGNATURE));
 	}
+	
+	/**
+	 * Get the guard field.
+	 * 
+	 * @return
+	 */
+	public SootField getAverroesGuardField() {
+		return averroesAbstractLibraryClass.getField(Hierarchy.signatureToSubsignature(Names.AVE_GUARD_FIELD_SIGNATURE));
+	}
 
 	/**
 	 * Create the Averroes library class where all the fun takes place ;)
@@ -194,7 +206,7 @@ public class CodeGenerator {
 			// Create the constructor that calls the JavaLangObject constructor
 			createAverroesAbstractLibraryInit();
 
-			// Create the LPT field, FIN field, and instance field
+			// Create the LPT field, FIN field, instance field, and the Guard
 			createAverroesAbstractLibraryFields();
 
 			// Create the abstract doItAll method
@@ -304,6 +316,9 @@ public class CodeGenerator {
 		// Insert the standard Jimple body footer
 		body.insertStandardJimpleBodyFooter();
 
+		// Eliminate Nops
+		NopEliminator.v().transform(body.getJimpleBody());
+				
 		// Validate the Jimple body
 		body.validate();
 
@@ -381,20 +396,28 @@ public class CodeGenerator {
 		// Finally validate the Jimple body
 		body.validate();
 	}
+	
+	/**
+	 * Add a field to given Soot class.
+	 * 
+	 * @param cls
+	 * @param fieldName
+	 * @param fieldType
+	 * @param modifiers
+	 */
+	private void createField(SootClass cls, String fieldName, Type fieldType, int modifiers) {
+		SootField field = new SootField(fieldName, fieldType, modifiers);
+		cls.addField(field);
+	}
 
 	/**
-	 * Add the main 3 fields to the AverroesAbstractLibrary class.
+	 * Add the main 4 fields to the AverroesAbstractLibrary class.
 	 */
 	private void createAverroesAbstractLibraryFields() {
-		SootField libraryPointsTo = new SootField(Names.LIBRARY_POINTS_TO, Hierarchy.v().getJavaLangObject().getType(),
-				Modifier.PUBLIC);
-		SootField finalizePointsTo = new SootField(Names.FINALIZE_POINTS_TO,
-				Hierarchy.v().getJavaLangObject().getType(), Modifier.PUBLIC);
-		SootField instance = new SootField(Names.INSTANCE, averroesAbstractLibraryClass.getType(),
-				Modifier.PUBLIC | Modifier.STATIC);
-		averroesAbstractLibraryClass.addField(libraryPointsTo);
-		averroesAbstractLibraryClass.addField(finalizePointsTo);
-		averroesAbstractLibraryClass.addField(instance);
+		createField(averroesAbstractLibraryClass, Names.LIBRARY_POINTS_TO, Hierarchy.v().getJavaLangObject().getType(), Modifier.PUBLIC);
+		createField(averroesAbstractLibraryClass, Names.FINALIZE_POINTS_TO, Hierarchy.v().getJavaLangObject().getType(), Modifier.PUBLIC);
+		createField(averroesAbstractLibraryClass, Names.INSTANCE, averroesAbstractLibraryClass.getType(), Modifier.PUBLIC | Modifier.STATIC);
+		createField(averroesAbstractLibraryClass, Names.GUARD_FIELD_NAME, BooleanType.v(), Modifier.PUBLIC | Modifier.STATIC);
 	}
 
 	/**
@@ -427,6 +450,9 @@ public class CodeGenerator {
 		// Add return statement
 		body.getUnits().addLast(Jimple.v().newReturnVoidStmt());
 
+		// Eliminate Nops
+		NopEliminator.v().transform(body);
+				
 		// Finally validate the Jimple body
 		body.validate();
 	}
@@ -442,15 +468,17 @@ public class CodeGenerator {
 		averroesLibraryClass.addMethod(clinit);
 
 		// Create instance and call the constructor
-		Local instance = body.insertNewStatement(RefType.v(averroesLibraryClass));
-		body.insertSpecialInvokeStatement(instance, averroesLibraryClass.getMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG));
+		Local instance = body.insertSpecialInvokeNewStmt(RefType.v(averroesLibraryClass), averroesLibraryClass.getMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG));
 
 		// Now assign this instance to AverroesAbstractLibrary.instance
-		body.storeStaticField(CodeGenerator.v().getAverroesInstanceField(), instance);
+		body.storeStaticField(CodeGenerator.v().getAverroesInstanceField(), instance, true);
 
 		// Add return statement
 		body.insertReturnStmt();
 
+		// Eliminate Nops
+		NopEliminator.v().transform(body.getJimpleBody());
+				
 		// System.out.println(clinitBody.getJimpleBody());
 
 		// Finally validate the Jimple body
@@ -469,6 +497,9 @@ public class CodeGenerator {
 		averroesLibraryClass.addMethod(doItAll);
 		doItAllBody = new AverroesJimpleBody(doItAll);
 
+		// Load the Averroes instance field
+		doItAllBody.getInstance();
+		
 		// Insert object creation statements
 		createObjects();
 
@@ -497,6 +528,9 @@ public class CodeGenerator {
 		// statement, and the return type is void.
 		// body.insertReturnStmt();
 
+		// Eliminate Nops
+		NopEliminator.v().transform(doItAllBody.getJimpleBody());
+		
 		// TODO
 		// System.out.println(doItAllBody.getJimpleBody());
 
@@ -597,10 +631,15 @@ public class CodeGenerator {
 		List<Value> args = doItAllBody.prepareActualArguments(forName);
 		Local classes = doItAllBody.newLocal(Hierarchy.v().getJavaLangClass().getType());
 		Local instances = doItAllBody.newLocal(Hierarchy.v().getJavaLangObject().getType());
-		doItAllBody.insertAssignmentStatement(classes, Jimple.v().newStaticInvokeExpr(forName.makeRef(), args));
-		doItAllBody.insertAssignmentStatement(instances,
-				Jimple.v().newVirtualInvokeExpr(classes, newInstance.makeRef()));
-		doItAllBody.storeLibraryPointsToField(instances);
+		
+		AssignStmt classForName = Jimple.v().newAssignStmt(classes, Jimple.v().newStaticInvokeExpr(forName.makeRef(), args));
+		AssignStmt classNewInstance = Jimple.v().newAssignStmt(instances, Jimple.v().newVirtualInvokeExpr(classes, newInstance.makeRef()));
+		
+		doItAllBody.insertAndGuardAssignStmts(classForName, classNewInstance);
+		
+//		doItAllBody.insertAssignmentStatement(classes, Jimple.v().newStaticInvokeExpr(forName.makeRef(), args));
+//		doItAllBody.insertAssignmentStatement(instances, Jimple.v().newVirtualInvokeExpr(classes, newInstance.makeRef()));
+//		doItAllBody.storeLibraryPointsToField(instances);
 	}
 
 	/**

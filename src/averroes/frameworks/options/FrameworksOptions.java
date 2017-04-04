@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
@@ -52,6 +53,9 @@ public final class FrameworksOptions {
 			.desc("the analysis that Averroes should use to model the library stubs (one of rta, xta, cfa)")
 			.hasArg().argName("analysis").required().build();
 	
+	private static Option help = Option.builder("h").longOpt("help").desc("print out this help message").hasArg(false)
+			.required(false).build();
+	
 	private static Option enableGuards = Option
 			.builder("g")
 			.longOpt("enable-guards")
@@ -60,7 +64,7 @@ public final class FrameworksOptions {
 
 	private static Options options = new Options().addOption(input)
 			.addOption(deps).addOption(outputDirectory).addOption(jreDirectory)
-			.addOption(analysis).addOption(enableGuards);
+			.addOption(analysis).addOption(help).addOption(enableGuards);
 
 	private static CommandLine cmd;
 
@@ -72,9 +76,23 @@ public final class FrameworksOptions {
 	public static void processArguments(String[] args) {
 		try {
 			cmd = new DefaultParser().parse(options, args);
+			
+			// Do we need to print out help messages?
+			if (cmd.hasOption(help.getOpt())) {
+				help();
+			}
+						
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * Print out some help information.
+	 */
+	private static void help() {
+		new HelpFormatter().printHelp("jar -jar averroes.jar", "", options, "", true);
+		System.exit(0);
 	}
 
 	/**

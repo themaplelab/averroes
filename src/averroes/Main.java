@@ -14,12 +14,6 @@ import java.util.Collections;
 
 import org.apache.commons.io.FileUtils;
 
-import soot.ClassProvider;
-import soot.G;
-import soot.Scene;
-import soot.SootClass;
-import soot.SourceLocator;
-import soot.options.Options;
 import averroes.options.AverroesOptions;
 import averroes.soot.CodeGenerator;
 import averroes.soot.Hierarchy;
@@ -28,6 +22,12 @@ import averroes.soot.SootSceneUtil;
 import averroes.util.MathUtils;
 import averroes.util.TimeUtils;
 import averroes.util.io.Paths;
+import soot.ClassProvider;
+import soot.G;
+import soot.Scene;
+import soot.SootClass;
+import soot.SourceLocator;
+import soot.options.Options;
 
 /**
  * The main Averroes class.
@@ -139,7 +139,7 @@ public class Main {
 			}
 			double averroes = TimeUtils.elapsedTime();
 			System.out.println("Placeholder library classes created and validated in " + averroes + " seconds.");
-
+			
 			// Create the jar file and add all the generated class files to it.
 			TimeUtils.reset();
 			JarFile librJarFile = new JarFile(Paths.placeholderLibraryJarFile());

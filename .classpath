@@ -22,10 +22,10 @@
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="dat"/>
-	<classpathentry kind="lib" path="lib/bcel-5.2.jar" sourcepath="lib/bcel-5.2-src.zip"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/soot"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/probe"/>
 	<classpathentry kind="con" path="org.scala-ide.sdt.launching.SCALA_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/bcel-6.0.jar" sourcepath="lib/bcel-6.0-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
