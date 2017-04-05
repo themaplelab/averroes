@@ -152,7 +152,7 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 	 */
 	private Local getSetFLocal(SootField field) {
 		if (!setFLocal.containsKey(field)) {
-			setFLocal.put(field, loadField(getSetF(field)));
+			setFLocal.put(field, loadField(getSetF(field), true));
 		}
 
 		return setFLocal.get(field);
