@@ -3,6 +3,11 @@ package averroes.frameworks.analysis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import averroes.frameworks.soot.ClassWriter;
+import averroes.frameworks.soot.CodeGenerator;
+import averroes.soot.Names;
+import averroes.util.io.Printers;
+import averroes.util.io.Printers.PrinterType;
 import soot.BooleanType;
 import soot.Local;
 import soot.Modifier;
@@ -10,10 +15,7 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.Value;
-import averroes.frameworks.soot.CodeGenerator;
-import averroes.soot.Names;
-import averroes.util.io.Printers;
-import averroes.util.io.Printers.PrinterType;
+import soot.jimple.AssignStmt;
 
 /**
  * RTA Jimple body creator that over-approximates all objects in the library by
@@ -41,17 +43,22 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	}
 
 	@Override
-	public Local setToCast() {
+	protected Local setToCast() {
 		return getRtaSet();
 	}
 
 	@Override
-	public void storeToSet(Value from) {
+	protected AssignStmt buildStoreToSetExpr(Value from) {
+		return buildStoreFieldExpr(Scene.v().getField(Names.RTA_SET_FIELD_SIGNATURE), from);
+	}
+	
+	@Override
+	protected void storeToSet(Value from) {
 		storeField(Scene.v().getField(Names.RTA_SET_FIELD_SIGNATURE), from);
 	}
 
 	@Override
-	public Local getGuard() {
+	protected Local getGuard() {
 		if (rtaGuard == null) {
 			rtaGuard = loadField(Scene.v().getField(
 					Names.RTA_GUARD_FIELD_SIGNATURE), true);
@@ -60,7 +67,7 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	}
 
 	@Override
-	public void ensureCommonClassExists() {
+	protected void ensureCommonClassExists() {
 		if (Scene.v().containsClass(Names.RTA_CLASS)) {
 			return;
 		}
@@ -82,13 +89,15 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 		// with default values
 		CodeGenerator.createStaticInitializer(averroesRta);
 
-		// TODO: Write it to disk
+		// Print out the Jimple code
 		averroesRta.getMethods().forEach(m -> Printers.printJimple(PrinterType.GENERATED, m));
-		// ClassWriter.writeLibraryClassFile(averroesRta);
+		
+		// Write it to disk
+		ClassWriter.writeLibraryClassFile(averroesRta);
 	}
 
 	@Override
-	public void handleFields() {
+	protected void handleFields() {
 		// For RTA, we ignore all private fields, since we have one location in the library
 		fieldReads.stream().filter(f -> f.isPrivate() == false).forEach(f -> {
 			storeToSet(loadField(f));
@@ -107,8 +116,7 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 	 */
 	private Local getRtaSet() {
 		if (rtaSet == null) {
-			rtaSet = loadField(Scene.v()
-					.getField(Names.RTA_SET_FIELD_SIGNATURE));
+			rtaSet = loadField(Scene.v().getField(Names.RTA_SET_FIELD_SIGNATURE), true);
 		}
 		return rtaSet;
 	}

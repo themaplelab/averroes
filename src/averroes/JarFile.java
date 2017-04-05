@@ -138,6 +138,10 @@ public class JarFile {
 				});
 		close();
 
+		// Set BCEL's repository class path.
+		SyntheticRepository rep = SyntheticRepository.getInstance(new ClassPath(placeholderJar.toString()));
+		Repository.setRepository(rep);
+				
 		// Now add all those class files in the crafted JAR file to the BCEL
 		// repository.
 		for (String classFile : classFiles) {
@@ -145,6 +149,12 @@ public class JarFile {
 			JavaClass cls = parser.parse();
 			bcelClasses.add(cls);
 		}
+		
+		// Now we need to add all the BCEL classes
+		bcelClasses.forEach(c -> Repository.getRepository().storeClass(c));
+
+		// Now verify all the generated class files
+		verify();
 	}
 
 	/**

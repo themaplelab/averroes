@@ -909,6 +909,7 @@ public class AverroesJimpleBody {
 		} else {
 			body.getUnits().add(Jimple.v().newAssignStmt(base, buildNewExpr(type)));
 			body.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(base, toInvoke.makeRef(), args)));
+			storeLibraryPointsToField(base);
 		}
 
 		return base;

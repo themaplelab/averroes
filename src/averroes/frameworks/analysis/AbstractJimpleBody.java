@@ -1,6 +1,7 @@
 package averroes.frameworks.analysis;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -164,6 +165,16 @@ public abstract class AbstractJimpleBody {
 	 * @param from
 	 */
 	protected abstract void storeToSet(Value from);
+	
+	/**
+	 * Builds a Jimple expresion to store the given value to the set that is
+	 * used to over-approximate objects in the library. This could be set_m for
+	 * XTA or RTA.set for RTA. This method is useful for cases when multiple
+	 * statements have to be guarded using the same guard.
+	 * 
+	 * @param from
+	 */
+	protected abstract AssignStmt buildStoreToSetExpr(Value from);
 
 	/**
 	 * Load the guard field that is used to guard conditionals. See
@@ -277,12 +288,12 @@ public abstract class AbstractJimpleBody {
 				insertStmt(Jimple.v().newAssignStmt(fieldRef, body.getParameterLocal(0)));
 			}
 
+			// don't guard calls to the super constructor => causes uninitialized bytecode verification errors
 			if (isCallToSuperOrOverloadedConstructor(firstNonIdentity)) {
 				InvokeStmt stmt = (InvokeStmt) firstNonIdentity;
-				insertSpecialInvokeStmt(base, stmt.getInvokeExpr().getMethod());
+				insertSpecialInvokeStmt(base, stmt.getInvokeExpr().getMethod(), true);
 			} else if (method.getDeclaringClass().hasSuperclass()) {
-				insertSpecialInvokeStmt(base,
-						method.getDeclaringClass().getSuperclass().getMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG));
+				insertSpecialInvokeStmt(base, method.getDeclaringClass().getSuperclass().getMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG), true);
 			}
 		}
 
@@ -318,8 +329,7 @@ public abstract class AbstractJimpleBody {
 		});
 
 		arrayCreations.forEach(t -> {
-			Local obj = insertNewStmt(t);
-			storeToSet(obj);
+			insertNewStmt(t);
 		});
 
 		checkedExceptions.forEach(cls -> {
@@ -397,8 +407,7 @@ public abstract class AbstractJimpleBody {
 			if (readsArray) {
 				Local elem = localGenerator.generateLocal(Scene.v().getObjectType());
 				
-				insertStmt(Jimple.v().newAssignStmt(elem, arrayRef));
-				storeToSet(elem);
+				insertAssignStmts(Jimple.v().newAssignStmt(elem, arrayRef), buildStoreToSetExpr(elem));
 			} else {
 				insertStmt(Jimple.v().newAssignStmt(arrayRef, setToCast()));
 			}
@@ -488,9 +497,19 @@ public abstract class AbstractJimpleBody {
 	 * @param toInvoke
 	 */
 	protected void insertSpecialInvokeStmt(Local base, SootMethod toInvoke) {
+		insertSpecialInvokeStmt(base, toInvoke, false);
+	}
+	
+	/**
+	 * Insert a special invoke statement.
+	 * 
+	 * @param base
+	 * @param toInvoke
+	 */
+	protected void insertSpecialInvokeStmt(Local base, SootMethod toInvoke, boolean overrideGuard) {
 		List<Value> args = toInvoke.getParameterTypes().stream().map(p -> getCompatibleValue(p))
 				.collect(Collectors.toList());
-		insertStmt(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(base, toInvoke.makeRef(), args)));
+		insertStmt(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(base, toInvoke.makeRef(), args)), overrideGuard);
 	}
 
 	/**
@@ -510,7 +529,7 @@ public abstract class AbstractJimpleBody {
 
 		if (FrameworksOptions.isEnableGuards()) {
 			insertAndGuardStmt(Jimple.v().newAssignStmt(base, buildNewExpr(type)),
-					Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(base, toInvoke.makeRef(), args)));
+					Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(base, toInvoke.makeRef(), args)), base);
 		} else {
 			body.getUnits().add(Jimple.v().newAssignStmt(base, buildNewExpr(type)));
 			body.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(base, toInvoke.makeRef(), args)));
@@ -535,10 +554,11 @@ public abstract class AbstractJimpleBody {
 		
 		if (FrameworksOptions.isEnableGuards()) {
 			insertAndGuardStmt(Jimple.v().newAssignStmt(base, buildNewExpr(type)),
-					Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(base, originalInvokeExpression.getMethod().makeRef(), args)));
+					Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(base, originalInvokeExpression.getMethod().makeRef(), args)), base);
 		} else {
 			body.getUnits().add(Jimple.v().newAssignStmt(base, buildNewExpr(type)));
 			body.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(base, originalInvokeExpression.getMethod().makeRef(), args)));
+			storeToSet(base);
 		}
 		
 		return base;
@@ -590,14 +610,7 @@ public abstract class AbstractJimpleBody {
 	 * @return
 	 */
 	protected void insertAndGuardStmt(Stmt stmt) {
-		// This condition can produce dead code. That's why we should use
-		// the "guard" field as a condition instead.
-		// NeExpr cond = Jimple.v().newNeExpr(IntConstant.v(1),
-		// IntConstant.v(1));
-		EqExpr cond = Jimple.v().newEqExpr(getGuard(), IntConstant.v(0));
-		NopStmt nop = Jimple.v().newNopStmt();
-
-		body.getUnits().add(Jimple.v().newIfStmt(cond, nop));
+		NopStmt nop = insertGuardCondition();
 		body.getUnits().add(stmt);
 		body.getUnits().add(nop);
 	}
@@ -610,18 +623,74 @@ public abstract class AbstractJimpleBody {
 	 * @param stmt
 	 * @return
 	 */
-	protected void insertAndGuardStmt(Stmt newStmt, Stmt invokeStmt) {
+	protected void insertAndGuardStmt(AssignStmt newStmt, InvokeStmt invokeStmt, Value from) {
+		NopStmt nop = insertGuardCondition();
+		body.getUnits().add(newStmt);
+		body.getUnits().add(invokeStmt);
+		body.getUnits().add(buildStoreToSetExpr(from));
+		body.getUnits().add(nop);
+	}
+	
+	/**
+	 * Guard a statement by an if-statement whose condition always evaluates to
+	 * true. This helps inserting multiple {@link ThrowStmt}, for example, in a
+	 * Jimple method. This also assigns the return of that stmt to the LPT
+	 * field.
+	 * 
+	 * @param stmt
+	 * @return
+	 */
+	protected void insertAndGuardStmt(Stmt stmt, Value from) {
+		NopStmt nop = insertGuardCondition();
+		body.getUnits().add(stmt);
+		body.getUnits().add(buildStoreToSetExpr(from));
+		body.getUnits().add(nop);
+	}
+	
+	/**
+	 * Guard a sequence of assignment statements.
+	 * 
+	 * @param stmt
+	 * @return
+	 */
+	protected void insertAndGuardAssignStmts(AssignStmt... stmts) {
+		NopStmt nop = insertGuardCondition();
+		Arrays.stream(stmts).forEach(body.getUnits()::add);
+		body.getUnits().add(nop);
+	}
+	
+	/**
+	 * Inserts a guard condition.
+	 * 
+	 * @return
+	 */
+	protected NopStmt insertGuardCondition() {
 		// This condition can produce dead code. That's why we should use
 		// the "guard" field as a condition instead.
 		// NeExpr cond = Jimple.v().newNeExpr(IntConstant.v(1),
 		// IntConstant.v(1));
 		EqExpr cond = Jimple.v().newEqExpr(getGuard(), IntConstant.v(0));
 		NopStmt nop = Jimple.v().newNopStmt();
-
+		
 		body.getUnits().add(Jimple.v().newIfStmt(cond, nop));
-		body.getUnits().add(newStmt);
-		body.getUnits().add(invokeStmt);
-		body.getUnits().add(nop);
+		
+		return nop;
+	}
+	
+	/**
+	 * Inserts a sequence of assignment statement to the body of the underlying
+	 * method. The sequence will be protected by a guard if
+	 * {@link FrameworksOptions#isEnableGuards()} returns true, as long as it is
+	 * not a return statement or a cast statement.
+	 * 
+	 * @param stmts
+	 */
+	protected void insertAssignStmts(AssignStmt... stmts) {
+		if (FrameworksOptions.isEnableGuards()) {
+			insertAndGuardAssignStmts(stmts);
+		} else {
+			Arrays.stream(stmts).forEach(body.getUnits()::add);
+		}
 	}
 	
 	/**
@@ -633,31 +702,59 @@ public abstract class AbstractJimpleBody {
 	 * @param stmt
 	 */
 	protected void insertStmt(Stmt stmt) {
-		stmt.apply(new AbstractStmtSwitch() {
-			@Override
-			public void caseReturnStmt(ReturnStmt stmt) {
-				body.getUnits().add(stmt);
-			}
-			
-			@Override
-			public void caseAssignStmt(AssignStmt stmt) {
-				// cast statements
-				if (stmt.getRightOp() instanceof CastExpr) {
+		insertStmt(stmt, false);
+	}
+	
+	/**
+	 * Inserts a statement to the body of the underlying method. The statement
+	 * will be protected by a guard if
+	 * {@link FrameworksOptions#isEnableGuards()} returns true, as long as it is
+	 * not a return statement or a cast statement.
+	 * 
+	 * @param stmt
+	 * @param overrideGuard
+	 */
+	protected void insertStmt(Stmt stmt, boolean overrideGuard) {
+		if (overrideGuard) {
+			body.getUnits().add(stmt);
+		} else {
+			stmt.apply(new AbstractStmtSwitch() {
+				@Override
+				public void caseReturnStmt(ReturnStmt stmt) {
 					body.getUnits().add(stmt);
-				} else {
-					insertAndGuardStmt(stmt);
 				}
-			}
-			
-			@Override
-			public void defaultCase(Object obj) {
-				if(FrameworksOptions.isEnableGuards()) {
-					insertAndGuardStmt((Stmt) obj);
-				} else {
-					body.getUnits().add((Stmt) obj);
+
+				@Override
+				public void caseAssignStmt(AssignStmt stmt) {
+					// cast statements
+					if (stmt.getRightOp() instanceof CastExpr) {
+						body.getUnits().add(stmt);
+					} else if (isNewArrayExpression(stmt.getRightOp())) {
+						insertAndGuardStmt(stmt, stmt.getLeftOp());
+					} else {
+						insertAndGuardStmt(stmt);
+					}
 				}
-			}
-		});
+
+				@Override
+				public void defaultCase(Object obj) {
+					if (FrameworksOptions.isEnableGuards()) {
+						insertAndGuardStmt((Stmt) obj);
+					} else {
+						body.getUnits().add((Stmt) obj);
+					}
+				}
+			});
+		}
+	}
+	
+	/**
+	 * Is this value a new array expression, possibly a multi-dimensional one?
+	 * @param expr
+	 * @return
+	 */
+	protected boolean isNewArrayExpression(Value expr) {
+		return expr instanceof AnyNewExpr && ((AnyNewExpr) expr).getType() instanceof ArrayType;
 	}
 
 	/**
@@ -709,6 +806,18 @@ public abstract class AbstractJimpleBody {
 	 */
 	protected void storeField(SootField field, Value from) {
 		insertStmt(Jimple.v().newAssignStmt(getFieldRef(field), from));
+	}
+	
+	/**
+	 * Construct Jimple code that stores the given value to a Soot field.
+	 * 
+	 * @param field
+	 * @param from
+	 * 
+	 * @return
+	 */
+	protected AssignStmt buildStoreFieldExpr(SootField field, Value from) {
+		return Jimple.v().newAssignStmt(getFieldRef(field), from);
 	}
 
 	/**

@@ -2,6 +2,7 @@ package averroes.frameworks.analysis;
 
 import java.util.HashMap;
 
+import averroes.frameworks.soot.ClassWriter;
 import averroes.frameworks.soot.CodeGenerator;
 import averroes.soot.Names;
 import averroes.util.io.Printers;
@@ -14,6 +15,7 @@ import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
 import soot.Value;
+import soot.jimple.AssignStmt;
 import soot.jimple.Jimple;
 
 /**
@@ -51,6 +53,11 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 	}
 
 	@Override
+	protected AssignStmt buildStoreToSetExpr(Value from) {
+		return buildStoreFieldExpr(getSetM(), from);
+	}
+	
+	@Override
 	protected void storeToSet(Value from) {
 		storeField(getSetM(), from);
 	}
@@ -84,9 +91,11 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 		// with default values
 		CodeGenerator.createStaticInitializer(averroesXta);
 
-		// TODO: Write it to disk
+		// Print out the Jimple code
 		averroesXta.getMethods().forEach(m -> Printers.printJimple(PrinterType.GENERATED, m));
-		// ClassWriter.writeLibraryClassFile(averroesXta);
+
+		// Write it to disk		
+		ClassWriter.writeLibraryClassFile(averroesXta);
 	}
 
 	@Override
@@ -107,7 +116,7 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 	 */
 	private Local getSetMLocal() {
 		if (setMLocal == null) {
-			setMLocal = loadField(getSetM());
+			setMLocal = loadField(getSetM(), true);
 		}
 
 		return setMLocal;
