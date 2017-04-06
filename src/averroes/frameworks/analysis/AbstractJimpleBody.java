@@ -122,8 +122,8 @@ public abstract class AbstractJimpleBody {
 		Printers.printJimple(PrinterType.ORIGINAL, method);
 
 		// Create Common Class
-		// NOTE: we will skip guarding any statements in this class 
-		//       because it contains the guard
+		// NOTE: we will skip guarding any statements in this class
+		// because it contains the guard
 		ensureCommonClassExists();
 
 		// Create the new Jimple body
@@ -165,7 +165,7 @@ public abstract class AbstractJimpleBody {
 	 * @param from
 	 */
 	protected abstract void storeToSet(Value from);
-	
+
 	/**
 	 * Builds a Jimple expresion to store the given value to the set that is
 	 * used to over-approximate objects in the library. This could be set_m for
@@ -277,14 +277,16 @@ public abstract class AbstractJimpleBody {
 			Local base = body.getThisLocal();
 			Stmt firstNonIdentity = originalBody.getFirstNonIdentityStmt();
 
-			// don't guard calls to the super constructor => causes uninitialized bytecode verification errors
+			// don't guard calls to the super constructor => causes
+			// uninitialized bytecode verification errors
 			if (isCallToSuperOrOverloadedConstructor(firstNonIdentity)) {
 				InvokeStmt stmt = (InvokeStmt) firstNonIdentity;
-				insertSpecialInvokeStmt(base, stmt.getInvokeExpr().getMethod(), true);
+				insertSpecialInvokeStmt(base, stmt.getInvokeExpr().getMethod(), true, false);
 			} else if (method.getDeclaringClass().hasSuperclass()) {
-				insertSpecialInvokeStmt(base, method.getDeclaringClass().getSuperclass().getMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG), true);
+				insertSpecialInvokeStmt(base,
+						method.getDeclaringClass().getSuperclass().getMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG), true);
 			}
-						
+
 			/*
 			 * If this is the constructor of an inner class, insert an
 			 * assignment statement for the first parameter to the special
@@ -395,7 +397,7 @@ public abstract class AbstractJimpleBody {
 
 			if (readsArray) {
 				Local elem = localGenerator.generateLocal(Scene.v().getObjectType());
-				
+
 				insertAssignStmts(Jimple.v().newAssignStmt(elem, arrayRef), buildStoreToSetExpr(elem));
 			} else {
 				insertStmt(Jimple.v().newAssignStmt(arrayRef, setToCast()));
@@ -469,7 +471,7 @@ public abstract class AbstractJimpleBody {
 		InvokeExpr invokeExpr = buildInvokeExpr(originalInvokeExpr);
 		insertInvokeStmt(invokeExpr);
 	}
-	
+
 	/**
 	 * Insert an new invoke statement.
 	 * 
@@ -488,7 +490,7 @@ public abstract class AbstractJimpleBody {
 	protected void insertSpecialInvokeStmt(Local base, SootMethod toInvoke) {
 		insertSpecialInvokeStmt(base, toInvoke, false);
 	}
-	
+
 	/**
 	 * Insert a special invoke statement.
 	 * 
@@ -496,9 +498,23 @@ public abstract class AbstractJimpleBody {
 	 * @param toInvoke
 	 */
 	protected void insertSpecialInvokeStmt(Local base, SootMethod toInvoke, boolean overrideGuard) {
-		List<Value> args = toInvoke.getParameterTypes().stream().map(p -> getCompatibleValue(p))
+		insertSpecialInvokeStmt(base, toInvoke, overrideGuard, true);
+	}
+
+	/**
+	 * Insert a special invoke statement.
+	 * 
+	 * @param base
+	 * @param toInvoke
+	 */
+	protected void insertSpecialInvokeStmt(Local base, SootMethod toInvoke, boolean overrideGuard,
+			boolean generateCasts) {
+		List<Value> args = toInvoke.getParameterTypes().stream()
+				.map(p -> generateCasts ? getCompatibleValue(p)
+						: body.getParameterLocals().stream().filter(l -> p.equals(l.getType())).findFirst().get())
 				.collect(Collectors.toList());
-		insertStmt(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(base, toInvoke.makeRef(), args)), overrideGuard);
+		insertStmt(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(base, toInvoke.makeRef(), args)),
+				overrideGuard);
 	}
 
 	/**
@@ -521,7 +537,8 @@ public abstract class AbstractJimpleBody {
 					Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(base, toInvoke.makeRef(), args)), base);
 		} else {
 			body.getUnits().add(Jimple.v().newAssignStmt(base, buildNewExpr(type)));
-			body.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(base, toInvoke.makeRef(), args)));
+			body.getUnits()
+					.add(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(base, toInvoke.makeRef(), args)));
 			storeToSet(base);
 		}
 
@@ -541,16 +558,17 @@ public abstract class AbstractJimpleBody {
 		List<Value> args = prepareArguments(originalInvokeExpression);
 
 		Local base = localGenerator.generateLocal(type);
-		
+
 		if (FrameworksOptions.isEnableGuards()) {
-			insertAndGuardStmt(Jimple.v().newAssignStmt(base, buildNewExpr(type)),
-					Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(base, originalInvokeExpression.getMethod().makeRef(), args)), base);
+			insertAndGuardStmt(Jimple.v().newAssignStmt(base, buildNewExpr(type)), Jimple.v().newInvokeStmt(
+					Jimple.v().newSpecialInvokeExpr(base, originalInvokeExpression.getMethod().makeRef(), args)), base);
 		} else {
 			body.getUnits().add(Jimple.v().newAssignStmt(base, buildNewExpr(type)));
-			body.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(base, originalInvokeExpression.getMethod().makeRef(), args)));
+			body.getUnits().add(Jimple.v().newInvokeStmt(
+					Jimple.v().newSpecialInvokeExpr(base, originalInvokeExpression.getMethod().makeRef(), args)));
 			storeToSet(base);
 		}
-		
+
 		return base;
 	}
 
@@ -604,7 +622,7 @@ public abstract class AbstractJimpleBody {
 		body.getUnits().add(stmt);
 		body.getUnits().add(nop);
 	}
-	
+
 	/**
 	 * Guard an object creation. This is different from guarding regular
 	 * statements. An object creation requires 2 statements: new statement and
@@ -620,7 +638,7 @@ public abstract class AbstractJimpleBody {
 		body.getUnits().add(buildStoreToSetExpr(from));
 		body.getUnits().add(nop);
 	}
-	
+
 	/**
 	 * Guard a statement by an if-statement whose condition always evaluates to
 	 * true. This helps inserting multiple {@link ThrowStmt}, for example, in a
@@ -636,7 +654,7 @@ public abstract class AbstractJimpleBody {
 		body.getUnits().add(buildStoreToSetExpr(from));
 		body.getUnits().add(nop);
 	}
-	
+
 	/**
 	 * Guard a sequence of assignment statements.
 	 * 
@@ -648,7 +666,7 @@ public abstract class AbstractJimpleBody {
 		Arrays.stream(stmts).forEach(body.getUnits()::add);
 		body.getUnits().add(nop);
 	}
-	
+
 	/**
 	 * Inserts a guard condition.
 	 * 
@@ -661,12 +679,12 @@ public abstract class AbstractJimpleBody {
 		// IntConstant.v(1));
 		EqExpr cond = Jimple.v().newEqExpr(getGuard(), IntConstant.v(0));
 		NopStmt nop = Jimple.v().newNopStmt();
-		
+
 		body.getUnits().add(Jimple.v().newIfStmt(cond, nop));
-		
+
 		return nop;
 	}
-	
+
 	/**
 	 * Inserts a sequence of assignment statement to the body of the underlying
 	 * method. The sequence will be protected by a guard if
@@ -682,7 +700,7 @@ public abstract class AbstractJimpleBody {
 			Arrays.stream(stmts).forEach(body.getUnits()::add);
 		}
 	}
-	
+
 	/**
 	 * Inserts a statement to the body of the underlying method. The statement
 	 * will be protected by a guard if
@@ -694,7 +712,7 @@ public abstract class AbstractJimpleBody {
 	protected void insertStmt(Stmt stmt) {
 		insertStmt(stmt, false);
 	}
-	
+
 	/**
 	 * Inserts a statement to the body of the underlying method. The statement
 	 * will be protected by a guard if
@@ -733,9 +751,10 @@ public abstract class AbstractJimpleBody {
 			});
 		}
 	}
-	
+
 	/**
 	 * Is this value a new array expression, possibly a multi-dimensional one?
+	 * 
 	 * @param expr
 	 * @return
 	 */
@@ -763,7 +782,7 @@ public abstract class AbstractJimpleBody {
 	protected Local loadField(SootField field) {
 		return loadField(field, false);
 	}
-	
+
 	/**
 	 * Construct Jimple code that loads a given field and assigns it to a new
 	 * temporary local variable.
@@ -775,7 +794,7 @@ public abstract class AbstractJimpleBody {
 	protected Local loadField(SootField field, boolean overrideGuard) {
 		Value fieldRef = getFieldRef(field);
 		Local tmp = localGenerator.generateLocal(field.getType());
-		if(overrideGuard) {
+		if (overrideGuard) {
 			body.getUnits().add(Jimple.v().newAssignStmt(tmp, fieldRef));
 		} else {
 			insertStmt(Jimple.v().newAssignStmt(tmp, fieldRef));
@@ -792,7 +811,7 @@ public abstract class AbstractJimpleBody {
 	protected void storeField(SootField field, Value from) {
 		insertStmt(Jimple.v().newAssignStmt(getFieldRef(field), from));
 	}
-	
+
 	/**
 	 * Construct Jimple code that stores the given value to a Soot field.
 	 * 
@@ -1189,7 +1208,7 @@ public abstract class AbstractJimpleBody {
 		for (int i = 0; i < originalInvokeExpr.getArgCount(); i++) {
 			if (!method.isStatic() && originalInvokeExpr.getArg(i).equals(originalBody.getThisLocal())) {
 				result.add(body.getThisLocal());
-			} else if(originalInvokeExpr.getArg(i).getType().equals(NullType.v())){
+			} else if (originalInvokeExpr.getArg(i).getType().equals(NullType.v())) {
 				result.add(getCompatibleValue(originalInvokeExpr.getMethod().getParameterType(i)));
 			} else {
 				result.add(getCompatibleValue(originalInvokeExpr.getArg(i).getType()));
