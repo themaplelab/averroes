@@ -277,6 +277,14 @@ public abstract class AbstractJimpleBody {
 			Local base = body.getThisLocal();
 			Stmt firstNonIdentity = originalBody.getFirstNonIdentityStmt();
 
+			// don't guard calls to the super constructor => causes uninitialized bytecode verification errors
+			if (isCallToSuperOrOverloadedConstructor(firstNonIdentity)) {
+				InvokeStmt stmt = (InvokeStmt) firstNonIdentity;
+				insertSpecialInvokeStmt(base, stmt.getInvokeExpr().getMethod(), true);
+			} else if (method.getDeclaringClass().hasSuperclass()) {
+				insertSpecialInvokeStmt(base, method.getDeclaringClass().getSuperclass().getMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG), true);
+			}
+						
 			/*
 			 * If this is the constructor of an inner class, insert an
 			 * assignment statement for the first parameter to the special
@@ -285,15 +293,7 @@ public abstract class AbstractJimpleBody {
 			if (isDeclaringClassNonStaticInnerClass()) {
 				InstanceFieldRef fieldRef = Jimple.v().newInstanceFieldRef(base,
 						method.getDeclaringClass().getFieldByName("this$0").makeRef());
-				insertStmt(Jimple.v().newAssignStmt(fieldRef, body.getParameterLocal(0)));
-			}
-
-			// don't guard calls to the super constructor => causes uninitialized bytecode verification errors
-			if (isCallToSuperOrOverloadedConstructor(firstNonIdentity)) {
-				InvokeStmt stmt = (InvokeStmt) firstNonIdentity;
-				insertSpecialInvokeStmt(base, stmt.getInvokeExpr().getMethod(), true);
-			} else if (method.getDeclaringClass().hasSuperclass()) {
-				insertSpecialInvokeStmt(base, method.getDeclaringClass().getSuperclass().getMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG), true);
+				insertStmt(Jimple.v().newAssignStmt(fieldRef, body.getParameterLocal(0)), true);
 			}
 		}
 
@@ -323,20 +323,9 @@ public abstract class AbstractJimpleBody {
 	 * initializer.
 	 */
 	protected void createObjects() {
-		objectCreations.forEach(e -> {
-			Local obj = createObjectByInvokeExpr(e);
-			storeToSet(obj);
-		});
-
-		arrayCreations.forEach(t -> {
-			insertNewStmt(t);
-		});
-
-		checkedExceptions.forEach(cls -> {
-			SootMethod init = cls.getMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG);
-			Local obj = createObjectByMethod(init);
-			storeToSet(obj);
-		});
+		objectCreations.forEach(e -> createObjectByInvokeExpr(e));
+		arrayCreations.forEach(t -> insertNewStmt(t));
+		checkedExceptions.forEach(cls -> createObjectByMethod(cls.getMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG)));
 	}
 
 	/**
@@ -533,6 +522,7 @@ public abstract class AbstractJimpleBody {
 		} else {
 			body.getUnits().add(Jimple.v().newAssignStmt(base, buildNewExpr(type)));
 			body.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(base, toInvoke.makeRef(), args)));
+			storeToSet(base);
 		}
 
 		return base;
@@ -715,7 +705,7 @@ public abstract class AbstractJimpleBody {
 	 * @param overrideGuard
 	 */
 	protected void insertStmt(Stmt stmt, boolean overrideGuard) {
-		if (overrideGuard) {
+		if (overrideGuard || !FrameworksOptions.isEnableGuards()) {
 			body.getUnits().add(stmt);
 		} else {
 			stmt.apply(new AbstractStmtSwitch() {
@@ -738,11 +728,7 @@ public abstract class AbstractJimpleBody {
 
 				@Override
 				public void defaultCase(Object obj) {
-					if (FrameworksOptions.isEnableGuards()) {
-						insertAndGuardStmt((Stmt) obj);
-					} else {
-						body.getUnits().add((Stmt) obj);
-					}
+					insertAndGuardStmt((Stmt) obj);
 				}
 			});
 		}
@@ -764,8 +750,7 @@ public abstract class AbstractJimpleBody {
 	 */
 	protected void storeMethodCallReturn(InvokeExpr expr) {
 		Local ret = localGenerator.generateLocal(expr.getMethod().getReturnType());
-		insertStmt(Jimple.v().newAssignStmt(ret, expr));
-		storeToSet(ret);
+		insertAssignStmts(Jimple.v().newAssignStmt(ret, expr), buildStoreToSetExpr(ret));
 	}
 
 	/**
