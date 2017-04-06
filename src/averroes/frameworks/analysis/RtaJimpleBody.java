@@ -98,13 +98,11 @@ public class RtaJimpleBody extends AbstractJimpleBody {
 
 	@Override
 	protected void handleFields() {
-		// For RTA, we ignore all private fields, since we have one location in the library
-		fieldReads.stream().filter(f -> f.isPrivate() == false).forEach(f -> {
+		fieldReads.stream().forEach(f -> {
 			storeToSet(loadField(f, true));
 		});
 		
-		// For RTA, we ignore all private fields, since we have one location in the library
-		fieldWrites.stream().filter(f -> f.isPrivate() == false).forEach(f -> {
+		fieldWrites.stream().forEach(f -> {
 			storeField(f, getCompatibleValue(f.getType()));
 		});
 	}

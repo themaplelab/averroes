@@ -300,6 +300,18 @@ public abstract class AbstractJimpleBody {
 		}
 
 		assignMethodParameters();
+		
+		/*
+		 * If this is a method in an inner class, assign the implicit "this"
+		 * parameter of the outer class to the underlying set.
+		 */
+		if (isDeclaringClassNonStaticInnerClass()) {
+			Local base = body.getThisLocal();
+			InstanceFieldRef fieldRef = Jimple.v().newInstanceFieldRef(base,
+					method.getDeclaringClass().getFieldByName("this$0").makeRef());
+			Local elem = localGenerator.generateLocal(fieldRef.getType());
+			insertAssignStmts(Jimple.v().newAssignStmt(elem, fieldRef), buildStoreToSetExpr(elem));
+		}
 	}
 
 	/**

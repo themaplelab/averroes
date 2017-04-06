@@ -103,7 +103,7 @@ public class Main {
 			// });
 			
 			// Perform code cleanup
-			SootUtils.cleanupClasses();
+//			SootUtils.cleanupClasses();
 
 			// Write class files for the generate model
 			System.out.println("Writing class files for framework methods...");

@@ -132,17 +132,22 @@ public class JsonUtils {
 		} else {
 			str.append(((InstanceInvokeExpr) invoke).getBase().getType().toString());
 		}
-
+		
+		// append declaring class of method
+		str.append(".<" + invoke.getMethod().getDeclaringClass() + ":");
+		
+		// append return type
+		str.append(" " + invoke.getMethod().getReturnType());
+		
 		// append method name
-		str.append("." + invoke.getMethod().getName());
+		str.append(" " + invoke.getMethod().getName());
 
 		// append types of arguments
 		str.append("(");
 		invoke.getArgs().stream().map(a -> a.getType().toString()).collect(Collectors.joining(", "));
 		invoke.getArgs().forEach(a -> str.append(a.getType().toString()));
 		str.append(")");
-
-		// ignore return type for now
+		str.append(">");
 
 		return str.toString();
 	}
