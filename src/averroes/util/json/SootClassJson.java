@@ -1,13 +1,12 @@
 package averroes.util.json;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.Maps;
 
+import soot.Modifier;
 import soot.SootMethod;
 import soot.Type;
 import soot.jimple.FieldRef;
@@ -27,14 +26,27 @@ public class SootClassJson {
 	private HashMap<String, HashSet<String>> methodToFieldWrites = new HashMap<String, HashSet<String>>();
 
 	/**
+	 * Check whether a method is synthetic or not. This helps ignore checking
+	 * some methods that the Java compiler generates such as access$0.
+	 * 
+	 * @param method
+	 * @return
+	 */
+	private static boolean isSynthetic(SootMethod method) {
+		return Modifier.isSynthetic(method.getModifiers());
+	}
+
+	/**
 	 * Add an object creation.
 	 * 
 	 * @param method
 	 * @param type
 	 */
 	public void addObjectCreation(SootMethod method, Type type) {
-		methodToObjectCreations.putIfAbsent(method.getSignature(), new HashSet<String>());
-		methodToObjectCreations.get(method.getSignature()).add(JsonUtils.toJson(type));
+		if (!isSynthetic(method)) {
+			methodToObjectCreations.putIfAbsent(method.getSignature(), new HashSet<String>());
+			methodToObjectCreations.get(method.getSignature()).add(JsonUtils.toJson(type));
+		}
 	}
 
 	/**
@@ -44,8 +56,10 @@ public class SootClassJson {
 	 * @param invoke
 	 */
 	public void addInvocation(SootMethod method, InvokeExpr invoke) {
-		methodToInvocations.putIfAbsent(method.getSignature(), new HashSet<String>());
-		methodToInvocations.get(method.getSignature()).add(JsonUtils.toJson(invoke));
+		if (!isSynthetic(method)) {
+			methodToInvocations.putIfAbsent(method.getSignature(), new HashSet<String>());
+			methodToInvocations.get(method.getSignature()).add(JsonUtils.toJson(invoke));
+		}
 	}
 
 	/**
@@ -55,8 +69,10 @@ public class SootClassJson {
 	 * @param fieldRef
 	 */
 	public void addFieldRead(SootMethod method, FieldRef fieldRef) {
-		methodToFieldReads.putIfAbsent(method.getSignature(), new HashSet<String>());
-		methodToFieldReads.get(method.getSignature()).add(JsonUtils.toJson(fieldRef));
+		if (!isSynthetic(method)) {
+			methodToFieldReads.putIfAbsent(method.getSignature(), new HashSet<String>());
+			methodToFieldReads.get(method.getSignature()).add(JsonUtils.toJson(fieldRef));
+		}
 	}
 
 	/**
@@ -66,8 +82,10 @@ public class SootClassJson {
 	 * @param fieldRef
 	 */
 	public void addFieldWrite(SootMethod method, FieldRef fieldRef) {
-		methodToFieldWrites.putIfAbsent(method.getSignature(), new HashSet<String>());
-		methodToFieldWrites.get(method.getSignature()).add(JsonUtils.toJson(fieldRef));
+		if (!isSynthetic(method)) {
+			methodToFieldWrites.putIfAbsent(method.getSignature(), new HashSet<String>());
+			methodToFieldWrites.get(method.getSignature()).add(JsonUtils.toJson(fieldRef));
+		}
 	}
 
 	/**
@@ -78,53 +96,70 @@ public class SootClassJson {
 	 * @return
 	 */
 	public boolean isEquivalentTo(SootClassJson other) {
-		
-		MapDifference<String, HashSet<String>> objectCreationsDifference = Maps.difference(methodToObjectCreations, other.methodToObjectCreations); 
-		if(!objectCreationsDifference.areEqual()) {
+		MapDifference<String, HashSet<String>> objectCreationsDifference = Maps.difference(methodToObjectCreations,
+				other.methodToObjectCreations);
+		if (!objectCreationsDifference.areEqual()) {
 			System.out.println("There are some differences in object creations.");
-			System.out.println("Methods with different object creations between generated and expected code: " + objectCreationsDifference.entriesDiffering());
-			System.out.println("Methods with object creations that only show up in generated code: " + objectCreationsDifference.entriesOnlyOnLeft());
-			System.out.println("Method with object creations that only show up in expected code: " + objectCreationsDifference.entriesOnlyOnRight());
+			System.out.println("Methods with different object creations between generated and expected code: "
+					+ objectCreationsDifference.entriesDiffering());
+			System.out.println("Methods with object creations that only show up in generated code: "
+					+ objectCreationsDifference.entriesOnlyOnLeft());
+			System.out.println("Method with object creations that only show up in expected code: "
+					+ objectCreationsDifference.entriesOnlyOnRight());
 			System.out.println();
 			System.out.println();
 			return false;
 		}
-		
-		MapDifference<String, HashSet<String>> invocationsDifference = Maps.difference(methodToInvocations, other.methodToInvocations); 
-		if(!invocationsDifference.areEqual()) {
+
+		MapDifference<String, HashSet<String>> invocationsDifference = Maps.difference(methodToInvocations,
+				other.methodToInvocations);
+		if (!invocationsDifference.areEqual()) {
 			System.out.println("There are some differences in invocations.");
-			System.out.println("Methods with different invocations between generated and expected code: " + invocationsDifference.entriesDiffering());
-			System.out.println("Methods with invocations that only show up in generated code: " + invocationsDifference.entriesOnlyOnLeft());
-			System.out.println("Methods with invocations that only show up in expected code: " + invocationsDifference.entriesOnlyOnRight());
+			System.out.println("Methods with different invocations between generated and expected code: "
+					+ invocationsDifference.entriesDiffering());
+			System.out.println("Methods with invocations that only show up in generated code: "
+					+ invocationsDifference.entriesOnlyOnLeft());
+			System.out.println("Methods with invocations that only show up in expected code: "
+					+ invocationsDifference.entriesOnlyOnRight());
 			System.out.println();
 			System.out.println();
 			return false;
 		}
-		
-		MapDifference<String, HashSet<String>> fieldReadsDifference = Maps.difference(methodToFieldReads, other.methodToFieldReads);
-		if(!fieldReadsDifference.areEqual()) {// && !onlyGuardReadIsMissing(fieldReadsDifference.entriesOnlyOnLeft())) {
+
+		MapDifference<String, HashSet<String>> fieldReadsDifference = Maps.difference(methodToFieldReads,
+				other.methodToFieldReads);
+		if (!fieldReadsDifference.areEqual()) {// &&
+												// !onlyGuardReadIsMissing(fieldReadsDifference.entriesOnlyOnLeft()))
+												// {
 			System.out.println("There are some differences in field reads.");
-			System.out.println("Methods with different field reads between generated and expected code: " + fieldReadsDifference.entriesDiffering());
-			System.out.println("Methods with field reads that only show up in generated code: " + fieldReadsDifference.entriesOnlyOnLeft());
-			System.out.println("Methods with field reads that only show up in expected code: " + fieldReadsDifference.entriesOnlyOnRight());
+			System.out.println("Methods with different field reads between generated and expected code: "
+					+ fieldReadsDifference.entriesDiffering());
+			System.out.println("Methods with field reads that only show up in generated code: "
+					+ fieldReadsDifference.entriesOnlyOnLeft());
+			System.out.println("Methods with field reads that only show up in expected code: "
+					+ fieldReadsDifference.entriesOnlyOnRight());
 			System.out.println();
 			System.out.println();
 			return false;
 		}
-		
-		MapDifference<String, HashSet<String>> fieldWritesDifference = Maps.difference(methodToFieldWrites, other.methodToFieldWrites);
-		if(!fieldWritesDifference.areEqual()) {
+
+		MapDifference<String, HashSet<String>> fieldWritesDifference = Maps.difference(methodToFieldWrites,
+				other.methodToFieldWrites);
+		if (!fieldWritesDifference.areEqual()) {
 			System.out.println("There are some differences in field writes.");
-			System.out.println("Methods with different field writes between generated and expected code: " + fieldWritesDifference.entriesDiffering());
-			System.out.println("Methods with field writes that only show up in generated code: " + fieldWritesDifference.entriesOnlyOnLeft());
-			System.out.println("Methods with field writes that only show up in expected code: " + fieldWritesDifference.entriesOnlyOnRight());
+			System.out.println("Methods with different field writes between generated and expected code: "
+					+ fieldWritesDifference.entriesDiffering());
+			System.out.println("Methods with field writes that only show up in generated code: "
+					+ fieldWritesDifference.entriesOnlyOnLeft());
+			System.out.println("Methods with field writes that only show up in expected code: "
+					+ fieldWritesDifference.entriesOnlyOnRight());
 			System.out.println();
 			System.out.println();
 			return false;
 		}
-		
+
 		// TODO need to also compare array reads/writes
-		
+
 		return true;
 	}
 
@@ -143,8 +178,10 @@ public class SootClassJson {
 	public HashMap<String, HashSet<String>> getMethodToFieldWrites() {
 		return methodToFieldWrites;
 	}
-	
-//	private boolean onlyGuardReadIsMissing(Map<String, HashSet<String>> fieldReadsInGeneratedCode) {
-//		fieldReadsInGeneratedCode.values().stream().flatMap(Collection::stream).allMatch(s -> s.equalsIgnoreCase(anotherString) || s.equals)
-//	}
+
+	// private boolean onlyGuardReadIsMissing(Map<String, HashSet<String>>
+	// fieldReadsInGeneratedCode) {
+	// fieldReadsInGeneratedCode.values().stream().flatMap(Collection::stream).allMatch(s
+	// -> s.equalsIgnoreCase(anotherString) || s.equals)
+	// }
 }

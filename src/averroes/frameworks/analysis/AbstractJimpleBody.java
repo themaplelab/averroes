@@ -305,7 +305,7 @@ public abstract class AbstractJimpleBody {
 		 * If this is a method in an inner class, assign the implicit "this"
 		 * parameter of the outer class to the underlying set.
 		 */
-		if (isDeclaringClassNonStaticInnerClass()) {
+		if (!method.isConstructor() && isDeclaringClassNonStaticInnerClass()) {
 			Local base = body.getThisLocal();
 			InstanceFieldRef fieldRef = Jimple.v().newInstanceFieldRef(base,
 					method.getDeclaringClass().getFieldByName("this$0").makeRef());
