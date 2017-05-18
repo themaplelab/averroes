@@ -136,7 +136,7 @@ public class XtaJimpleBody extends AbstractJimpleBody {
 	protected Value getFieldRef(SootField field) {
 		if (field.isStatic()) {
 			return Jimple.v().newStaticFieldRef(field.makeRef());
-		} else if ((field.equals(getSetM()) || setF.containsValue(field)) && !method.isStatic()) {
+		} else if (field.equals(getSetM()) && !method.isStatic()) {
 			return Jimple.v().newInstanceFieldRef(body.getThisLocal(), field.makeRef());
 		} else {
 			return Jimple.v().newInstanceFieldRef(getCompatibleValue(field.getDeclaringClass().getType()),
