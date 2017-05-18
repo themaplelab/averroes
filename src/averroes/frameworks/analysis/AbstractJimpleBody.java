@@ -58,6 +58,7 @@ import soot.jimple.LongConstant;
 import soot.jimple.NewArrayExpr;
 import soot.jimple.NewMultiArrayExpr;
 import soot.jimple.NopStmt;
+import soot.jimple.NullConstant;
 import soot.jimple.ReturnStmt;
 import soot.jimple.SpecialInvokeExpr;
 import soot.jimple.StaticInvokeExpr;
@@ -1221,7 +1222,8 @@ public abstract class AbstractJimpleBody {
 			if (!method.isStatic() && originalInvokeExpr.getArg(i).equals(originalBody.getThisLocal())) {
 				result.add(body.getThisLocal());
 			} else if (originalInvokeExpr.getArg(i).getType().equals(NullType.v())) {
-				result.add(getCompatibleValue(originalInvokeExpr.getMethod().getParameterType(i)));
+//				result.add(getCompatibleValue(originalInvokeExpr.getMethod().getParameterType(i)));
+				result.add(NullConstant.v());
 			} else {
 				result.add(getCompatibleValue(originalInvokeExpr.getArg(i).getType()));
 			}
