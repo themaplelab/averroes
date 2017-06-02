@@ -1,20 +1,29 @@
 package averroes.frameworks.soot;
 
-import soot.*;
-import soot.jimple.*;
+import java.util.List;
+
+import averroes.soot.SootSceneUtil;
+import soot.RefType;
+import soot.Scene;
+import soot.SootClass;
+import soot.SootMethod;
+import soot.Type;
+import soot.Unit;
+import soot.jimple.InstanceInvokeExpr;
+import soot.jimple.InvokeExpr;
+import soot.jimple.SpecialInvokeExpr;
+import soot.jimple.StaticInvokeExpr;
+import soot.jimple.Stmt;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.Edge;
 import soot.jimple.toolkits.callgraph.VirtualCalls;
 import soot.util.queue.ChunkedQueue;
 import soot.util.queue.QueueReader;
 
-import java.util.*;
-
 public class CHABuilder {
 	public void run() {
 		cg = new CallGraph();
-		Scene.v()
-				.getApplicationClasses()
+		SootSceneUtil.getClasses()
 				.stream()
 				.map(c -> c.getMethods())
 				.flatMap(List::stream)
@@ -51,7 +60,7 @@ public class CHABuilder {
 			}
 		} else {
 			InstanceInvokeExpr iie = (InstanceInvokeExpr) ie;
-			for(SootClass clz: Scene.v().getApplicationClasses()) {
+			for(SootClass clz: SootSceneUtil.getClasses()) {
 				Type tpe = RefType.v(clz);
 				Type staticType = iie.getBase().getType();
 				if(Scene.v().getFastHierarchy().canStoreType(tpe, staticType)) {

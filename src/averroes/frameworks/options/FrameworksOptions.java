@@ -61,10 +61,16 @@ public final class FrameworksOptions {
 			.longOpt("enable-guards")
 			.desc("setting this flag will make Averroes wrap a guard around any statement that is not a cast statement (or a local variable declaration)")
 			.hasArg(false).required(false).build();
+	
+	private static Option includeDependencies = Option
+			.builder("w")
+			.longOpt("whole-library")
+			.desc("setting this flag will make Averroes also model all the library dependencies of the given library code (e.g., JDK)")
+			.hasArg(false).required(false).build();
 
 	private static Options options = new Options().addOption(input)
 			.addOption(deps).addOption(outputDirectory).addOption(jreDirectory)
-			.addOption(analysis).addOption(help).addOption(enableGuards);
+			.addOption(analysis).addOption(help).addOption(enableGuards).addOption(includeDependencies);
 
 	private static CommandLine cmd;
 
@@ -169,5 +175,15 @@ public final class FrameworksOptions {
 	 */
 	public static boolean isEnableGuards() {
 		return cmd.hasOption(enableGuards.getOpt());
+	}
+	
+	/**
+	 * Setting this flag will make Averroes also model all the library
+	 * dependencies of the given library code (e.g., JDK).
+	 * 
+	 * @return
+	 */
+	public static boolean isIncludeDependencies() {
+		return cmd.hasOption(includeDependencies.getOpt());
 	}
 }

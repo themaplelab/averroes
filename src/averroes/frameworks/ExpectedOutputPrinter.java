@@ -3,6 +3,7 @@ package averroes.frameworks;
 import java.util.List;
 
 import averroes.frameworks.options.FrameworksOptions;
+import averroes.soot.SootSceneUtil;
 import averroes.util.io.Printers;
 import averroes.util.io.Printers.PrinterType;
 import soot.G;
@@ -39,13 +40,13 @@ public class ExpectedOutputPrinter {
 			Scene.v().loadNecessaryClasses();
 
 			// Print out Jimple files
-			Scene.v().getApplicationClasses().stream().map(c -> c.getMethods()).flatMap(List::stream)
+			SootSceneUtil.getClasses().stream().map(c -> c.getMethods()).flatMap(List::stream)
 					.filter(SootMethod::isConcrete).forEach(m -> {
 						Printers.printJimple(PrinterType.EXPECTED, m);
 					});
 
 			// Print out JSON files
-			Scene.v().getApplicationClasses().forEach(c -> {
+			SootSceneUtil.getClasses().forEach(c -> {
 				Printers.printJson(PrinterType.EXPECTED, c);
 			});
 

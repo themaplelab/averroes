@@ -1,5 +1,6 @@
 package averroes.frameworks.soot;
 
+import averroes.soot.SootSceneUtil;
 import averroes.util.io.Printers;
 import soot.*;
 import soot.jimple.FieldRef;
@@ -68,7 +69,7 @@ public class Optimizer {
             }
         }
         public Set<SootMethod> apply() {
-            for(SootClass cls: Scene.v().getApplicationClasses()) {
+            for(SootClass cls: SootSceneUtil.getClasses()) {
                 for (SootMethod method : cls.getMethods()) {
                     if (isOverridable(method)) {
                         logReachable(method, "it is overridable");
@@ -92,7 +93,7 @@ public class Optimizer {
         signaturesToBeKept.add("void readObjectNoData()");
 
         Set<SootMethod> reachables = new ReachableMethodsFinder().apply();
-        for(SootClass cls: Scene.v().getApplicationClasses()) {
+        for(SootClass cls: SootSceneUtil.getClasses()) {
 //            System.out.println("removing unreachable methods in "+cls);
             for (SootMethod method : cls.getMethods()) {
 //                System.out.println(method.getSubSignature());
@@ -107,7 +108,7 @@ public class Optimizer {
 
     void removeUnusedFields() {
         Set<SootField> usedFields = new HashSet<SootField>();
-        for(SootClass cls: Scene.v().getApplicationClasses()) {
+        for(SootClass cls: SootSceneUtil.getClasses()) {
             for (SootMethod method : cls.getMethods()) {
                 if (method.hasActiveBody()) {
                     Body body = method.getActiveBody();
@@ -121,7 +122,7 @@ public class Optimizer {
                 }
             }
         }
-        for(SootClass cls: Scene.v().getApplicationClasses()) {
+        for(SootClass cls: SootSceneUtil.getClasses()) {
             for(SootField fld: new ArrayList<SootField>(cls.getFields())) {
                 if(fld.isPublic() || usedFields.contains(fld)) continue;
                 cls.removeField(fld);
@@ -142,7 +143,7 @@ public class Optimizer {
         return false;
     }
     public void replaceEmptyClasses() {
-        for(SootClass cls: new ArrayList<SootClass>(Scene.v().getApplicationClasses())) {
+        for(SootClass cls: new ArrayList<SootClass>(SootSceneUtil.getClasses())) {
             if(!cls.isPublic() && !hasMethodsOrFields(cls)) {
                 if(DEBUG) System.out.println("folding class "+cls+" into "+cls.getSuperclass());
                 inlineConstructorCalls(cls);
@@ -154,7 +155,7 @@ public class Optimizer {
     public void inlineConstructorCalls(SootClass toRemove) {
 //        System.out.println("inlining constructors of empty class "+toRemove);
 
-        for (SootClass cls : Scene.v().getApplicationClasses()) {
+        for (SootClass cls : SootSceneUtil.getClasses()) {
             for (SootMethod method : cls.getMethods()) {
                 if (method.isConcrete()) {
                     ArrayList<Stmt> sites = new ArrayList<Stmt>();
@@ -181,7 +182,7 @@ public class Optimizer {
     }
 
     void validate() {
-        for(SootClass cls: Scene.v().getApplicationClasses()) {
+        for(SootClass cls: SootSceneUtil.getClasses()) {
             cls.validate();
             for(SootMethod method: cls.getMethods()) {
                 if(method.hasActiveBody()) {
@@ -217,7 +218,7 @@ class ClassReplacer {
     }
     void apply() {
         Scene.v().removeClass(original);
-        for(SootClass cls: Scene.v().getApplicationClasses()) {
+        for(SootClass cls: SootSceneUtil.getClasses()) {
             apply(cls);
         }
     }

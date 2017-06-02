@@ -10,8 +10,12 @@
  *******************************************************************************/
 package averroes.soot;
 
+import java.util.Collection;
+
+import averroes.frameworks.options.FrameworksOptions;
 import soot.ClassProvider;
 import soot.Scene;
+import soot.SootClass;
 
 /**
  * A utility class for the {@link Scene} class.
@@ -40,8 +44,9 @@ public class SootSceneUtil {
 	 */
 	public static void addCommonDynamicClasses(ClassProvider provider) {
 		/*
-		 * For simulating the FileSystem class, we need the implementation of the FileSystem, but the classes are not
-		 * loaded automatically due to the indirection via native code.
+		 * For simulating the FileSystem class, we need the implementation of
+		 * the FileSystem, but the classes are not loaded automatically due to
+		 * the indirection via native code.
 		 */
 		addCommonDynamicClass(provider, "java.io.UnixFileSystem");
 		addCommonDynamicClass(provider, "java.io.WinNTFileSystem");
@@ -53,5 +58,19 @@ public class SootSceneUtil {
 		addCommonDynamicClass(provider, "sun.net.www.protocol.http.Handler");
 		addCommonDynamicClass(provider, "sun.net.www.protocol.https.Handler");
 		addCommonDynamicClass(provider, "sun.net.www.protocol.jar.Handler");
+	}
+
+	/**
+	 * Return the set of classes that Averroes processes in the Scene. These
+	 * include the library classes if
+	 * {@link FrameworksOptions#isIncludeDependencies()} return true.
+	 * 
+	 * @return
+	 */
+	public static Collection<SootClass> getClasses() {
+		Collection<SootClass> result = Scene.v().getApplicationClasses();
+		if (FrameworksOptions.isIncludeDependencies()) result.addAll(Scene.v().getLibraryClasses());
+		return result;
+
 	}
 }

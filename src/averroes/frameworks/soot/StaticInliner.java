@@ -34,6 +34,7 @@ import soot.jimple.toolkits.callgraph.*;
 import soot.tagkit.Host;
 import java.util.*;
 
+import averroes.soot.SootSceneUtil;
 import averroes.util.io.Printers;
 
 /** Uses the Scene's currently-active InvokeGraph to inline monomorphic call sites. */
@@ -167,7 +168,7 @@ public class StaticInliner extends SceneTransformer
     private void computeAverageMethodSizeAndSaveOriginalSizes()
     {
         long sum = 0, count = 0;
-        Iterator classesIt = Scene.v().getApplicationClasses().iterator();
+        Iterator classesIt = SootSceneUtil.getClasses().iterator();
 
         while (classesIt.hasNext())
         {

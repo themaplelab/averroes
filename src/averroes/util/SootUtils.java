@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import averroes.soot.LocalVariableRenamer;
 import averroes.soot.LocalVariableSorter;
+import averroes.soot.SootSceneUtil;
 import soot.Body;
 import soot.Scene;
 import soot.SootField;
@@ -64,12 +65,12 @@ public class SootUtils {
 	 * This will remove, for example, all private fields in the RTA model.
 	 */
 	private static void removeUnusedFields() {
-		Set<SootField> usedFields = Scene.v().getApplicationClasses().stream().map(c -> c.getMethods())
+		Set<SootField> usedFields = SootSceneUtil.getClasses().stream().map(c -> c.getMethods())
 				.flatMap(List::stream).filter(SootMethod::hasActiveBody).map(m -> m.getActiveBody().getUseAndDefBoxes())
 				.flatMap(List::stream).map(vb -> vb.getValue()).filter(v -> v instanceof FieldRef)
 				.map(v -> ((FieldRef) v).getField()).collect(Collectors.toSet());
 	
-		Scene.v().getApplicationClasses().stream().map(c -> new ArrayList<SootField>(c.getFields()))
+		SootSceneUtil.getClasses().stream().map(c -> new ArrayList<SootField>(c.getFields()))
 				.flatMap(List::stream).filter(f -> f.isPrivate() && !usedFields.contains(f))
 				.forEach(f -> f.getDeclaringClass().removeField(f));
 	}

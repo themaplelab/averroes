@@ -9,6 +9,7 @@ import averroes.JarFile;
 import averroes.frameworks.options.FrameworksOptions;
 import averroes.frameworks.soot.ClassWriter;
 import averroes.frameworks.soot.CodeGenerator;
+import averroes.soot.SootSceneUtil;
 import averroes.util.MathUtils;
 import averroes.util.SootUtils;
 import averroes.util.TimeUtils;
@@ -53,6 +54,7 @@ public class Main {
 			Options.v().set_process_dir(FrameworksOptions.getInputs());
 			Options.v().set_soot_classpath(FrameworksOptions.getSootClassPath());
 			Options.v().set_validate(true);
+			if(FrameworksOptions.isIncludeDependencies()) Options.v().set_whole_program(true);
 			// Options.v().setPhaseOption("jb.tr", "use-older-type-assigner:true");
 
 //			Options.v().setPhaseOption("wjtp", "enabled");
@@ -75,14 +77,15 @@ public class Main {
 			 * Note: do not call Scene.v().getClasses() here as it will throw
 			 * concurrent modification error when new classes are added.
 			 */
-			Scene.v().getApplicationClasses().stream().map(c -> c.getMethods()).flatMap(List::stream)
+			SootSceneUtil.getClasses().stream().map(c -> c.getMethods()).flatMap(List::stream)
 					.filter(SootMethod::isConcrete).forEach(m -> CodeGenerator.getJimpleBodyCreator(m).generateCode());
-
+			
 			System.out.println("Writing JSON files for framework methods...");
 			// Print out JSON files
-			Scene.v().getApplicationClasses().forEach(c -> {
+			SootSceneUtil.getClasses().forEach(c -> {
 				Printers.printJson(PrinterType.GENERATED, c);
 			});
+			
 
 			// System.out.println("Optimizing generated library methods...");
 			// new Optimizer().optimize();
@@ -107,7 +110,7 @@ public class Main {
 
 			// Write class files for the generate model
 			System.out.println("Writing class files for framework methods...");
-			Scene.v().getApplicationClasses().forEach(ClassWriter::writeLibraryClassFile);
+			SootSceneUtil.getClasses().forEach(ClassWriter::writeLibraryClassFile);
 			double averroes = TimeUtils.elapsedTime();
 			System.out.println("");
 			System.out.println("Placeholder framework classes created and validated in " + averroes + " seconds.");

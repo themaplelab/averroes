@@ -282,7 +282,7 @@ public abstract class AbstractJimpleBody {
 			// uninitialized bytecode verification errors
 			if (isCallToSuperOrOverloadedConstructor(firstNonIdentity)) {
 				InvokeStmt stmt = (InvokeStmt) firstNonIdentity;
-				insertSpecialInvokeStmt(base, stmt.getInvokeExpr().getMethod(), true, false);
+				insertSpecialInvokeStmt(base, stmt.getInvokeExpr(), true, false);
 			} else if (method.getDeclaringClass().hasSuperclass()) {
 				insertSpecialInvokeStmt(base,
 						method.getDeclaringClass().getSuperclass().getMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG), true);
@@ -500,6 +500,48 @@ public abstract class AbstractJimpleBody {
 	 * @param base
 	 * @param toInvoke
 	 */
+	protected void insertSpecialInvokeStmt(Local base, InvokeExpr toInvoke) {
+		insertSpecialInvokeStmt(base, toInvoke, false);
+	}
+
+	/**
+	 * Insert a special invoke statement.
+	 * 
+	 * @param base
+	 * @param toInvoke
+	 */
+	protected void insertSpecialInvokeStmt(Local base, InvokeExpr toInvoke, boolean overrideGuard) {
+		insertSpecialInvokeStmt(base, toInvoke, overrideGuard, true);
+	}
+
+	/**
+	 * Insert a special invoke statement.
+	 * 
+	 * @param base
+	 * @param toInvoke
+	 */
+	protected void insertSpecialInvokeStmt(Local base, InvokeExpr toInvoke, boolean overrideGuard,
+			boolean generateCasts) {
+		List<Value> args = toInvoke.getArgs().stream()
+				.map(a -> {
+					if(generateCasts) {
+						return getCompatibleValue(a.getType());
+					} else if(a.getType().equals(NullType.v())) {
+						return NullConstant.v();
+					} else {
+						return body.getParameterLocals().stream().filter(l -> a.getType().equals(l.getType())).findFirst().get();
+					}
+				}).collect(Collectors.toList());
+		insertStmt(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(base, toInvoke.getMethod().makeRef(), args)),
+				overrideGuard);
+	}
+	
+	/**
+	 * Insert a special invoke statement.
+	 * 
+	 * @param base
+	 * @param toInvoke
+	 */
 	protected void insertSpecialInvokeStmt(Local base, SootMethod toInvoke) {
 		insertSpecialInvokeStmt(base, toInvoke, false);
 	}
@@ -523,9 +565,15 @@ public abstract class AbstractJimpleBody {
 	protected void insertSpecialInvokeStmt(Local base, SootMethod toInvoke, boolean overrideGuard,
 			boolean generateCasts) {
 		List<Value> args = toInvoke.getParameterTypes().stream()
-				.map(p -> generateCasts ? getCompatibleValue(p)
-						: body.getParameterLocals().stream().filter(l -> p.equals(l.getType())).findFirst().get())
-				.collect(Collectors.toList());
+				.map(p -> {
+					if(generateCasts) {
+						return getCompatibleValue(p);
+					} else if(p.equals(NullType.v())) {
+						return NullConstant.v();
+					} else {
+						return body.getParameterLocals().stream().filter(l -> p.equals(l.getType())).findFirst().get();
+					}
+				}).collect(Collectors.toList());
 		insertStmt(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(base, toInvoke.makeRef(), args)),
 				overrideGuard);
 	}
