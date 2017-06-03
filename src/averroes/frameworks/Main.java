@@ -69,7 +69,9 @@ public class Main {
 			System.out.println("Soot loaded the input classes in " + soot + " seconds.");
 			
 			// Add default constructors to all library classes
-			SootSceneUtil.getClasses().forEach(SootSceneUtil::addDefaultConstructor);
+//			SootSceneUtil.getSortedClasses().forEach(System.out::println);
+//			System.exit(0);
+			SootSceneUtil.getClasses().forEach(CodeGenerator::createEmptyDefaultConstructor);
 
 			// Now let Averroes do its thing
 			TimeUtils.reset();

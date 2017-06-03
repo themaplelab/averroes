@@ -59,8 +59,7 @@ public class CodeGenerator {
 	 * @param fieldType
 	 * @param modifiers
 	 */
-	public static void createField(SootClass cls, String fieldName,
-			Type fieldType, int modifiers) {
+	public static void createField(SootClass cls, String fieldName, Type fieldType, int modifiers) {
 		SootField field = new SootField(fieldName, fieldType, modifiers);
 		cls.addField(field);
 	}
@@ -74,8 +73,7 @@ public class CodeGenerator {
 	 * @param superClass
 	 * @return
 	 */
-	public static SootClass createEmptyClass(String className, int modifiers,
-			SootClass superClass) {
+	public static SootClass createEmptyClass(String className, int modifiers, SootClass superClass) {
 		SootClass cls = new SootClass(className, modifiers);
 		cls.setSuperclass(superClass);
 		Scene.v().addClass(cls);
@@ -89,26 +87,29 @@ public class CodeGenerator {
 	 * @param cls
 	 */
 	public static void createEmptyDefaultConstructor(SootClass cls) {
-		SootMethod init = makeDefaultConstructor();
-		JimpleBody body = Jimple.v().newBody(init);
-		init.setActiveBody(body);
-		cls.addMethod(init);
+		if (!hasDefaultConstructor(cls)) {
+			SootMethod init = makeDefaultConstructor();
+			JimpleBody body = Jimple.v().newBody(init);
+			init.setActiveBody(body);
+			cls.addMethod(init);
 
-		// Call superclass constructor
-		body.insertIdentityStmts();
-		body.getUnits().add(
-				Jimple.v().newInvokeStmt(
-						Jimple.v().newSpecialInvokeExpr(
-								body.getThisLocal(),
-								getDefaultConstructor(cls.getSuperclass())
-										.makeRef(),
-								Collections.<Value> emptyList())));
+			// Call superclass constructor
+			body.insertIdentityStmts();
+			
+			// Create a default constructor in the super class if it doesn't have one.
+			if(!hasDefaultConstructor(cls.getSuperclass())) {
+				createEmptyDefaultConstructor(cls.getSuperclass());
+			}
+			
+			body.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(body.getThisLocal(),
+					getDefaultConstructor(cls.getSuperclass()).makeRef(), Collections.<Value> emptyList())));
 
-		// Add return statement
-		body.getUnits().addLast(Jimple.v().newReturnVoidStmt());
+			// Add return statement
+			body.getUnits().addLast(Jimple.v().newReturnVoidStmt());
 
-		// Finally validate the Jimple body
-		body.validate();
+			// Finally validate the Jimple body
+			body.validate();
+		}
 	}
 
 	/**
@@ -124,23 +125,26 @@ public class CodeGenerator {
 
 		// Initialize the static fields
 		body.insertIdentityStmts();
-		cls.getFields()
-				.stream()
-				.filter(SootField::isStatic)
-				.forEach(
-						f -> {
-							body.getUnits().add(
-									Jimple.v().newAssignStmt(
-											Jimple.v().newStaticFieldRef(
-													f.makeRef()),
-											getDefaultValue(f.getType())));
-						});
+		cls.getFields().stream().filter(SootField::isStatic).forEach(f -> {
+			body.getUnits().add(
+					Jimple.v().newAssignStmt(Jimple.v().newStaticFieldRef(f.makeRef()), getDefaultValue(f.getType())));
+		});
 
 		// Add return statement
 		body.getUnits().addLast(Jimple.v().newReturnVoidStmt());
 
 		// Finally validate the Jimple body
 		body.validate();
+	}
+
+	/**
+	 * Check if the given class has a default constructor.
+	 * 
+	 * @param cls
+	 * @return
+	 */
+	private static boolean hasDefaultConstructor(SootClass cls) {
+		return cls.declaresMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG);
 	}
 
 	/**
@@ -181,8 +185,8 @@ public class CodeGenerator {
 	 * @return
 	 */
 	private static SootMethod makeDefaultConstructor() {
-		return new SootMethod(SootMethod.constructorName,
-				Collections.<Type> emptyList(), VoidType.v(), Modifier.PUBLIC);
+		return new SootMethod(SootMethod.constructorName, Collections.<Type> emptyList(), VoidType.v(),
+				Modifier.PUBLIC);
 	}
 
 	/**
@@ -191,9 +195,8 @@ public class CodeGenerator {
 	 * @return
 	 */
 	private static SootMethod makeStaticInitializer() {
-		return new SootMethod(SootMethod.staticInitializerName,
-				Collections.<Type> emptyList(), VoidType.v(), Modifier.PUBLIC
-						| Modifier.STATIC);
+		return new SootMethod(SootMethod.staticInitializerName, Collections.<Type> emptyList(), VoidType.v(),
+				Modifier.PUBLIC | Modifier.STATIC);
 	}
 
 }
