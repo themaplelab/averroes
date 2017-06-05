@@ -43,6 +43,7 @@ import soot.jimple.ArrayRef;
 import soot.jimple.AssignStmt;
 import soot.jimple.CastExpr;
 import soot.jimple.DoubleConstant;
+import soot.jimple.DynamicInvokeExpr;
 import soot.jimple.EqExpr;
 import soot.jimple.FieldRef;
 import soot.jimple.FloatConstant;
@@ -293,7 +294,7 @@ public abstract class AbstractJimpleBody {
 			 * assignment statement for the first parameter to the special
 			 * this$0 field.
 			 */
-			if (isDeclaringClassNonStaticInnerClass()) {
+			if (isDeclaringClassNonStaticInnerClass() && !body.getParameterLocals().isEmpty()) {
 				InstanceFieldRef fieldRef = Jimple.v().newInstanceFieldRef(base,
 						method.getDeclaringClass().getFieldByName("this$0").makeRef());
 				insertStmt(Jimple.v().newAssignStmt(fieldRef, body.getParameterLocal(0)), true);
@@ -392,7 +393,7 @@ public abstract class AbstractJimpleBody {
 			InvokeExpr expr = buildInvokeExpr(e);
 			// Only store the return value if it's a reference, otherwise just
 			// call the method.
-			if (expr.getMethod().getReturnType() instanceof RefLikeType) {
+			if (!(expr instanceof DynamicInvokeExpr) && expr.getMethod().getReturnType() instanceof RefLikeType) {
 				storeMethodCallReturn(expr);
 			} else {
 				insertInvokeStmt(expr);
@@ -524,7 +525,7 @@ public abstract class AbstractJimpleBody {
 			boolean generateCasts) {
 		List<Value> args = toInvoke.getArgs().stream()
 				.map(a -> {
-					if(generateCasts) {
+					if(generateCasts || a.getType() instanceof PrimType) {
 						return getCompatibleValue(a.getType());
 					} else if(a.getType().equals(NullType.v())) {
 						return NullConstant.v();
@@ -1247,6 +1248,11 @@ public abstract class AbstractJimpleBody {
 		} else if (originalInvokeExpr instanceof VirtualInvokeExpr) {
 			Local base = (Local) getInvokeReceiver((VirtualInvokeExpr) originalInvokeExpr);
 			invokeExpr = Jimple.v().newVirtualInvokeExpr(base, callee, args);
+		} else if(originalInvokeExpr instanceof DynamicInvokeExpr) {
+			SootMethodRef bootstrap = ((DynamicInvokeExpr) originalInvokeExpr).getBootstrapMethodRef();
+			List<Value> bootstrapArgs = ((DynamicInvokeExpr) originalInvokeExpr).getBootstrapArgs();
+			int tag = ((DynamicInvokeExpr) originalInvokeExpr).getHandleTag();
+			invokeExpr = Jimple.v().newDynamicInvokeExpr(bootstrap, bootstrapArgs, callee, tag, args);
 		} else {
 			logger.error("Cannot handle invoke expression of type: " + originalInvokeExpr.getClass());
 		}
