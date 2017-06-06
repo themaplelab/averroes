@@ -13,6 +13,7 @@
  */
 package averroes.util.io;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -52,7 +53,8 @@ public class Printers {
 		PrintStream result = null;
 
 		try {
-			result = new PrintStream(new FileOutputStream(Paths.jimpleDumpFile(printerType, method), true), true);
+			File f = Paths.jimpleDumpFile(printerType, method);
+			result = new PrintStream(new FileOutputStream(f, true), true);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}

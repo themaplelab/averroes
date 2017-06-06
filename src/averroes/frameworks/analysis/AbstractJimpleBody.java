@@ -64,6 +64,7 @@ import soot.jimple.ReturnStmt;
 import soot.jimple.SpecialInvokeExpr;
 import soot.jimple.StaticInvokeExpr;
 import soot.jimple.Stmt;
+import soot.jimple.StringConstant;
 import soot.jimple.ThrowStmt;
 import soot.jimple.VirtualInvokeExpr;
 import soot.tagkit.InnerClassTag;
@@ -529,6 +530,8 @@ public abstract class AbstractJimpleBody {
 						return getCompatibleValue(a.getType());
 					} else if(a.getType().equals(NullType.v())) {
 						return NullConstant.v();
+					} else if(a instanceof StringConstant) {
+						return StringConstant.v("");
 					} else {
 						return body.getParameterLocals().stream().filter(l -> a.getType().equals(l.getType())).findFirst().get();
 					}

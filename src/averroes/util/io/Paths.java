@@ -59,7 +59,7 @@ public class Paths {
 	 * @return
 	 */
 	public static File jimpleDumpFile(PrinterType printerType, SootMethod method) {
-		String pkg = method.getDeclaringClass().getPackageName().replace(".", File.pathSeparator);
+		String pkg = method.getDeclaringClass().getPackageName().replace(".", File.separator);
 		String file = method.getDeclaringClass().getShortName() + ".jimple";
 		String input = FrameworksOptions.getInputs().get(0);
 		String project = input.replace(File.separator + "bin", "." + printerType.toString().toLowerCase());
@@ -95,7 +95,7 @@ public class Paths {
 	 * @return
 	 */
 	public static File inlinerDumpFile(SootClass cls) {
-		String pkg = cls.getPackageName().replace(".", File.pathSeparator);
+		String pkg = cls.getPackageName().replace(".", File.separator);
 		String file = cls.getShortName() + "-inliner.txt";
 		String input = FrameworksOptions.getInputs().get(0);
 		String project = input.replace(File.separator + "bin", "." + PrinterType.OPTIMIZED.toString().toLowerCase())
@@ -124,7 +124,7 @@ public class Paths {
 	 * @return
 	 */
 	public static File jsonDumpFile(PrinterType printerType, SootClass cls) {
-		String pkg = cls.getPackageName().replace(".", File.pathSeparator);
+		String pkg = cls.getPackageName().replace(".", File.separator);
 		String file = cls.getShortName() + ".json";
 		String input = FrameworksOptions.getInputs().get(0);
 		String project = input.replace(File.separator + "bin", "." + printerType.toString().toLowerCase());
