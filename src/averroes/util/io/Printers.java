@@ -13,7 +13,6 @@
  */
 package averroes.util.io;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -53,8 +52,7 @@ public class Printers {
 		PrintStream result = null;
 
 		try {
-			File f = Paths.jimpleDumpFile(printerType, method);
-			result = new PrintStream(new FileOutputStream(f, true), true);
+			result = new PrintStream(new FileOutputStream(Paths.jimpleDumpFile(printerType, method), true), true);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -115,6 +113,7 @@ public class Printers {
 		getPrintStream(printerType, method).println(method.retrieveActiveBody());
 		getPrintStream(printerType, method).println();
 		getPrintStream(printerType, method).println();
+		getPrintStream(printerType, method).close();
 	}
 
 	/**
@@ -125,6 +124,7 @@ public class Printers {
 	 */
 	public static void printJson(PrinterType printerType, SootClass cls) {
 		getJsonWriter(printerType, cls).print(gson.toJson(JsonUtils.toJson(cls)));
+		getJsonWriter(printerType, cls).close();
 	}
 
 	/**
@@ -135,6 +135,7 @@ public class Printers {
 	 */
 	public static void logInliningInfo(String message, SootMethod method) {
 		getInlinerPrintStream(method.getDeclaringClass()).println(message);
+		getInlinerPrintStream(method.getDeclaringClass()).close();
 	}
 
 	/**
@@ -145,5 +146,6 @@ public class Printers {
 	 */
 	public static void logInliningInfo(String message, SootClass cls) {
 		getInlinerPrintStream(cls).println(message);
+		getInlinerPrintStream(cls).close();
 	}
 }
