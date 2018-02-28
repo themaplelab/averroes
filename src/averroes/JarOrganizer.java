@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
@@ -23,6 +24,7 @@ import java.util.zip.ZipFile;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 
+import averroes.exceptions.AverroesException;
 import averroes.options.AverroesOptions;
 import averroes.util.io.Paths;
 
@@ -81,7 +83,7 @@ public class JarOrganizer {
 	 * @throws IOException
 	 * @throws URISyntaxException
 	 */
-	public void organizeInputJarFiles() throws ZipException, IOException {
+	public void organizeInputJarFiles() throws ZipException, IOException, AverroesException {
 		processInputs();
 		processDependencies();
 		organizedApplicationJarFile.close();
@@ -95,10 +97,9 @@ public class JarOrganizer {
 	 * @throws IOException
 	 * @throws URISyntaxException
 	 */
-	private void processInputs() throws ZipException, IOException {
+	private void processInputs() throws ZipException, IOException, AverroesException {
 		AverroesOptions.getApplicationJars().forEach(jar -> processArchive(jar, true));
 	}
-
 	/**
 	 * Process the dependencies of the input JAR files.
 	 */

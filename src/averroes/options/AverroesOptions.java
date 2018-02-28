@@ -26,6 +26,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import averroes.exceptions.AverroesException;
 import probe.ObjectManager;
 import probe.ProbeClass;
 import soot.SootClass;
@@ -85,15 +86,36 @@ public final class AverroesOptions {
 			.addOption(tamiflexFactsFile).addOption(outputDirectory).addOption(jreDirectory).addOption(help);
 
 	private static CommandLine cmd;
+	/**
+	 * Documents, whether an android or java application is processed
+	 */
+	private static boolean android = false;
+	
+	// TODO: Refactor. Perhaps a new command line option for the android.jar?
+	private static String androidJar = null;
 
 	/**
 	 * Process the input arguments of Averroes.
 	 * 
 	 * @param args
+	 * @throws AverroesException 
 	 */
-	public static void processArguments(String[] args) {
+	public static void processArguments(String[] args) throws AverroesException {
 		try {
+			// If the application input is an Android app there will be only one apk.
+			// Also, it's not as easy as with an apk (opposed to a jar) to extract class files.
+			// In case of a java application, we iterate twice over the application inputs.
+			// This is due to easier exception management (we can't pass the exception off of a lambda expression).
+			
 			cmd = new DefaultParser().parse(options, args);
+			for (String s: getApplicationJars()) {
+				if (s.endsWith(".apk")) {
+					setAndroid(true);
+				}	
+			}
+			if (getApplicationJars().size() > 1 && isAndroid()) {
+				throw new AverroesException("Mutliple application archives detected while in Android mode. Only 1 apk is allowed.", new Throwable());	
+			}
 
 			// Do we need to print out help messages?
 			if (cmd.hasOption(help.getOpt())) {
@@ -122,7 +144,28 @@ public final class AverroesOptions {
 	public static List<String> getApplicationRegex() {
 		return Arrays.asList(cmd.getOptionValue(applicationRegex.getOpt()).split(File.pathSeparator));
 	}
+	/**
+	 * A regex pattern that is usable by a java.regex.Matcher
+	 * TODO: Refactor
+	 * @return
+	 */
+	public static String getEscapedApplicationRegex() {
+		List<String> appRegex = AverroesOptions.getApplicationRegex();
+		StringBuilder pattern = new StringBuilder();
+		
+		for (String s: appRegex) {
+			pattern.append("(");
+			pattern.append(s);
+			pattern.append(")|");
+		}
+		
+		pattern.deleteCharAt(pattern.length()-1);
+		String patternString = pattern.toString();
+		patternString = patternString.replaceAll("\\.", "\\\\.");
+		patternString = patternString.replaceAll("\\*+", "\\.*");	
 
+		return patternString;
+	}
 	/**
 	 * The main class that runs the application when the program executes.
 	 * 
@@ -306,4 +349,37 @@ public final class AverroesOptions {
 	public static boolean isLibraryClass(String className) {
 		return !isApplicationClass(className);
 	}
-}
+	
+	/**
+	 * Check if an android app is being processed.
+	 * 
+	 * @return 
+	 */
+		public static boolean isAndroid() {
+			
+			return android;
+		}
+		/**
+		 * 
+		 * @param android  true if android app, false otherwise.
+		 */
+		public static void setAndroid(boolean android) {
+			AverroesOptions.android = android;
+		}
+		public static String getAndroidJar() {
+			if (androidJar == null) {
+				for (String s: getLibraryJarFiles()) {
+					if (s.endsWith("android.jar")) {
+						androidJar = s;
+					}
+				}	
+			}
+			return androidJar;
+		}
+		
+		public static String getApk() {
+			if (isAndroid()) 
+				return getApplicationJars().get(0);
+			return null;
+		}
+	}
