@@ -81,7 +81,6 @@ public class JarOrganizer {
 	 * 
 	 * @throws ZipException
 	 * @throws IOException
-	 * @throws AverroesException 
 	 * @throws URISyntaxException
 	 */
 	public void organizeInputJarFiles() throws ZipException, IOException, AverroesException {
@@ -97,28 +96,10 @@ public class JarOrganizer {
 	 * @throws ZipException
 	 * @throws IOException
 	 * @throws URISyntaxException
-	 * @throws AverroesException
 	 */
 	private void processInputs() throws ZipException, IOException, AverroesException {
-		List<String> applicationInputs = AverroesOptions.getApplicationJars();
-		
-		// If the application input is an Android app there will be only one apk.
-		// Also, it's not as easy as with an apk (opposed to a jar) to extract class files.
-		// In case of a java application, we iterate twice over the application inputs.
-		// This is due to easier exception management (we can't pass the exception off of a lambda expression).
-		for (String s: applicationInputs) {
-			if (s.endsWith(".apk")) {
-				AverroesOptions.setAndroid(true);
-			}	
-		}
-		if (applicationInputs.size() > 1 && AverroesOptions.isAndroid()) {
-			throw new AverroesException("Mutliple application archives detected while in Android mode. Only 1 apk is allowed.", new Throwable());	
-		}
-		else {
-			applicationInputs.forEach(jar -> processArchive(jar, true));
-		}
+		AverroesOptions.getApplicationJars().forEach(jar -> processArchive(jar, true));
 	}
-
 	/**
 	 * Process the dependencies of the input JAR files.
 	 */

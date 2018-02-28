@@ -26,6 +26,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import averroes.exceptions.AverroesException;
 import probe.ObjectManager;
 import probe.ProbeClass;
 import soot.SootClass;
@@ -97,10 +98,24 @@ public final class AverroesOptions {
 	 * Process the input arguments of Averroes.
 	 * 
 	 * @param args
+	 * @throws AverroesException 
 	 */
-	public static void processArguments(String[] args) {
+	public static void processArguments(String[] args) throws AverroesException {
 		try {
+			// If the application input is an Android app there will be only one apk.
+			// Also, it's not as easy as with an apk (opposed to a jar) to extract class files.
+			// In case of a java application, we iterate twice over the application inputs.
+			// This is due to easier exception management (we can't pass the exception off of a lambda expression).
+			
 			cmd = new DefaultParser().parse(options, args);
+			for (String s: getApplicationJars()) {
+				if (s.endsWith(".apk")) {
+					setAndroid(true);
+				}	
+			}
+			if (getApplicationJars().size() > 1 && isAndroid()) {
+				throw new AverroesException("Mutliple application archives detected while in Android mode. Only 1 apk is allowed.", new Throwable());	
+			}
 
 			// Do we need to print out help messages?
 			if (cmd.hasOption(help.getOpt())) {
