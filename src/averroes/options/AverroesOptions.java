@@ -77,13 +77,16 @@ public final class AverroesOptions {
 	private static Option jreDirectory = Option.builder("j").longOpt("java-runtime-directory")
 			.desc("the directory that contains the Java runtime environment that Averroes should model").hasArg()
 			.argName("directory").required().build();
+	
+	private static Option platformDirectory = Option.builder("p").longOpt("android-platform-directory")
+			.desc("path to the android platforms directory that contains android.jar file").hasArg().argName("directory").required(false).build();
 
 	private static Option help = Option.builder("h").longOpt("help").desc("print out this help message").hasArg(false)
 			.required(false).build();
 
 	private static Options options = new Options().addOption(applicationRegex).addOption(mainClass)
 			.addOption(applicationJars).addOption(libraryJars).addOption(dynamicClassesFile)
-			.addOption(tamiflexFactsFile).addOption(outputDirectory).addOption(jreDirectory).addOption(help);
+			.addOption(tamiflexFactsFile).addOption(outputDirectory).addOption(jreDirectory).addOption(platformDirectory).addOption(help);
 
 	private static CommandLine cmd;
 	/**
