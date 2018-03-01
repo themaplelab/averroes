@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.jf.dexlib2.dexbacked.raw.FieldIdItem;
+import org.jf.dexlib2.dexbacked.raw.MethodIdItem;
+import org.jf.dexlib2.dexbacked.raw.RawDexFile;
+
 import soot.ResolutionFailedException;
 import soot.Scene;
 import soot.SootClass;
@@ -11,6 +15,8 @@ import soot.SootField;
 import soot.SootFieldRef;
 import soot.SootMethod;
 import soot.Type;
+import averroes.android.SetupAndroid;
+import averroes.options.AverroesOptions;
 import averroes.soot.Hierarchy;
 import averroes.util.BytecodeUtils;
 
@@ -228,6 +234,10 @@ public class AverroesApplicationConstantPool {
 		Set<SootClass> result = new HashSet<SootClass>();
 		// Set<SootClass> classes = new HashSet<SootClass>();
 		// Set<String> substrings = new HashSet<String>();
+		
+		if(AverroesOptions.isAndroid()) {
+			return result;
+		}
 
 		/*
 		 * This is only useful if the application class has any methods. Some
@@ -295,13 +305,14 @@ public class AverroesApplicationConstantPool {
 
 		// If we're processing an android apk, process the global method
 		// constant pool
-		// if (Options.v().src_prec() == Options.src_prec_apk) {
-		// libraryMethods.addAll(findLibraryMethodsInAndroidApplicationConstantPool());
-		// } else {
-		// Add the library methods that appear in the constant pool of
-		// application classes
-		for (SootClass applicationClass : hierarchy.getApplicationClasses()) {
-			libraryMethods.addAll(findLibraryMethodsInConstantPool(applicationClass));
+		if (AverroesOptions.isAndroid()) {
+			libraryMethods.addAll(findLibraryMethodsInAndroidApplicationConstantPool());
+		} else {
+			// Add the library methods that appear in the constant pool of
+			// application classes
+			for (SootClass applicationClass : hierarchy.getApplicationClasses()) {
+				libraryMethods.addAll(findLibraryMethodsInConstantPool(applicationClass));
+			}
 		}
 		// }
 	}
@@ -385,14 +396,116 @@ public class AverroesApplicationConstantPool {
 
 		// If we're processing an android apk, process the global field constant
 		// pool
-		// if (Options.v().src_prec() == Options.src_prec_apk) {
-		// libraryFields.addAll(findLibraryFieldsInAndroidApplicationConstantPool());
-		// } else {
+		 if (AverroesOptions.isAndroid()) {
+			 libraryFields.addAll(findLibraryFieldsInAndroidApplicationConstantPool());
+		 } else {
 		// Add the library methods that appear in the constant pool of
 		// application classes
-		for (SootClass applicationClass : hierarchy.getApplicationClasses()) {
-			libraryFields.addAll(findLibraryFieldsInConstantPool(applicationClass));
+			for (SootClass applicationClass : hierarchy.getApplicationClasses()) {
+				libraryFields.addAll(findLibraryFieldsInConstantPool(applicationClass));
+			}
 		}
-		// }
 	}
+	private Set<SootMethod> findLibraryMethodsInAndroidApplicationConstantPool() {
+		Set<SootMethod> result = new HashSet<SootMethod>();
+
+		RawDexFile rawDex = SetupAndroid.v().getRawDex();
+		String[] methods = MethodIdItem.getMethods(rawDex);
+		for (String s: methods) {
+			// Sample string: Landroid/app/PendingIntent;->getActivity(Landroid/content/Context;ILandroid/content/Intent;I)Landroid/app/PendingIntent;
+			/*String[] parts = s.split("((?<=;)|\\(|\\))");	// (;|\\(|\\))
+			Type clazz = DexType.toSoot(parts[0]);
+			String methodName = parts[1].substring(2, parts[1].length());
+			int idx = 2;
+			Type[] params = null;
+			if (!parts[idx].isEmpty()) { // Parameter list is not empty
+				params = new Type[parts.length-3];
+				while (idx < (parts.length - 1)) {
+					params[idx-2] = DexType.toSoot(parts[idx]);
+					idx++;
+				}
+			}
+			else {
+				idx++;
+			}	
+			String returnTypeString = parts[idx];
+			if (returnTypeString.charAt(0) == ')')
+				returnTypeString = returnTypeString.substring(1);
+			Type returnType = DexType.toSoot(parts[idx]);
+			*/		
+			String[] parts = s.split("->");
+			String className = "";
+			if (parts[0].startsWith("[J") || parts[0].startsWith("[I")) // TODO: why? is that correct? 
+				className = "Ljava.lang.Object;";
+			else
+				className = parts[0];	
+
+			className = className.replace('/', '.');
+			// Remove "L" and ";"
+			className = className.substring(1, className.length()-1);
+
+			if (AverroesOptions.isLibraryClass(className)) {
+				int idx = parts[1].indexOf('(');
+				String methodName = parts[1].substring(0, idx);
+				String methodDescriptor = parts[1].substring(idx);
+				
+				SootMethod method = BytecodeUtils.makeSootMethod(className, methodName, methodDescriptor);
+				result.add(method);
+			}	
+		}	
+	
+		return result;
+	}	
+	
+	private Set<SootField> findLibraryFieldsInAndroidApplicationConstantPool() {
+		Set<SootField> result = new HashSet<SootField>();
+		
+		RawDexFile rawDex = SetupAndroid.v().getRawDex();
+		String[] fields = FieldIdItem.getFields(rawDex);
+		for (String s: fields) {	
+			String[] parts = s.split("(->|:)");
+
+			String className = parts[0];	
+
+			className = className.replace('/', '.');
+			// Remove "L" and ";"
+			className = className.substring(1, className.length()-1);
+			SootClass cls = Scene.v().getSootClass(className);
+
+			//if (cls.isApplicationClass()) {
+			//	continue;
+			//}
+			
+			String fieldName = parts[1];
+			String fieldDescriptor = parts[2];
+			Type fieldType = Util.v().jimpleTypeOfFieldDescriptor(fieldDescriptor);
+			
+
+			SootFieldRef fieldRef = Scene.v().makeFieldRef(cls, fieldName, fieldType, false);
+			SootField field;
+
+			/*
+			 * We have to do this ugly code. Try first and see if the
+			 * field is not static. If it is static, then create a new
+			 * fieldRef in the catch and resolve it again with isStatic
+			 * = true.
+			 */
+			try {
+				field = fieldRef.resolve();
+			} catch (ResolutionFailedException e) {
+				fieldRef = Scene.v().makeFieldRef(cls, fieldName, fieldType, true);
+			}
+			field = fieldRef.resolve();
+
+			// If the resolved field is in the library, add it to the
+			// result
+			if (hierarchy.isLibraryField(field)) {
+				result.add(field);
+			}
+		}		
+		
+		return result;
+	}	
+	
 }
+

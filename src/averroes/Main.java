@@ -105,7 +105,7 @@ public class Main {
     			}	
             }
             // Set some soot parameters if not android 
-            else {
+            else if (!AverroesOptions.isAndroid()){
 			SourceLocator.v().setClassProviders(Collections.singletonList((ClassProvider) provider));
 			SootSceneUtil.addCommonDynamicClasses(provider);
 			Options.v().classes().addAll(provider.getApplicationClassNames());

@@ -25,7 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+
 import soot.ArrayType;
+import soot.Body;
 import soot.Local;
 import soot.Modifier;
 import soot.RefLikeType;
@@ -42,8 +44,10 @@ import soot.jimple.IntConstant;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
+import soot.jimple.infoflow.entryPointCreators.AndroidEntryPointUtils;
 import soot.options.Options;
 import soot.util.JasminOutputStream;
+import averroes.android.SetupAndroid;
 import averroes.options.AverroesOptions;
 import averroes.tamiflex.TamiFlexFactsDatabase;
 import averroes.util.io.Paths;
@@ -219,6 +223,11 @@ public class CodeGenerator {
 
 			// Create its static initalizer
 			createAverroesLibraryClinit();
+			
+			// If we are running in Android mode we need to add the dummy main
+			if (AverroesOptions.isAndroid()) {
+				createAverroesLibraryDummyMain();
+			}
 
 			// Create the dotItAll method
 			createAverroesLibraryDoItAll();
@@ -452,6 +461,31 @@ public class CodeGenerator {
 		// Finally validate the Jimple body
 		body.validate();
 	}
+	
+	/**
+	 * If running in Android mode, this method adds the dummy main to the Averroes library class.
+	 */
+	private void createAverroesLibraryDummyMain() {
+		SootMethod dM = SetupAndroid.v().getDummyMainMethod();	
+		Type stringArrayType = ArrayType.v(RefType.v("java.lang.String"), 1);
+		SootMethod dummyMain = new SootMethod(Names.AVERROES_DUMMY_MAIN_METHOD_NAME, Collections.singletonList(stringArrayType),
+				VoidType.v(), Modifier.PUBLIC | Modifier.STATIC);
+
+		averroesLibraryClass.addMethod(dummyMain);
+		Body b = dM.getActiveBody();
+		/*for (Local l: b.getLocals()) {
+			Scene.v().getRefType(l.getType().toString())   Scene.v().getSootClass("android.app.Activity").getType().)
+			if (l.getType(). {
+				
+			}
+		}*/
+		
+		dummyMain.setActiveBody(b);
+		
+		dummyMain.getActiveBody().validate();
+				
+		b.validate();
+	}
 
 	/**
 	 * Create the doItAll method for the Averroes library class. It includes
@@ -515,6 +549,11 @@ public class CodeGenerator {
 	 */
 	private void callApplicationMethodsReflectively() {
 		for (SootMethod toCall : getAllMethodsToCallReflectively()) {
+			// TODO: Is that correct? We want to skip lifecycle methods because these are modeled in the dummy main
+			if (isLifeCycle(toCall)) {
+				continue;
+			}
+			
 			SootClass cls = toCall.getDeclaringClass();
 			// SootClass cls = Hierarchy.v().getClass(toCall.getSignature());
 			SootMethodRef methodRef = toCall.makeRef();
@@ -551,6 +590,11 @@ public class CodeGenerator {
 			doItAllBody.storeLibraryPointsToField(ret);
 		}
 
+	}
+	private boolean isLifeCycle(SootMethod method) {
+		// TODO: Refactor (e.g. store the method signatures inside this class)?
+		AndroidEntryPointUtils m = new AndroidEntryPointUtils();
+		return m.isEntryPointMethod(method);
 	}
 
 	/**

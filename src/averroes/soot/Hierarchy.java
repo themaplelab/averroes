@@ -30,6 +30,7 @@ import soot.SootMethod;
 import soot.Type;
 import soot.VoidType;
 import soot.coffi.AverroesApplicationConstantPool;
+import soot.jimple.infoflow.entryPointCreators.AndroidEntryPointUtils;
 import soot.tagkit.Tag;
 import averroes.options.AverroesOptions;
 
@@ -356,7 +357,8 @@ public class Hierarchy {
 	 */
 	public boolean isBasicLibraryMethod(SootMethod method) {
 		String sig = method.getSignature();
-		return method.isConstructor() || isStaticInitializer(method) || sig.equals(Names.FOR_NAME_SIG)
+		AndroidEntryPointUtils m = new AndroidEntryPointUtils();
+		return method.isConstructor() || m.isEntryPointMethod(method)|| isStaticInitializer(method) || sig.equals(Names.FOR_NAME_SIG)
 				|| sig.equals(Names.NEW_INSTANCE_SIG) || sig.equals(Names.FINALIZE_SIG);
 	}
 

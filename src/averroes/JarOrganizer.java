@@ -106,12 +106,14 @@ public class JarOrganizer {
 	private void processDependencies() {
 		// Add the application library dependencies
 		AverroesOptions.getLibraryJarFiles().forEach(lib -> processArchive(lib, false));
-
+		
 		// Add the JRE libraries
-		if ("system".equals(AverroesOptions.getJreDirectory())) {
-			processJreArchives(System.getProperty("java.home"));
-		} else {
-			processJreArchives(AverroesOptions.getJreDirectory());
+		if(!AverroesOptions.isAndroid()) {
+			if ("system".equals(AverroesOptions.getJreDirectory())) {
+				processJreArchives(System.getProperty("java.home"));
+			} else {
+				processJreArchives(AverroesOptions.getJreDirectory());
+			}
 		}
 	}
 
