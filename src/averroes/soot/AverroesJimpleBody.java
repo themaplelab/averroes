@@ -80,6 +80,7 @@ public class AverroesJimpleBody {
 	 */
 	private void createBasicJimpleBody(SootMethod method) {
 		body = Jimple.v().newBody(method);
+		// TODO: method.getDeclaringClass().isPhantom() ? check if phantom class?
 		method.setActiveBody(body);
 		insertStandardJimpleBodyHeader();
 	}
