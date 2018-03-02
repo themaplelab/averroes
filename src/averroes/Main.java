@@ -70,13 +70,14 @@ public class Main {
 			jarOrganizer.organizeInputJarFiles();
 			
 			// Print some statistics
-			if (AverroesOptions.isAndroid()) {	
+			if (AverroesOptions.isAndroid()) {
 				System.out.println("# referenced application classes: " + SetupAndroid.v().getReferencedApplicationClassCount());
 				System.out.println("# referenced application methods: " + SetupAndroid.v().getReferencedApplicationMethodCount());
 			}
-			else {	
+			else {
 				System.out.println("# application classes: " + jarOrganizer.applicationClassNames().size());
 			}
+			
 			System.out.println("# library classes: " + jarOrganizer.libraryClassNames().size());
 
 			// Add the organized archives for the application and its
@@ -88,28 +89,30 @@ public class Main {
 			//Set some soot parameters for android
             if(AverroesOptions.isAndroid())
             {
-            	List<ClassProvider> classProviders = new LinkedList<>();
-    			classProviders.add((ClassProvider) provider);	
-    			classProviders.add(new DexClassProvider());
-    			SourceLocator.v().setClassProviders(classProviders);
-    			SootSceneUtil.addCommonDynamicClasses(provider);
-    			
-    			SetupAndroid setupAndroid = null;
-    			SootMethod dummyMain = null;
-    			if (AverroesOptions.isAndroid()) {	
-    				setupAndroid = SetupAndroid.v();
-    				dummyMain = setupAndroid.getDummyMainMethod(); 
-     			}
-    			else {
-    				Options.v().classes().addAll(provider.getApplicationClassNames());
-    			}	
+	            	List<ClassProvider> classProviders = new LinkedList<>();
+	    			classProviders.add((ClassProvider) provider);	
+	    			classProviders.add(new DexClassProvider());
+	    			SourceLocator.v().setClassProviders(classProviders);
+	    			SootSceneUtil.addCommonDynamicClasses(provider);
+	    			
+	    			SetupAndroid setupAndroid = null;
+	    			SootMethod dummyMain = null;
+	    			
+	    			if (AverroesOptions.isAndroid()) {	
+	    				setupAndroid = SetupAndroid.v();
+	    				dummyMain = setupAndroid.getDummyMainMethod(); 
+	    				
+	     			}
+	    			else {
+	    				Options.v().classes().addAll(provider.getApplicationClassNames());
+	    			}	
             }
             // Set some soot parameters if not android 
             else if (!AverroesOptions.isAndroid()){
-			SourceLocator.v().setClassProviders(Collections.singletonList((ClassProvider) provider));
-			SootSceneUtil.addCommonDynamicClasses(provider);
-			Options.v().classes().addAll(provider.getApplicationClassNames());
-			Options.v().set_main_class(AverroesOptions.getMainClass());
+            		SourceLocator.v().setClassProviders(Collections.singletonList((ClassProvider) provider));
+            		SootSceneUtil.addCommonDynamicClasses(provider);
+            		Options.v().classes().addAll(provider.getApplicationClassNames());
+            		Options.v().set_main_class(AverroesOptions.getMainClass());
             }
 			Options.v().set_validate(true);
 
@@ -119,8 +122,10 @@ public class Main {
 			Scene.v().loadNecessaryClasses();
 			
 			//only in case of java files
-			if(!AverroesOptions.isAndroid())
+			if(!AverroesOptions.isAndroid()) {
 				Scene.v().setMainClassFromOptions();
+			}
+				
 			
 			double soot = TimeUtils.elapsedTime();
 			System.out.println("Soot loaded the input classes in " + soot + " seconds.");
@@ -134,6 +139,7 @@ public class Main {
 
 			// Output some initial statistics
 			System.out.println("# initial application classes: " + Hierarchy.v().getApplicationClasses().size());
+			System.out.println(Hierarchy.v().getApplicationClasses()); 
 			System.out.println("# initial library classes: " + Hierarchy.v().getLibraryClasses().size());
 			System.out.println("# initial library methods: " + Hierarchy.v().getLibraryMethodCount());
 			System.out.println("# initial library fields: " + Hierarchy.v().getLibraryFieldCount());
