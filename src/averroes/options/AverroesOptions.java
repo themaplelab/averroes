@@ -369,29 +369,37 @@ public final class AverroesOptions {
 		return !isApplicationClass(className);
 	}
 	
+    /**
+     * Checks if android app is being processed
+     * @return
+     */
+	public static boolean isAndroid() {		
+		return android;
+	}
+	
 	/**
-	 * Check if an android app is being processed.
 	 * 
+	 * @param android  true if android app, false otherwise.
+	 */
+	public static void setAndroid(boolean android) {
+		AverroesOptions.android = android;
+	}
+	
+	/**
+	 * Returns the path to the android platform directory 
 	 * @return 
 	 */
-		public static boolean isAndroid() {
-			
-			return android;
-		}
-		/**
-		 * 
-		 * @param android  true if android app, false otherwise.
-		 */
-		public static void setAndroid(boolean android) {
-			AverroesOptions.android = android;
-		}
-		public static String getAndroidJar() {
-			return cmd.getOptionValue(platformDirectory.getOpt());
-		}
-		
-		public static String getApk() {
-			if (isAndroid()) 
-				return getApplicationJars().get(0);
-			return null;
-		}
+	public static String getAndroidJar() {
+		return cmd.getOptionValue(platformDirectory.getOpt());
 	}
+	
+	/**
+	 * returns the path to the android apk file. 	
+	 * @return
+	 */
+	public static String getApk() {
+		if (isAndroid()) return getApplicationJars().get(0);
+		
+		return null;
+	}
+}

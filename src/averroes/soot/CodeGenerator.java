@@ -244,6 +244,7 @@ public class CodeGenerator {
 	 */
 	public void createLibraryMethodBodies() throws IOException {
 		for (SootClass libraryClass : getLibraryClasses()) {
+			//TODO: should we use this check? if(!libraryClass.isPhantom()) {
 			for (SootMethod method : libraryClass.getMethods()) {
 				// Create our Jimple body for concrete methods only
 				if (method.isConcrete()) {
@@ -252,6 +253,8 @@ public class CodeGenerator {
 			}
 
 			writeLibraryClassFile(libraryClass);
+			//}
+
 		}
 	}
 
@@ -549,10 +552,6 @@ public class CodeGenerator {
 	 */
 	private void callApplicationMethodsReflectively() {
 		for (SootMethod toCall : getAllMethodsToCallReflectively()) {
-			// TODO: Is that correct? We want to skip lifecycle methods because these are modeled in the dummy main
-			if (isLifeCycle(toCall)) {
-				continue;
-			}
 			
 			SootClass cls = toCall.getDeclaringClass();
 			// SootClass cls = Hierarchy.v().getClass(toCall.getSignature());
@@ -591,8 +590,13 @@ public class CodeGenerator {
 		}
 
 	}
+	/**
+	 * Checks if a method is a life cycle method or not. (android) 
+	 * @param method 
+	 * @return 
+	 */
+	//TODO: this method is being used in Hierarchy.java as well. Refactor? 
 	private boolean isLifeCycle(SootMethod method) {
-		// TODO: Refactor (e.g. store the method signatures inside this class)?
 		AndroidEntryPointUtils m = new AndroidEntryPointUtils();
 		return m.isEntryPointMethod(method);
 	}
@@ -607,13 +611,18 @@ public class CodeGenerator {
 		LinkedHashSet<SootMethod> result = new LinkedHashSet<SootMethod>();
 		result.addAll(Hierarchy.v().getLibrarySuperMethodsOfApplicationMethods());
 		result.addAll(getTamiFlexApplicationMethodInvokes());
-
-		// Get those methods specified in the apk resource xml files that handle
-		// onClick events.
-		// if (Options.v().src_prec() == Options.src_prec_apk) {
-		// result.addAll(Hierarchy.v().getOnClickApplicationMethods());
-		// }
-
+		
+		//If it is android we want to ignore life cycle methods because 
+		//they are already being modeled in the dummy main. 
+		if(AverroesOptions.isAndroid()) {
+			result.forEach(method->{
+				if(isLifeCycle(method)) {
+					result.remove(method);
+				}
+				
+			});
+		}
+		
 		return result;
 	}
 

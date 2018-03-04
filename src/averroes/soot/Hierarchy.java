@@ -357,6 +357,7 @@ public class Hierarchy {
 	 */
 	public boolean isBasicLibraryMethod(SootMethod method) {
 		String sig = method.getSignature();
+		//TODO: does same thing as isLifeCycle() in CodeGenerator.java. Refactor?
 		AndroidEntryPointUtils m = new AndroidEntryPointUtils();
 		return method.isConstructor() || m.isEntryPointMethod(method)|| isStaticInitializer(method) || sig.equals(Names.FOR_NAME_SIG)
 				|| sig.equals(Names.NEW_INSTANCE_SIG) || sig.equals(Names.FINALIZE_SIG);
@@ -913,10 +914,10 @@ public class Hierarchy {
 	 */
 	public SootClass getDirectSuperclassOf(SootClass cls) {
 		checkLevel(cls);
+    		if (!classToDirectSuperclass.containsKey(cls)) {
+    			classToDirectSuperclass.put(cls, cls.getSuperclass());
+    		}
 
-		if (!classToDirectSuperclass.containsKey(cls)) {
-			classToDirectSuperclass.put(cls, cls.getSuperclass());
-		}
 
 		return classToDirectSuperclass.get(cls);
 	}
