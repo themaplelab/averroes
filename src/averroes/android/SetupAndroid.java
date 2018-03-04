@@ -17,6 +17,7 @@ import averroes.exceptions.AverroesException;
 
 import averroes.options.AverroesOptions;
 import averroes.util.DexUtils;
+import soot.Scene;
 import soot.SootMethod;
 import soot.Type;
 import soot.coffi.Util;
@@ -39,15 +40,10 @@ import soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator;
 public class SetupAndroid {
 
 	private static SetupAndroid instance;
-	
 	private final int apiVersion;
-
-	private ProcessManifest processMan;
-
 	private String apkFileLocation;
 	private String androidJars;
 	private SootMethod dummyMain = null;
-	
 	private RawDexFile rawDex;
 	
 
@@ -67,30 +63,16 @@ public class SetupAndroid {
 	
 	/**
 	 * Constructor 
-	 * @throws AverroesException if API version is not found in manifest file 
+	 * @throws AverroesException if API version is not found
 	 */
 	
 	private SetupAndroid() throws AverroesException {
 		apkFileLocation = AverroesOptions.getApk();
 		androidJars = AverroesOptions.getAndroidJar();
 
-		try {
-			processMan = new ProcessManifest(apkFileLocation);
-		}
-		catch(Exception ex) {
-			ex.printStackTrace();
-		}
-		// TODO: Scene.v().getAndroidAPIVersion() works only with a "platforms" directory.
-		// I'm not sure if the first parameter has to be the platforms directory or
-		// if the platforms directory has to be set by an extra call.
-		// In any case, the call returns -1 without a platforms directory.
-		// We work with the targetSdkVersion, as given in the manifest file for now.
-		//apiVersion = Scene.v().getAndroidAPIVersion(AverroesOptions.getAndroidJar(), apkFileLocation);
-		
-		
-		apiVersion = processMan.targetSdkVersion();
+		apiVersion = Scene.v().getAndroidAPIVersion();
 		if (apiVersion == -1){
-			throw new AverroesException("Couldn't find the Android API version in the manifest file.",
+			throw new AverroesException("Couldn't find the Android API version",
 					new Throwable());
 		}
 		

@@ -49,7 +49,6 @@ public class DexUtils {
 
             int api = SetupAndroid.v().getApiVersion();
             Opcodes opcodes = Opcodes.forApi(api);
-            
             return new RawDexFile(opcodes, dexBytes);
         } catch (IOException ex) {
             // don't continue on if we know it's a zip file
