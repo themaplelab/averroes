@@ -25,7 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+
 import soot.ArrayType;
+import soot.Body;
 import soot.Local;
 import soot.Modifier;
 import soot.RefLikeType;
@@ -42,8 +44,10 @@ import soot.jimple.IntConstant;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
+import soot.jimple.infoflow.entryPointCreators.AndroidEntryPointUtils;
 import soot.options.Options;
 import soot.util.JasminOutputStream;
+import averroes.android.SetupAndroid;
 import averroes.options.AverroesOptions;
 import averroes.tamiflex.TamiFlexFactsDatabase;
 import averroes.util.io.Paths;
@@ -219,6 +223,11 @@ public class CodeGenerator {
 
 			// Create its static initalizer
 			createAverroesLibraryClinit();
+			
+			// If we are running in Android mode we need to add the dummy main
+			if (AverroesOptions.isAndroid()) {
+				createAverroesLibraryDummyMain();
+			}
 
 			// Create the dotItAll method
 			createAverroesLibraryDoItAll();
@@ -235,6 +244,7 @@ public class CodeGenerator {
 	 */
 	public void createLibraryMethodBodies() throws IOException {
 		for (SootClass libraryClass : getLibraryClasses()) {
+			//TODO: should we use this check? if(!libraryClass.isPhantom()) {
 			for (SootMethod method : libraryClass.getMethods()) {
 				// Create our Jimple body for concrete methods only
 				if (method.isConcrete()) {
@@ -243,6 +253,8 @@ public class CodeGenerator {
 			}
 
 			writeLibraryClassFile(libraryClass);
+			//}
+
 		}
 	}
 
@@ -452,6 +464,31 @@ public class CodeGenerator {
 		// Finally validate the Jimple body
 		body.validate();
 	}
+	
+	/**
+	 * If running in Android mode, this method adds the dummy main to the Averroes library class.
+	 */
+	private void createAverroesLibraryDummyMain() {
+		SootMethod dM = SetupAndroid.v().getDummyMainMethod();	
+		Type stringArrayType = ArrayType.v(RefType.v("java.lang.String"), 1);
+		SootMethod dummyMain = new SootMethod(Names.AVERROES_DUMMY_MAIN_METHOD_NAME, Collections.singletonList(stringArrayType),
+				VoidType.v(), Modifier.PUBLIC | Modifier.STATIC);
+
+		averroesLibraryClass.addMethod(dummyMain);
+		Body b = dM.getActiveBody();
+		/*for (Local l: b.getLocals()) {
+			Scene.v().getRefType(l.getType().toString())   Scene.v().getSootClass("android.app.Activity").getType().)
+			if (l.getType(). {
+				
+			}
+		}*/
+		
+		dummyMain.setActiveBody(b);
+		
+		dummyMain.getActiveBody().validate();
+				
+		b.validate();
+	}
 
 	/**
 	 * Create the doItAll method for the Averroes library class. It includes
@@ -515,6 +552,7 @@ public class CodeGenerator {
 	 */
 	private void callApplicationMethodsReflectively() {
 		for (SootMethod toCall : getAllMethodsToCallReflectively()) {
+			
 			SootClass cls = toCall.getDeclaringClass();
 			// SootClass cls = Hierarchy.v().getClass(toCall.getSignature());
 			SootMethodRef methodRef = toCall.makeRef();
@@ -552,6 +590,16 @@ public class CodeGenerator {
 		}
 
 	}
+	/**
+	 * Checks if a method is a life cycle method or not. (android) 
+	 * @param method 
+	 * @return 
+	 */
+	//TODO: this method is being used in Hierarchy.java as well. Refactor? 
+	private boolean isLifeCycle(SootMethod method) {
+		AndroidEntryPointUtils m = new AndroidEntryPointUtils();
+		return m.isEntryPointMethod(method);
+	}
 
 	/**
 	 * Retrieve all the methods that the library could call back through
@@ -563,13 +611,18 @@ public class CodeGenerator {
 		LinkedHashSet<SootMethod> result = new LinkedHashSet<SootMethod>();
 		result.addAll(Hierarchy.v().getLibrarySuperMethodsOfApplicationMethods());
 		result.addAll(getTamiFlexApplicationMethodInvokes());
-
-		// Get those methods specified in the apk resource xml files that handle
-		// onClick events.
-		// if (Options.v().src_prec() == Options.src_prec_apk) {
-		// result.addAll(Hierarchy.v().getOnClickApplicationMethods());
-		// }
-
+		
+		//If it is android we want to ignore life cycle methods because 
+		//they are already being modeled in the dummy main. 
+		if(AverroesOptions.isAndroid()) {
+			result.forEach(method->{
+				if(isLifeCycle(method)) {
+					result.remove(method);
+				}
+				
+			});
+		}
+		
 		return result;
 	}
 

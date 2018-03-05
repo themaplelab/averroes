@@ -79,9 +79,11 @@ public class AverroesJimpleBody {
 	 * @return
 	 */
 	private void createBasicJimpleBody(SootMethod method) {
-		body = Jimple.v().newBody(method);
-		method.setActiveBody(body);
-		insertStandardJimpleBodyHeader();
+			body = Jimple.v().newBody(method);
+			method.setActiveBody(body);
+			insertStandardJimpleBodyHeader();
+
+
 	}
 
 	/**

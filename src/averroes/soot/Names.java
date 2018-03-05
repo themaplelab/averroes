@@ -41,12 +41,15 @@ public class Names {
 	// Methods
 	public static final String AVERROES_DO_IT_ALL_METHOD_NAME = "doItAll";
 	public static final String MAIN_METHOD = "main";
+	public static final String AVERROES_DUMMY_MAIN_METHOD_NAME = "dummyMain";
 	public static final String AVERROES_ABSTRACT_DO_IT_ALL_METHOD_SIGNATURE = "<" + AVERROES_ABSTRACT_LIBRARY_CLASS
 			+ ": void " + AVERROES_DO_IT_ALL_METHOD_NAME + "()>";
 	public static final String AVERROES_LIBRARY_DO_IT_ALL_METHOD_SIGNATURE = "<" + AVERROES_LIBRARY_CLASS + ": void "
 			+ AVERROES_DO_IT_ALL_METHOD_NAME + "()>";
 	public static final String AVERROES_LIBRARY_CLINIT_METHOD_SIGNATURE = "<" + AVERROES_LIBRARY_CLASS + ": void "
 			+ SootMethod.staticInitializerName + "()>";
+	public static final String AVERROES_LIBRARY_DUMMY_MAIN_METHOD_SIGNATURE = "<" + AVERROES_LIBRARY_CLASS + ": void "
+			+ AVERROES_DUMMY_MAIN_METHOD_NAME + "()>";
 
 	// Reflection methods
 	public static final String FOR_NAME_SIG = "<java.lang.Class: java.lang.Class forName(java.lang.String)>";

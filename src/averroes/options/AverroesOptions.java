@@ -26,6 +26,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import averroes.exceptions.AverroesException;
 import probe.ObjectManager;
 import probe.ProbeClass;
 import soot.SootClass;
@@ -49,7 +50,7 @@ public final class AverroesOptions {
 
 	private static Option mainClass = Option.builder("m").longOpt("main-class")
 			.desc("the main class that runs the application when the program executes").hasArg().argName("class")
-			.required().build();
+			.required(false).build();
 
 	private static Option applicationJars = Option.builder("a").longOpt("application-jars")
 			.desc("a list of the application JAR files separated by File.pathSeparator").hasArg().argName("path")
@@ -75,31 +76,71 @@ public final class AverroesOptions {
 
 	private static Option jreDirectory = Option.builder("j").longOpt("java-runtime-directory")
 			.desc("the directory that contains the Java runtime environment that Averroes should model").hasArg()
-			.argName("directory").required().build();
+			.argName("directory").required(false).build();
+	
+	private static Option platformDirectory = Option.builder("p").longOpt("android-platform-directory")
+			.desc("path to the android platforms directory that contains android.jar file").hasArg().argName("directory").required(false).build();
 
 	private static Option help = Option.builder("h").longOpt("help").desc("print out this help message").hasArg(false)
 			.required(false).build();
 
 	private static Options options = new Options().addOption(applicationRegex).addOption(mainClass)
 			.addOption(applicationJars).addOption(libraryJars).addOption(dynamicClassesFile)
-			.addOption(tamiflexFactsFile).addOption(outputDirectory).addOption(jreDirectory).addOption(help);
+			.addOption(tamiflexFactsFile).addOption(outputDirectory).addOption(platformDirectory).addOption(help);
 
 	private static CommandLine cmd;
+	/**
+	 * Documents, whether an android or java application is processed
+	 */
+	private static boolean android = false;
+
 
 	/**
 	 * Process the input arguments of Averroes.
 	 * 
 	 * @param args
+	 * @throws AverroesException 
 	 */
-	public static void processArguments(String[] args) {
+	public static void processArguments(String[] args) throws AverroesException {
 		try {
+			// If the application input is an Android app there will be only one apk.
+			// Also, it's not as easy as with an apk (opposed to a jar) to extract class files.
+			// In case of a java application, we iterate twice over the application inputs.
+			// This is due to easier exception management (we can't pass the exception off of a lambda expression).
+			
 			cmd = new DefaultParser().parse(options, args);
+			for (String s: getApplicationJars()) {
+				if (s.endsWith(".apk")) {
+					setAndroid(true);
+				}	
+			}
+			if (getApplicationJars().size() > 1 && isAndroid()) {
+				throw new AverroesException("Mutliple application archives detected while in Android mode. Only 1 apk is allowed.", new Throwable());	
+			}
+			
+			// if it as an android app, the path to the platform directory has to be specified
+			if(isAndroid()) {
+				
+				if(!cmd.hasOption(platformDirectory.getOpt())) {
+					throw new AverroesException("missing option p : path to android-platform directory", new Throwable());
+						
+				}
+
+			}
+			//If it is a java application jre directory and main class need to be specified. 
+			else
+			{
+				if(!(cmd.hasOption(jreDirectory.getOpt()) && cmd.hasOption(mainClass.getOpt()))) {
+					throw new AverroesException("missing option j and/or m ", new Throwable());
+						
+				}
+			}
 
 			// Do we need to print out help messages?
 			if (cmd.hasOption(help.getOpt())) {
 				help();
 			}
-		} catch (ParseException e) {
+		} catch (AverroesException |ParseException e) {
 			e.printStackTrace();
 			help();
 		}
@@ -122,7 +163,28 @@ public final class AverroesOptions {
 	public static List<String> getApplicationRegex() {
 		return Arrays.asList(cmd.getOptionValue(applicationRegex.getOpt()).split(File.pathSeparator));
 	}
+	/**
+	 * A regex pattern that is usable by a java.regex.Matcher
+	 * TODO: Refactor
+	 * @return
+	 */
+	public static String getEscapedApplicationRegex() {
+		List<String> appRegex = AverroesOptions.getApplicationRegex();
+		StringBuilder pattern = new StringBuilder();
+		
+		for (String s: appRegex) {
+			pattern.append("(");
+			pattern.append(s);
+			pattern.append(")|");
+		}
+		
+		pattern.deleteCharAt(pattern.length()-1);
+		String patternString = pattern.toString();
+		patternString = patternString.replaceAll("\\.", "\\\\.");
+		patternString = patternString.replaceAll("\\*+", "\\.*");	
 
+		return patternString;
+	}
 	/**
 	 * The main class that runs the application when the program executes.
 	 * 
@@ -305,5 +367,39 @@ public final class AverroesOptions {
 	 */
 	public static boolean isLibraryClass(String className) {
 		return !isApplicationClass(className);
+	}
+	
+    /**
+     * Checks if android app is being processed
+     * @return
+     */
+	public static boolean isAndroid() {		
+		return android;
+	}
+	
+	/**
+	 * 
+	 * @param android  true if android app, false otherwise.
+	 */
+	public static void setAndroid(boolean android) {
+		AverroesOptions.android = android;
+	}
+	
+	/**
+	 * Returns the path to the android platform directory 
+	 * @return 
+	 */
+	public static String getAndroidJar() {
+		return cmd.getOptionValue(platformDirectory.getOpt());
+	}
+	
+	/**
+	 * returns the path to the android apk file. 	
+	 * @return
+	 */
+	public static String getApk() {
+		if (isAndroid()) return getApplicationJars().get(0);
+		
+		return null;
 	}
 }
