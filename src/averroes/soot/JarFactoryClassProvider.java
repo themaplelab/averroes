@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import averroes.options.AverroesOptions;
 import averroes.util.io.Paths;
 import averroes.util.io.Resource;
 import averroes.util.io.ZipEntryResource;
@@ -92,7 +93,9 @@ public class JarFactoryClassProvider implements ClassProvider {
 	public void prepareJarFactoryClasspath() throws IOException {
 		System.out.println("");
 		System.out.println("Preparing Averroes ...");
-		addApplicationArchive();
+		if(!AverroesOptions.isAndroid()) {
+			addApplicationArchive();
+		}
 		addLibraryArchive();
 	}
 

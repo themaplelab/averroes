@@ -9,6 +9,7 @@ import org.jf.dexlib2.dexbacked.raw.MethodIdItem;
 import org.jf.dexlib2.dexbacked.raw.RawDexFile;
 
 import soot.ResolutionFailedException;
+import soot.asm.*;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootField;
@@ -37,8 +38,8 @@ public class AverroesApplicationConstantPool {
 	private Hierarchy hierarchy;
 
 	/**
-	 * Initialize this constant pool with all the library methods and fields in
-	 * the constant pool of any application class.
+	 * Initialize this constant pool with all the library methods and fields in the
+	 * constant pool of any application class.
 	 * 
 	 * @param hierarchy
 	 */
@@ -73,8 +74,8 @@ public class AverroesApplicationConstantPool {
 	}
 
 	/**
-	 * Get the set of classes that are referenced by name in the constant pool
-	 * of any application class.
+	 * Get the set of classes that are referenced by name in the constant pool of
+	 * any application class.
 	 * 
 	 * @return
 	 */
@@ -83,8 +84,7 @@ public class AverroesApplicationConstantPool {
 	}
 
 	/**
-	 * Check if the given field is a library field referenced by the
-	 * application.
+	 * Check if the given field is a library field referenced by the application.
 	 * 
 	 * @param field
 	 * @return
@@ -94,8 +94,7 @@ public class AverroesApplicationConstantPool {
 	}
 
 	/**
-	 * Check if the given method is a library method referenced by the
-	 * application.
+	 * Check if the given method is a library method referenced by the application.
 	 * 
 	 * @param method
 	 * @return
@@ -114,8 +113,8 @@ public class AverroesApplicationConstantPool {
 	}
 
 	/**
-	 * Get the Coffi class corresponding to the given Soot class. From this
-	 * coffi class, we can get the constant pool and all the related info.
+	 * Get the Coffi class corresponding to the given Soot class. From this coffi
+	 * class, we can get the constant pool and all the related info.
 	 * 
 	 * @param cls
 	 * @return
@@ -125,6 +124,7 @@ public class AverroesApplicationConstantPool {
 		CoffiMethodSource methodSource = (CoffiMethodSource) anyMethod.getSource();
 		return methodSource.coffiClass;
 	}
+	
 
 	/**
 	 * Get the referenced library methods in an application class.
@@ -136,10 +136,9 @@ public class AverroesApplicationConstantPool {
 		Set<SootMethod> result = new HashSet<SootMethod>();
 
 		/*
-		 * This is only useful if the application class has any methods. Some
-		 * classes will not have any methods in them, e.g.,
-		 * org.jfree.data.xml.DatasetTags which is an interface that has some
-		 * final constants only.
+		 * This is only useful if the application class has any methods. Some classes
+		 * will not have any methods in them, e.g., org.jfree.data.xml.DatasetTags which
+		 * is an interface that has some final constants only.
 		 */
 		if (applicationClass.getMethodCount() > 0) {
 			ClassFile coffiClass = getCoffiClass(applicationClass);
@@ -194,9 +193,9 @@ public class AverroesApplicationConstantPool {
 		// Add the classes whose name appear in the constant pool of application
 		// classes
 		// TODO
-//		for (SootClass applicationClass : hierarchy.getApplicationClasses()) {
-//			applicationClasses.addAll(findApplicationClassesReferencedByName(applicationClass));
-//		}
+		// for (SootClass applicationClass : hierarchy.getApplicationClasses()) {
+		// applicationClasses.addAll(findApplicationClassesReferencedByName(applicationClass));
+		// }
 		// applicationClasses.forEach(System.out::println);
 		// System.out.println("averroes found " + substrings.size() +
 		// " possible class name substrings");
@@ -234,16 +233,15 @@ public class AverroesApplicationConstantPool {
 		Set<SootClass> result = new HashSet<SootClass>();
 		// Set<SootClass> classes = new HashSet<SootClass>();
 		// Set<String> substrings = new HashSet<String>();
-		
-		if(AverroesOptions.isAndroid()) {
+
+		if (AverroesOptions.isAndroid()) {
 			return result;
 		}
 
 		/*
-		 * This is only useful if the application class has any methods. Some
-		 * classes will not have any methods in them, e.g.,
-		 * org.jfree.data.xml.DatasetTags which is an interface that has some
-		 * final constants only.
+		 * This is only useful if the application class has any methods. Some classes
+		 * will not have any methods in them, e.g., org.jfree.data.xml.DatasetTags which
+		 * is an interface that has some final constants only.
 		 */
 		if (applicationClass.getMethodCount() > 0) {
 			ClassFile coffiClass = getCoffiClass(applicationClass);
@@ -255,7 +253,7 @@ public class AverroesApplicationConstantPool {
 
 					// Get the class name
 					CONSTANT_Utf8_info s = (CONSTANT_Utf8_info) constantPool[stringInfo.string_index];
-					String className = s.convert();//.trim();
+					String className = s.convert();// .trim();
 
 					// if (className.length() > 2) {
 					// Set<SootClass> set =
@@ -273,10 +271,9 @@ public class AverroesApplicationConstantPool {
 			}
 
 			/*
-			 * This filtering has to take place here (i.e., for each class
-			 * separately). Otherwise, we will collect a lot of class names that
-			 * has substrings spanning multiple class files which is both wrong
-			 * and imprecise.
+			 * This filtering has to take place here (i.e., for each class separately).
+			 * Otherwise, we will collect a lot of class names that has substrings spanning
+			 * multiple class files which is both wrong and imprecise.
 			 */
 			// result.addAll(classes
 			// .stream()
@@ -295,8 +292,8 @@ public class AverroesApplicationConstantPool {
 	}
 
 	/**
-	 * Find all the library methods referenced from the constant pool of
-	 * application classes.
+	 * Find all the library methods referenced from the constant pool of application
+	 * classes.
 	 * 
 	 * @return
 	 */
@@ -327,10 +324,9 @@ public class AverroesApplicationConstantPool {
 		Set<SootField> result = new HashSet<SootField>();
 
 		/*
-		 * This is only useful if the application class has any methods. Some
-		 * classes will not have any methods in them, e.g.,
-		 * org.jfree.data.xml.DatasetTags which is an interface that has some
-		 * final constants only.
+		 * This is only useful if the application class has any methods. Some classes
+		 * will not have any methods in them, e.g., org.jfree.data.xml.DatasetTags which
+		 * is an interface that has some final constants only.
 		 */
 		if (applicationClass.getMethodCount() > 0) {
 			ClassFile coffiClass = getCoffiClass(applicationClass);
@@ -361,10 +357,9 @@ public class AverroesApplicationConstantPool {
 					SootField field;
 
 					/*
-					 * We have to do this ugly code. Try first and see if the
-					 * field is not static. If it is static, then create a new
-					 * fieldRef in the catch and resolve it again with isStatic
-					 * = true.
+					 * We have to do this ugly code. Try first and see if the field is not static.
+					 * If it is static, then create a new fieldRef in the catch and resolve it again
+					 * with isStatic = true.
 					 */
 					try {
 						field = fieldRef.resolve();
@@ -386,8 +381,8 @@ public class AverroesApplicationConstantPool {
 	}
 
 	/**
-	 * Get all the library fields referenced from the constant pool of
-	 * application classes.
+	 * Get all the library fields referenced from the constant pool of application
+	 * classes.
 	 * 
 	 * @return
 	 */
@@ -396,99 +391,93 @@ public class AverroesApplicationConstantPool {
 
 		// If we're processing an android apk, process the global field constant
 		// pool
-		 if (AverroesOptions.isAndroid()) {
-			 libraryFields.addAll(findLibraryFieldsInAndroidApplicationConstantPool());
-		 } else {
-		// Add the library methods that appear in the constant pool of
-		// application classes
+		if (AverroesOptions.isAndroid()) {
+			libraryFields.addAll(findLibraryFieldsInAndroidApplicationConstantPool());
+		} else {
+			// Add the library methods that appear in the constant pool of
+			// application classes
 			for (SootClass applicationClass : hierarchy.getApplicationClasses()) {
 				libraryFields.addAll(findLibraryFieldsInConstantPool(applicationClass));
 			}
 		}
 	}
+
 	private Set<SootMethod> findLibraryMethodsInAndroidApplicationConstantPool() {
 		Set<SootMethod> result = new HashSet<SootMethod>();
 
 		RawDexFile rawDex = SetupAndroid.v().getRawDex();
 		String[] methods = MethodIdItem.getMethods(rawDex);
-		for (String s: methods) {
-			// Sample string: Landroid/app/PendingIntent;->getActivity(Landroid/content/Context;ILandroid/content/Intent;I)Landroid/app/PendingIntent;
-			/*String[] parts = s.split("((?<=;)|\\(|\\))");	// (;|\\(|\\))
-			Type clazz = DexType.toSoot(parts[0]);
-			String methodName = parts[1].substring(2, parts[1].length());
-			int idx = 2;
-			Type[] params = null;
-			if (!parts[idx].isEmpty()) { // Parameter list is not empty
-				params = new Type[parts.length-3];
-				while (idx < (parts.length - 1)) {
-					params[idx-2] = DexType.toSoot(parts[idx]);
-					idx++;
-				}
-			}
-			else {
-				idx++;
-			}	
-			String returnTypeString = parts[idx];
-			if (returnTypeString.charAt(0) == ')')
-				returnTypeString = returnTypeString.substring(1);
-			Type returnType = DexType.toSoot(parts[idx]);
-			*/		
+		for (String s : methods) {
+			// Sample string:
+			// Landroid/app/PendingIntent;->getActivity(Landroid/content/Context;ILandroid/content/Intent;I)Landroid/app/PendingIntent;
+			/*
+			 * String[] parts = s.split("((?<=;)|\\(|\\))"); // (;|\\(|\\)) Type clazz =
+			 * DexType.toSoot(parts[0]); String methodName = parts[1].substring(2,
+			 * parts[1].length()); int idx = 2; Type[] params = null; if
+			 * (!parts[idx].isEmpty()) { // Parameter list is not empty params = new
+			 * Type[parts.length-3]; while (idx < (parts.length - 1)) { params[idx-2] =
+			 * DexType.toSoot(parts[idx]); idx++; } } else { idx++; } String
+			 * returnTypeString = parts[idx]; if (returnTypeString.charAt(0) == ')')
+			 * returnTypeString = returnTypeString.substring(1); Type returnType =
+			 * DexType.toSoot(parts[idx]);
+			 */
 			String[] parts = s.split("->");
 			String className = "";
-			if (parts[0].startsWith("[J") || parts[0].startsWith("[I")) // TODO: why? is that correct? 
-				className = "Ljava.lang.Object;";
-			else
-				className = parts[0];	
+			if (parts[0].startsWith("[J") || parts[0].startsWith("[I")) {
+				className = "Ljava.lang.Object;"; // TODO: why? is that correct?
+			}
+
+			else {
+				className = parts[0];
+			}
 
 			className = className.replace('/', '.');
 			// Remove "L" and ";"
-			className = className.substring(1, className.length()-1);
+			className = className.substring(1, className.length() - 1);
 
 			if (AverroesOptions.isLibraryClass(className)) {
 				int idx = parts[1].indexOf('(');
 				String methodName = parts[1].substring(0, idx);
 				String methodDescriptor = parts[1].substring(idx);
-				
+
 				SootMethod method = BytecodeUtils.makeSootMethod(className, methodName, methodDescriptor);
 				result.add(method);
-			}	
-		}	
-	
+			}
+		}
+
 		return result;
-	}	
-	
+	}
+
 	private Set<SootField> findLibraryFieldsInAndroidApplicationConstantPool() {
 		Set<SootField> result = new HashSet<SootField>();
-		
+
 		RawDexFile rawDex = SetupAndroid.v().getRawDex();
 		String[] fields = FieldIdItem.getFields(rawDex);
-		for (String s: fields) {	
+		for (String s : fields) {
 			String[] parts = s.split("(->|:)");
 
-			String className = parts[0];	
+			String className = parts[0];
 
 			className = className.replace('/', '.');
 			// Remove "L" and ";"
-			className = className.substring(1, className.length()-1);
+			className = className.substring(1, className.length() - 1);
 			SootClass cls = Scene.v().getSootClass(className);
 
-			//if (cls.isApplicationClass()) {
-			//	continue;
-			//}
-			
+			// if (cls.isApplicationClass()) {
+			// continue;
+			// }
+
 			String fieldName = parts[1];
 			String fieldDescriptor = parts[2];
 			Type fieldType = Util.v().jimpleTypeOfFieldDescriptor(fieldDescriptor);
-			
 
 			SootFieldRef fieldRef = Scene.v().makeFieldRef(cls, fieldName, fieldType, false);
 			SootField field;
 
 			/*
-			 * We have to do this ugly code. Try first and see if the
-			 * field is not static. If it is static, then create a new
-			 * fieldRef in the catch and resolve it again with isStatic
-			 * = true.
+			 * We have to do this ugly code. Try first and see if the field is not static.
+			 * If it is static, then create a new fieldRef in the catch and resolve it again
+			 * with isStatic = true.
 			 */
 			try {
 				field = fieldRef.resolve();
@@ -502,10 +491,9 @@ public class AverroesApplicationConstantPool {
 			if (hierarchy.isLibraryField(field)) {
 				result.add(field);
 			}
-		}		
-		
-		return result;
-	}	
-	
-}
+		}
 
+		return result;
+	}
+
+}

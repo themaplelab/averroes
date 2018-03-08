@@ -86,7 +86,7 @@ public final class AverroesOptions {
 
 	private static Options options = new Options().addOption(applicationRegex).addOption(mainClass)
 			.addOption(applicationJars).addOption(libraryJars).addOption(dynamicClassesFile)
-			.addOption(tamiflexFactsFile).addOption(outputDirectory).addOption(platformDirectory).addOption(help);
+			.addOption(tamiflexFactsFile).addOption(outputDirectory).addOption(platformDirectory).addOption(jreDirectory).addOption(help);
 
 	private static CommandLine cmd;
 	/**
@@ -400,6 +400,13 @@ public final class AverroesOptions {
 	public static String getApk() {
 		if (isAndroid()) return getApplicationJars().get(0);
 		
+		return null;
+	}
+	public static String getApkJar() {
+		if (isAndroid()) {
+			String apk = getApk();
+			return apk.replace(".apk", ".jar");	
+		}
 		return null;
 	}
 }
