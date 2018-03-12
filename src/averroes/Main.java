@@ -11,8 +11,10 @@
 package averroes;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 
@@ -68,16 +70,17 @@ public class Main {
 			System.out.println("Organizing the JAR files ...");
 			JarOrganizer jarOrganizer = new JarOrganizer();
 			jarOrganizer.organizeInputJarFiles();
-			
+
 			// Print some statistics
 			if (AverroesOptions.isAndroid()) {
-				System.out.println("# referenced application classes: " + SetupAndroid.v().getReferencedApplicationClassCount());
-				System.out.println("# referenced application methods: " + SetupAndroid.v().getReferencedApplicationMethodCount());
-			}
-			else {
+				System.out.println(
+						"# referenced application classes: " + SetupAndroid.v().getReferencedApplicationClassCount());
+				System.out.println(
+						"# referenced application methods: " + SetupAndroid.v().getReferencedApplicationMethodCount());
+			} else {
 				System.out.println("# application classes: " + jarOrganizer.applicationClassNames().size());
 			}
-			
+
 			System.out.println("# library classes: " + jarOrganizer.libraryClassNames().size());
 
 			// Add the organized archives for the application and its
@@ -85,48 +88,45 @@ public class Main {
 			TimeUtils.reset();
 			JarFactoryClassProvider provider = new JarFactoryClassProvider();
 			provider.prepareJarFactoryClasspath();
-			
-			//Set some soot parameters for android
-            if(AverroesOptions.isAndroid())
-            {
-	            	List<ClassProvider> classProviders = new LinkedList<>();
-	    			classProviders.add((ClassProvider) provider);	
-	    			classProviders.add(new DexClassProvider());
-	    			SourceLocator.v().setClassProviders(classProviders);
-	    			SootSceneUtil.addCommonDynamicClasses(provider);
-	    			
-	    			SetupAndroid setupAndroid = null;
-	    			SootMethod dummyMain = null;
-	    			
-	    			if (AverroesOptions.isAndroid()) {	
-	    				setupAndroid = SetupAndroid.v();
-	    				dummyMain = setupAndroid.getDummyMainMethod(); 
-	    				
-	     			}
-	    			else {
-	    				Options.v().classes().addAll(provider.getApplicationClassNames());
-	    			}	
-            }
-            // Set some soot parameters if not android 
-            else if (!AverroesOptions.isAndroid()){
-            		SourceLocator.v().setClassProviders(Collections.singletonList((ClassProvider) provider));
-            		SootSceneUtil.addCommonDynamicClasses(provider);
-            		Options.v().classes().addAll(provider.getApplicationClassNames());
-            		Options.v().set_main_class(AverroesOptions.getMainClass());
-            }
+
+			// Set some soot parameters for android
+			if (AverroesOptions.isAndroid()) {
+				List<ClassProvider> classProviders = new LinkedList<>();
+				classProviders.add((ClassProvider) provider);
+				classProviders.add(new DexClassProvider());
+				SourceLocator.v().setClassProviders(classProviders);
+				SootSceneUtil.addCommonDynamicClasses(provider);
+
+				SetupAndroid setupAndroid = null;
+				SootMethod dummyMain = null;
+
+				if (AverroesOptions.isAndroid()) {
+					setupAndroid = SetupAndroid.v();
+					dummyMain = setupAndroid.getDummyMainMethod();
+
+				} else {
+					Options.v().classes().addAll(provider.getApplicationClassNames());
+				}
+			}
+			// Set some soot parameters if not android
+			else if (!AverroesOptions.isAndroid()) {
+				SourceLocator.v().setClassProviders(Collections.singletonList((ClassProvider) provider));
+				SootSceneUtil.addCommonDynamicClasses(provider);
+				Options.v().classes().addAll(provider.getApplicationClassNames());
+				Options.v().set_main_class(AverroesOptions.getMainClass());
+			}
 			Options.v().set_validate(true);
 
 			// Load the necessary classes
 			System.out.println("");
 			System.out.println("Loading classes ...");
 			Scene.v().loadNecessaryClasses();
-			
-			//only in case of java files
-			if(!AverroesOptions.isAndroid()) {
+
+			// only in case of java files
+			if (!AverroesOptions.isAndroid()) {
 				Scene.v().setMainClassFromOptions();
 			}
-				
-			
+
 			double soot = TimeUtils.elapsedTime();
 			System.out.println("Soot loaded the input classes in " + soot + " seconds.");
 
@@ -139,7 +139,7 @@ public class Main {
 
 			// Output some initial statistics
 			System.out.println("# initial application classes: " + Hierarchy.v().getApplicationClasses().size());
-			System.out.println(Hierarchy.v().getApplicationClasses()); 
+			System.out.println(Hierarchy.v().getApplicationClasses());
 			System.out.println("# initial library classes: " + Hierarchy.v().getLibraryClasses().size());
 			System.out.println("# initial library methods: " + Hierarchy.v().getLibraryMethodCount());
 			System.out.println("# initial library fields: " + Hierarchy.v().getLibraryFieldCount());
@@ -179,6 +179,19 @@ public class Main {
 			for (SootClass basicClass : Hierarchy.v().getBasicClassesDatabase().getMissingBasicClasses()) {
 				CodeGenerator.writeLibraryClassFile(basicClass);
 			}
+
+			// Add all the phantom classes created by flowdroid
+			System.out.println("Generating the phantom classes for placeholder library ...");
+			Set<String> basicClasses = new HashSet<String>();
+			basicClasses.addAll(Scene.v().getBasicClasses());
+			for (SootClass phantomClass : CodeGenerator.v().getPhantomLibraryCLasses()) {
+				//ignoring phantom classes that are basic classes
+				//because they are handled above
+				if (!basicClasses.contains(phantomClass.getName())) {
+					CodeGenerator.writeLibraryClassFile(phantomClass);
+				}
+			}
+
 			double averroes = TimeUtils.elapsedTime();
 			System.out.println("Placeholder library classes created and validated in " + averroes + " seconds.");
 
@@ -192,8 +205,8 @@ public class Main {
 			System.out.println("Placeholder library JAR file verified in " + bcel + " seconds.");
 			System.out
 					.println("Total time (without verification) is " + MathUtils.round(soot + averroes) + " seconds.");
-			System.out.println("Total time (with verification) is " + MathUtils.round(soot + averroes + bcel)
-					+ " seconds.");
+			System.out.println(
+					"Total time (with verification) is " + MathUtils.round(soot + averroes + bcel) + " seconds.");
 
 			double total = TimeUtils.elapsedSplitTime();
 			System.out.println("Elapsed time: " + total + " seconds.");

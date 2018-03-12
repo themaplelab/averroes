@@ -16,8 +16,8 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/averroes/lib/commons-io-2.4-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/soot-infoflow-cmd-jar-with-dependencies.jar" sourcepath="/soot-infoflow"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/soot-infoflow"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/soot-infoflow-android"/>
+	<classpathentry kind="lib" path="lib/soot-infoflow-cmd-jar-with-dependencies.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

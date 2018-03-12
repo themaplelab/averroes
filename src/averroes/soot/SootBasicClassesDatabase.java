@@ -146,6 +146,7 @@ public class SootBasicClassesDatabase {
 
 		classNames.add("java.lang.ref.Finalizer");
 
+		classNames.add("java.lang.invoke.LambdaMetafactory");
 		try {
 			classNames.addAll(AverroesOptions.getDynamicLibraryClasses());
 		} catch (IOException e) {
@@ -217,5 +218,7 @@ public class SootBasicClassesDatabase {
 		fakeHierarchy.put("java.io.Serializable", "java.lang.Object");
 
 		fakeHierarchy.put("java.lang.ref.Finalizer", "java.lang.Object");
+		
+		fakeHierarchy.put("java.lang.invoke.LambdaMetafactory", "java.lang.Object");
 	}
 }

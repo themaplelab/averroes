@@ -16,7 +16,9 @@ import org.jf.dexlib2.dexbacked.raw.RawDexFile;
 import averroes.exceptions.AverroesException;
 
 import averroes.options.AverroesOptions;
+import averroes.soot.Names;
 import averroes.util.DexUtils;
+import soot.G;
 import soot.Scene;
 import soot.SootMethod;
 import soot.Type;
@@ -83,10 +85,16 @@ public class SetupAndroid {
 			return dummyMain;
 		}
 		SetupApplication app = new SetupApplication(androidJars, apkFileLocation);	
-
+		//Options.v().set_soot_classpath(apkFileLocation + File.pathSeparator + AverroesOptions.getAndroidJar());
+		//System.out.println(app.getSootConfig());
 		app.constructCallgraph(); //this creates the dummy main method 
 		
+		
 		dummyMain = app.getDummyMainMethod();
+		System.out.println(dummyMain.getDeclaringClass());
+		//dummyMain.getDeclaringClass().setSuperclass(G.v().soot_Scene().getSootClass(Names.JAVA_LANG_OBJECT));
+		//System.out.println(dummyMain.getActiveBody());
+		
 		
 				
 		return dummyMain;	
