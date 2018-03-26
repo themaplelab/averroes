@@ -159,6 +159,7 @@ public class Hierarchy {
 		libraryFieldsReferencedInApplication = new HashSet<SootField>();
 
 		classes = Scene.v().getClasses(ResolvingLevel.SIGNATURES.value());
+		//classes.removeAll(Scene.v().getPhantomClasses());
 		nameToClass = new HashMap<String, SootClass>();
 		nameToApplicationClass = new HashMap<String, SootClass>();
 		nameToLibraryClass = new HashMap<String, SootClass>();

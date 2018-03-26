@@ -91,9 +91,9 @@ public class SetupAndroid {
 		
 		
 		dummyMain = app.getDummyMainMethod();
-		System.out.println(dummyMain.getDeclaringClass());
-		//dummyMain.getDeclaringClass().setSuperclass(G.v().soot_Scene().getSootClass(Names.JAVA_LANG_OBJECT));
-		//System.out.println(dummyMain.getActiveBody());
+		//System.out.println(dummyMain.getDeclaringClass());
+		dummyMain.getDeclaringClass().setSuperclass(G.v().soot_Scene().getSootClass(Names.JAVA_LANG_OBJECT));
+		System.out.println(dummyMain.getActiveBody());
 		
 		
 				

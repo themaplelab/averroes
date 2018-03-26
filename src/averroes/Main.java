@@ -180,15 +180,18 @@ public class Main {
 				CodeGenerator.writeLibraryClassFile(basicClass);
 			}
 
-			// Add all the phantom classes created by flowdroid
-			System.out.println("Generating the phantom classes for placeholder library ...");
-			Set<String> basicClasses = new HashSet<String>();
-			basicClasses.addAll(Scene.v().getBasicClasses());
-			for (SootClass phantomClass : CodeGenerator.v().getPhantomLibraryCLasses()) {
-				//ignoring phantom classes that are basic classes
-				//because they are handled above
-				if (!basicClasses.contains(phantomClass.getName())) {
-					CodeGenerator.writeLibraryClassFile(phantomClass);
+			// Add all the phantom classes created by flowdroid if android 
+			if (AverroesOptions.isAndroid()) {
+				System.out.println("Generating the phantom classes for placeholder library ...");
+				Set<String> basicClasses = new HashSet<String>();
+				basicClasses.addAll(Scene.v().getBasicClasses());
+				for (SootClass phantomClass : CodeGenerator.v().getPhantomLibraryCLasses()) {
+
+					// ignoring phantom classes that are basic classes
+					// because they are handled above
+					if (!basicClasses.contains(phantomClass.getName())) {
+						CodeGenerator.writeLibraryClassFile(phantomClass);
+					}
 				}
 			}
 
@@ -201,6 +204,8 @@ public class Main {
 			librJarFile.addGeneratedLibraryClassFiles();
 			JarFile aveJarFile = new JarFile(Paths.averroesLibraryClassJarFile());
 			aveJarFile.addAverroesLibraryClassFile();
+			// Now verify all the generated class files
+			aveJarFile.verify();
 			double bcel = TimeUtils.elapsedTime();
 			System.out.println("Placeholder library JAR file verified in " + bcel + " seconds.");
 			System.out

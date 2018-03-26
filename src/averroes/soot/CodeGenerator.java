@@ -258,11 +258,12 @@ public class CodeGenerator {
 		}
 
 		for (SootClass libraryClass : AllLibraryClasses) {
-			//for some reason android.jar contains incorrect
-			//declaration for Timer.class
-			//explicitly setting its super class to avoid RuntimeException 
-			if (AverroesOptions.isAndroid() && libraryClass.getName().equals("java.util.Timer")) {
-				libraryClass.setSuperclass(G.v().soot_Scene().getSootClass(Names.JAVA_LANG_OBJECT));
+			// for some reason android.jar contains incorrect
+			// declaration for Timer.class
+			// explicitly setting its super class to avoid RuntimeException
+			if (AverroesOptions.isAndroid() && libraryClass.getName().equals("java.util.Timer")
+					&& !libraryClass.hasSuperclass()) {
+				libraryClass.setSuperclass(Hierarchy.v().getJavaLangObject());
 			}
 			for (SootMethod method : libraryClass.getMethods()) {
 				// Create our Jimple body for concrete methods only
@@ -291,9 +292,9 @@ public class CodeGenerator {
 		PrintWriter writerOut = new PrintWriter(new OutputStreamWriter(streamOut));
 
 		if (cls.containsBafBody()) {
-			 new soot.baf.JasminClass(cls).print(writerOut);
+			new soot.baf.JasminClass(cls).print(writerOut);
 		} else {
-			
+
 			new soot.jimple.JasminClass(cls).print(writerOut);
 		}
 
@@ -634,14 +635,14 @@ public class CodeGenerator {
 
 		// If it is android we want to ignore life cycle methods because
 		// they are already being modeled in the dummy main.
-		if (AverroesOptions.isAndroid()) {
+		/*if (AverroesOptions.isAndroid()) {
 			result.forEach(method -> {
 				if (isLifeCycle(method)) {
 					result.remove(method);
 				}
 
 			});
-		}
+		}*/
 
 		return result;
 	}
@@ -809,35 +810,43 @@ public class CodeGenerator {
 		return result;
 	}
 
+	/**
+	 * Get a set of all the phantom library classes
+	 * 
+	 * @return
+	 */
+
 	public Set<SootClass> getPhantomLibraryCLasses() {
 
 		Set<SootClass> phantomClasses = new HashSet<SootClass>();
 		Set<SootClass> result = new HashSet<SootClass>();
-		
+
 		phantomClasses.addAll(getLibraryClasses());
 
 		// Removing all non-phantom classes.
 		// Note: this does not remove them from Scene.
 		phantomClasses.removeIf(cls -> (!cls.isPhantomClass()));
-		
+
+		// creating empty soot classes for the phantom classes
 		for (SootClass pClass : phantomClasses) {
-				SootClass newPhantomClass = new SootClass(pClass.getName());
-				for(SootMethod method : newPhantomClass.getMethods()) {
-					if(method != null) {
-						newPhantomClass.addMethod(method);
-						AverroesJimpleBody body = new AverroesJimpleBody(method);
-						body.insertStandardJimpleBodyFooter();
-						body.validate();
-					}
+			SootClass newPhantomClass = new SootClass(pClass.getName());
+			for (SootMethod method : newPhantomClass.getMethods()) {
+				if (method != null) {
+					newPhantomClass.addMethod(method);
+					AverroesJimpleBody body = new AverroesJimpleBody(method);
+					body.insertStandardJimpleBodyFooter();
+					body.validate();
 				}
-				if(pClass.hasSuperclass()) {
-					newPhantomClass.setSuperclass(pClass.getSuperclass());
-				}
+			}
+			if (pClass.hasSuperclass()) {
+				newPhantomClass.setSuperclass(pClass.getSuperclass());
+			} else {
+				newPhantomClass.setSuperclass(Hierarchy.v().getJavaLangObject());
+			}
 
-				result.add(newPhantomClass);
-			
+			result.add(newPhantomClass);
+
 		}
-
 
 		return result;
 

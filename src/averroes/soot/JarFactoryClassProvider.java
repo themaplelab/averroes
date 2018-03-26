@@ -93,9 +93,7 @@ public class JarFactoryClassProvider implements ClassProvider {
 	public void prepareJarFactoryClasspath() throws IOException {
 		System.out.println("");
 		System.out.println("Preparing Averroes ...");
-		if(!AverroesOptions.isAndroid()) {
-			addApplicationArchive();
-		}
+		addApplicationArchive();
 		addLibraryArchive();
 	}
 

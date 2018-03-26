@@ -154,9 +154,6 @@ public class JarFile {
 		// placeholder JAR to force BCEL to load
 		// those crafted files when it looks them up
 		bcelClasses.forEach(c -> Repository.getRepository().storeClass(c));
-
-		// Now verify all the generated class files
-		verify();
 	}
 
 	/**
@@ -262,7 +259,7 @@ public class JarFile {
 	 * @throws IOException
 	 * @throws ClassFormatException
 	 */
-	private void verify() throws ClassFormatException, IOException {
+	public void verify() throws ClassFormatException, IOException {
 		for (JavaClass cls : bcelClasses) {
 			Verifier verifier = VerifierFactory.getVerifier(cls.getClassName());
 			Method[] methods = cls.getMethods();
@@ -276,7 +273,13 @@ public class JarFile {
 				} else {
 					vr = verifier.doPass3b(i);
 				}
-
+				if(vr.getStatus() != (VerificationResult.VERIFIED_OK)) {
+					System.out.println(cls.getClassName() + " " + methods[i].getName() + " " + vr);
+					continue;
+				}
+				/*if(vr.getStatus() == (VerificationResult.VERIFIED_OK)) {
+					System.out.println(cls.getClassName() + " " + methods[i].getName() + " " + vr);
+				}*/
 				Assertions.verificationResultOKAssertion(vr, cls.getClassName(), methods[i].getName());
 			}
 		}
