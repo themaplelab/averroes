@@ -273,13 +273,6 @@ public class JarFile {
 				} else {
 					vr = verifier.doPass3b(i);
 				}
-				if(vr.getStatus() != (VerificationResult.VERIFIED_OK)) {
-					System.out.println(cls.getClassName() + " " + methods[i].getName() + " " + vr);
-					continue;
-				}
-				/*if(vr.getStatus() == (VerificationResult.VERIFIED_OK)) {
-					System.out.println(cls.getClassName() + " " + methods[i].getName() + " " + vr);
-				}*/
 				Assertions.verificationResultOKAssertion(vr, cls.getClassName(), methods[i].getName());
 			}
 		}
