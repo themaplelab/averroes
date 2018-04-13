@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 
 import org.apache.commons.io.FileUtils;
 
@@ -100,16 +101,13 @@ public class Main {
 				SetupAndroid setupAndroid = null;
 				SootMethod dummyMain = null;
 
-				if (AverroesOptions.isAndroid()) {
-					setupAndroid = SetupAndroid.v();
-					dummyMain = setupAndroid.getDummyMainMethod();
-
-				} else {
-					Options.v().classes().addAll(provider.getApplicationClassNames());
-				}
+				setupAndroid = SetupAndroid.v();
+				dummyMain = setupAndroid.getDummyMainMethod();
 			}
+
 			// Set some soot parameters if not android
 			else if (!AverroesOptions.isAndroid()) {
+				Options.v().classes().addAll(provider.getApplicationClassNames());
 				SourceLocator.v().setClassProviders(Collections.singletonList((ClassProvider) provider));
 				SootSceneUtil.addCommonDynamicClasses(provider);
 				Options.v().classes().addAll(provider.getApplicationClassNames());
@@ -139,7 +137,6 @@ public class Main {
 
 			// Output some initial statistics
 			System.out.println("# initial application classes: " + Hierarchy.v().getApplicationClasses().size());
-			System.out.println(Hierarchy.v().getApplicationClasses());
 			System.out.println("# initial library classes: " + Hierarchy.v().getLibraryClasses().size());
 			System.out.println("# initial library methods: " + Hierarchy.v().getLibraryMethodCount());
 			System.out.println("# initial library fields: " + Hierarchy.v().getLibraryFieldCount());
@@ -180,7 +177,7 @@ public class Main {
 				CodeGenerator.writeLibraryClassFile(basicClass);
 			}
 
-			// Add all the phantom classes created by flowdroid if android 
+			// Add all the phantom classes created by flowdroid if android
 			if (AverroesOptions.isAndroid()) {
 				System.out.println("Generating the phantom classes for placeholder library ...");
 				Set<String> basicClasses = new HashSet<String>();

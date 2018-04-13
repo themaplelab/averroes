@@ -2,7 +2,7 @@ package averroes.android;
 
 import java.io.File;
 import java.io.IOException;
-
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -11,19 +11,21 @@ import java.util.regex.Pattern;
 import org.jf.dexlib2.dexbacked.raw.ClassDefItem;
 import org.jf.dexlib2.dexbacked.raw.MethodIdItem;
 import org.jf.dexlib2.dexbacked.raw.RawDexFile;
+import org.xmlpull.v1.XmlPullParserException;
 
+import soot.options.Options;
 import averroes.exceptions.AverroesException;
-
 import averroes.options.AverroesOptions;
 import averroes.soot.Hierarchy;
-import averroes.soot.Names;
 import averroes.util.DexUtils;
-import soot.G;
 import soot.Scene;
 import soot.SootMethod;
 import soot.Type;
 import soot.coffi.Util;
+import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.android.SetupApplication;
+import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.CallbackAnalyzer;
+import soot.jimple.infoflow.android.manifest.ProcessManifest;
 
 /**
  * Sets up Averroes such that it works with Android applications. Specifically,
@@ -37,6 +39,7 @@ import soot.jimple.infoflow.android.SetupApplication;
 public class SetupAndroid {
 
 	private static SetupAndroid instance;
+	private ProcessManifest processMan;
 	private final int apiVersion;
 	private String apkFileLocation;
 	private String androidJars;
@@ -64,6 +67,13 @@ public class SetupAndroid {
 	private SetupAndroid() throws AverroesException {
 		apkFileLocation = AverroesOptions.getApk();
 		androidJars = AverroesOptions.getAndroidJar();
+		
+		try {
+			processMan = new ProcessManifest(apkFileLocation);
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();}
+		
 
 		apiVersion = Scene.v().getAndroidAPIVersion();
 		if (apiVersion == -1) {
@@ -75,20 +85,40 @@ public class SetupAndroid {
 	/**
 	 * Uses flowdroid to create the dummy main method. 
 	 * @return
+	 * @throws XmlPullParserException 
+	 * @throws IOException 
 	 */
-	public SootMethod getDummyMainMethod() {
+	public SootMethod getDummyMainMethod() throws IOException, XmlPullParserException {
 		if (dummyMain != null) {
 			return dummyMain;
 		}
-		SetupApplication app = new SetupApplication(androidJars, apkFileLocation);
-		app.constructCallgraph(); // this creates the dummy main method
+        InfoflowAndroidConfiguration config = new InfoflowAndroidConfiguration();
+		//config.getAnalysisFileConfig().setTargetAPKFile(apkFileLocation);
+		//config.setAndroidPlatformDir(androidJars);
+		//config.setCallbackAnalyzer(CallbackAnalyzer.Fast);
+		SetupApplication app = new SetupApplication(androidJars,apkFileLocation);
+		//app.setConfig(config);
+		app.calculateSourcesSinksEntrypoints("SourcesAndSinks.txt");
+        soot.G.reset();
 
-		dummyMain = app.getDummyMainMethod();
-		dummyMain.getDeclaringClass().setSuperclass(Hierarchy.v().getJavaLangObject());
-		System.out.println(dummyMain.getActiveBody());
+        Options.v().set_src_prec(Options.src_prec_apk);
+        Options.v().set_process_dir(Collections.singletonList(apkFileLocation));
+        Options.v().set_android_jars(androidJars);
+        Options.v().set_whole_program(true);
+        Options.v().set_allow_phantom_refs(true);
+        Options.v().set_output_format(Options.output_format_class);
+        Options.v().setPhaseOption("cg.spark", "on");
 
+
+        Scene.v().loadNecessaryClasses();
+
+        dummyMain = app.getEntryPointCreator().createDummyMain();
+        Options.v().set_main_class(dummyMain.getSignature());
+        Scene.v().setEntryPoints(Collections.singletonList(dummyMain));
+		//dummyMain.getDeclaringClass().setSuperclass(Hierarchy.v().getJavaLangObject());
 		return dummyMain;
 	}
+	
 
 	public RawDexFile getRawDex() {
 		// needs to be done after the constructor, hence the field is initialized here
@@ -155,5 +185,6 @@ public class SetupAndroid {
 	public String getApkFileLocation() {
 		return apkFileLocation;
 	}
+	
 
 }

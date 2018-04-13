@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.xmlpull.v1.XmlPullParserException;
+
 import soot.ArrayType;
 import soot.Body;
 import soot.G;
@@ -47,9 +49,9 @@ import soot.jimple.IntConstant;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
-import soot.jimple.infoflow.entryPointCreators.AndroidEntryPointUtils;
 import soot.options.Options;
 import soot.util.JasminOutputStream;
+import averroes.android.AndroidEntryPointConstants;
 import averroes.android.SetupAndroid;
 import averroes.options.AverroesOptions;
 import averroes.tamiflex.TamiFlexFactsDatabase;
@@ -187,8 +189,9 @@ public class CodeGenerator {
 	 * Create the Averroes library class where all the fun takes place ;)
 	 * 
 	 * @throws IOException
+	 * @throws XmlPullParserException
 	 */
-	public void createAverroesLibraryClass() throws IOException {
+	public void createAverroesLibraryClass() throws IOException, XmlPullParserException {
 		// Create the abstract library class (specifically to be compatible with
 		// WALA/Java).
 		// This class represents the interface of the AverroesLibraryClass and
@@ -251,6 +254,7 @@ public class CodeGenerator {
 		// Phantom classes cannot have methods with bodies,
 		// So we want to ignore these classes in case of android
 		// They are handled separately.
+
 		if (AverroesOptions.isAndroid()) {
 			AllLibraryClasses = getNonPhantomLibraryClasses();
 		} else {
@@ -258,11 +262,10 @@ public class CodeGenerator {
 		}
 
 		for (SootClass libraryClass : AllLibraryClasses) {
-			// for some reason android.jar contains incorrect
-			// declaration for Timer.class
+
 			// explicitly setting its super class to avoid RuntimeException
-			if (AverroesOptions.isAndroid() && libraryClass.getName().equals("java.util.Timer")
-					&& !libraryClass.hasSuperclass()) {
+			if (AverroesOptions.isAndroid() && !libraryClass.hasSuperclass()
+					&& !libraryClass.getName().equals("java.lang.Object")) {
 				libraryClass.setSuperclass(Hierarchy.v().getJavaLangObject());
 			}
 			for (SootMethod method : libraryClass.getMethods()) {
@@ -487,8 +490,11 @@ public class CodeGenerator {
 	/**
 	 * If running in Android mode, this method adds the dummy main to the Averroes
 	 * library class.
+	 * 
+	 * @throws XmlPullParserException
+	 * @throws IOException
 	 */
-	private void createAverroesLibraryDummyMain() {
+	private void createAverroesLibraryDummyMain() throws IOException, XmlPullParserException {
 		SootMethod dM = SetupAndroid.v().getDummyMainMethod();
 		Type stringArrayType = ArrayType.v(RefType.v("java.lang.String"), 1);
 		SootMethod dummyMain = new SootMethod(Names.AVERROES_DUMMY_MAIN_METHOD_NAME,
@@ -496,17 +502,8 @@ public class CodeGenerator {
 
 		averroesLibraryClass.addMethod(dummyMain);
 		Body b = dM.getActiveBody();
-		/*
-		 * for (Local l: b.getLocals()) { Scene.v().getRefType(l.getType().toString())
-		 * Scene.v().getSootClass("android.app.Activity").getType().) if (l.getType(). {
-		 * 
-		 * } }
-		 */
-
 		dummyMain.setActiveBody(b);
-
 		dummyMain.getActiveBody().validate();
-
 		b.validate();
 	}
 
@@ -619,8 +616,9 @@ public class CodeGenerator {
 	 */
 	// TODO: this method is being used in Hierarchy.java as well. Refactor?
 	private boolean isLifeCycle(SootMethod method) {
-		AndroidEntryPointUtils m = new AndroidEntryPointUtils();
-		return m.isEntryPointMethod(method);
+		// TODO: Refactor (e.g. store the method signatures inside this class)?
+		return AndroidEntryPointConstants.isLifecycleClass(method.getDeclaringClass().getName())
+				&& AndroidEntryPointConstants.getComponentLifecycleMethods().contains(method.getSubSignature());
 	}
 
 	/**
@@ -635,6 +633,7 @@ public class CodeGenerator {
 
 		// If it is android we want to ignore life cycle methods because
 		// they are already being modeled in the dummy main.
+
 		/*if (AverroesOptions.isAndroid()) {
 			result.forEach(method -> {
 				if (isLifeCycle(method)) {
