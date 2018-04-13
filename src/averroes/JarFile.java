@@ -138,10 +138,9 @@ public class JarFile {
 					+ System.getProperty("line.separator") + "Invalid path given: " + fileName);
 		}
 		close();
-
 		// Set BCEL's repository class path.
 		SyntheticRepository rep = SyntheticRepository.getInstance(new ClassPath(averroesLibraryClassJar
-				+ File.pathSeparator + placeholderJar + File.pathSeparator + Paths.organizedApplicationJarFile()));
+				+ File.pathSeparator + placeholderJar + File.pathSeparator + Paths.organizedApplicationJarFile() + File.pathSeparator + Paths.organizedLibraryJarFile()));
 		Repository.setRepository(rep);
 
 		// Now add the class files (including ones from placeholder JAR) to the

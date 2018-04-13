@@ -16,11 +16,11 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/bcel-6.2.jar" sourcepath="lib/bcel-6.2-sources.jar"/>
-	<classpathentry kind="lib" path="/Users/eshna/cs499/FlowDroid-other/soot-infoflow-android.jar" sourcepath="/soot-infoflow-android"/>
-	<classpathentry kind="lib" path="/Users/eshna/cs499/FlowDroid-other/axml-2.0.jar"/>
-	<classpathentry kind="lib" path="/Users/eshna/cs499/FlowDroid-other/slf4j-api-1.7.5.jar"/>
-	<classpathentry kind="lib" path="/Users/eshna/cs499/FlowDroid-other/slf4j-simple-1.7.5.jar"/>
-	<classpathentry kind="lib" path="/Users/eshna/cs499/FlowDroid-other/soot-infoflow.jar"/>
-	<classpathentry kind="lib" path="/Users/eshna/cs499/FlowDroid-other/sootclasses-trunk-jar-with-dependencies.jar"/>
+	<classpathentry kind="lib" path="lib/axml-2.0.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-api-1.7.5.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-simple-1.7.5.jar"/>
+	<classpathentry kind="lib" path="lib/soot-infoflow-android.jar"/>
+	<classpathentry kind="lib" path="lib/soot-infoflow.jar"/>
+	<classpathentry kind="lib" path="lib/sootclasses-trunk-jar-with-dependencies.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
