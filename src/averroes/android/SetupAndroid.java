@@ -16,16 +16,11 @@ import org.xmlpull.v1.XmlPullParserException;
 import soot.options.Options;
 import averroes.exceptions.AverroesException;
 import averroes.options.AverroesOptions;
-import averroes.soot.Hierarchy;
 import averroes.util.DexUtils;
 import soot.Scene;
-import soot.SootMethod;
 import soot.Type;
 import soot.coffi.Util;
-import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.android.SetupApplication;
-import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.CallbackAnalyzer;
-import soot.jimple.infoflow.android.manifest.ProcessManifest;
 
 /**
  * Sets up Averroes such that it works with Android applications. Specifically,
@@ -39,11 +34,10 @@ import soot.jimple.infoflow.android.manifest.ProcessManifest;
 public class SetupAndroid {
 
 	private static SetupAndroid instance;
-	private ProcessManifest processMan;
 	private final int apiVersion;
 	private String apkFileLocation;
 	private String androidJars;
-	private SootMethod dummyMain = null;
+	//private SootMethod dummyMain = null;
 	private RawDexFile rawDex;
 
 	public static SetupAndroid v() {
@@ -68,13 +62,6 @@ public class SetupAndroid {
 		apkFileLocation = AverroesOptions.getApk();
 		androidJars = AverroesOptions.getAndroidJar();
 		
-		try {
-			processMan = new ProcessManifest(apkFileLocation);
-		}
-		catch(Exception ex) {
-			ex.printStackTrace();}
-		
-
 		apiVersion = Scene.v().getAndroidAPIVersion();
 		if (apiVersion == -1) {
 			throw new AverroesException("Couldn't find the Android API version", new Throwable());
@@ -88,16 +75,11 @@ public class SetupAndroid {
 	 * @throws XmlPullParserException 
 	 * @throws IOException 
 	 */
-	public SootMethod getDummyMainMethod() throws IOException, XmlPullParserException {
-		if (dummyMain != null) {
+	public void getDummyMainMethod() throws IOException, XmlPullParserException {
+		/*if (dummyMain != null) {
 			return dummyMain;
-		}
-        InfoflowAndroidConfiguration config = new InfoflowAndroidConfiguration();
-		//config.getAnalysisFileConfig().setTargetAPKFile(apkFileLocation);
-		//config.setAndroidPlatformDir(androidJars);
-		//config.setCallbackAnalyzer(CallbackAnalyzer.Fast);
+		}*/
 		SetupApplication app = new SetupApplication(androidJars,apkFileLocation);
-		//app.setConfig(config);
 		app.calculateSourcesSinksEntrypoints("SourcesAndSinks.txt");
         soot.G.reset();
 
@@ -112,11 +94,11 @@ public class SetupAndroid {
 
         Scene.v().loadNecessaryClasses();
 
-        dummyMain = app.getEntryPointCreator().createDummyMain();
-        Options.v().set_main_class(dummyMain.getSignature());
-        Scene.v().setEntryPoints(Collections.singletonList(dummyMain));
+        //dummyMain = app.getEntryPointCreator().createDummyMain();
+        //Options.v().set_main_class(dummyMain.getSignature());
+        //Scene.v().setEntryPoints(Collections.singletonList(dummyMain));
 		//dummyMain.getDeclaringClass().setSuperclass(Hierarchy.v().getJavaLangObject());
-		return dummyMain;
+		//return dummyMain;
 	}
 	
 

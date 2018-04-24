@@ -361,12 +361,13 @@ public class Hierarchy {
 				|| sig.equals(Names.FOR_NAME_SIG) || sig.equals(Names.NEW_INSTANCE_SIG)
 				|| sig.equals(Names.FINALIZE_SIG);
 	}
-	
+
 	private boolean isLifeCycle(SootMethod method) {
 		// TODO: Refactor (e.g. store the method signatures inside this class)?
-		return AndroidEntryPointConstants.isLifecycleClass(method.getDeclaringClass().getName()) &&
-				AndroidEntryPointConstants.getComponentLifecycleMethods().contains(method.getSubSignature());
+		return AndroidEntryPointConstants.isLifecycleClass(method.getDeclaringClass().getName())
+				&& AndroidEntryPointConstants.getComponentLifecycleMethods().contains(method.getSubSignature());
 	}
+
 	/**
 	 * Check if the given class has a default constructor.
 	 * 
@@ -410,7 +411,7 @@ public class Hierarchy {
 	 * @return
 	 */
 	public SootMethod getDirectSuperclassDefaultConstructor(SootMethod method) {
-		return getDirectSuperclassOf(method.getDeclaringClass()).getMethod(Names.DEFAULT_CONSTRUCTOR_SIG);
+	   return getDirectSuperclassOf(method.getDeclaringClass()).getMethod(Names.DEFAULT_CONSTRUCTOR_SIG);		
 	}
 
 	/**

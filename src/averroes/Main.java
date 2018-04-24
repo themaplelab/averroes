@@ -15,7 +15,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.SortedSet;
 
 import org.apache.commons.io.FileUtils;
 
@@ -99,10 +98,8 @@ public class Main {
 				SootSceneUtil.addCommonDynamicClasses(provider);
 
 				SetupAndroid setupAndroid = null;
-				SootMethod dummyMain = null;
-
 				setupAndroid = SetupAndroid.v();
-				dummyMain = setupAndroid.getDummyMainMethod();
+				setupAndroid.getDummyMainMethod();
 			}
 
 			// Set some soot parameters if not android

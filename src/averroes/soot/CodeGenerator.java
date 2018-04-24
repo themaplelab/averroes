@@ -16,12 +16,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -31,12 +29,10 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import soot.ArrayType;
 import soot.Body;
-import soot.G;
 import soot.Local;
 import soot.Modifier;
 import soot.RefLikeType;
 import soot.RefType;
-import soot.Scene;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
@@ -189,9 +185,8 @@ public class CodeGenerator {
 	 * Create the Averroes library class where all the fun takes place ;)
 	 * 
 	 * @throws IOException
-	 * @throws XmlPullParserException
 	 */
-	public void createAverroesLibraryClass() throws IOException, XmlPullParserException {
+	public void createAverroesLibraryClass() throws IOException {
 		// Create the abstract library class (specifically to be compatible with
 		// WALA/Java).
 		// This class represents the interface of the AverroesLibraryClass and
@@ -231,9 +226,9 @@ public class CodeGenerator {
 			createAverroesLibraryClinit();
 
 			// If we are running in Android mode we need to add the dummy main
-			if (AverroesOptions.isAndroid()) {
-				createAverroesLibraryDummyMain();
-			}
+			/*
+			 * if (AverroesOptions.isAndroid()) { createAverroesLibraryDummyMain(); }
+			 */
 
 			// Create the dotItAll method
 			createAverroesLibraryDoItAll();
@@ -254,7 +249,6 @@ public class CodeGenerator {
 		// Phantom classes cannot have methods with bodies,
 		// So we want to ignore these classes in case of android
 		// They are handled separately.
-
 		if (AverroesOptions.isAndroid()) {
 			AllLibraryClasses = getNonPhantomLibraryClasses();
 		} else {
@@ -493,8 +487,9 @@ public class CodeGenerator {
 	 * 
 	 * @throws XmlPullParserException
 	 * @throws IOException
+	 * @deprecated
 	 */
-	private void createAverroesLibraryDummyMain() throws IOException, XmlPullParserException {
+	/*private void createAverroesLibraryDummyMain() throws IOException, XmlPullParserException {
 		SootMethod dM = SetupAndroid.v().getDummyMainMethod();
 		Type stringArrayType = ArrayType.v(RefType.v("java.lang.String"), 1);
 		SootMethod dummyMain = new SootMethod(Names.AVERROES_DUMMY_MAIN_METHOD_NAME,
@@ -505,7 +500,7 @@ public class CodeGenerator {
 		dummyMain.setActiveBody(b);
 		dummyMain.getActiveBody().validate();
 		b.validate();
-	}
+	}*/
 
 	/**
 	 * Create the doItAll method for the Averroes library class. It includes
@@ -634,14 +629,16 @@ public class CodeGenerator {
 		// If it is android we want to ignore life cycle methods because
 		// they are already being modeled in the dummy main.
 
-		/*if (AverroesOptions.isAndroid()) {
-			result.forEach(method -> {
-				if (isLifeCycle(method)) {
-					result.remove(method);
-				}
-
-			});
-		}*/
+		/*
+		 * if (AverroesOptions.isAndroid()) { result.forEach(method -> { if
+		 * (isLifeCycle(method)) { result.remove(method); }
+		 * 
+		 * }); }
+		 */
+		//TODO: phantom methods causing problems?
+		if (AverroesOptions.isAndroid()) {
+			result.removeIf(m -> !m.isDeclared());
+		}
 
 		return result;
 	}

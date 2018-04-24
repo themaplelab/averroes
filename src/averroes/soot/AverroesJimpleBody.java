@@ -68,7 +68,7 @@ public class AverroesJimpleBody {
 		invokeReturnVariables = new HashSet<Local>();
 		numberer = new LocalVariableNumberer();
 		lptCastToType = new HashMap<Type, Local>();
-		
+
 		createBasicJimpleBody(method);
 	}
 
@@ -79,24 +79,23 @@ public class AverroesJimpleBody {
 	 * @return
 	 */
 	private void createBasicJimpleBody(SootMethod method) {
-			body = Jimple.v().newBody(method);
-			method.setActiveBody(body);
-			insertStandardJimpleBodyHeader();
-
+		body = Jimple.v().newBody(method);
+		method.setActiveBody(body);
+		insertStandardJimpleBodyHeader();
 
 	}
 
 	/**
-	 * Insert the identity statements, assigns actual parameters (if any) and
-	 * the this parameter (if any) to the LPT.
+	 * Insert the identity statements, assigns actual parameters (if any) and the
+	 * this parameter (if any) to the LPT.
 	 */
 	private void insertStandardJimpleBodyHeader() {
 		body.insertIdentityStmts();
 
 		/*
-		 * To generate correct bytecode, we need to initialize the object first
-		 * by calling the superclass constructor before inserting any more
-		 * statements. That is if this method is for a constructor.
+		 * To generate correct bytecode, we need to initialize the object first by
+		 * calling the superclass constructor before inserting any more statements. That
+		 * is if this method is for a constructor.
 		 */
 		if (isConstructor()) {
 			Local base = body.getThisLocal();
@@ -104,9 +103,10 @@ public class AverroesJimpleBody {
 			// Call the default constructor of the direct superclass, except for
 			// the constructor of java.lang.Object
 			if (!Hierarchy.v().isDeclaredInJavaLangObject(body.getMethod())) {
-				insertSpecialInvokeStatement(base, Hierarchy.v()
-						.getDirectSuperclassDefaultConstructor(body.getMethod()));
+					insertSpecialInvokeStatement(base,
+							Hierarchy.v().getDirectSuperclassDefaultConstructor(body.getMethod()));
 			}
+
 		}
 
 		assignActualParametersToLpt();
@@ -114,8 +114,8 @@ public class AverroesJimpleBody {
 	}
 
 	/**
-	 * Insert the standard footer for a library method: calling the doItAll
-	 * method then the return statement.
+	 * Insert the standard footer for a library method: calling the doItAll method
+	 * then the return statement.
 	 */
 	public void insertStandardJimpleBodyFooter() {
 		insertInvocationStmtToDoItAll();
@@ -130,8 +130,8 @@ public class AverroesJimpleBody {
 	}
 
 	/**
-	 * Insert the appropriate return statement at the end of the underlying
-	 * Jimple body.
+	 * Insert the appropriate return statement at the end of the underlying Jimple
+	 * body.
 	 */
 	public void insertReturnStmt() {
 		SootMethod method = body.getMethod();
@@ -299,8 +299,7 @@ public class AverroesJimpleBody {
 	}
 
 	/**
-	 * Add statements that initialize all the static fields of the declaring
-	 * class.
+	 * Add statements that initialize all the static fields of the declaring class.
 	 * 
 	 * @return
 	 */
@@ -328,9 +327,9 @@ public class AverroesJimpleBody {
 	}
 
 	/**
-	 * Find the compatible value to the given Soot type. If it's a primary type,
-	 * a constant is returned. Otherwise, a cast to the given type from the LPT
-	 * is returned.
+	 * Find the compatible value to the given Soot type. If it's a primary type, a
+	 * constant is returned. Otherwise, a cast to the given type from the LPT is
+	 * returned.
 	 * 
 	 * @param type
 	 * @return
@@ -345,8 +344,8 @@ public class AverroesJimpleBody {
 
 	/**
 	 * Cast the LPT set to the given type. This is useful in many cases, e.g.,
-	 * determining the base for method invocations, as well as the actual
-	 * arguments used to make those invocations.
+	 * determining the base for method invocations, as well as the actual arguments
+	 * used to make those invocations.
 	 * 
 	 * @param type
 	 * @return
@@ -360,8 +359,8 @@ public class AverroesJimpleBody {
 	}
 
 	/**
-	 * Get the local variable that represents the LPT. It also loads the LPT
-	 * field if it's not loaded already.
+	 * Get the local variable that represents the LPT. It also loads the LPT field
+	 * if it's not loaded already.
 	 * 
 	 * @return
 	 */
@@ -374,8 +373,8 @@ public class AverroesJimpleBody {
 	}
 
 	/**
-	 * Get the local variable that represents the FPT. It also loads the FPT
-	 * field if it's not loaded already.
+	 * Get the local variable that represents the FPT. It also loads the FPT field
+	 * if it's not loaded already.
 	 * 
 	 * @return
 	 */
@@ -439,8 +438,8 @@ public class AverroesJimpleBody {
 	}
 
 	/**
-	 * Construct a grammar chunk to load the given static field and assign it to
-	 * a new temporary local variable.
+	 * Construct a grammar chunk to load the given static field and assign it to a
+	 * new temporary local variable.
 	 * 
 	 * @param field
 	 * @return
@@ -479,8 +478,8 @@ public class AverroesJimpleBody {
 	}
 
 	/**
-	 * Create a new local variable of the given type, and adds it to the
-	 * underlying Jimple body.
+	 * Create a new local variable of the given type, and adds it to the underlying
+	 * Jimple body.
 	 * 
 	 * @param type
 	 * @return
@@ -492,8 +491,8 @@ public class AverroesJimpleBody {
 	}
 
 	/**
-	 * Insert a statement that casts the given local variable to the given type
-	 * and assign it to a new temporary local variable.
+	 * Insert a statement that casts the given local variable to the given type and
+	 * assign it to a new temporary local variable.
 	 * 
 	 * @param local
 	 * @param type
@@ -585,8 +584,8 @@ public class AverroesJimpleBody {
 	}
 
 	/**
-	 * Construct the appropriate NEW expression depending on the given Soot
-	 * type. It handles RefType and ArrayType types.
+	 * Construct the appropriate NEW expression depending on the given Soot type. It
+	 * handles RefType and ArrayType types.
 	 * 
 	 * @param type
 	 * @return
@@ -640,11 +639,11 @@ public class AverroesJimpleBody {
 	}
 
 	/**
-	 * Create an object by calling this specific constructor. This method checks
-	 * if the constructor exists, and its declaring class is instantiatable,
-	 * then it creates a new local with this type, assigns it a NEW expression,
-	 * calls the constructor and finally assigns the object to the LPT. It also
-	 * call the static initializer for the class if it's available.
+	 * Create an object by calling this specific constructor. This method checks if
+	 * the constructor exists, and its declaring class is instantiatable, then it
+	 * creates a new local with this type, assigns it a NEW expression, calls the
+	 * constructor and finally assigns the object to the LPT. It also call the
+	 * static initializer for the class if it's available.
 	 * 
 	 * @param init
 	 */
@@ -665,9 +664,9 @@ public class AverroesJimpleBody {
 	}
 
 	/**
-	 * Prepare a list of values to be used as the actual arguments used to call
-	 * the given soot method. Those arguments will be pulled from the objects in
-	 * the LPT or constant values for primary types.
+	 * Prepare a list of values to be used as the actual arguments used to call the
+	 * given soot method. Those arguments will be pulled from the objects in the LPT
+	 * or constant values for primary types.
 	 * 
 	 * @param toCall
 	 * @return
