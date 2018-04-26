@@ -16,25 +16,23 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.xmlpull.v1.XmlPullParserException;
+
 import soot.ArrayType;
 import soot.Body;
-import soot.G;
 import soot.Local;
 import soot.Modifier;
 import soot.RefLikeType;
 import soot.RefType;
-import soot.Scene;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
@@ -47,9 +45,9 @@ import soot.jimple.IntConstant;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
-import soot.jimple.infoflow.entryPointCreators.AndroidEntryPointUtils;
 import soot.options.Options;
 import soot.util.JasminOutputStream;
+import averroes.android.AndroidEntryPointConstants;
 import averroes.android.SetupAndroid;
 import averroes.options.AverroesOptions;
 import averroes.tamiflex.TamiFlexFactsDatabase;
@@ -228,9 +226,9 @@ public class CodeGenerator {
 			createAverroesLibraryClinit();
 
 			// If we are running in Android mode we need to add the dummy main
-			if (AverroesOptions.isAndroid()) {
-				createAverroesLibraryDummyMain();
-			}
+			/*
+			 * if (AverroesOptions.isAndroid()) { createAverroesLibraryDummyMain(); }
+			 */
 
 			// Create the dotItAll method
 			createAverroesLibraryDoItAll();
@@ -258,11 +256,11 @@ public class CodeGenerator {
 		}
 
 		for (SootClass libraryClass : AllLibraryClasses) {
-			//for some reason android.jar contains incorrect
-			//declaration for Timer.class
-			//explicitly setting its super class to avoid RuntimeException 
-			if (AverroesOptions.isAndroid() && libraryClass.getName().equals("java.util.Timer")) {
-				libraryClass.setSuperclass(G.v().soot_Scene().getSootClass(Names.JAVA_LANG_OBJECT));
+
+			// explicitly setting its super class to avoid RuntimeException
+			if (AverroesOptions.isAndroid() && !libraryClass.hasSuperclass()
+					&& !libraryClass.getName().equals("java.lang.Object")) {
+				libraryClass.setSuperclass(Hierarchy.v().getJavaLangObject());
 			}
 			for (SootMethod method : libraryClass.getMethods()) {
 				// Create our Jimple body for concrete methods only
@@ -291,9 +289,9 @@ public class CodeGenerator {
 		PrintWriter writerOut = new PrintWriter(new OutputStreamWriter(streamOut));
 
 		if (cls.containsBafBody()) {
-			 new soot.baf.JasminClass(cls).print(writerOut);
+			new soot.baf.JasminClass(cls).print(writerOut);
 		} else {
-			
+
 			new soot.jimple.JasminClass(cls).print(writerOut);
 		}
 
@@ -486,8 +484,12 @@ public class CodeGenerator {
 	/**
 	 * If running in Android mode, this method adds the dummy main to the Averroes
 	 * library class.
+	 * 
+	 * @throws XmlPullParserException
+	 * @throws IOException
+	 * @deprecated
 	 */
-	private void createAverroesLibraryDummyMain() {
+	/*private void createAverroesLibraryDummyMain() throws IOException, XmlPullParserException {
 		SootMethod dM = SetupAndroid.v().getDummyMainMethod();
 		Type stringArrayType = ArrayType.v(RefType.v("java.lang.String"), 1);
 		SootMethod dummyMain = new SootMethod(Names.AVERROES_DUMMY_MAIN_METHOD_NAME,
@@ -495,19 +497,10 @@ public class CodeGenerator {
 
 		averroesLibraryClass.addMethod(dummyMain);
 		Body b = dM.getActiveBody();
-		/*
-		 * for (Local l: b.getLocals()) { Scene.v().getRefType(l.getType().toString())
-		 * Scene.v().getSootClass("android.app.Activity").getType().) if (l.getType(). {
-		 * 
-		 * } }
-		 */
-
 		dummyMain.setActiveBody(b);
-
 		dummyMain.getActiveBody().validate();
-
 		b.validate();
-	}
+	}*/
 
 	/**
 	 * Create the doItAll method for the Averroes library class. It includes
@@ -618,8 +611,9 @@ public class CodeGenerator {
 	 */
 	// TODO: this method is being used in Hierarchy.java as well. Refactor?
 	private boolean isLifeCycle(SootMethod method) {
-		AndroidEntryPointUtils m = new AndroidEntryPointUtils();
-		return m.isEntryPointMethod(method);
+		// TODO: Refactor (e.g. store the method signatures inside this class)?
+		return AndroidEntryPointConstants.isLifecycleClass(method.getDeclaringClass().getName())
+				&& AndroidEntryPointConstants.getComponentLifecycleMethods().contains(method.getSubSignature());
 	}
 
 	/**
@@ -634,13 +628,16 @@ public class CodeGenerator {
 
 		// If it is android we want to ignore life cycle methods because
 		// they are already being modeled in the dummy main.
-		if (AverroesOptions.isAndroid()) {
-			result.forEach(method -> {
-				if (isLifeCycle(method)) {
-					result.remove(method);
-				}
 
-			});
+		/*
+		 * if (AverroesOptions.isAndroid()) { result.forEach(method -> { if
+		 * (isLifeCycle(method)) { result.remove(method); }
+		 * 
+		 * }); }
+		 */
+		//TODO: phantom methods causing problems?
+		if (AverroesOptions.isAndroid()) {
+			result.removeIf(m -> !m.isDeclared());
 		}
 
 		return result;
@@ -809,35 +806,43 @@ public class CodeGenerator {
 		return result;
 	}
 
+	/**
+	 * Get a set of all the phantom library classes
+	 * 
+	 * @return
+	 */
+
 	public Set<SootClass> getPhantomLibraryCLasses() {
 
 		Set<SootClass> phantomClasses = new HashSet<SootClass>();
 		Set<SootClass> result = new HashSet<SootClass>();
-		
+
 		phantomClasses.addAll(getLibraryClasses());
 
 		// Removing all non-phantom classes.
 		// Note: this does not remove them from Scene.
 		phantomClasses.removeIf(cls -> (!cls.isPhantomClass()));
-		
+
+		// creating empty soot classes for the phantom classes
 		for (SootClass pClass : phantomClasses) {
-				SootClass newPhantomClass = new SootClass(pClass.getName());
-				for(SootMethod method : newPhantomClass.getMethods()) {
-					if(method != null) {
-						newPhantomClass.addMethod(method);
-						AverroesJimpleBody body = new AverroesJimpleBody(method);
-						body.insertStandardJimpleBodyFooter();
-						body.validate();
-					}
+			SootClass newPhantomClass = new SootClass(pClass.getName());
+			for (SootMethod method : newPhantomClass.getMethods()) {
+				if (method != null) {
+					newPhantomClass.addMethod(method);
+					AverroesJimpleBody body = new AverroesJimpleBody(method);
+					body.insertStandardJimpleBodyFooter();
+					body.validate();
 				}
-				if(pClass.hasSuperclass()) {
-					newPhantomClass.setSuperclass(pClass.getSuperclass());
-				}
+			}
+			if (pClass.hasSuperclass()) {
+				newPhantomClass.setSuperclass(pClass.getSuperclass());
+			} else {
+				newPhantomClass.setSuperclass(Hierarchy.v().getJavaLangObject());
+			}
 
-				result.add(newPhantomClass);
-			
+			result.add(newPhantomClass);
+
 		}
-
 
 		return result;
 

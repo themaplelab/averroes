@@ -98,18 +98,13 @@ public class Main {
 				SootSceneUtil.addCommonDynamicClasses(provider);
 
 				SetupAndroid setupAndroid = null;
-				SootMethod dummyMain = null;
-
-				if (AverroesOptions.isAndroid()) {
-					setupAndroid = SetupAndroid.v();
-					dummyMain = setupAndroid.getDummyMainMethod();
-
-				} else {
-					Options.v().classes().addAll(provider.getApplicationClassNames());
-				}
+				setupAndroid = SetupAndroid.v();
+				setupAndroid.getDummyMainMethod();
 			}
+
 			// Set some soot parameters if not android
 			else if (!AverroesOptions.isAndroid()) {
+				Options.v().classes().addAll(provider.getApplicationClassNames());
 				SourceLocator.v().setClassProviders(Collections.singletonList((ClassProvider) provider));
 				SootSceneUtil.addCommonDynamicClasses(provider);
 				Options.v().classes().addAll(provider.getApplicationClassNames());
@@ -139,7 +134,6 @@ public class Main {
 
 			// Output some initial statistics
 			System.out.println("# initial application classes: " + Hierarchy.v().getApplicationClasses().size());
-			System.out.println(Hierarchy.v().getApplicationClasses());
 			System.out.println("# initial library classes: " + Hierarchy.v().getLibraryClasses().size());
 			System.out.println("# initial library methods: " + Hierarchy.v().getLibraryMethodCount());
 			System.out.println("# initial library fields: " + Hierarchy.v().getLibraryFieldCount());
@@ -180,15 +174,18 @@ public class Main {
 				CodeGenerator.writeLibraryClassFile(basicClass);
 			}
 
-			// Add all the phantom classes created by flowdroid
-			System.out.println("Generating the phantom classes for placeholder library ...");
-			Set<String> basicClasses = new HashSet<String>();
-			basicClasses.addAll(Scene.v().getBasicClasses());
-			for (SootClass phantomClass : CodeGenerator.v().getPhantomLibraryCLasses()) {
-				//ignoring phantom classes that are basic classes
-				//because they are handled above
-				if (!basicClasses.contains(phantomClass.getName())) {
-					CodeGenerator.writeLibraryClassFile(phantomClass);
+			// Add all the phantom classes created by flowdroid if android
+			if (AverroesOptions.isAndroid()) {
+				System.out.println("Generating the phantom classes for placeholder library ...");
+				Set<String> basicClasses = new HashSet<String>();
+				basicClasses.addAll(Scene.v().getBasicClasses());
+				for (SootClass phantomClass : CodeGenerator.v().getPhantomLibraryCLasses()) {
+
+					// ignoring phantom classes that are basic classes
+					// because they are handled above
+					if (!basicClasses.contains(phantomClass.getName())) {
+						CodeGenerator.writeLibraryClassFile(phantomClass);
+					}
 				}
 			}
 
@@ -201,6 +198,8 @@ public class Main {
 			librJarFile.addGeneratedLibraryClassFiles();
 			JarFile aveJarFile = new JarFile(Paths.averroesLibraryClassJarFile());
 			aveJarFile.addAverroesLibraryClassFile();
+			// Now verify all the generated class files
+			aveJarFile.verify();
 			double bcel = TimeUtils.elapsedTime();
 			System.out.println("Placeholder library JAR file verified in " + bcel + " seconds.");
 			System.out

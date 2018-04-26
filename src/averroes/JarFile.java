@@ -138,10 +138,9 @@ public class JarFile {
 					+ System.getProperty("line.separator") + "Invalid path given: " + fileName);
 		}
 		close();
-
 		// Set BCEL's repository class path.
 		SyntheticRepository rep = SyntheticRepository.getInstance(new ClassPath(averroesLibraryClassJar
-				+ File.pathSeparator + placeholderJar + File.pathSeparator + Paths.organizedApplicationJarFile()));
+				+ File.pathSeparator + placeholderJar + File.pathSeparator + Paths.organizedApplicationJarFile() + File.pathSeparator + Paths.organizedLibraryJarFile()));
 		Repository.setRepository(rep);
 
 		// Now add the class files (including ones from placeholder JAR) to the
@@ -154,9 +153,6 @@ public class JarFile {
 		// placeholder JAR to force BCEL to load
 		// those crafted files when it looks them up
 		bcelClasses.forEach(c -> Repository.getRepository().storeClass(c));
-
-		// Now verify all the generated class files
-		verify();
 	}
 
 	/**
@@ -262,7 +258,7 @@ public class JarFile {
 	 * @throws IOException
 	 * @throws ClassFormatException
 	 */
-	private void verify() throws ClassFormatException, IOException {
+	public void verify() throws ClassFormatException, IOException {
 		for (JavaClass cls : bcelClasses) {
 			Verifier verifier = VerifierFactory.getVerifier(cls.getClassName());
 			Method[] methods = cls.getMethods();
@@ -276,7 +272,6 @@ public class JarFile {
 				} else {
 					vr = verifier.doPass3b(i);
 				}
-
 				Assertions.verificationResultOKAssertion(vr, cls.getClassName(), methods[i].getName());
 			}
 		}

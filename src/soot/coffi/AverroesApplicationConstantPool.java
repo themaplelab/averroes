@@ -435,11 +435,10 @@ public class AverroesApplicationConstantPool {
 			// Remove "L" and ";"
 			className = className.substring(1, className.length() - 1);
 
-			if (AverroesOptions.isLibraryClass(className)) {
+			if (className.length() > 1 && AverroesOptions.isLibraryClass(className)) {
 				int idx = parts[1].indexOf('(');
 				String methodName = parts[1].substring(0, idx);
 				String methodDescriptor = parts[1].substring(idx);
-
 				SootMethod method = BytecodeUtils.makeSootMethod(className, methodName, methodDescriptor);
 				result.add(method);
 			}
