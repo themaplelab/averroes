@@ -75,7 +75,7 @@ public class Paths {
 		}
 
 		Path prefix = java.nio.file.Paths.get(FrameworksOptions.getOutputDirectory()).toAbsolutePath().getParent()
-				.getParent().resolve(java.nio.file.Paths.get("averroes.tests", "jimple"));
+				.getParent().resolve(java.nio.file.Paths.get("averroes-tests", "jimple"));
 
 		Path dir = java.nio.file.Paths.get(project).getFileName();
 
@@ -102,7 +102,7 @@ public class Paths {
 				.replace("input", "output." + FrameworksOptions.getAnalysis());
 
 		Path prefix = java.nio.file.Paths.get(FrameworksOptions.getOutputDirectory()).toAbsolutePath().getParent()
-				.getParent().resolve(java.nio.file.Paths.get("averroes.tests", "jimple"));
+				.getParent().resolve(java.nio.file.Paths.get("averroes-tests", "jimple"));
 
 		Path dir = java.nio.file.Paths.get(project).getFileName();
 
@@ -140,7 +140,7 @@ public class Paths {
 		}
 
 		Path prefix = java.nio.file.Paths.get(FrameworksOptions.getOutputDirectory()).toAbsolutePath().getParent()
-				.getParent().resolve(java.nio.file.Paths.get("averroes.tests", "json"));
+				.getParent().resolve(java.nio.file.Paths.get("averroes-tests", "json"));
 
 		Path dir = java.nio.file.Paths.get(project).getFileName();
 
