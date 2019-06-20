@@ -14,8 +14,16 @@
 package averroes.util.io;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 
+import org.apache.commons.io.FileUtils;
+
+import averroes.frameworks.options.FrameworksOptions;
 import averroes.options.AverroesOptions;
+import averroes.util.io.Printers.PrinterType;
+import soot.SootClass;
+import soot.SootMethod;
 
 /**
  * Utility class for file-related operations.
@@ -24,6 +32,126 @@ import averroes.options.AverroesOptions;
  * 
  */
 public class Paths {
+	/**
+	 * The path to the placeholder library class files.
+	 * 
+	 * @return
+	 */
+	public static File framewokrsLibraryClassesOutputDirectory() {
+		return java.nio.file.Paths.get(FrameworksOptions.getOutputDirectory(), "classes", "lib").toFile();
+	}
+	
+	/**
+	 * The path to the frameworks placeholder library JAR file.
+	 * 
+	 * @return
+	 */
+	public static File placeholderFrameworkJarFile() {
+		return java.nio.file.Paths.get(FrameworksOptions.getOutputDirectory(), "placeholder-fwk-" + FrameworksOptions.getAnalysis() + ".jar").toFile();
+	}
+
+	/**
+	 * The path to the output file where we dump Jimple code for before, after,
+	 * and expected output.
+	 * 
+	 * @param printerType
+	 * @param method
+	 * @return
+	 */
+	public static File jimpleDumpFile(PrinterType printerType, SootMethod method) {
+		String pkg = method.getDeclaringClass().getPackageName().replace(".", File.separator);
+		String file = method.getDeclaringClass().getShortName() + ".jimple";
+		String input = FrameworksOptions.getInputs().get(0);
+		String project = input.replace(File.separator + "bin", "." + printerType.toString().toLowerCase());
+
+		/*
+		 * Separating output based on the project. For example: input + original
+		 * => input.original input + generated => output.rta.generated output +
+		 * expected => output.rta.expected output + optimized =>
+		 * output.rta.optimized
+		 */
+		if (printerType != PrinterType.ORIGINAL) {
+			project = project.replace("input", "output." + FrameworksOptions.getAnalysis());
+		}
+
+		Path prefix = java.nio.file.Paths.get(FrameworksOptions.getOutputDirectory()).toAbsolutePath().getParent()
+				.getParent().resolve(java.nio.file.Paths.get("averroes.tests", "jimple"));
+
+		Path dir = java.nio.file.Paths.get(project).getFileName();
+
+		try {
+			FileUtils.forceMkdir(prefix.resolve(dir).resolve(pkg).toFile());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return prefix.resolve(dir).resolve(pkg).resolve(file).toFile();
+	}
+
+	/**
+	 * The path to the output file where we dump inlining information.
+	 * 
+	 * @param cls
+	 * @return
+	 */
+	public static File inlinerDumpFile(SootClass cls) {
+		String pkg = cls.getPackageName().replace(".", File.separator);
+		String file = cls.getShortName() + "-inliner.txt";
+		String input = FrameworksOptions.getInputs().get(0);
+		String project = input.replace(File.separator + "bin", "." + PrinterType.OPTIMIZED.toString().toLowerCase())
+				.replace("input", "output." + FrameworksOptions.getAnalysis());
+
+		Path prefix = java.nio.file.Paths.get(FrameworksOptions.getOutputDirectory()).toAbsolutePath().getParent()
+				.getParent().resolve(java.nio.file.Paths.get("averroes.tests", "jimple"));
+
+		Path dir = java.nio.file.Paths.get(project).getFileName();
+
+		try {
+			FileUtils.forceMkdir(prefix.resolve(dir).resolve(pkg).toFile());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return prefix.resolve(dir).resolve(pkg).resolve(file).toFile();
+	}
+
+	/**
+	 * The path to the debug file where we dump Jimple code for before, after,
+	 * and expected output.
+	 * 
+	 * @param printerType
+	 * @param cls
+	 * @return
+	 */
+	public static File jsonDumpFile(PrinterType printerType, SootClass cls) {
+		String pkg = cls.getPackageName().replace(".", File.separator);
+		String file = cls.getShortName() + ".json";
+		String input = FrameworksOptions.getInputs().get(0);
+		String project = input.replace(File.separator + "bin", "." + printerType.toString().toLowerCase());
+
+		/*
+		 * Separating output based on the project. For example: input + original
+		 * => input.original input + generated => output.rta.generated output +
+		 * expected => output.rta.expected output + optimized =>
+		 * output.rta.optimized
+		 */
+		if (printerType != PrinterType.ORIGINAL) {
+			project = project.replace("input", "output." + FrameworksOptions.getAnalysis());
+		}
+
+		Path prefix = java.nio.file.Paths.get(FrameworksOptions.getOutputDirectory()).toAbsolutePath().getParent()
+				.getParent().resolve(java.nio.file.Paths.get("averroes.tests", "json"));
+
+		Path dir = java.nio.file.Paths.get(project).getFileName();
+
+		try {
+			FileUtils.forceMkdir(prefix.resolve(dir).resolve(pkg).toFile());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return prefix.resolve(dir).resolve(pkg).resolve(file).toFile();
+	}
 
 	/**
 	 * The path to the output class files.

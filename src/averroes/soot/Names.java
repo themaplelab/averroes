@@ -10,15 +10,15 @@
  *******************************************************************************/
 package averroes.soot;
 
-import soot.Scene;
 import soot.SootMethod;
-import soot.util.NumberedString;
 
 public class Names {
 	// Averroes-specific Classes
 	public static final String AVERROES_LIBRARY_CLASS = "averroes.Library";
 	public static final String AVERROES_LIBRARY_CLASS_BC_SIG = "averroes/Library";
 	public static final String AVERROES_ABSTRACT_LIBRARY_CLASS = "averroes.AbstractLibrary";
+	public static final String RTA_CLASS = "rta.RTA";
+	public static final String XTA_CLASS = "xta.XTA";
 
 	// Classes
 	public static final String JAVA_LANG_OBJECT = "java.lang.Object";
@@ -37,6 +37,19 @@ public class Names {
 	public static final String INSTANCE = "instance";
 	public static final String INSTANCE_FIELD_SIGNATURE = "<" + AVERROES_ABSTRACT_LIBRARY_CLASS + ": "
 			+ AVERROES_ABSTRACT_LIBRARY_CLASS + " " + INSTANCE + ">";
+	
+	public static final String SET_FIELD_PREFIX = "set_";
+	public static final String SET_METHOD_PREFIX = "set_m";
+	public static final String SET_FIELD_NAME = "set";
+	public static final String INT_FIELD_NAME = "integer";
+	public static final String BOOLEAN_FIELD_NAME = "bool";
+	public static final String GUARD_FIELD_NAME = "guard";
+	public static final String RTA_SET_FIELD_SIGNATURE = "<" + RTA_CLASS + ": java.lang.Object " + SET_FIELD_NAME + ">";
+	public static final String RTA_INT_FIELD_SIGNATURE = "<" + RTA_CLASS + ": int " + INT_FIELD_NAME + ">";
+	public static final String RTA_BOOLEAN_FIELD_SIGNATURE = "<" + RTA_CLASS + ": boolean " + BOOLEAN_FIELD_NAME + ">";
+	public static final String AVE_GUARD_FIELD_SIGNATURE = "<" + AVERROES_ABSTRACT_LIBRARY_CLASS + ": boolean " + GUARD_FIELD_NAME + ">";
+	public static final String RTA_GUARD_FIELD_SIGNATURE = "<" + RTA_CLASS + ": boolean " + GUARD_FIELD_NAME + ">";
+	public static final String XTA_GUARD_FIELD_SIGNATURE = "<" + XTA_CLASS + ": boolean " + GUARD_FIELD_NAME + ">";
 
 	// Methods
 	public static final String AVERROES_DO_IT_ALL_METHOD_NAME = "doItAll";
@@ -56,8 +69,7 @@ public class Names {
 	public static final String FINALIZE_SIG = "<java.lang.Object: void finalize()>";
 
 	// Soot-specific constants
-	public static final NumberedString DEFAULT_CONSTRUCTOR_SIG = Scene.v().getSubSigNumberer()
-			.findOrAdd("void <init>()");
+	public static final String DEFAULT_CONSTRUCTOR_SUBSIG = "void <init>()";
 
 	// Other
 	public static final String BLOB = "blob";

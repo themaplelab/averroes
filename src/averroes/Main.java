@@ -14,12 +14,6 @@ import java.util.Collections;
 
 import org.apache.commons.io.FileUtils;
 
-import soot.ClassProvider;
-import soot.G;
-import soot.Scene;
-import soot.SootClass;
-import soot.SourceLocator;
-import soot.options.Options;
 import averroes.options.AverroesOptions;
 import averroes.soot.CodeGenerator;
 import averroes.soot.Hierarchy;
@@ -28,6 +22,12 @@ import averroes.soot.SootSceneUtil;
 import averroes.util.MathUtils;
 import averroes.util.TimeUtils;
 import averroes.util.io.Paths;
+import soot.ClassProvider;
+import soot.G;
+import soot.Scene;
+import soot.SootClass;
+import soot.SourceLocator;
+import soot.options.Options;
 
 /**
  * The main Averroes class.
@@ -60,7 +60,7 @@ public class Main {
 
 			// Organize the input JAR files
 			System.out.println("");
-			System.out.println("Organizing the JAR files ...");
+			System.out.println("Organizing the JAR files...");
 			JarOrganizer jarOrganizer = new JarOrganizer();
 			jarOrganizer.organizeInputJarFiles();
 
@@ -83,7 +83,7 @@ public class Main {
 
 			// Load the necessary classes
 			System.out.println("");
-			System.out.println("Loading classes ...");
+			System.out.println("Loading classes...");
 			Scene.v().loadNecessaryClasses();
 			Scene.v().setMainClassFromOptions();
 			double soot = TimeUtils.elapsedTime();
@@ -93,7 +93,7 @@ public class Main {
 			// First, create the class hierarchy
 			TimeUtils.reset();
 			System.out.println("");
-			System.out.println("Creating the class hierarchy for the placeholder library ...");
+			System.out.println("Creating the class hierarchy for the placeholder library...");
 			Hierarchy.v();
 
 			// Output some initial statistics
@@ -106,7 +106,7 @@ public class Main {
 
 			// Cleanup the hierarchy
 			System.out.println("");
-			System.out.println("Cleaning up the class hierarchy ...");
+			System.out.println("Cleaning up the class hierarchy...");
 			Hierarchy.v().cleanupLibraryClasses();
 
 			// Output some cleanup statistics
@@ -118,13 +118,13 @@ public class Main {
 
 			// Output some code generation statistics
 			System.out.println("");
-			System.out.println("Generating extra library classes ...");
+			System.out.println("Generating extra library classes...");
 			System.out.println("# generated library classes: " + CodeGenerator.v().getGeneratedClassCount());
 			System.out.println("# generated library methods: " + CodeGenerator.v().getGeneratedMethodCount());
 
 			// Create the Averroes library class
 			System.out.println("");
-			System.out.println("Creating the skeleton for Averroes's main library class ...");
+			System.out.println("Creating the skeleton for Averroes's main library class...");
 			CodeGenerator.v().createAverroesLibraryClass();
 
 			// Create method bodies to the library classes
@@ -133,13 +133,13 @@ public class Main {
 
 			// Create empty classes for the basic classes required internally by
 			// Soot
-			System.out.println("Generating empty basic library classes required by Soot ...");
+			System.out.println("Generating empty basic library classes required by Soot...");
 			for (SootClass basicClass : Hierarchy.v().getBasicClassesDatabase().getMissingBasicClasses()) {
 				CodeGenerator.writeLibraryClassFile(basicClass);
 			}
 			double averroes = TimeUtils.elapsedTime();
 			System.out.println("Placeholder library classes created and validated in " + averroes + " seconds.");
-
+			
 			// Create the jar file and add all the generated class files to it.
 			TimeUtils.reset();
 			JarFile librJarFile = new JarFile(Paths.placeholderLibraryJarFile());
@@ -148,10 +148,8 @@ public class Main {
 			aveJarFile.addAverroesLibraryClassFile();
 			double bcel = TimeUtils.elapsedTime();
 			System.out.println("Placeholder library JAR file verified in " + bcel + " seconds.");
-			System.out
-					.println("Total time (without verification) is " + MathUtils.round(soot + averroes) + " seconds.");
-			System.out.println("Total time (with verification) is " + MathUtils.round(soot + averroes + bcel)
-					+ " seconds.");
+			System.out.println("Total time (without verification) is " + MathUtils.round(soot + averroes) + " seconds.");
+			System.out.println("Total time (with verification) is " + MathUtils.round(soot + averroes + bcel) + " seconds.");
 
 			double total = TimeUtils.elapsedSplitTime();
 			System.out.println("Elapsed time: " + total + " seconds.");

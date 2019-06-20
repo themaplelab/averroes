@@ -79,10 +79,16 @@ public final class AverroesOptions {
 
 	private static Option help = Option.builder("h").longOpt("help").desc("print out this help message").hasArg(false)
 			.required(false).build();
+	
+	private static Option enableGuards = Option
+			.builder("g")
+			.longOpt("enable-guards")
+			.desc("setting this flag will make Averroes wrap a guard around any statement that is not a cast statement (or a local variable declaration)")
+			.hasArg(false).required(false).build();
 
 	private static Options options = new Options().addOption(applicationRegex).addOption(mainClass)
 			.addOption(applicationJars).addOption(libraryJars).addOption(dynamicClassesFile)
-			.addOption(tamiflexFactsFile).addOption(outputDirectory).addOption(jreDirectory).addOption(help);
+			.addOption(tamiflexFactsFile).addOption(outputDirectory).addOption(jreDirectory).addOption(help).addOption(enableGuards);
 
 	private static CommandLine cmd;
 
@@ -305,5 +311,15 @@ public final class AverroesOptions {
 	 */
 	public static boolean isLibraryClass(String className) {
 		return !isApplicationClass(className);
+	}
+	
+	/**
+	 * Setting this flag will make Averroes wrap a guard around any statement
+	 * that is not a cast statement (or a local variable declaration).
+	 * 
+	 * @return
+	 */
+	public static boolean isEnableGuards() {
+		return cmd.hasOption(enableGuards.getOpt());
 	}
 }

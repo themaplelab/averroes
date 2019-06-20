@@ -10,7 +10,6 @@
  *******************************************************************************/
 package averroes.util.io;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -19,5 +18,5 @@ import java.io.InputStream;
  * Similar to FoundFile in soot.SourceLocator, which is not accessible.
  */
 public interface Resource {
-	public InputStream open() throws IOException;
+	public InputStream open();
 }

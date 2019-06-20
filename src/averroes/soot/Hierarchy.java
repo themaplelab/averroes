@@ -104,7 +104,7 @@ public class Hierarchy {
 	private int removedLibraryFieldCount;
 
 	/**
-	 * Get the Hierarchy singleton.
+	 * Get the Cleanup singleton.
 	 * 
 	 * @return
 	 */
@@ -367,7 +367,7 @@ public class Hierarchy {
 	 * @return
 	 */
 	public static boolean hasDefaultConstructor(SootClass cls) {
-		return cls.declaresMethod(Names.DEFAULT_CONSTRUCTOR_SIG);
+		return cls.declaresMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG);
 	}
 
 	/**
@@ -377,7 +377,7 @@ public class Hierarchy {
 	 * @return
 	 */
 	public static SootMethod getDefaultConstructor(SootClass cls) {
-		return cls.getMethod(Names.DEFAULT_CONSTRUCTOR_SIG);
+		return cls.getMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG);
 	}
 
 	/**
@@ -403,7 +403,7 @@ public class Hierarchy {
 	 * @return
 	 */
 	public SootMethod getDirectSuperclassDefaultConstructor(SootMethod method) {
-		return getDirectSuperclassOf(method.getDeclaringClass()).getMethod(Names.DEFAULT_CONSTRUCTOR_SIG);
+		return getDirectSuperclassOf(method.getDeclaringClass()).getMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG);
 	}
 
 	/**
@@ -423,7 +423,7 @@ public class Hierarchy {
 	public void addDefaultConstructorToLibraryClass(SootClass libraryClass) {
 		if (!libraryClass.isInterface()) {
 			if (hasDefaultConstructor(libraryClass)) {
-				makePublic(libraryClass.getMethod(Names.DEFAULT_CONSTRUCTOR_SIG));
+				makePublic(libraryClass.getMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG));
 			} else {
 				addMethodToLibraryClass(libraryClass, getNewDefaultConstructor());
 			}
