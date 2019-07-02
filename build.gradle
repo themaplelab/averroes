@@ -1,0 +1,25 @@
+plugins {
+    id 'scala'
+}
+
+group 'ca.uwaterloo.plg'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.scalatest:scalatest_2.13:3.0.8'
+
+    implementation 'ca.mcgill.sable:soot:3.3.0'
+    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'commons-io:commons-io:2.6'
+    implementation 'commons-cli:commons-cli:1.4'
+    implementation 'org.apache.bcel:bcel:6.3.1'
+    implementation 'org.scala-lang:scala-library:2.13.0'
+
+    implementation files('libs/probe.jar')
+
+}
