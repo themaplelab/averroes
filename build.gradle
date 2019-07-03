@@ -12,6 +12,8 @@ repositories {
 dependencies {
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.scalatest:scalatest_2.13:3.0.8'
+    testImplementation 'de.tud.sse:soot-infoflow:2.7.1.1'
+    testImplementation 'de.tud.sse:soot-infoflow:2.7.1.1:tests'
 
     implementation 'ca.mcgill.sable:soot:3.3.0'
     implementation 'com.google.code.gson:gson:2.8.5'
