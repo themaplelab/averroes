@@ -30,6 +30,7 @@ public class ExpectedOutputPrinter {
       // Set some soot parameters
       Options.v().set_process_dir(FrameworksOptions.getInputs());
       Options.v().set_soot_classpath(FrameworksOptions.getSootClassPath());
+
       // Options.v().setPhaseOption("jb.dae", "enabled:false");
       // Options.v().set_verbose(true);
 

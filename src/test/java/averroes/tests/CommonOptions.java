@@ -17,7 +17,8 @@ import org.apache.commons.io.filefilter.IOFileFilter;
  */
 public class CommonOptions {
 
-  public static String base = "testsuite";
+  public static String base =
+      Paths.get("build", "classes", "java", "test", "averroes", "testsuite").toString();
   public static String output = "output";
   public static String jimple = "jimple";
   public static String json = "json";
@@ -159,7 +160,7 @@ public class CommonOptions {
    * @return
    */
   public static String getInputProject(String testCase) {
-    return Paths.get(base, testCase, getProjectNamePrefix(testCase) + ".input", "bin").toString();
+    return Paths.get(base, testCase.toLowerCase(), "input").toString();
   }
 
   /**
@@ -170,8 +171,7 @@ public class CommonOptions {
    * @return
    */
   public static String getOutputProject(String testCase, String analysis) {
-    return Paths.get(base, testCase, getProjectNamePrefix(testCase) + ".output." + analysis, "bin")
-        .toString();
+    return Paths.get(base, testCase.toLowerCase(), "output", analysis).toString();
   }
 
   /**

@@ -12,6 +12,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 
 /**
  * A class that holds all the properties required by Averroes to run.
@@ -157,7 +158,9 @@ public final class FrameworksOptions {
   public static String getSootClassPath() {
     String deps = getDependencies().stream().collect(Collectors.joining(File.pathSeparator));
     String std =
-        FileUtils.listFiles(new File(getJreDirectory()), FileFilters.jreFileFilter, null).stream()
+        FileUtils.listFiles(
+                new File(getJreDirectory()), FileFilters.jreFileFilter, TrueFileFilter.TRUE)
+            .stream()
             .map(f -> f.getAbsolutePath())
             .collect(Collectors.joining(File.pathSeparator));
 

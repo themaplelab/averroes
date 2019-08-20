@@ -148,6 +148,7 @@ public class Tests {
   private static void runExpectedOutputPrinter(String testCase, String analysis) {
     CommonOptions.deleteJimpleExpectedDirectory(testCase, analysis);
     CommonOptions.deleteJsonExpectedDirectory(testCase, analysis);
+
     averroes.frameworks.ExpectedOutputPrinter.main(
         new String[] {
           "-i",
