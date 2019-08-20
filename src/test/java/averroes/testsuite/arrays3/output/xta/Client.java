@@ -1,4 +1,4 @@
-package arrays3;
+package averroes.testsuite.arrays3.output.xta;
 
 class Client {
 
