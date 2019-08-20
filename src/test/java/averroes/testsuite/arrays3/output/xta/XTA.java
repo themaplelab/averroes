@@ -1,5 +1,5 @@
 package xta;
 
 public class XTA {
-	public static boolean booleanValue;
+  public static boolean booleanValue;
 }

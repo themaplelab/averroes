@@ -1,5 +1,5 @@
 package averroes.testsuite.example.output.xta;
 
 public class XTA {
-	public static boolean guard;
+  public static boolean guard;
 }

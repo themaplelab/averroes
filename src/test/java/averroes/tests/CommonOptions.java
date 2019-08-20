@@ -1,16 +1,14 @@
 package averroes.tests;
 
+import averroes.util.io.FileFilters;
+import averroes.util.io.Printers.PrinterType;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.stream.Collectors;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
-
-import averroes.util.io.FileFilters;
-import averroes.util.io.Printers.PrinterType;
 
 /**
  * Class holding common options for testing purposes.

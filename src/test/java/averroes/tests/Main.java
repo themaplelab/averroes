@@ -5,15 +5,14 @@ import org.junit.runner.Result;
 
 /**
  * Main test suite runner.
- * 
- * @author Karim Ali
  *
+ * @author Karim Ali
  */
 public class Main {
 
-	public static void main(String[] args) {
-		Result result = JUnitCore.runClasses(AllTests.class);
-		result.getFailures().forEach(System.out::println);
-		System.out.println(result.wasSuccessful());
-	}
+  public static void main(String[] args) {
+    Result result = JUnitCore.runClasses(AllTests.class);
+    result.getFailures().forEach(System.out::println);
+    System.out.println(result.wasSuccessful());
+  }
 }

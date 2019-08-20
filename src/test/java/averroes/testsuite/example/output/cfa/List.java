@@ -1,62 +1,58 @@
 package averroes.testsuite.example.output.cfa;
 
 class List {
-	public List() {
-		// all arrays will be of size 1
-		elements = new String[1];
-	}
+  private int size;
+  private String[] elements;
 
-	public void add(String o) {
-		// size is read and written
-		// elements.length is only read
+  public List() {
+    // all arrays will be of size 1
+    elements = new String[1];
+  }
 
-		// Extract all expressions from the conditional (already done in Jimple)
-		// replace all conditions with CFA.guard
+  public void add(String o) {
+    // size is read and written
+    // elements.length is only read
 
-		if (CFA.guard()) {
-			growList();
-		}
+    // Extract all expressions from the conditional (already done in Jimple)
+    // replace all conditions with CFA.guard
 
-		size++;
+    if (CFA.guard()) {
+      growList();
+    }
 
-		if (CFA.guard()) {
-			elements[0] = o;
-		}
-	}
+    size++;
 
-	public String get(int i) {
-		// all array reads are changed to reads of arr[0]
-		return elements[0];
-	}
+    if (CFA.guard()) {
+      elements[0] = o;
+    }
+  }
 
-	public boolean contains(String o) {
-		// remove loops all together
-		// extract expressions in if-statements
-		
-		// Would this call be optimized away in the bytecode/Jimple?
-		elements[0].equals(o);
-		
-		// replace if-condition with CFA.guard
-		// this conditional can also be optimized away
-		if (CFA.guard()) {
-			return true;
-		}
-		
-		return false;
-	}
+  public String get(int i) {
+    // all array reads are changed to reads of arr[0]
+    return elements[0];
+  }
 
-	// Discuss with Julian and Ondrej
-	private void growList() {
-		// allocs
-		String[] newElements = new String[1];
-		
-		// method calls
-		System.arraycopy(elements, 1, newElements, 1, 1);
-		
-		// array writes
-		elements = newElements;
-	}
+  public boolean contains(String o) {
+    // remove loops all together
+    // extract expressions in if-statements
 
-	private int size;
-	private String[] elements;
+    // Would this call be optimized away in the bytecode/Jimple?
+    elements[0].equals(o);
+
+    // replace if-condition with CFA.guard
+    // this conditional can also be optimized away
+    return CFA.guard();
+  }
+
+  // Discuss with Julian and Ondrej
+  private void growList() {
+    // allocs
+    String[] newElements = new String[1];
+
+    // method calls
+    System.arraycopy(elements, 1, newElements, 1, 1);
+
+    // array writes
+    elements = newElements;
+  }
 }

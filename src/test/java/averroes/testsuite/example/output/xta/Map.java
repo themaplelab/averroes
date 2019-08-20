@@ -1,151 +1,149 @@
 package averroes.testsuite.example.output.xta;
 
 /* That's the order that Averroes generates the code. */
-//parameters
-//allocs
-//method calls
-//array reads
-//array writes
-//field reads
-//field writes
-//exceptions
-//return
+// parameters
+// allocs
+// method calls
+// array reads
+// array writes
+// field reads
+// field writes
+// exceptions
+// return
 
 class Map {
-	public Map() {
-		// parameters
-		if(XTA.guard) set_m0 = this;
+  private String[] keys;
+  private String[] values;
+  private Object set_m0;
+  private Object set_m1;
+  private Object set_m2;
+  private Object set_m3;
+  private Object set_m4;
+  private Object set_m5;
 
-		// allocs
-		if(XTA.guard) set_m0 = new String[1];
+  public Map() {
+    // parameters
+    if (XTA.guard) set_m0 = this;
 
-		// field writes
-		Object obj = set_m0;
-		String[] arr = (String[]) obj;
-		Map map = (Map) obj;
-		if(XTA.guard) map.keys = arr;
-		if(XTA.guard) map.values = arr;
-	}
+    // allocs
+    if (XTA.guard) set_m0 = new String[1];
 
-	public void put(String k, String v) {
-		// parameters
-		if(XTA.guard) set_m1 = this;
-		if(XTA.guard) set_m1 = k;
-		if(XTA.guard) set_m1 = v;
+    // field writes
+    Object obj = set_m0;
+    String[] arr = (String[]) obj;
+    Map map = (Map) obj;
+    if (XTA.guard) map.keys = arr;
+    if (XTA.guard) map.values = arr;
+  }
 
-		// method calls
-		if(XTA.guard) growMap();
-		Object obj = set_m1;
-		String str = (String) obj;
-		if(XTA.guard) getIndex(str);
+  public void put(String k, String v) {
+    // parameters
+    if (XTA.guard) set_m1 = this;
+    if (XTA.guard) set_m1 = k;
+    if (XTA.guard) set_m1 = v;
 
-		// array writes
-		Object[] arr = (Object[]) obj;
-		if(XTA.guard) arr[0] = obj;
+    // method calls
+    if (XTA.guard) growMap();
+    Object obj = set_m1;
+    String str = (String) obj;
+    if (XTA.guard) getIndex(str);
 
-		// field reads
-		Map map = (Map) obj;
-		if(XTA.guard) set_m1 = map.values;
-		if(XTA.guard) set_m1 = map.keys;
-	}
+    // array writes
+    Object[] arr = (Object[]) obj;
+    if (XTA.guard) arr[0] = obj;
 
-	private void growMap() {
-		// parameters
-		if(XTA.guard) set_m2 = this;
+    // field reads
+    Map map = (Map) obj;
+    if (XTA.guard) set_m1 = map.values;
+    if (XTA.guard) set_m1 = map.keys;
+  }
 
-		// allocs
-		if(XTA.guard) set_m2 = new String[1];
+  private void growMap() {
+    // parameters
+    if (XTA.guard) set_m2 = this;
 
-		// method calls
-		Object obj = set_m2;
-		String[] arr = (String[]) obj;
-		if(XTA.guard) System.arraycopy(arr, 1, arr, 1, 1);
-		if(XTA.guard) System.arraycopy(arr, 1, arr, 1, 1);
+    // allocs
+    if (XTA.guard) set_m2 = new String[1];
 
-		// field reads
-		Map map = (Map) obj;
-		if(XTA.guard) set_m2 = map.keys;
-		if(XTA.guard) set_m2 = map.values;
+    // method calls
+    Object obj = set_m2;
+    String[] arr = (String[]) obj;
+    if (XTA.guard) System.arraycopy(arr, 1, arr, 1, 1);
+    if (XTA.guard) System.arraycopy(arr, 1, arr, 1, 1);
 
-		// field writes
-		if(XTA.guard) map.keys = arr;
-		if(XTA.guard) map.values = arr;
-	}
+    // field reads
+    Map map = (Map) obj;
+    if (XTA.guard) set_m2 = map.keys;
+    if (XTA.guard) set_m2 = map.values;
 
-	public Object get(String k) {
-		// parameters
-		if(XTA.guard) set_m3 = this;
-		if(XTA.guard) set_m3 = k;
+    // field writes
+    if (XTA.guard) map.keys = arr;
+    if (XTA.guard) map.values = arr;
+  }
 
-		// method calls
-		Object obj = set_m3;
-		if(XTA.guard) getIndex((String) obj);
+  public Object get(String k) {
+    // parameters
+    if (XTA.guard) set_m3 = this;
+    if (XTA.guard) set_m3 = k;
 
-		// array reads
-		Object[] arr = (Object[]) obj;
-		if(XTA.guard) set_m3 = arr[0];
+    // method calls
+    Object obj = set_m3;
+    if (XTA.guard) getIndex((String) obj);
 
-		// field reads
-		Map map = (Map) obj;
-		if(XTA.guard) set_m3 = map.values;
+    // array reads
+    Object[] arr = (Object[]) obj;
+    if (XTA.guard) set_m3 = arr[0];
 
-		// return
-		return obj;
-	}
+    // field reads
+    Map map = (Map) obj;
+    if (XTA.guard) set_m3 = map.values;
 
-	private int getIndex(String k) {
-		// parameters
-		if(XTA.guard) set_m4 = this;
-		if(XTA.guard) set_m4 = k;
+    // return
+    return obj;
+  }
 
-		// method calls
-		Object obj = set_m4;
-		String str = (String) obj;
-		if(XTA.guard) str.equals(str);
+  private int getIndex(String k) {
+    // parameters
+    if (XTA.guard) set_m4 = this;
+    if (XTA.guard) set_m4 = k;
 
-		// array reads
-		Object[] arr = (Object[]) obj;
-		if(XTA.guard) set_m4 = arr[0];
+    // method calls
+    Object obj = set_m4;
+    String str = (String) obj;
+    if (XTA.guard) str.equals(str);
 
-		// field reads
-		Map map = (Map) obj;
-		if(XTA.guard) set_m4 = map.keys;
+    // array reads
+    Object[] arr = (Object[]) obj;
+    if (XTA.guard) set_m4 = arr[0];
 
-		// return
-		return 1;
-	}
+    // field reads
+    Map map = (Map) obj;
+    if (XTA.guard) set_m4 = map.keys;
 
-	public String findKeyFor(String v) {
-		// parameters
-		if (XTA.guard) set_m5 = this;
-		if (XTA.guard) set_m5 = v;
-		
-		
-		// method calls
-		Object obj = set_m5;
-		String str = (String) obj;
-		if(XTA.guard) str.equals(str);
-		
-		// array reads
-		Object[] arr = (Object[]) obj;
-		if(XTA.guard) set_m5 = arr[0];
-				
-		// field reads
-		Map map = (Map) obj;
-		if(XTA.guard) set_m5 = map.keys;
-		if(XTA.guard) set_m5 = map.values;
-				
-		// return
-		return str;
-	}
+    // return
+    return 1;
+  }
 
-	private String[] keys;
-	private String[] values;
+  public String findKeyFor(String v) {
+    // parameters
+    if (XTA.guard) set_m5 = this;
+    if (XTA.guard) set_m5 = v;
 
-	private Object set_m0;
-	private Object set_m1;
-	private Object set_m2;
-	private Object set_m3;
-	private Object set_m4;
-	private Object set_m5;
+    // method calls
+    Object obj = set_m5;
+    String str = (String) obj;
+    if (XTA.guard) str.equals(str);
+
+    // array reads
+    Object[] arr = (Object[]) obj;
+    if (XTA.guard) set_m5 = arr[0];
+
+    // field reads
+    Map map = (Map) obj;
+    if (XTA.guard) set_m5 = map.keys;
+    if (XTA.guard) set_m5 = map.values;
+
+    // return
+    return str;
+  }
 }

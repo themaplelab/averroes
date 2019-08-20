@@ -1,10 +1,10 @@
 package averroes.frameworks.options;
 
+import averroes.util.io.FileFilters;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -12,8 +12,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
-
-import averroes.util.io.FileFilters;
 
 /**
  * A class that holds all the properties required by Averroes to run.

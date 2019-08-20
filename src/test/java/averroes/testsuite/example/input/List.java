@@ -1,42 +1,42 @@
 package averroes.testsuite.example.input;
 
 public class List {
-	public List() {
-		elements = new String[10];
-		bla = new String[10];
-	}
+  private int size;
+  private String[] elements;
+  private String[] bla;
 
-	public void add(String o) {
-		if (size == elements.length) {
-			growList();
-		}
-		elements[size++] = o;
-	}
+  public List() {
+    elements = new String[10];
+    bla = new String[10];
+  }
 
-	public String get(int i) {
-		return elements[i];
-	}
+  public void add(String o) {
+    if (size == elements.length) {
+      growList();
+    }
+    elements[size++] = o;
+  }
 
-	public boolean contains(String o) {
-		for (int i = 0; i < size; i++) {
-			if (elements[i].equals(o)) {
-				return true;
-			}
-		}
-		return false;
-	}
+  public String get(int i) {
+    return elements[i];
+  }
 
-	private void growList() {
-		String[] newElements = new String[size * 2];
-		System.arraycopy(elements, 0, newElements, 0, size);
-		elements = newElements;
-	}
+  public boolean contains(String o) {
+    for (int i = 0; i < size; i++) {
+      if (elements[i].equals(o)) {
+        return true;
+      }
+    }
+    return false;
+  }
 
-	public int size() {
-		return size;
-	}
+  private void growList() {
+    String[] newElements = new String[size * 2];
+    System.arraycopy(elements, 0, newElements, 0, size);
+    elements = newElements;
+  }
 
-	private int size;
-	private String[] elements;
-	private String[] bla;
+  public int size() {
+    return size;
+  }
 }

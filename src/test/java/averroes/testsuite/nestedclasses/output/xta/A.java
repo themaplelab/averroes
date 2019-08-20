@@ -2,133 +2,129 @@ package averroes.testsuite.nestedclasses.output.xta;
 
 public class A {
 
-	/* non-static nested class */
-	class B {
-		B() {
-			set_m0 = this;
-			set_m0 = A.this;
-		}
+  private B f3; // set for field f3
+  private Object f4; // set for field f4
+  private C f5; // set for field f5
+  private Object set_m0;
+  private Object set_m1;
+  private Object set_m2;
+  private Object set_m3;
+  public A() {
+    set_m0 = this;
+  }
 
-		void m1() {
-			set_m1 = this; // inferred from implicit "this" parameter
-			set_m1 = A.this; // inferred from implicit "this" parameter of outer class A
-			
-			// field writes
-			Object set = set_m1;
-			A a = (A) set;
-			B b = (B) set;
-			b.f1 = a;
-		}
+  public void m6() {
+    set_m1 = this; // inferred from implicit "this" parameter
+    set_m1 = new B(); // inferred from allocation "new B()"
+    set_m1 = ""; // inferred from allocation "new String()"
 
-		A m2() {
-			set_m2 = this; // inferred from implicit "this" parameter
-			set_m2 = A.this; // inferred from implicit "this" parameter of outer class A
-			
-			// field reads
-			Object set = set_m2;
-			B b = (B) set;
-			set_m2 = b.f1;
+    // field writes
+    Object set = set_m1;
+    A a = (A) set;
+    a.f3 = (B) set;
+    a.f4 = set;
+  }
 
-			return (A) set; // inferred from return type
-		}
+  public void m7() {
+    set_m2 = this; // inferred from implicit "this" parameter
+    set_m2 = new C(); // inferred from allocation "new C()"
 
-		Object m3() {
-			set_m3 = this; // inferred from implicit "this" parameter
-			set_m3 = A.this; // inferred from implicit "this" parameter of outer class A
-			
-			// field reads
-			Object set = set_m3;
-			A a = (A) set;
-			set_m3 = a.f5;
+    // field writes
+    Object set = set_m2;
+    A a = (A) set;
+    a.f5 = (C) set;
+  }
 
-			return set; // inferred from return type
-		}
+  public B m8() {
+    set_m3 = this; // inferred from implicit "this" parameter
 
-		// weirdly, it seems that static fields cannot be used here because the
-		// nested class is nonstatic
-		private /* static */ A f1; // set for field f1
-		private Object set_m0;
-		private Object set_m1;
-		private Object set_m2;
-		private Object set_m3;
-	}
+    // field reads
+    Object set = set_m3;
+    A a = (A) set;
+    set_m3 = a.f3;
 
-	/* static nested class */
-	static class C {
-		C(){
-			set_m0 = this;
-		}
-		
-		void m4(Object o) {
-			set_m1 = this; // inferred from implicit "this" parameter
-			set_m1 = o; // inferred for parameter o
-			
-			// field writes
-			Object set = set_m1;
-			C c = (C) set;
-			c.f2 = set;
-		}
+    return (B) set; // inferred from return type
+  }
 
-		Object m5() {
-			set_m2 = this; // inferred from implicit "this" parameter
-			
-			// field reads
-			Object set = set_m2;
-			C c = (C) set;
-			set_m2 = c.f2;
+  /* static nested class */
+  static class C {
+    private Object f2; // set for field f2
+    private Object set_m0;
+    private Object set_m1;
+    private Object set_m2;
+    C() {
+      set_m0 = this;
+    }
 
-			return set; // inferred from return type
-		}
+    void m4(Object o) {
+      set_m1 = this; // inferred from implicit "this" parameter
+      set_m1 = o; // inferred for parameter o
 
-		private Object f2; // set for field f2
-		private Object set_m0;
-		private Object set_m1;
-		private Object set_m2;
-	}
-	
-	public A() {
-		set_m0 = this;
-	}
+      // field writes
+      Object set = set_m1;
+      C c = (C) set;
+      c.f2 = set;
+    }
 
-	public void m6() {
-		set_m1 = this; // inferred from implicit "this" parameter
-		set_m1 = new B(); // inferred from allocation "new B()"
-		set_m1 = new String(); // inferred from allocation "new String()"
-		
-		// field writes
-		Object set = set_m1;
-		A a = (A) set;
-		a.f3 = (B) set;
-		a.f4 = set;
-	}
+    Object m5() {
+      set_m2 = this; // inferred from implicit "this" parameter
 
-	public void m7() {
-		set_m2 = this; // inferred from implicit "this" parameter
-		set_m2 = new C(); // inferred from allocation "new C()"
-		
-		// field writes
-		Object set = set_m2;
-		A a = (A) set;
-		a.f5 = (C) set;
-	}
+      // field reads
+      Object set = set_m2;
+      C c = (C) set;
+      set_m2 = c.f2;
 
-	public B m8() {
-		set_m3 = this; // inferred from implicit "this" parameter
-		
-		// field reads
-		Object set = set_m3;
-		A a = (A) set;
-		set_m3 = a.f3;
+      return set; // inferred from return type
+    }
+  }
 
-		return (B) set; // inferred from return type
-	}
+  /* non-static nested class */
+  class B {
+    // weirdly, it seems that static fields cannot be used here because the
+    // nested class is nonstatic
+    private /* static */ A f1; // set for field f1
+    private Object set_m0;
+    private Object set_m1;
+    private Object set_m2;
+    private Object set_m3;
+    B() {
+      set_m0 = this;
+      set_m0 = A.this;
+    }
 
-	private B f3; // set for field f3
-	private Object f4; // set for field f4
-	private C f5; // set for field f5
+    void m1() {
+      set_m1 = this; // inferred from implicit "this" parameter
+      set_m1 = A.this; // inferred from implicit "this" parameter of outer class A
 
-	private Object set_m0;
-	private Object set_m1;
-	private Object set_m2;
-	private Object set_m3;
+      // field writes
+      Object set = set_m1;
+      A a = (A) set;
+      B b = (B) set;
+      b.f1 = a;
+    }
+
+    A m2() {
+      set_m2 = this; // inferred from implicit "this" parameter
+      set_m2 = A.this; // inferred from implicit "this" parameter of outer class A
+
+      // field reads
+      Object set = set_m2;
+      B b = (B) set;
+      set_m2 = b.f1;
+
+      return (A) set; // inferred from return type
+    }
+
+    Object m3() {
+      set_m3 = this; // inferred from implicit "this" parameter
+      set_m3 = A.this; // inferred from implicit "this" parameter of outer class A
+
+      // field reads
+      Object set = set_m3;
+      A a = (A) set;
+      set_m3 = a.f5;
+
+      return set; // inferred from return type
+    }
+  }
 }
