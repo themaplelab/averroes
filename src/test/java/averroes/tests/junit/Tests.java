@@ -80,12 +80,12 @@ public class Tests {
             file -> {
               try {
                 String content = FileUtils.readFileToString(file, Charset.defaultCharset());
-                String cleanContent = cleanFileContent(testCase, content);
+                String cleanContent = cleanString(testCase, content);
                 FileUtils.writeStringToFile(file, cleanContent, Charset.defaultCharset());
 
-                File cleanJsonFile =
-                    Paths.get(dir.toString(), cleanFileName(testCase, file.getName())).toFile();
-                FileUtils.moveFile(file, cleanJsonFile);
+                File cleanFile =
+                    Paths.get(dir.toString(), cleanString(testCase, file.getName())).toFile();
+                FileUtils.moveFile(file, cleanFile);
               } catch (IOException e) {
                 e.printStackTrace();
               }
@@ -96,11 +96,11 @@ public class Tests {
    * Clean the given string to enable successful Json comparisons.
    *
    * @param testCase
-   * @param content
+   * @param str
    * @return
    */
-  private static String cleanFileContent(String testCase, String content) {
-    return content
+  private static String cleanString(String testCase, String str) {
+    return str
         .replace(
             "averroes.testsuite." + testCase.toLowerCase() + ".input",
             "averroes.testsuite."
@@ -119,22 +119,6 @@ public class Tests {
                 + "."
                 + FrameworksOptions.getAnalysis().toUpperCase()
                 + ".");
-  }
-
-  /**
-   * Clean the give nfile name to enable successful Json comparison.
-   *
-   * @param testCase
-   * @param name
-   * @return
-   */
-  private static String cleanFileName(String testCase, String name) {
-    return name.replace(
-        "averroes.testsuite." + testCase.toLowerCase() + ".input",
-        "averroes.testsuite."
-            + testCase.toLowerCase()
-            + ".output."
-            + FrameworksOptions.getAnalysis());
   }
 
   /**
@@ -233,6 +217,8 @@ public class Tests {
             Arrays.asList(
                 "-i",
                 CommonOptions.getOutputProject(testCase, analysis),
+                "-p",
+                "averroes.testsuite." + testCase.toLowerCase() + ".output." + analysis,
                 "-o",
                 CommonOptions.getOutputDirectory(testCase),
                 "-j",
@@ -256,6 +242,8 @@ public class Tests {
             Arrays.asList(
                 "-i",
                 CommonOptions.getInputProject(testCase),
+                "-p",
+                "averroes.testsuite." + testCase.toLowerCase() + ".input",
                 "-o",
                 CommonOptions.getOutputDirectory(testCase),
                 "-j",

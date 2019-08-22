@@ -47,8 +47,7 @@ public class Main {
       FileUtils.cleanDirectory(Paths.frameworksLibraryClassesOutputDirectory());
 
       // Set some soot parameters
-//      Options.v().set_process_dir(FrameworksOptions.getInputs());
-      Options.v().classes().addAll(FrameworksOptions.getClasses("averroes.testsuite.anonymousclasses.input."));
+      Options.v().classes().addAll(FrameworksOptions.getClasses());
       Options.v().set_soot_classpath(FrameworksOptions.getSootClassPath());
       Options.v().set_validate(true);
       if (FrameworksOptions.isIncludeDependencies()) {
@@ -69,8 +68,6 @@ public class Main {
       System.out.println("Soot loaded the input classes in " + soot + " seconds.");
 
       // Add default constructors to all library classes
-      //			SootSceneUtil.getSortedClasses().forEach(System.out::println);
-      //			System.exit(0);
       SootSceneUtil.getClasses().forEach(CodeGenerator::createEmptyDefaultConstructor);
 
       // Now let Averroes do its thing

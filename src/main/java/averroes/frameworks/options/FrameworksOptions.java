@@ -35,6 +35,15 @@ public final class FrameworksOptions {
           .required()
           .build();
 
+  private static Option prefix =
+      Option.builder("p")
+          .longOpt("prefix")
+          .desc("a prefix for the package names of the input files")
+          .hasArg()
+          .argName("package name")
+          .required(false)
+          .build();
+
   private static Option deps =
       Option.builder("d")
           .longOpt("dependencies")
@@ -47,7 +56,7 @@ public final class FrameworksOptions {
   private static Option outputDirectory =
       Option.builder("o")
           .longOpt("output-directory")
-          .desc("the directory to which Averroes will write any output files/folders.")
+          .desc("the directory to which Averroes will write any output files/folders")
           .hasArg()
           .argName("directory")
           .required()
@@ -102,6 +111,7 @@ public final class FrameworksOptions {
   private static Options options =
       new Options()
           .addOption(input)
+          .addOption(prefix)
           .addOption(deps)
           .addOption(outputDirectory)
           .addOption(jreDirectory)
@@ -138,7 +148,16 @@ public final class FrameworksOptions {
   }
 
   /**
-   * A list of the input files (class files, JARs, or folders).
+   * Get a list of the input files (class files, JARs, or folders).
+   *
+   * @return
+   */
+  public static String getPrefix() {
+    return cmd.getOptionValue(prefix.getOpt(), "");
+  }
+
+  /**
+   * Get the package prefix, defaulting to an empty string.
    *
    * @return
    */
@@ -172,6 +191,10 @@ public final class FrameworksOptions {
             .collect(Collectors.joining(File.pathSeparator));
 
     return inputs + File.pathSeparator + (deps.isEmpty() ? "" : deps + File.pathSeparator) + std;
+  }
+
+  public static List<String> getClasses() {
+    return getClasses(getPrefix() + ".");
   }
 
   public static List<String> getClasses(String prefix) {
