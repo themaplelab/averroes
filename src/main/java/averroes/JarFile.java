@@ -55,7 +55,7 @@ public class JarFile {
   /**
    * Construct a new JAR file.
    *
-   * @param fileName
+   * @param file
    */
   public JarFile(File file) {
     jarOutputStream = null;
@@ -65,8 +65,8 @@ public class JarFile {
   /**
    * Get the relative path for an absolute file path.
    *
-   * @param dir
-   * @param file
+   * @param base
+   * @param absolute
    * @return
    * @throws IOException
    */
