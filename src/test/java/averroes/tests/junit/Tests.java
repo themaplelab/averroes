@@ -80,11 +80,11 @@ public class Tests {
             file -> {
               try {
                 String content = FileUtils.readFileToString(file, Charset.defaultCharset());
-                String cleanContent = cleanString(testCase, content);
+                String cleanContent = cleanFileContent(testCase, content);
                 FileUtils.writeStringToFile(file, cleanContent, Charset.defaultCharset());
 
                 File cleanJsonFile =
-                    Paths.get(dir.toString(), cleanString(testCase, file.getName())).toFile();
+                    Paths.get(dir.toString(), cleanFileName(testCase, file.getName())).toFile();
                 FileUtils.moveFile(file, cleanJsonFile);
               } catch (IOException e) {
                 e.printStackTrace();
@@ -96,11 +96,40 @@ public class Tests {
    * Clean the given string to enable successful Json comparisons.
    *
    * @param testCase
-   * @param str
+   * @param content
    * @return
    */
-  private static String cleanString(String testCase, String str) {
-    return str.replace(
+  private static String cleanFileContent(String testCase, String content) {
+    return content
+        .replace(
+            "averroes.testsuite." + testCase.toLowerCase() + ".input",
+            "averroes.testsuite."
+                + testCase.toLowerCase()
+                + ".output."
+                + FrameworksOptions.getAnalysis())
+        .replace(
+            FrameworksOptions.getAnalysis()
+                + "."
+                + FrameworksOptions.getAnalysis().toUpperCase()
+                + ".",
+            "averroes.testsuite."
+                + testCase.toLowerCase()
+                + ".output."
+                + FrameworksOptions.getAnalysis()
+                + "."
+                + FrameworksOptions.getAnalysis().toUpperCase()
+                + ".");
+  }
+
+  /**
+   * Clean the give nfile name to enable successful Json comparison.
+   *
+   * @param testCase
+   * @param name
+   * @return
+   */
+  private static String cleanFileName(String testCase, String name) {
+    return name.replace(
         "averroes.testsuite." + testCase.toLowerCase() + ".input",
         "averroes.testsuite."
             + testCase.toLowerCase()

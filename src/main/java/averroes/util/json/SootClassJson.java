@@ -157,7 +157,8 @@ public class SootClassJson {
 
     MapDifference<String, HashSet<String>> fieldWritesDifference =
         Maps.difference(methodToFieldWrites, other.methodToFieldWrites);
-    if (!fieldWritesDifference.areEqual()) {
+    if (!fieldWritesDifference.areEqual()
+        && !ignoreFieldWrites(fieldWritesDifference.entriesOnlyOnLeft())) {
       System.out.println("There are some differences in field writes.");
       System.out.println(
           "Methods with different field writes between generated and expected code: "
@@ -194,16 +195,25 @@ public class SootClassJson {
     return methodToFieldWrites;
   }
 
-  private boolean ignoreCalls(Map<String, HashSet<String>> methodsToCalls) {
-    // All method calls are from the default constructor of inner classes and to the default constructor
-    // of the superclass. This is a hackish way of ignoring such calls, but necessary because Averroes
+  private boolean ignoreCalls(Map<String, HashSet<String>> callsDiff) {
+    // All method calls are from the default constructor of inner classes and to the default
+    // constructor
+    // of the superclass. This is a hackish way of ignoring such calls, but necessary because
+    // Averroes
     // needs those default constructors to generate valid bytecode that involves casting the LPT
-    // to the types required to prepare arguments for methods calls to constructors. Without those default
+    // to the types required to prepare arguments for methods calls to constructors. Without those
+    // default
     // constructors, Averroes will just drop dead.
-    return methodsToCalls.keySet().stream().allMatch(m -> m.contains("$") && m.endsWith("void <init>()>"))
-        && methodsToCalls.values().stream()
+    return callsDiff.keySet().stream()
+            .allMatch(m -> m.contains("$") && m.endsWith("void <init>()>"))
+        && callsDiff.values().stream()
             .flatMap(Collection::stream)
             .allMatch(c -> c.endsWith("void <init>()>"));
+  }
+
+  private boolean ignoreFieldWrites(Map<String, HashSet<String>> fieldWritesDiff) {
+    return fieldWritesDiff.keySet().stream()
+        .allMatch(m -> m.contains("$") && m.endsWith("void <init>()>"));
   }
 
   // private boolean onlyGuardReadIsMissing(Map<String, HashSet<String>>

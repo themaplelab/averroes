@@ -347,7 +347,7 @@ public abstract class AbstractJimpleBody {
   /**
    * Create an object by calling that specific constructor.
    *
-   * @param init
+   * @param invoke
    * @return
    */
   protected Local createObjectByInvokeExpr(SpecialInvokeExpr invoke) {
@@ -1126,9 +1126,9 @@ public abstract class AbstractJimpleBody {
    * @return
    */
   protected boolean isFieldRead(AssignStmt assign) {
-    return assign.getRightOp() instanceof FieldRef
-        && !(isDeclaringClassInnerClass()
-            && ((FieldRef) assign.getRightOp()).getField().getName().equals("this$0"));
+    return assign.getRightOp() instanceof FieldRef;
+//        && !(isDeclaringClassInnerClass()
+//            && ((FieldRef) assign.getRightOp()).getField().getName().equals("this$0"));
   }
 
   /**
