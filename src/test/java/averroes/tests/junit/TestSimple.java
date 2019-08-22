@@ -12,8 +12,8 @@ public class TestSimple {
     Tests.runRta(testCase, guard, whole);
   }
 
-  //	@Test
-  //	public void testSimpleXta() {
-  //		Tests.runXta(testCase, guard, whole);
-  //	}
+  @Test
+  public void testSimpleXta() {
+    Tests.runXta(testCase, guard, whole);
+  }
 }
