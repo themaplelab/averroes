@@ -391,13 +391,15 @@ public abstract class AbstractJimpleBody {
     invokeExprs.forEach(
         e -> {
           InvokeExpr expr = buildInvokeExpr(e);
-          // Only store the return value if it's a reference, otherwise just
-          // call the method.
-          if (!(expr instanceof DynamicInvokeExpr)
-              && expr.getMethod().getReturnType() instanceof RefLikeType) {
-            storeMethodCallReturn(expr);
-          } else {
-            insertInvokeStmt(expr);
+
+          // ignore invokedynamic
+          if(!(expr instanceof DynamicInvokeExpr)) {
+            // Only store the return value if it's a reference, otherwise just call the method.
+            if (expr.getMethod().getReturnType() instanceof RefLikeType) {
+              storeMethodCallReturn(expr);
+            } else {
+              insertInvokeStmt(expr);
+            }
           }
         });
   }
@@ -483,7 +485,8 @@ public abstract class AbstractJimpleBody {
    */
   protected void buildAndInsertInvokeStmt(InvokeExpr originalInvokeExpr) {
     InvokeExpr invokeExpr = buildInvokeExpr(originalInvokeExpr);
-    insertInvokeStmt(invokeExpr);
+    // ignore invokedynamic
+    if (!(invokeExpr instanceof DynamicInvokeExpr)) insertInvokeStmt(invokeExpr);
   }
 
   /**
@@ -992,15 +995,15 @@ public abstract class AbstractJimpleBody {
    * @return
    */
   protected boolean isCallToSuperConstructor(InvokeStmt stmt) {
-    return method.getDeclaringClass().hasSuperclass() && (
-        stmt.getInvokeExpr() instanceof SpecialInvokeExpr
+    return method.getDeclaringClass().hasSuperclass()
+        && (stmt.getInvokeExpr() instanceof SpecialInvokeExpr
             && method.isConstructor()
             && stmt.getInvokeExpr().getMethod().isConstructor()
             && method
-            .getDeclaringClass()
-            .getSuperclass()
-            .getMethods()
-            .contains(stmt.getInvokeExpr().getMethod()));
+                .getDeclaringClass()
+                .getSuperclass()
+                .getMethods()
+                .contains(stmt.getInvokeExpr().getMethod()));
   }
 
   /**
@@ -1127,8 +1130,8 @@ public abstract class AbstractJimpleBody {
    */
   protected boolean isFieldRead(AssignStmt assign) {
     return assign.getRightOp() instanceof FieldRef;
-//        && !(isDeclaringClassInnerClass()
-//            && ((FieldRef) assign.getRightOp()).getField().getName().equals("this$0"));
+    //        && !(isDeclaringClassInnerClass()
+    //            && ((FieldRef) assign.getRightOp()).getField().getName().equals("this$0"));
   }
 
   /**

@@ -70,8 +70,7 @@ public class JsonUtils {
 
                                   @Override
                                   public void caseInvokeStmt(InvokeStmt stmt) {
-                                    sootClassJson.addInvocation(
-                                        m, stmt.getInvokeExpr());
+                                    sootClassJson.addInvocation(m, stmt.getInvokeExpr());
                                   }
                                 }));
               }
@@ -139,7 +138,7 @@ public class JsonUtils {
     // Append the base (instance invoke) or declaring class (static invoke)
     if (invoke instanceof StaticInvokeExpr) {
       str.append(invoke.getMethod().getDeclaringClass().getType().toString());
-    } else {
+    } else if (invoke instanceof InstanceInvokeExpr) {
       str.append(((InstanceInvokeExpr) invoke).getBase().getType().toString());
     }
 
