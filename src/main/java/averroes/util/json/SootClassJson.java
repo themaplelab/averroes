@@ -2,8 +2,10 @@ package averroes.util.json;
 
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.Maps;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import soot.Modifier;
 import soot.SootMethod;
 import soot.Type;
@@ -116,7 +118,8 @@ public class SootClassJson {
 
     MapDifference<String, HashSet<String>> invocationsDifference =
         Maps.difference(methodToInvocations, other.methodToInvocations);
-    if (!invocationsDifference.areEqual()) {
+    if (!invocationsDifference.areEqual()
+        && !ignoreCalls(invocationsDifference.entriesOnlyOnLeft())) {
       System.out.println("There are some differences in invocations.");
       System.out.println(
           "Methods with different invocations between generated and expected code: "
@@ -189,6 +192,18 @@ public class SootClassJson {
 
   public HashMap<String, HashSet<String>> getMethodToFieldWrites() {
     return methodToFieldWrites;
+  }
+
+  private boolean ignoreCalls(Map<String, HashSet<String>> methodsToCalls) {
+    // All method calls are from the default constructor of inner classes and to the default constructor
+    // of the superclass. This is a hackish way of ignoring such calls, but necessary because Averroes
+    // needs those default constructors to generate valid bytecode that involves casting the LPT
+    // to the types required to prepare arguments for methods calls to constructors. Without those default
+    // constructors, Averroes will just drop dead.
+    return methodsToCalls.keySet().stream().allMatch(m -> m.contains("$") && m.endsWith("void <init>()>"))
+        && methodsToCalls.values().stream()
+            .flatMap(Collection::stream)
+            .allMatch(c -> c.endsWith("void <init>()>"));
   }
 
   // private boolean onlyGuardReadIsMissing(Map<String, HashSet<String>>
