@@ -15,11 +15,8 @@ import averroes.util.json.JsonUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.nio.charset.Charset;
+import java.util.Collections;
 import org.apache.commons.io.FileUtils;
 import soot.SootClass;
 import soot.SootMethod;
@@ -35,64 +32,6 @@ public class Printers {
   private static Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
 
   /**
-   * Get the Jimple output file that corresponds to the given Soot method.
-   *
-   * @param printerType
-   * @param method
-   * @return
-   */
-  private static PrintStream getPrintStream(PrinterType printerType, SootMethod method) {
-    PrintStream result = null;
-
-    try {
-      result =
-          new PrintStream(
-              new FileOutputStream(Paths.jimpleOutputFile(printerType, method), true), true);
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-    }
-
-    return result;
-  }
-
-  /**
-   * Get the JSON output file that corresponds to the given Soot class.
-   *
-   * @param printerType
-   * @param cls
-   * @return
-   */
-  private static PrintStream getJsonWriter(PrinterType printerType, SootClass cls) {
-    PrintStream result = null;
-
-    try {
-      result = new PrintStream(new FileOutputStream(Paths.jsonOutputFile(printerType, cls)), true);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
-    return result;
-  }
-
-  /**
-   * Get the output stream used to print the inliner info for the given Soot class.
-   *
-   * @param cls
-   * @return
-   */
-  private static PrintStream getInlinerPrintStream(SootClass cls) {
-    PrintStream result = null;
-
-    try {
-      result = new PrintStream(new FileOutputStream(Paths.inlinerOutputFile(cls), true), true);
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-    }
-
-    return result;
-  }
-
-  /**
    * Print out the Jimple representation of the given Soot method.
    *
    * @param printerType
@@ -103,11 +42,16 @@ public class Printers {
       SootUtils.cleanup(method.retrieveActiveBody());
     }
 
-    getPrintStream(printerType, method).println(method.getSignature());
-    getPrintStream(printerType, method).println(method.retrieveActiveBody());
-    getPrintStream(printerType, method).println();
-    getPrintStream(printerType, method).println();
-    getPrintStream(printerType, method).close();
+    File jimpleFile = Paths.jimpleOutputFile(printerType, method);
+    try {
+      FileUtils.writeLines(jimpleFile, Collections.singleton(method.getSignature()), true);
+      FileUtils.writeLines(
+          jimpleFile, Collections.singleton(method.retrieveActiveBody().toString()), true);
+      FileUtils.writeLines(jimpleFile, null, true);
+      FileUtils.writeLines(jimpleFile, null, true);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   /**
@@ -120,12 +64,10 @@ public class Printers {
     File jsonFile = Paths.jsonOutputFile(printerType, cls);
     String json = gson.toJson(JsonUtils.toJson(cls));
     try {
-      FileUtils.writeStringToFile(jsonFile, json, Charset.defaultCharset());
+      FileUtils.writeLines(jsonFile, Collections.singleton(json));
     } catch (IOException e) {
       e.printStackTrace();
     }
-//    getJsonWriter(printerType, cls).print(json);
-//    getJsonWriter(printerType, cls).close();
   }
 
   /**
@@ -135,8 +77,7 @@ public class Printers {
    * @param method
    */
   public static void logInliningInfo(String message, SootMethod method) {
-    getInlinerPrintStream(method.getDeclaringClass()).println(message);
-    getInlinerPrintStream(method.getDeclaringClass()).close();
+    logInliningInfo(message, method.getDeclaringClass());
   }
 
   /**
@@ -146,8 +87,12 @@ public class Printers {
    * @param cls
    */
   public static void logInliningInfo(String message, SootClass cls) {
-    getInlinerPrintStream(cls).println(message);
-    getInlinerPrintStream(cls).close();
+    File inlinerFile = Paths.inlinerOutputFile(cls);
+    try {
+      FileUtils.writeLines(inlinerFile, Collections.singleton(message));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   public enum PrinterType {
