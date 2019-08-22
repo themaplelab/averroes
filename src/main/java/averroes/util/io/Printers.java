@@ -14,10 +14,13 @@ import averroes.util.SootUtils;
 import averroes.util.json.JsonUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.charset.Charset;
+import org.apache.commons.io.FileUtils;
 import soot.SootClass;
 import soot.SootMethod;
 
@@ -44,7 +47,7 @@ public class Printers {
     try {
       result =
           new PrintStream(
-              new FileOutputStream(Paths.jimpleDumpFile(printerType, method), true), true);
+              new FileOutputStream(Paths.jimpleOutputFile(printerType, method), true), true);
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     }
@@ -63,7 +66,7 @@ public class Printers {
     PrintStream result = null;
 
     try {
-      result = new PrintStream(new FileOutputStream(Paths.jsonDumpFile(printerType, cls)), true);
+      result = new PrintStream(new FileOutputStream(Paths.jsonOutputFile(printerType, cls)), true);
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -81,7 +84,7 @@ public class Printers {
     PrintStream result = null;
 
     try {
-      result = new PrintStream(new FileOutputStream(Paths.inlinerDumpFile(cls), true), true);
+      result = new PrintStream(new FileOutputStream(Paths.inlinerOutputFile(cls), true), true);
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     }
@@ -114,9 +117,15 @@ public class Printers {
    * @param cls
    */
   public static void printJson(PrinterType printerType, SootClass cls) {
-    //		File jsonFile = Paths.jsonDumpFile(printerType, cls);
-    getJsonWriter(printerType, cls).print(gson.toJson(JsonUtils.toJson(cls)));
-    getJsonWriter(printerType, cls).close();
+    File jsonFile = Paths.jsonOutputFile(printerType, cls);
+    String json = gson.toJson(JsonUtils.toJson(cls));
+    try {
+      FileUtils.writeStringToFile(jsonFile, json, Charset.defaultCharset());
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+//    getJsonWriter(printerType, cls).print(json);
+//    getJsonWriter(printerType, cls).close();
   }
 
   /**

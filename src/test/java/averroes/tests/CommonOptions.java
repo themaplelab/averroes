@@ -3,6 +3,7 @@ package averroes.tests;
 import averroes.util.io.FileFilters;
 import averroes.util.io.Printers.PrinterType;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -19,9 +20,6 @@ public class CommonOptions {
 
   public static String base =
       Paths.get("build", "classes", "java", "test", "averroes", "testsuite").toString();
-  public static String output = "output";
-  public static String jimple = "jimple";
-  public static String json = "json";
 
   public static IOFileFilter averroesModelFilter =
       FileFilterUtils.or(
@@ -42,8 +40,7 @@ public class CommonOptions {
    * @return
    */
   public static String getOriginalLibrary(String testCase) {
-    return Paths.get(
-            base, testCase, getProjectNamePrefix(testCase), "jars", "averroes", "organized-lib.jar")
+    return Paths.get(getOutputDirectory(testCase), "jars", "averroes", "organized-lib.jar")
         .toString();
   }
 
@@ -57,7 +54,7 @@ public class CommonOptions {
   public static String getAverroesModel(String testCase, boolean selectHandWrittenModel) {
     String dir = selectHandWrittenModel ? "manual" : "averroes";
     return FileUtils.listFiles(
-            Paths.get(base, testCase, getProjectNamePrefix(testCase), "jars", dir).toFile(),
+            Paths.get(getOutputDirectory(testCase), "jars", dir).toFile(),
             averroesModelFilter,
             FileFilterUtils.trueFileFilter())
         .stream()
@@ -74,8 +71,7 @@ public class CommonOptions {
    */
   public static String getAverroesLibraryClass(String testCase, boolean selectHandWrittenModel) {
     String dir = selectHandWrittenModel ? "manual" : "averroes";
-    return Paths.get(
-            base, testCase, getProjectNamePrefix(testCase), "jars", dir, "averroes-lib-class.jar")
+    return Paths.get(getOutputDirectory(testCase), "jars", dir, "averroes-lib-class.jar")
         .toString();
   }
 
@@ -88,9 +84,7 @@ public class CommonOptions {
    */
   public static String getAverroesPlaceholderLib(String testCase, boolean selectHandWrittenModel) {
     String dir = selectHandWrittenModel ? "manual" : "averroes";
-    return Paths.get(
-            base, testCase, getProjectNamePrefix(testCase), "jars", dir, "placeholder-lib.jar")
-        .toString();
+    return Paths.get(getOutputDirectory(testCase), "jars", dir, "placeholder-lib.jar").toString();
   }
 
   /**
@@ -121,18 +115,11 @@ public class CommonOptions {
       String testCase, String analysis, boolean selectHandWrittenModel) {
     if (selectHandWrittenModel) {
       return Paths.get(
-              base,
-              testCase,
-              getProjectNamePrefix(testCase),
-              "jars",
-              "manual",
-              "placeholder-" + analysis + ".jar")
+              getOutputDirectory(testCase), "jars", "manual", "placeholder-" + analysis + ".jar")
           .toString();
     } else {
       return Paths.get(
-              base,
-              testCase,
-              getProjectNamePrefix(testCase),
+              getOutputDirectory(testCase),
               "jars",
               "averroes",
               "placeholder-fwk-" + analysis + ".jar")
@@ -148,8 +135,7 @@ public class CommonOptions {
    * @return
    */
   public static String getApplicationCode(String testCase) {
-    return Paths.get(
-            base, testCase, getProjectNamePrefix(testCase), "jars", "averroes", "organized-app.jar")
+    return Paths.get(getOutputDirectory(testCase), "jars", "averroes", "organized-app.jar")
         .toString();
   }
 
@@ -177,150 +163,73 @@ public class CommonOptions {
   /**
    * Find the Jimple files for the given test case.
    *
-   * @param testCase
-   * @param analysis
    * @param printerType
    * @return
    */
-  public static Collection<File> findJimpleFiles(
-      String testCase, String analysis, PrinterType printerType) {
-    File root =
-        Paths.get(
-                jimple,
-                getProjectNamePrefix(testCase)
-                    + ".output."
-                    + analysis
-                    + "."
-                    + printerType.toString().toLowerCase())
-            .toFile();
-    return FileUtils.listFiles(root, new String[] {jimple}, true);
+  public static Collection<File> findJimpleFiles(PrinterType printerType) {
+    return FileUtils.listFiles(
+        averroes.util.io.Paths.jimpleOutputDirectory(printerType).toFile(),
+        new String[] {"jimple"},
+        true);
   }
 
   /**
    * Find the JSON files for the given test case.
    *
-   * @param testCase
-   * @param analysis
    * @param printerType
    * @return
    */
-  public static Collection<File> findJsonFiles(
-      String testCase, String analysis, PrinterType printerType) {
-    File root =
-        Paths.get(
-                json,
-                getProjectNamePrefix(testCase)
-                    + ".output."
-                    + analysis
-                    + "."
-                    + printerType.toString().toLowerCase())
-            .toFile();
-    return FileUtils.listFiles(root, new String[] {json}, true);
+  public static Collection<File> findJsonFiles(PrinterType printerType) {
+    return FileUtils.listFiles(
+        averroes.util.io.Paths.jsonOutputDirectory(printerType).toFile(),
+        new String[] {"json"},
+        true);
+  }
+
+  /** Delete the directory that contains the Jimple files for the handwritten model. */
+  public static void deleteJimpleExpectedDirectory() {
+    deleteDirectory(averroes.util.io.Paths.jimpleOutputDirectory(PrinterType.EXPECTED).toFile());
+  }
+
+  /** Delete the directory that contains the JSON files for the handwritten model. */
+  public static void deleteJsonExpectedDirectory() {
+    deleteDirectory(averroes.util.io.Paths.jsonOutputDirectory(PrinterType.EXPECTED).toFile());
+  }
+
+  /** Delete the directory that contains the Jimple files for the generated model. */
+  public static void deleteJimpleAnalysisDirectories() {
+    deleteDirectory(averroes.util.io.Paths.jimpleOutputDirectory(PrinterType.ORIGINAL).toFile());
+    deleteDirectory(averroes.util.io.Paths.jimpleOutputDirectory(PrinterType.GENERATED).toFile());
+    deleteDirectory(averroes.util.io.Paths.jimpleOutputDirectory(PrinterType.OPTIMIZED).toFile());
+  }
+
+  /** Delete the directory that contains the Jimple files for the generated model. */
+  public static void deleteJsonAnalysisDirectories() {
+    deleteDirectory(averroes.util.io.Paths.jsonOutputDirectory(PrinterType.ORIGINAL).toFile());
+    deleteDirectory(averroes.util.io.Paths.jsonOutputDirectory(PrinterType.GENERATED).toFile());
+    deleteDirectory(averroes.util.io.Paths.jsonOutputDirectory(PrinterType.OPTIMIZED).toFile());
   }
 
   /**
-   * Get the common project prefix.
+   * Get the output directory for the given test case.
    *
    * @param testCase
    * @return
    */
-  public static String getProjectNamePrefix(String testCase) {
-    return "averroes.tests." + testCase.toLowerCase();
+  public static String getOutputDirectory(String testCase) {
+    return Paths.get("output", testCase.toLowerCase()).toString();
   }
 
   /**
-   * Delete the directory that contains the Jimple files for the handwritten model.
+   * Delete the given directory, recursively.
    *
-   * @param testCase
-   * @param analysis
+   * @param directory
    */
-  public static void deleteJimpleExpectedDirectory(String testCase, String analysis) {
-    deleteExpectedDirectory(testCase, analysis, jimple);
-  }
-
-  /**
-   * Delete the directory that contains the JSON files for the handwritten model.
-   *
-   * @param testCase
-   * @param analysis
-   */
-  public static void deleteJsonExpectedDirectory(String testCase, String analysis) {
-    deleteExpectedDirectory(testCase, analysis, json);
-  }
-
-  /**
-   * Delete the directory that contains the expected files for the handwritten model.
-   *
-   * @param testCase
-   * @param analysis
-   * @param basedir
-   */
-  public static void deleteExpectedDirectory(String testCase, String analysis, String basedir) {
-    FileUtils.deleteQuietly(
-        Paths.get(
-                basedir,
-                getProjectNamePrefix(testCase)
-                    + ".output."
-                    + analysis
-                    + "."
-                    + PrinterType.EXPECTED.toString().toLowerCase())
-            .toFile());
-  }
-
-  /**
-   * Delete the directory that contains the Jimple files for the generated model.
-   *
-   * @param testCase
-   * @param analysis
-   */
-  public static void deleteJimpleAnalysisDirectories(String testCase, String analysis) {
-    deleteAnalysisDirectories(testCase, analysis, jimple);
-  }
-
-  /**
-   * Delete the directory that contains the Jimple files for the generated model.
-   *
-   * @param testCase
-   * @param analysis
-   */
-  public static void deleteJsonAnalysisDirectories(String testCase, String analysis) {
-    deleteAnalysisDirectories(testCase, analysis, json);
-  }
-
-  /**
-   * Delete the analysis directories that contain the files for the generated model.
-   *
-   * @param testCase
-   * @param analysis
-   * @param basedir
-   */
-  public static void deleteAnalysisDirectories(String testCase, String analysis, String basedir) {
-    FileUtils.deleteQuietly(
-        Paths.get(
-                basedir,
-                getProjectNamePrefix(testCase)
-                    + ".input."
-                    + PrinterType.ORIGINAL.toString().toLowerCase())
-            .toFile());
-
-    FileUtils.deleteQuietly(
-        Paths.get(
-                basedir,
-                getProjectNamePrefix(testCase)
-                    + ".output."
-                    + analysis
-                    + "."
-                    + PrinterType.GENERATED.toString().toLowerCase())
-            .toFile());
-
-    FileUtils.deleteQuietly(
-        Paths.get(
-                basedir,
-                getProjectNamePrefix(testCase)
-                    + ".output."
-                    + analysis
-                    + "."
-                    + PrinterType.OPTIMIZED.toString().toLowerCase())
-            .toFile());
+  private static void deleteDirectory(File directory) {
+    try {
+      FileUtils.deleteDirectory(directory);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 }

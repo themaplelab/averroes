@@ -2,6 +2,9 @@ package averroes.frameworks.options;
 
 import averroes.util.io.FileFilters;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,6 +16,8 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
+import soot.DexClassProvider;
+import soot.dexpler.DexFileProvider;
 
 /**
  * A class that holds all the properties required by Averroes to run.
@@ -157,6 +162,8 @@ public final class FrameworksOptions {
    */
   public static String getSootClassPath() {
     String deps = getDependencies().stream().collect(Collectors.joining(File.pathSeparator));
+    String inputs = Paths.get("build", "classes", "java", "test").toString();
+//        getInputs().stream().collect(Collectors.joining(File.pathSeparator));
     String std =
         FileUtils.listFiles(
                 new File(getJreDirectory()), FileFilters.jreFileFilter, TrueFileFilter.TRUE)
@@ -164,7 +171,58 @@ public final class FrameworksOptions {
             .map(f -> f.getAbsolutePath())
             .collect(Collectors.joining(File.pathSeparator));
 
-    return deps.isEmpty() ? std : deps + File.pathSeparator + std;
+    return inputs + File.pathSeparator + (deps.isEmpty() ? "" : deps + File.pathSeparator) + std;
+  }
+
+  public static List<String> getClasses(String prefix) {
+    return getInputs().stream()
+        .map(p -> getClassesUnder(p, prefix))
+        .flatMap(List::stream)
+        .collect(Collectors.toList());
+  }
+
+  private static List<String> getClassesUnder(String aPath, String prefix) {
+    List<String> classes = new ArrayList<String>();
+
+    File file = new File(aPath);
+
+    File[] files = file.listFiles();
+    if (files == null) {
+      files = new File[1];
+      files[0] = file;
+    }
+
+    for (File element : files) {
+      if (element.isDirectory()) {
+        classes.addAll(
+            getClassesUnder(
+                aPath + File.separatorChar + element.getName(), prefix + element.getName() + "."));
+      } else {
+        String fileName = element.getName();
+
+        if (fileName.endsWith(".class")) {
+          int index = fileName.lastIndexOf(".class");
+          classes.add(prefix + fileName.substring(0, index));
+        } else if (fileName.endsWith(".jimple")) {
+          int index = fileName.lastIndexOf(".jimple");
+          classes.add(prefix + fileName.substring(0, index));
+        } else if (fileName.endsWith(".java")) {
+          int index = fileName.lastIndexOf(".java");
+          classes.add(prefix + fileName.substring(0, index));
+        } else if (fileName.endsWith(".dex")) {
+          try {
+            for (DexFileProvider.DexContainer container :
+                DexFileProvider.v().getDexFromSource(element)) {
+              classes.addAll(DexClassProvider.classesOfDex(container.getBase()));
+            }
+          } catch (IOException e) {
+            e.getMessage();
+          }
+        }
+      }
+    }
+
+    return classes;
   }
 
   /**

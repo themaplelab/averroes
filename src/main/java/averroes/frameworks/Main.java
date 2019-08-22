@@ -43,11 +43,12 @@ public class Main {
       G.reset();
 
       // Create the output directory and clean up any class files in there
-      FileUtils.forceMkdir(Paths.framewokrsLibraryClassesOutputDirectory());
-      FileUtils.cleanDirectory(Paths.framewokrsLibraryClassesOutputDirectory());
+      FileUtils.forceMkdir(Paths.frameworksLibraryClassesOutputDirectory());
+      FileUtils.cleanDirectory(Paths.frameworksLibraryClassesOutputDirectory());
 
       // Set some soot parameters
-      Options.v().set_process_dir(FrameworksOptions.getInputs());
+//      Options.v().set_process_dir(FrameworksOptions.getInputs());
+      Options.v().classes().addAll(FrameworksOptions.getClasses("averroes.testsuite.anonymousclasses.input."));
       Options.v().set_soot_classpath(FrameworksOptions.getSootClassPath());
       Options.v().set_validate(true);
       if (FrameworksOptions.isIncludeDependencies()) {
