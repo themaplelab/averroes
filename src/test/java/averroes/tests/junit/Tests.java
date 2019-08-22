@@ -3,6 +3,7 @@ package averroes.tests.junit;
 import averroes.exceptions.AssertionError;
 import averroes.frameworks.analysis.RtaJimpleBody;
 import averroes.frameworks.analysis.XtaJimpleBody;
+import averroes.frameworks.options.FrameworksOptions;
 import averroes.soot.Names;
 import averroes.tests.CommonOptions;
 import averroes.util.io.Printers.PrinterType;
@@ -10,6 +11,9 @@ import averroes.util.json.JsonUtils;
 import averroes.util.json.SootClassJson;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,7 +37,8 @@ public class Tests {
     System.out.println("======== Started testing " + testCase + " RTA ========");
     runExpectedOutputPrinter(testCase, RtaJimpleBody.name);
     runAnalysis(testCase, RtaJimpleBody.name, guard, whole);
-    compareJson(testCase, RtaJimpleBody.name);
+    cleanupFiles(testCase);
+    compareJson();
     System.out.println("======== Finished testing " + testCase + " RTA ========");
   }
 
@@ -49,22 +54,67 @@ public class Tests {
     System.out.println("======== Started testing " + testCase + " XTA ========");
     runExpectedOutputPrinter(testCase, XtaJimpleBody.name);
     runAnalysis(testCase, XtaJimpleBody.name, guard, whole);
-    compareJson(testCase, XtaJimpleBody.name);
+    cleanupFiles(testCase);
+    compareJson();
     System.out.println("======== Finished testing " + testCase + " XTA ========");
+  }
+
+  private static void cleanupFiles(String testCase) {
+    cleanupFiles(
+        testCase,
+        CommonOptions.findJsonFiles(PrinterType.GENERATED),
+        averroes.util.io.Paths.jsonOutputDirectory(PrinterType.GENERATED));
+    cleanupFiles(
+        testCase,
+        CommonOptions.findJimpleFiles(PrinterType.GENERATED),
+        averroes.util.io.Paths.jimpleOutputDirectory(PrinterType.GENERATED));
+  }
+
+  /**
+   * Cleanup the generated Json files. This cleanup includes renaming files to use
+   * "output.<analysis>" instead of "input." in the file name, as well in the file content.
+   */
+  private static void cleanupFiles(String testCase, Collection<File> files, Path dir) {
+    files.stream()
+        .forEach(
+            file -> {
+              try {
+                String content = FileUtils.readFileToString(file, Charset.defaultCharset());
+                String cleanContent = cleanString(testCase, content);
+                FileUtils.writeStringToFile(file, cleanContent, Charset.defaultCharset());
+
+                File cleanJsonFile =
+                    Paths.get(dir.toString(), cleanString(testCase, file.getName())).toFile();
+                FileUtils.moveFile(file, cleanJsonFile);
+              } catch (IOException e) {
+                e.printStackTrace();
+              }
+            });
+  }
+
+  /**
+   * Clean the given string to enable successful Json comparisons.
+   *
+   * @param testCase
+   * @param str
+   * @return
+   */
+  private static String cleanString(String testCase, String str) {
+    return str.replace(
+        "averroes.testsuite." + testCase.toLowerCase() + ".input",
+        "averroes.testsuite."
+            + testCase.toLowerCase()
+            + ".output."
+            + FrameworksOptions.getAnalysis());
   }
 
   /**
    * Perform content-based comparison between JSON objects that represent the generated and the
    * expected classes.
-   *
-   * @param testCase
-   * @param analysis
    */
-  public static void compareJson(String testCase, String analysis) {
-    Collection<File> generatedFiles =
-        CommonOptions.findJsonFiles(testCase, analysis, PrinterType.GENERATED);
-    Collection<File> expectedFiles =
-        CommonOptions.findJsonFiles(testCase, analysis, PrinterType.EXPECTED);
+  private static void compareJson() {
+    Collection<File> generatedFiles = CommonOptions.findJsonFiles(PrinterType.GENERATED);
+    Collection<File> expectedFiles = CommonOptions.findJsonFiles(PrinterType.EXPECTED);
 
     // // Assert number of generates vs expected classes
     // if (generatedFiles.size() != expectedFiles.size()) {
@@ -104,17 +154,10 @@ public class Tests {
             });
   }
 
-  /**
-   * Perform text-based comparisons between Jimple files.
-   *
-   * @param testCase
-   * @param analysis
-   */
-  public static void performAssertions(String testCase, String analysis) {
-    Collection<File> generated =
-        CommonOptions.findJimpleFiles(testCase, analysis, PrinterType.GENERATED);
-    Collection<File> expected =
-        CommonOptions.findJimpleFiles(testCase, analysis, PrinterType.EXPECTED);
+  /** Perform text-based comparisons between Jimple files. */
+  private static void performAssertions() {
+    Collection<File> generated = CommonOptions.findJimpleFiles(PrinterType.GENERATED);
+    Collection<File> expected = CommonOptions.findJimpleFiles(PrinterType.EXPECTED);
 
     // Assert number of generates vs expected classes
     if (generated.size() != expected.size()) {
@@ -133,7 +176,17 @@ public class Tests {
         .forEach(
             g -> {
               File e =
-                  expected.stream().filter(f -> f.getName().equals(g.getName())).findFirst().get();
+                  expected.stream()
+                      .filter(
+                          f ->
+                              f.getName()
+                                  .equals(
+                                      g.getName()
+                                          .replace(
+                                              "input",
+                                              "output." + FrameworksOptions.getAnalysis())))
+                      .findFirst()
+                      .get();
               try {
                 if (!FileUtils.contentEquals(g, e)) {
                   throw new AssertionError(
@@ -146,33 +199,36 @@ public class Tests {
   }
 
   private static void runExpectedOutputPrinter(String testCase, String analysis) {
-    CommonOptions.deleteJimpleExpectedDirectory(testCase, analysis);
-    CommonOptions.deleteJsonExpectedDirectory(testCase, analysis);
+    ArrayList<String> args =
+        new ArrayList<String>(
+            Arrays.asList(
+                "-i",
+                CommonOptions.getOutputProject(testCase, analysis),
+                "-o",
+                CommonOptions.getOutputDirectory(testCase),
+                "-j",
+                CommonOptions.jre,
+                "-a",
+                analysis));
 
-    averroes.frameworks.ExpectedOutputPrinter.main(
-        new String[] {
-          "-i",
-          CommonOptions.getOutputProject(testCase, analysis),
-          "-o",
-          CommonOptions.output,
-          "-j",
-          CommonOptions.jre,
-          "-a",
-          analysis
-        });
+    // Process the arguments. This is necessary because many common
+    // options depend on some of those processed arguments.
+    FrameworksOptions.processArguments(args.stream().toArray(String[]::new));
+
+    CommonOptions.deleteJimpleExpectedDirectory();
+    CommonOptions.deleteJsonExpectedDirectory();
+
+    averroes.frameworks.ExpectedOutputPrinter.main(args.stream().toArray(String[]::new));
   }
 
   private static void runAnalysis(String testCase, String analysis, boolean guard, boolean whole) {
-    CommonOptions.deleteJimpleAnalysisDirectories(testCase, analysis);
-    CommonOptions.deleteJsonAnalysisDirectories(testCase, analysis);
-
     ArrayList<String> args =
         new ArrayList<String>(
             Arrays.asList(
                 "-i",
                 CommonOptions.getInputProject(testCase),
                 "-o",
-                CommonOptions.output,
+                CommonOptions.getOutputDirectory(testCase),
                 "-j",
                 CommonOptions.jre,
                 "-a",
@@ -186,7 +242,14 @@ public class Tests {
       args.add("-w");
     }
 
-    averroes.frameworks.Main.main(args.toArray(new String[0]));
+    // Process the arguments. This is necessary because many common
+    // options depend on some of those processed arguments.
+    FrameworksOptions.processArguments(args.stream().toArray(String[]::new));
+
+    CommonOptions.deleteJimpleAnalysisDirectories();
+    CommonOptions.deleteJsonAnalysisDirectories();
+
+    averroes.frameworks.Main.main(args.stream().toArray(String[]::new));
     // + File.pathSeparator + CommonOptions.getJreToModel()
   }
 }
