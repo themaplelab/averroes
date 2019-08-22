@@ -30,7 +30,7 @@ public class ClassWriter {
    * @throws IOException
    */
   public static void writeLibraryClassFile(SootClass cls) {
-    Options.v().set_output_dir(Paths.framewokrsLibraryClassesOutputDirectory().getPath());
+    Options.v().set_output_dir(Paths.frameworksLibraryClassesOutputDirectory().getPath());
 
     File file = new File(SourceLocator.v().getFileNameFor(cls, Options.output_format_class));
     file.getParentFile().mkdirs();

@@ -132,7 +132,7 @@ public class JarFile {
    */
   public void addGeneratedFrameworkClassFiles() throws IOException {
     Set<String> classFiles = new HashSet<String>();
-    File dir = Paths.framewokrsLibraryClassesOutputDirectory();
+    File dir = Paths.frameworksLibraryClassesOutputDirectory();
     File placeholderJar = Paths.placeholderFrameworkJarFile();
 
     // Add the class files to the crafted JAR file.
