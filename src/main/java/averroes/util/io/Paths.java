@@ -16,6 +16,7 @@ import averroes.util.io.Printers.PrinterType;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Collection;
 import org.apache.commons.io.FileUtils;
 import soot.SootClass;
 import soot.SootMethod;
@@ -162,6 +163,78 @@ public class Paths {
    */
   public static File organizedLibraryJarFile() {
     return new File(AverroesOptions.getOutputDirectory(), "organized-lib.jar");
+  }
+
+  /**
+   * Find the Jimple files for the given test case.
+   *
+   * @param printerType
+   * @return
+   */
+  public static Collection<File> findJimpleFiles(PrinterType printerType) {
+    return FileUtils.listFiles(
+        jimpleOutputDirectory(printerType).toFile(), new String[] {"jimple"}, true);
+  }
+
+  /**
+   * Find the JSON files for the given test case.
+   *
+   * @param printerType
+   * @return
+   */
+  public static Collection<File> findJsonFiles(PrinterType printerType) {
+    return FileUtils.listFiles(
+        jsonOutputDirectory(printerType).toFile(), new String[] {"json"}, true);
+  }
+
+  /** Delete the directory that contains the Jimple files for the handwritten model. */
+  public static void deleteJimpleExpectedDirectory() {
+    deleteDirectory(jimpleOutputDirectory(PrinterType.EXPECTED).toFile());
+  }
+
+  /** Delete the directory that contains the JSON files for the handwritten model. */
+  public static void deleteJsonExpectedDirectory() {
+    deleteDirectory(jsonOutputDirectory(PrinterType.EXPECTED).toFile());
+  }
+
+  /** Delete the directory that contains the Jimple files for the generated model. */
+  public static void deleteJimpleAnalysisDirectories() {
+    deleteDirectory(jimpleOutputDirectory(PrinterType.ORIGINAL).toFile());
+    deleteDirectory(jimpleOutputDirectory(PrinterType.GENERATED).toFile());
+    deleteDirectory(jimpleOutputDirectory(PrinterType.OPTIMIZED).toFile());
+  }
+
+  /** Delete the directory that contains the JSON files for the generated model. */
+  public static void deleteJsonAnalysisDirectories() {
+    deleteDirectory(jsonOutputDirectory(PrinterType.ORIGINAL).toFile());
+    deleteDirectory(jsonOutputDirectory(PrinterType.GENERATED).toFile());
+    deleteDirectory(jsonOutputDirectory(PrinterType.OPTIMIZED).toFile());
+  }
+
+  public static void deleteClassAnalysisDirectories() {
+    deleteDirectory(frameworksLibraryClassesOutputDirectory());
+  }
+
+  /**
+   * Delete the given directory, recursively.
+   *
+   * @param directory
+   */
+  public static void deleteDirectory(String directory) {
+    deleteDirectory(java.nio.file.Paths.get(directory).toFile());
+  }
+
+  /**
+   * Delete the given directory, recursively.
+   *
+   * @param directory
+   */
+  private static void deleteDirectory(File directory) {
+    try {
+      FileUtils.deleteDirectory(directory);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   /**

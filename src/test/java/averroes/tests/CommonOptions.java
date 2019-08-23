@@ -1,11 +1,8 @@
 package averroes.tests;
 
 import averroes.util.io.FileFilters;
-import averroes.util.io.Printers.PrinterType;
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.Collection;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
@@ -161,56 +158,6 @@ public class CommonOptions {
   }
 
   /**
-   * Find the Jimple files for the given test case.
-   *
-   * @param printerType
-   * @return
-   */
-  public static Collection<File> findJimpleFiles(PrinterType printerType) {
-    return FileUtils.listFiles(
-        averroes.util.io.Paths.jimpleOutputDirectory(printerType).toFile(),
-        new String[] {"jimple"},
-        true);
-  }
-
-  /**
-   * Find the JSON files for the given test case.
-   *
-   * @param printerType
-   * @return
-   */
-  public static Collection<File> findJsonFiles(PrinterType printerType) {
-    return FileUtils.listFiles(
-        averroes.util.io.Paths.jsonOutputDirectory(printerType).toFile(),
-        new String[] {"json"},
-        true);
-  }
-
-  /** Delete the directory that contains the Jimple files for the handwritten model. */
-  public static void deleteJimpleExpectedDirectory() {
-    deleteDirectory(averroes.util.io.Paths.jimpleOutputDirectory(PrinterType.EXPECTED).toFile());
-  }
-
-  /** Delete the directory that contains the JSON files for the handwritten model. */
-  public static void deleteJsonExpectedDirectory() {
-    deleteDirectory(averroes.util.io.Paths.jsonOutputDirectory(PrinterType.EXPECTED).toFile());
-  }
-
-  /** Delete the directory that contains the Jimple files for the generated model. */
-  public static void deleteJimpleAnalysisDirectories() {
-    deleteDirectory(averroes.util.io.Paths.jimpleOutputDirectory(PrinterType.ORIGINAL).toFile());
-    deleteDirectory(averroes.util.io.Paths.jimpleOutputDirectory(PrinterType.GENERATED).toFile());
-    deleteDirectory(averroes.util.io.Paths.jimpleOutputDirectory(PrinterType.OPTIMIZED).toFile());
-  }
-
-  /** Delete the directory that contains the Jimple files for the generated model. */
-  public static void deleteJsonAnalysisDirectories() {
-    deleteDirectory(averroes.util.io.Paths.jsonOutputDirectory(PrinterType.ORIGINAL).toFile());
-    deleteDirectory(averroes.util.io.Paths.jsonOutputDirectory(PrinterType.GENERATED).toFile());
-    deleteDirectory(averroes.util.io.Paths.jsonOutputDirectory(PrinterType.OPTIMIZED).toFile());
-  }
-
-  /**
    * Get the output directory for the given test case.
    *
    * @param testCase
@@ -218,18 +165,5 @@ public class CommonOptions {
    */
   public static String getOutputDirectory(String testCase) {
     return Paths.get("output", testCase.toLowerCase()).toString();
-  }
-
-  /**
-   * Delete the given directory, recursively.
-   *
-   * @param directory
-   */
-  private static void deleteDirectory(File directory) {
-    try {
-      FileUtils.deleteDirectory(directory);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
   }
 }

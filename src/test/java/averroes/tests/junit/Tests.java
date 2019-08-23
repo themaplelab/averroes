@@ -62,11 +62,11 @@ public class Tests {
   private static void cleanupFiles(String testCase) {
     cleanupFiles(
         testCase,
-        CommonOptions.findJsonFiles(PrinterType.GENERATED),
+        averroes.util.io.Paths.findJsonFiles(PrinterType.GENERATED),
         averroes.util.io.Paths.jsonOutputDirectory(PrinterType.GENERATED));
     cleanupFiles(
         testCase,
-        CommonOptions.findJimpleFiles(PrinterType.GENERATED),
+        averroes.util.io.Paths.findJimpleFiles(PrinterType.GENERATED),
         averroes.util.io.Paths.jimpleOutputDirectory(PrinterType.GENERATED));
   }
 
@@ -126,8 +126,8 @@ public class Tests {
    * expected classes.
    */
   private static void compareJson() {
-    Collection<File> generatedFiles = CommonOptions.findJsonFiles(PrinterType.GENERATED);
-    Collection<File> expectedFiles = CommonOptions.findJsonFiles(PrinterType.EXPECTED);
+    Collection<File> generatedFiles = averroes.util.io.Paths.findJsonFiles(PrinterType.GENERATED);
+    Collection<File> expectedFiles = averroes.util.io.Paths.findJsonFiles(PrinterType.EXPECTED);
 
     // // Assert number of generates vs expected classes
     // if (generatedFiles.size() != expectedFiles.size()) {
@@ -169,8 +169,8 @@ public class Tests {
 
   /** Perform text-based comparisons between Jimple files. */
   private static void performAssertions() {
-    Collection<File> generated = CommonOptions.findJimpleFiles(PrinterType.GENERATED);
-    Collection<File> expected = CommonOptions.findJimpleFiles(PrinterType.EXPECTED);
+    Collection<File> generated = averroes.util.io.Paths.findJimpleFiles(PrinterType.GENERATED);
+    Collection<File> expected = averroes.util.io.Paths.findJimpleFiles(PrinterType.EXPECTED);
 
     // Assert number of generates vs expected classes
     if (generated.size() != expected.size()) {
@@ -230,9 +230,6 @@ public class Tests {
     // options depend on some of those processed arguments.
     FrameworksOptions.processArguments(args.stream().toArray(String[]::new));
 
-    CommonOptions.deleteJimpleExpectedDirectory();
-    CommonOptions.deleteJsonExpectedDirectory();
-
     averroes.frameworks.ExpectedOutputPrinter.main(args.stream().toArray(String[]::new));
   }
 
@@ -262,9 +259,6 @@ public class Tests {
     // Process the arguments. This is necessary because many common
     // options depend on some of those processed arguments.
     FrameworksOptions.processArguments(args.stream().toArray(String[]::new));
-
-    CommonOptions.deleteJimpleAnalysisDirectories();
-    CommonOptions.deleteJsonAnalysisDirectories();
 
     averroes.frameworks.Main.main(args.stream().toArray(String[]::new));
     // + File.pathSeparator + CommonOptions.getJreToModel()

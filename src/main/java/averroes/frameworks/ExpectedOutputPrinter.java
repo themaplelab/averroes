@@ -27,6 +27,10 @@ public class ExpectedOutputPrinter {
       // Reset Soot
       G.reset();
 
+      // Cleanup output directory
+      averroes.util.io.Paths.deleteJimpleExpectedDirectory();
+      averroes.util.io.Paths.deleteJsonExpectedDirectory();
+
       // Set some soot parameters
       Options.v().classes().addAll(FrameworksOptions.getClasses());
       Options.v().set_soot_classpath(FrameworksOptions.getSootClassPath());
