@@ -12,21 +12,6 @@ package averroes;
 import averroes.exceptions.Assertions;
 import averroes.soot.Names;
 import averroes.util.io.Paths;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.jar.Attributes;
-import java.util.jar.JarEntry;
-import java.util.jar.JarOutputStream;
-import java.util.jar.Manifest;
-import java.util.stream.Collectors;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.ClassFormatException;
 import org.apache.bcel.classfile.ClassParser;
@@ -39,6 +24,17 @@ import org.apache.bcel.verifier.Verifier;
 import org.apache.bcel.verifier.VerifierFactory;
 import org.apache.commons.io.FileUtils;
 import soot.SootMethod;
+
+import java.io.*;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
+import java.util.stream.Collectors;
 
 /**
  * A JAR file is a collection of class files. We use BCEL to verify that the generated JAR files
@@ -222,9 +218,6 @@ public class JarFile {
     // placeholder JAR to force BCEL to load
     // those crafted files when it looks them up
     bcelClasses.forEach(c -> Repository.getRepository().storeClass(c));
-
-    // Now verify all the generated class files
-    verify();
   }
 
   /**
@@ -325,7 +318,7 @@ public class JarFile {
    * @throws IOException
    * @throws ClassFormatException
    */
-  private void verify() throws ClassFormatException, IOException {
+  public void verify() throws ClassFormatException, IOException {
     for (JavaClass cls : bcelClasses) {
       Verifier verifier = VerifierFactory.getVerifier(cls.getClassName());
       Method[] methods = cls.getMethods();

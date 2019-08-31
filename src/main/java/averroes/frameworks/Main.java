@@ -9,7 +9,6 @@ import averroes.util.MathUtils;
 import averroes.util.TimeUtils;
 import averroes.util.io.Paths;
 import averroes.util.io.Printers;
-import averroes.util.io.Printers.PrinterType;
 import org.apache.commons.io.FileUtils;
 import soot.G;
 import soot.Scene;
@@ -31,8 +30,7 @@ public class Main {
      */
     public static void main(String[] args) {
         try {
-            // Find the total execution time, instead of depending on the Unix
-            // time command
+            // Start calculating the total execution time
             TimeUtils.splitStart();
 
             // Process the arguments
@@ -55,11 +53,12 @@ public class Main {
                 Options.v().set_whole_program(true); // to model lib dependencies
                 Options.v().set_allow_phantom_refs(true); // to handle invokedynamic
             }
-            // Options.v().setPhaseOption("jb.tr", "use-older-type-assigner:true");
 
-            //			Options.v().setPhaseOption("wjtp", "enabled");
-            //			PackManager.v().getPack("wjtp").add(new StaticInlineTransform("wjtp.si"));
-            //			Options.v().setPhaseOption("wjtp.si", "enabled");
+//            Options.v().setPhaseOption("jb.tr", "use-older-type-assigner:true");
+//
+//            Options.v().setPhaseOption("wjtp", "enabled");
+//            PackManager.v().getPack("wjtp").add(new StaticInlineTransform("wjtp.si"));
+//            Options.v().setPhaseOption("wjtp.si", "enabled");
 
             // Load the necessary classes
             TimeUtils.reset();
@@ -74,61 +73,49 @@ public class Main {
             // Now let Averroes do its thing
             TimeUtils.reset();
             System.out.println("Creating Jimple bodies for framework methods...");
-            /*
-             * Note: do not call Scene.v().getClasses() here as it will throw
-             * concurrent modification error when new classes are added.
-             */
-            SootSceneUtil.getClasses().stream().forEach(CodeGenerator::generateJimple);
+            CodeGenerator.generateJimple();
 
             System.out.println("Writing JSON files for framework methods...");
             // Print out JSON files
-            SootSceneUtil.getClasses()
-                    .forEach(
-                            c -> {
-                                Printers.printJson(PrinterType.GENERATED, c);
-                            });
+            Printers.printGeneratedJson();
 
-            // System.out.println("Optimizing generated library methods...");
-            // new Optimizer().optimize();
+//            System.out.println("Optimizing generated library methods...");
+//            new Optimizer().optimize();
+//
+//            System.out.println("Creating optimized Jimple bodies for library
+//                    methods...");
+//            Scene.v().getApplicationClasses().stream().map(c ->
+//                    c.getMethods()).flatMap(List::stream)
+//                    .filter(SootMethod::isConcrete)
+//                    .forEach(m ->
+//                            Printers.printJimple(Printers.PrinterType.OPTIMIZED, m));
+//
+//            Print out JSON files
+//            System.out.println("Writing JSON files for optimized library
+//                    methods...");
+//            Scene.v().getApplicationClasses().forEach(c -> {
+//                Printers.printJson(PrinterType.OPTIMIZED, c);
+//            });
 
-            // System.out.println("Creating optimized Jimple bodies for library
-            // methods...");
-            // Scene.v().getApplicationClasses().stream().map(c ->
-            // c.getMethods()).flatMap(List::stream)
-            // .filter(SootMethod::isConcrete)
-            // .forEach(m ->
-            // Printers.printJimple(Printers.PrinterType.OPTIMIZED, m));
-
-            // Print out JSON files
-            // System.out.println("Writing JSON files for optimized library
-            // methods...");
-            // Scene.v().getApplicationClasses().forEach(c -> {
-            // Printers.printJson(PrinterType.OPTIMIZED, c);
-            // });
-
-            // Perform code cleanup
-            //			SootUtils.cleanupClasses();
+//            // Perform code cleanup
+//            SootUtils.cleanupClasses();
 
             // Write class files for the generate model
             System.out.println("Writing class files for framework methods...");
-            SootSceneUtil.getClasses().forEach(ClassWriter::writeLibraryClassFile);
+            ClassWriter.writeLibraryClassFiles();
             double averroes = TimeUtils.elapsedTime();
-            System.out.println(
-                    "Placeholder framework classes created and validated in " + averroes + " seconds.");
+            System.out.println("Placeholder framework classes created and Jimple validated in " + averroes + " seconds.");
 
-            // Create the jar file and add all the generated class files to it.
+            // Create the jar file, add all the generated class files to it, and, finally, verify it using BCEL.
             TimeUtils.reset();
             JarFile frameworkJarFile = new JarFile(Paths.placeholderFrameworkJarFile());
             frameworkJarFile.addGeneratedFrameworkClassFiles();
+            frameworkJarFile.verify();
 
             double bcel = TimeUtils.elapsedTime();
             System.out.println("Placeholder framework JAR file verified in " + bcel + " seconds.");
-            System.out.println(
-                    "Total time (without verification) is " + MathUtils.round(soot + averroes) + " seconds.");
-            System.out.println(
-                    "Total time (with verification) is "
-                            + MathUtils.round(soot + averroes + bcel)
-                            + " seconds.");
+            System.out.println("Total time (without verification) is " + MathUtils.round(soot + averroes) + " seconds.");
+            System.out.println("Total time (with verification) is " + MathUtils.round(soot + averroes + bcel) + " seconds.");
 
             double total = TimeUtils.elapsedSplitTime();
             System.out.println("Elapsed time: " + total + " seconds.");

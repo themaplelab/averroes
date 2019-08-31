@@ -1,5 +1,6 @@
 package averroes.frameworks.soot;
 
+import averroes.soot.SootSceneUtil;
 import averroes.util.io.Paths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,13 @@ import java.io.OutputStream;
 public class ClassWriter {
 
     private static final Logger logger = LoggerFactory.getLogger(ClassWriter.class);
+
+    /**
+     * Write the class file for the generated library classes.
+     */
+    public static void writeLibraryClassFiles() {
+        SootSceneUtil.getClasses().forEach(ClassWriter::writeLibraryClassFile);
+    }
 
     /**
      * Write the class file for the given library class.

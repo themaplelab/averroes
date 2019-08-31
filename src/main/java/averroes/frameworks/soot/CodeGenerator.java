@@ -5,10 +5,13 @@ import averroes.frameworks.analysis.RtaJimpleBody;
 import averroes.frameworks.analysis.XtaJimpleBody;
 import averroes.frameworks.options.FrameworksOptions;
 import averroes.soot.Names;
+import averroes.soot.SootSceneUtil;
 import soot.*;
 import soot.jimple.*;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The master-mind of Averroes. That's where the magic of generating code for library classes
@@ -19,27 +22,15 @@ import java.util.Collections;
 public class CodeGenerator {
 
     /**
-     * Generate Jimple for a given class.
-     *
-     * @param cls
+     * Generate Jimple for all classes that Averroes has processed.
+     * <p>
+     * Note: do not call Scene.v().getClasses() here as it will throw concurrent
+     * modification error when new classes are added.
      */
-    public static void generateJimple(SootClass cls) {
-        cls.getMethods().stream().filter(SootMethod::isConcrete).forEach(m -> getJimpleBodyCreator(m).generateCode());
-    }
-
-    /**
-     * Get a Jimple body creator for this method, based on the options.
-     *
-     * @param method
-     */
-    public static AbstractJimpleBody getJimpleBodyCreator(SootMethod method) {
-        if (FrameworksOptions.getAnalysis().equalsIgnoreCase("rta")) {
-            return new RtaJimpleBody(method);
-        } else if (FrameworksOptions.getAnalysis().equalsIgnoreCase("xta")) {
-            return new XtaJimpleBody(method);
-        } else {
-            return new RtaJimpleBody(method);
-        }
+    public static void generateJimple() {
+        // We ignore non-concrete methods, because they do not have method bodies (surprise!).
+        SootSceneUtil.getClasses().stream().map(c -> c.getMethods()).flatMap(List::stream)
+                .filter(SootMethod::isConcrete).collect(Collectors.toList()).forEach(m -> getJimpleBodyCreator(m).generateCode());
     }
 
     /**
@@ -139,6 +130,21 @@ public class CodeGenerator {
 
         // Finally validate the Jimple body
         body.validate();
+    }
+
+    /**
+     * Get a Jimple body creator for this method, based on the options.
+     *
+     * @param method
+     */
+    private static AbstractJimpleBody getJimpleBodyCreator(SootMethod method) {
+        if (FrameworksOptions.getAnalysis().equalsIgnoreCase("rta")) {
+            return new RtaJimpleBody(method);
+        } else if (FrameworksOptions.getAnalysis().equalsIgnoreCase("xta")) {
+            return new XtaJimpleBody(method);
+        } else {
+            return new RtaJimpleBody(method);
+        }
     }
 
     /**
