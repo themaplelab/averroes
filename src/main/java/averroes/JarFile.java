@@ -23,6 +23,10 @@ import org.apache.bcel.verifier.VerificationResult;
 import org.apache.bcel.verifier.Verifier;
 import org.apache.bcel.verifier.VerifierFactory;
 import org.apache.commons.io.FileUtils;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.util.CheckClassAdapter;
 import soot.SootMethod;
 
 import java.io.*;
@@ -93,7 +97,7 @@ public class JarFile {
    * @throws IOException
    */
   public void addGeneratedLibraryClassFiles() throws IOException {
-    Set<String> classFiles = new HashSet<String>();
+    Set<String> classFiles = new HashSet<>();
     File dir = Paths.libraryClassesOutputDirectory();
     File placeholderJar = Paths.placeholderLibraryJarFile();
 
@@ -127,7 +131,7 @@ public class JarFile {
    * @throws IOException
    */
   public void addGeneratedFrameworkClassFiles() throws IOException {
-    Set<String> classFiles = new HashSet<String>();
+    Set<String> classFiles = new HashSet<>();
     File dir = Paths.frameworksLibraryClassesOutputDirectory();
     File placeholderJar = Paths.placeholderFrameworkJarFile();
 
@@ -161,9 +165,6 @@ public class JarFile {
 
     // Now we need to add all the BCEL classes
     bcelClasses.forEach(c -> Repository.getRepository().storeClass(c));
-
-    // Now verify all the generated class files
-    verify();
   }
 
   /**
@@ -313,7 +314,7 @@ public class JarFile {
   }
 
   /**
-   * Verify the integrity of the jar file.
+   * Verify the integrity of the JAR file.
    *
    * @throws IOException
    * @throws ClassFormatException
@@ -335,6 +336,36 @@ public class JarFile {
 
         Assertions.verificationResultOKAssertion(vr, cls.getClassName(), methods[i].getName());
       }
+    }
+  }
+
+  /**
+   * Verify the integrity of the given JAR file using ASM.
+   *
+   * @param file
+   */
+  public static void verifyJarFile(String file) {
+    try (java.util.jar.JarFile jarFile = new java.util.jar.JarFile(new File(file))) {
+      jarFile.stream().forEach(entry -> {
+        if (entry.getName().endsWith(".class")) {
+          try {
+            ClassReader classReader = new ClassReader(jarFile.getInputStream(entry));
+            ClassWriter classWriter = new ClassWriter(classReader, ClassWriter.COMPUTE_MAXS);
+            ClassVisitor classVisitor = new CheckClassAdapter(classWriter, true);
+            classReader.accept(classVisitor, 0);
+
+            StringWriter stringWriter = new StringWriter();
+            PrintWriter printWriter = new PrintWriter(stringWriter);
+            CheckClassAdapter.verify(new ClassReader(classWriter.toByteArray()), false, printWriter);
+
+            Assertions.asmVerificationOk(stringWriter);
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+        }
+      });
+    } catch (IOException e) {
+      e.printStackTrace();
     }
   }
 }

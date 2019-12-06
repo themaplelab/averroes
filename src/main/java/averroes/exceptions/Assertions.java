@@ -11,6 +11,8 @@ package averroes.exceptions;
 
 import org.apache.bcel.verifier.VerificationResult;
 
+import java.io.StringWriter;
+
 /**
  * A utility class that creates the necessary assertions used by Averroes.
  *
@@ -32,7 +34,7 @@ public class Assertions {
 
   /**
    * Create an assertion that a {@link VerificationResult} has the value {@value
-   * VerificationResult#VR_OK}. This means that BCEL successfully verified the class file of the
+   * VerificationResult#VERIFIED_OK}. This means that BCEL successfully verified the class file of the
    * given class name.
    *
    * @param verificationResult
@@ -49,6 +51,16 @@ public class Assertions {
               .concat(methodName)
               .concat(System.getProperty("line.separator"))
               .concat(verificationResult.toString()));
+    }
+  }
+
+  /**
+   * Create an assertion that the ASM verifier has succeeded.
+   * @param stringWriter
+   */
+  public static void asmVerificationOk(StringWriter stringWriter) {
+    if (stringWriter.toString().length() > 0) {
+      throw new AssertionError(stringWriter.toString());
     }
   }
 

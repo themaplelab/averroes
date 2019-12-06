@@ -29,4 +29,6 @@ public class FileFilters {
           FileFilterUtils.nameFileFilter("jsse.jar"),
           FileFilterUtils.nameFileFilter("jce.jar"),
           FileFilterUtils.nameFileFilter("charsets.jar"));
+
+  public static IOFileFilter rtFileFilter = FileFilterUtils.nameFileFilter("rt.jar");
 }

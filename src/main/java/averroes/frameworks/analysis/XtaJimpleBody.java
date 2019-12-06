@@ -79,9 +79,9 @@ public class XtaJimpleBody extends AbstractJimpleBody {
         CodeGenerator.createField(
                 averroesXta, Names.GUARD_FIELD_NAME, BooleanType.v(), Modifier.PUBLIC | Modifier.STATIC);
 
-        // Add a static initializer to it (it also initializes the static fields
-        // with default values
-        CodeGenerator.createStaticInitializer(averroesXta);
+        // Add a static initializer to it (it also initializes the static fields with default values
+        // TODO: Do we really need this?
+//        CodeGenerator.createStaticInitializer(averroesXta);
 
         // Print out the Jimple code
         averroesXta.getMethods().forEach(m -> Printers.printJimple(PrinterType.GENERATED, m));
