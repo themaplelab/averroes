@@ -58,6 +58,7 @@ public class CodeGenerator {
         SootClass cls = new SootClass(className, modifiers);
         cls.setSuperclass(superClass);
         Scene.v().addClass(cls);
+        cls.setApplicationClass();
 
         return cls;
     }
