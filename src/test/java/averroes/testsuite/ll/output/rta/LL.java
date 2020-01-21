@@ -911,9 +911,13 @@ public class LL implements Iterable {
     private Node lastReturned;
     private Node next;
 
-    ListItr(int index) {
+    // Force java to read field this$0 in constructor
+    {
       RTA.set = this;
       RTA.set = LL.this;
+    }
+
+    ListItr(int index) {
 
       Object set = RTA.set;
       LL base = (LL) set;
@@ -926,6 +930,7 @@ public class LL implements Iterable {
 
     public boolean hasNext() {
       RTA.set = this; // inferred for implicit "this" parameter
+      RTA.set = (ListItr) RTA.set;
       RTA.set = LL.this;
       return true;
     }
@@ -1098,8 +1103,8 @@ public class LL implements Iterable {
 
   private class DescendingIterator implements Iterator {
     private final ListItr itr;
-
-    private DescendingIterator() {
+    // Force java to use a default constructor
+    {
       RTA.set = this;
       RTA.set = LL.this;
 

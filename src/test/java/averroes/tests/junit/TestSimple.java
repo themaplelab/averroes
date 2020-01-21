@@ -7,8 +7,8 @@ import org.junit.Test;
 
 public class TestSimple {
   String testCase = "Simple";
-  boolean guard = true;
-  boolean whole = true;
+  boolean guard = CommonOptions.guard;
+  boolean whole = CommonOptions.whole;
 
   @Before
   public void nuke() {
@@ -20,8 +20,8 @@ public class TestSimple {
     Tests.runRta(testCase, guard, whole);
   }
 
-//  @Test
-//  public void testSimpleXta() {
-//    Tests.runXta(testCase, guard, whole);
-//  }
+  @Test
+  public void testSimpleXta() {
+    Tests.runXta(testCase, guard, whole);
+  }
 }

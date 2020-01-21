@@ -1014,9 +1014,13 @@ public class LL implements Iterable {
     private Object set_m10;
     private Object set_m11;
 
-    ListItr(int index) {
+    // Force java to read field this$0 in constructor
+    {
       set_m0 = this;
       set_m0 = LL.this;
+    }
+
+    ListItr(int index) {
 
       Object set = set_m0;
       LL base = (LL) set;
@@ -1030,6 +1034,7 @@ public class LL implements Iterable {
     public boolean hasNext() {
       // TODO: should this be optimized away?
       set_m1 = this;
+      set_m1 = (ListItr) set_m1;
       set_m1 = LL.this;
       return true;
     }
@@ -1207,7 +1212,8 @@ public class LL implements Iterable {
     private Object set_m2;
     private Object set_m3;
 
-    private DescendingIterator() {
+    // Force Java to use a default constructor
+    {
       set_m0 = this;
       set_m0 = LL.this;
 
