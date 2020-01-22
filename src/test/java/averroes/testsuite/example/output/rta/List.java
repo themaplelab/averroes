@@ -12,11 +12,15 @@ package averroes.testsuite.example.output.rta;
 // return
 
 class List {
+  private String[] elements;  // Need to model private array fields
+  private String[] bla;
+
   public List() {
     // parameters
     if (RTA.guard) RTA.set = this;
 
     // allocs
+    RTA.set = (String) RTA.set;
     if (RTA.guard) RTA.set = new String[1];
   }
 
@@ -25,8 +29,12 @@ class List {
     if (RTA.guard) RTA.set = this;
     if (RTA.guard) RTA.set = o;
 
+    RTA.set = elements; // inferred from read of field elements in "size == elements.length"
+
     // methods calls
     if (RTA.guard) growList();
+
+    RTA.set = elements; // inferred from read of field elements in "elements[size++] = o"
 
     // array writes
     Object obj = RTA.set;
@@ -37,6 +45,8 @@ class List {
   public String get(int i) {
     // parameters
     if (RTA.guard) RTA.set = this;
+
+    RTA.set = elements; // inferred from read of field elements in "elements[i]"
 
     // array reads
     Object obj = RTA.set;
@@ -49,6 +59,8 @@ class List {
     // parameters
     if (RTA.guard) RTA.set = this;
     if (RTA.guard) RTA.set = o;
+
+    RTA.set = elements; // inferred from read of field elements in "elements[i].equals(o)"
 
     // method calls
     Object obj = RTA.set;
@@ -65,6 +77,8 @@ class List {
     // parameters
     if (RTA.guard) RTA.set = this;
     if (RTA.guard) RTA.set = new String[1];
+
+    RTA.set = elements; // inferred from read of field elements in "System.arraycopy(elements, 0, newElements, 0, size)"
 
     // method calls
     Object obj = RTA.set;

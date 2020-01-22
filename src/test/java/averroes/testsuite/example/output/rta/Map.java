@@ -12,11 +12,15 @@ package averroes.testsuite.example.output.rta;
 // return
 
 class Map {
+  private String[] keys;
+  private String[] values;
+
   public Map() {
     // parameters
     if (RTA.guard) RTA.set = this;
 
     // allocs
+    RTA.set = (String) RTA.set;
     if (RTA.guard) RTA.set = new String[1];
   }
 
@@ -26,11 +30,16 @@ class Map {
     if (RTA.guard) RTA.set = k;
     if (RTA.guard) RTA.set = v;
 
+    RTA.set = keys; // Inferred from read of field keys in "size == keys.length"
+
     // method calls
     if (RTA.guard) growMap();
     Object obj = RTA.set;
     String str = (String) obj;
     if (RTA.guard) getIndex(str);
+
+    RTA.set = keys; // Inferred from read of field keys in "keys[size] = k"
+    RTA.set = values; // Inferred from read of field values in "values[size] = v"
 
     // array writes
     Object[] arr = (Object[]) obj;
@@ -43,6 +52,9 @@ class Map {
 
     // allocs
     if (RTA.guard) RTA.set = new String[1];
+
+    RTA.set = keys; // Inferred from read of field keys in "System.arraycopy(keys, 0, newKeys, 0, size)"
+    RTA.set = values; // Inferred from read of field values in "System.arraycopy(values, 0, newValues, 0, size)"
 
     // method calls
     Object obj = RTA.set;
@@ -61,6 +73,8 @@ class Map {
     String str = (String) obj;
     if (RTA.guard) getIndex(str);
 
+    RTA.set = values; // Inferred from read of field values in "values[index]"
+
     // array reads
     Object[] arr = (Object[]) obj;
     if (RTA.guard) RTA.set = arr[0];
@@ -73,6 +87,8 @@ class Map {
     // parameters
     if (RTA.guard) RTA.set = this;
     if (RTA.guard) RTA.set = k;
+
+    RTA.set = keys; // Inferred from read of field keys in "keys[i].equals(k)"
 
     // method calls
     Object obj = RTA.set;
@@ -92,10 +108,14 @@ class Map {
     if (RTA.guard) RTA.set = this;
     if (RTA.guard) RTA.set = v;
 
+    RTA.set = values; // Inferred from read of field values in "values[i].equals(v)"
+
     // method calls
     Object obj = RTA.set;
     String str = (String) obj;
     if (RTA.guard) str.equals(str);
+
+    RTA.set = keys; // Inferred from read of field keys in "keys[i]"
 
     // array reads
     Object[] arr = (Object[]) obj;
