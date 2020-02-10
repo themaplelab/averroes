@@ -176,8 +176,8 @@ public final class FrameworksOptions {
      */
     public static String getSootClassPath() {
         String deps = getDependencies().stream().collect(Collectors.joining(File.pathSeparator));
-        String inputs = Paths.get("build", "classes", "java", "test").toString();
-//        getInputs().stream().collect(Collectors.joining(File.pathSeparator));
+        String inputs = //Paths.get("build", "classes", "java", "test").toString();
+            getInputs().stream().collect(Collectors.joining(File.pathSeparator));
         String std =
                 FileUtils.listFiles(
                         new File(getJreDirectory()), FileFilters.jreFileFilter, TrueFileFilter.TRUE)
@@ -194,7 +194,11 @@ public final class FrameworksOptions {
      * @return
      */
     public static List<String> getClasses() {
-        return getClasses(getPrefix() + ".");
+        String prefix = getPrefix();
+        if (prefix.equals("")) {
+            return getClasses(prefix);
+        }
+        return getClasses( prefix + ".");
     }
 
     /**
