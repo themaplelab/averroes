@@ -492,6 +492,9 @@ public abstract class AbstractJimpleBody {
                                         return NullConstant.v();
                                     } else if (a instanceof StringConstant) {
                                         return StringConstant.v("");
+                                    } else if (body.getParameterLocals().stream().noneMatch(l -> a.getType().equals(l.getType()))){
+                                        // Rare case of passing a (non-parameter) Class object to a superconstructor
+                                        return a;
                                     } else {
                                         return body.getParameterLocals().stream()
                                                 .filter(l -> a.getType().equals(l.getType()))
