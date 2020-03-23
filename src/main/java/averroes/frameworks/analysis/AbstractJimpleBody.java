@@ -294,8 +294,15 @@ public abstract class AbstractJimpleBody {
     protected void createObjects() {
         objectCreations.forEach(e -> createObjectByInvokeExpr(e));
         arrayCreations.forEach(t -> insertNewStmt(t));
-        checkedExceptions.forEach(
-                cls -> createObjectByMethod(cls.getMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG)));
+        checkedExceptions.forEach(cls -> {
+            if (cls.declaresMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG)) {
+                createObjectByMethod(cls.getMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG));
+            } else {
+                // Handle classes without a default constructor
+                // As far as I can tell, the only Exception with this problem is java.text.ParseException
+                createObjectByMethod(cls.getMethodByNameUnsafe("<init>"));
+            }
+        });
     }
 
     /**
