@@ -103,6 +103,14 @@ public class XtaJimpleBody extends AbstractJimpleBody {
                 });
     }
 
+    @Override
+    protected void handleFieldsSuperOverload() {
+        fieldReadsForSuperOrOverloadedConstructor.forEach(
+                f -> {
+                    storeToSet(getSetFLocal(f));
+                });
+    }
+
     /**
      * Get the local representing the set_m field of the underlying Soot method.
      *
