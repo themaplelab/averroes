@@ -30,6 +30,8 @@ public abstract class AbstractJimpleBody {
     protected LocalGenerator localGenerator;
     protected boolean readsArray = false;
     protected boolean writesArray = false;
+    protected boolean readsArrayBeforeSuperOrOverloadedContructor = false;
+    protected boolean writesArrayBeforeSuperOrOverloadedConstructor = false;
     protected boolean hasCallToSuperOrOverloadedConstructor = false;
     protected InvokeStmt callToSuperOrOverloadedConstructor;
 
@@ -231,6 +233,10 @@ public abstract class AbstractJimpleBody {
                                                     fieldReads.clear();
                                                     arrayCreationsForSuperOrOverloadedConstructor.addAll(arrayCreations);
                                                     arrayCreations.clear();
+                                                    readsArrayBeforeSuperOrOverloadedContructor = readsArray;
+                                                    readsArray = false;
+                                                    writesArrayBeforeSuperOrOverloadedConstructor = writesArray;
+                                                    writesArray = false;
 //                                                    throwablesForSuperOrOverloadedConstructor.addAll(throwables);
 //                                                    throwables.clear();
                                                 }
@@ -279,6 +285,7 @@ public abstract class AbstractJimpleBody {
                 arrayCreationsForSuperOrOverloadedConstructor.forEach(this::insertNewStmt);
                 handleInvokeExprs(invokeExprsForSuperOrOverloadedConstructor);
                 handleFieldsSuperOverload();
+                handleArraysSuperOverload();
                 handleCastsSuperOverload();
                 insertSpecialInvokeStmt(base, callToSuperOrOverloadedConstructor.getInvokeExpr(), true, false);
             } else if (method.getDeclaringClass().hasSuperclass()) {
@@ -318,6 +325,7 @@ public abstract class AbstractJimpleBody {
             insertAssignStmts(Jimple.v().newAssignStmt(elem, fieldRef), buildStoreToSetExpr(elem));
         }
     }
+
 
     /**
      * Insert the standard footer for a library method.
@@ -432,6 +440,25 @@ public abstract class AbstractJimpleBody {
             ArrayRef arrayRef = Jimple.v().newArrayRef(cast, ARRAY_INDEX);
 
             if (readsArray) {
+                Local elem = localGenerator.generateLocal(Scene.v().getObjectType());
+
+                insertAssignStmts(Jimple.v().newAssignStmt(elem, arrayRef), buildStoreToSetExpr(elem));
+            } else {
+                insertStmt(Jimple.v().newAssignStmt(arrayRef, setToCast()));
+            }
+        }
+    }
+
+    /**
+     * Handle array reads and writes that occur within a call to super or a call to an overloaded constructor
+     */
+    private void handleArraysSuperOverload() {
+        if (readsArrayBeforeSuperOrOverloadedContructor || writesArrayBeforeSuperOrOverloadedConstructor) {
+            Local cast =
+                    (Local) getCompatibleValue(ArrayType.v(setToCast().getType(), ARRAY_LENGTH.value));
+            ArrayRef arrayRef = Jimple.v().newArrayRef(cast, ARRAY_INDEX);
+
+            if (readsArrayBeforeSuperOrOverloadedContructor) {
                 Local elem = localGenerator.generateLocal(Scene.v().getObjectType());
 
                 insertAssignStmts(Jimple.v().newAssignStmt(elem, arrayRef), buildStoreToSetExpr(elem));
@@ -581,10 +608,17 @@ public abstract class AbstractJimpleBody {
                                         return ClassConstant.v("Ljava/lang/Object;"); // return a? or return the points-to set cast to type Class?
                                     } else if (hasCallToSuperOrOverloadedConstructor &&
                                                 callToSuperOrOverloadedConstructor.getInvokeExpr().equals(toInvoke)) {
-                                        return body.getLocals().stream()
+                                        Optional<Local> local = body.getLocals().stream()
                                                 .filter(l -> a.getType().equals(l.getType()))
-                                                .findFirst()
-                                                .get();
+                                                .findFirst();
+                                        if (local.isPresent()) {
+                                            return local.get();
+                                        } else if (readsArrayBeforeSuperOrOverloadedContructor) {
+                                            return insertCastStmt(setToCast(), a.getType());
+                                        } else {
+                                            throw new RuntimeException("Couldn't find appropriate local to use as arg for " +
+                                                    "special invoke statement in " + this.method.toString());
+                                        }
                                     } else {
                                         return body.getParameterLocals().stream()
                                                 .filter(l -> a.getType().equals(l.getType()))
