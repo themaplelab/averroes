@@ -14,6 +14,7 @@ import averroes.util.io.Resource;
 import averroes.util.io.ZipEntryResource;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -23,10 +24,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
-import soot.*;
-import soot.asm.AsmClassSource;
-
+import soot.ClassProvider;
+import soot.ClassSource;
+import soot.CoffiClassSource;
+import soot.FoundFile;
+import soot.coffi.ClassFile;
 
 /**
  * This class provider adds the Java classes from the application JAR to the list of application
@@ -87,8 +89,6 @@ public class JarFactoryClassProvider implements ClassProvider {
     System.out.println("Preparing Averroes ...");
     addApplicationArchive();
     addLibraryArchive();
-    // probably not needed, check back later once switched over to pre-built jar
-    //Scene.v().setSootClassPath(Paths.organizedApplicationJarFile().toString() + File.pathSeparator + Paths.organizedLibraryJarFile().toString());
   }
 
   /**
@@ -116,7 +116,19 @@ public class JarFactoryClassProvider implements ClassProvider {
    */
   public String addClass(String path, Resource resource, boolean fromApplicationArchive)
       throws IOException {
-    String className = path.replace('/', '.').replace(".class", "");
+    ClassFile c = new ClassFile(path);
+
+    InputStream stream = null;
+    try {
+      stream = resource.open();
+      c.loadClassFile(stream);
+    } finally {
+      if (stream != null) {
+        stream.close();
+      }
+    }
+
+    String className = c.toString().replace('/', '.');
 
     if (classes.containsKey(className)) {
       // This means we encountered another copy of the class later on the
@@ -203,22 +215,10 @@ public class JarFactoryClassProvider implements ClassProvider {
   public ClassSource find(String className) {
     if (classes.containsKey(className)) {
       ZipEntryResource zer = (ZipEntryResource) classes.get(className);
-      FoundFile foundFile = new FoundFile(zer.archive().getName(), zer.entry().getName());
-      // Set AsmClassSource's constructor to public so we can use it.
-      // This looks awful but seems to be recommended practice,
-      // as per: https://github.com/Sable/soot/issues/832#issuecomment-346825835
-      try {
-        java.lang.reflect.Constructor<AsmClassSource> asmCSConstructor =
-                AsmClassSource.class.getDeclaredConstructor(String.class, FoundFile.class);
-        asmCSConstructor.setAccessible(true);
-        AsmClassSource asmClassSource = asmCSConstructor.newInstance(className, foundFile);
-        return asmClassSource;
-      } catch (Exception e) {
-        System.err.println("Error loading AsmClassSource!");
-        e.printStackTrace();
-        System.exit(1);
-      }
+      FoundFile foundFile = new FoundFile(zer.entry().getName(), zer.archive().getName());
+      return new CoffiClassSource(className, foundFile);
+    } else {
+      return null;
     }
-    return null;
   }
 }

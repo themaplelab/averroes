@@ -31,8 +31,6 @@ import soot.SootMethod;
 
 import java.io.*;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
@@ -347,14 +345,10 @@ public class JarFile {
    * @param file
    */
   public static void verifyJarFile(String file) {
-    File f = new File(file);
-    try (java.util.jar.JarFile jarFile = new java.util.jar.JarFile(f)) {
-      // Make sure all classes in the generated jar are available to the ASM verifier
-      ClassLoader cl = new URLClassLoader(new URL[] {f.toURI().toURL()}, ClassLoader.getSystemClassLoader());
+    try (java.util.jar.JarFile jarFile = new java.util.jar.JarFile(new File(file))) {
       jarFile.stream().forEach(entry -> {
         if (entry.getName().endsWith(".class")) {
           try {
-
             ClassReader classReader = new ClassReader(jarFile.getInputStream(entry));
             ClassWriter classWriter = new ClassWriter(classReader, ClassWriter.COMPUTE_MAXS);
             ClassVisitor classVisitor = new CheckClassAdapter(classWriter, true);
@@ -362,17 +356,11 @@ public class JarFile {
 
             StringWriter stringWriter = new StringWriter();
             PrintWriter printWriter = new PrintWriter(stringWriter);
-            CheckClassAdapter.verify(new ClassReader(classWriter.toByteArray()), cl, false, printWriter);
+            CheckClassAdapter.verify(new ClassReader(classWriter.toByteArray()), false, printWriter);
 
             Assertions.asmVerificationOk(stringWriter);
           } catch (IOException e) {
             e.printStackTrace();
-          } catch (IllegalAccessError iae) {
-            System.err.println("Unable to verify class " + entry.getName() + " due to IllegalAccessError");
-          } catch (IncompatibleClassChangeError icce) {
-            System.err.println("Unable to verify class " + entry.getName() + " due to IncompatibleClassChangeError");
-          } catch (AssertionError e) {
-            System.err.println("Unable to verify class " + entry.getName() + " for unknown reason (possible missing dependency for this class)");
           }
         }
       });
