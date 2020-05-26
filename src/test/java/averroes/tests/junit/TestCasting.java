@@ -7,21 +7,52 @@ import org.junit.Test;
 
 public class TestCasting {
   String testCase = "Casting";
-  boolean guard = CommonOptions.guard;
-  boolean whole = CommonOptions.whole;
 
   @Before
   public void nuke() {
     Paths.deleteDirectory(CommonOptions.getOutputDirectory(testCase));
   }
 
+  // RTA Tests
   @Test
-  public void testCastingRta() {
-    Tests.runRta(testCase, guard, whole);
+  public void testRtaPlain() {
+    Tests.runRta(testCase, false, false);
   }
 
   @Test
-  public void testCastingXta() {
-    Tests.runXta(testCase, guard, whole);
+  public void testRtaGuard() {
+    Tests.runRta(testCase, true, false);
+  }
+
+  @Test
+  public void testRtaWhole() {
+    Tests.runRta(testCase, false, true);
+  }
+
+  @Test
+  public void testRtaBoth() {
+    Tests.runRta(testCase, true, true);
+  }
+
+
+  // XTA Tests
+  @Test
+  public void testXtaPlain() {
+    Tests.runXta(testCase, false, false);
+  }
+
+  @Test
+  public void testXtaGuard() {
+    Tests.runXta(testCase, true, false);
+  }
+
+  @Test
+  public void testXtaWhole() {
+    Tests.runXta(testCase, false, true);
+  }
+
+  @Test
+  public void testXtaBoth() {
+    Tests.runXta(testCase, true, true);
   }
 }

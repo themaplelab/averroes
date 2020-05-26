@@ -176,8 +176,7 @@ public final class FrameworksOptions {
      */
     public static String getSootClassPath() {
         String deps = getDependencies().stream().collect(Collectors.joining(File.pathSeparator));
-        String inputs = //Paths.get("build", "classes", "java", "test").toString();
-            getInputs().stream().collect(Collectors.joining(File.pathSeparator));
+        String inputs = Paths.get("build", "classes", "java", "test").toString();
         String std =
                 FileUtils.listFiles(
                         new File(getJreDirectory()), FileFilters.jreFileFilter, TrueFileFilter.TRUE)
