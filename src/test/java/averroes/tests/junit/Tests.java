@@ -241,7 +241,8 @@ public class Tests {
                                 "-j",
                                 CommonOptions.jre,
                                 "-a",
-                                analysis));
+                                analysis,
+                                "-t"));
 
         // Process the arguments. This is necessary because many common
         // options depend on some of those processed arguments.
@@ -263,7 +264,8 @@ public class Tests {
                                 "-j",
                                 CommonOptions.jre,
                                 "-a",
-                                analysis));
+                                analysis,
+                                "-t"));
 
         if (guard) {
             args.add("-g");
