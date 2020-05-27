@@ -27,3 +27,7 @@ dependencies {
 
     implementation files('libs/probe.jar')
 }
+
+test {
+    maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+}
