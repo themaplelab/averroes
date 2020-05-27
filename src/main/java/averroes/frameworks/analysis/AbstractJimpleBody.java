@@ -33,6 +33,7 @@ public abstract class AbstractJimpleBody {
     protected boolean readsArrayBeforeSuperOrOverloadedContructor = false;
     protected boolean writesArrayBeforeSuperOrOverloadedConstructor = false;
     protected boolean hasCallToSuperOrOverloadedConstructor = false;
+    protected boolean isInCallToSuperOrOverloadedConstructor = false;
     protected InvokeStmt callToSuperOrOverloadedConstructor;
 
     protected Map<Type, Local> casts;
@@ -278,9 +279,10 @@ public abstract class AbstractJimpleBody {
         if (method.isConstructor()) {
             Local base = body.getThisLocal();
 
-            // don't guard calls to the super constructor => causes
+            // don't guard calls to the super constructor (or any stmts inside the call) => causes
             // uninitialized bytecode verification errors
             if (hasCallToSuperOrOverloadedConstructor) {
+                isInCallToSuperOrOverloadedConstructor = true;
                 objCreationsForSuperOrOverloadedConstructor.forEach(this::createObjectByInvokeExpr);
                 arrayCreationsForSuperOrOverloadedConstructor.forEach(this::insertNewStmt);
                 handleInvokeExprs(invokeExprsForSuperOrOverloadedConstructor);
@@ -288,6 +290,7 @@ public abstract class AbstractJimpleBody {
                 handleArraysSuperOverload();
                 handleCastsSuperOverload();
                 insertSpecialInvokeStmt(base, callToSuperOrOverloadedConstructor.getInvokeExpr(), true, false);
+                isInCallToSuperOrOverloadedConstructor = false;
             } else if (method.getDeclaringClass().hasSuperclass()) {
                 insertSpecialInvokeStmt(
                         base,
@@ -699,7 +702,7 @@ public abstract class AbstractJimpleBody {
 
         Local base = localGenerator.generateLocal(type);
 
-        if (FrameworksOptions.isEnableGuards()) {
+        if (FrameworksOptions.isEnableGuards() && !isInCallToSuperOrOverloadedConstructor) {
             insertAndGuardStmt(
                     Jimple.v().newAssignStmt(base, buildNewExpr(type)),
                     Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(base, toInvoke.makeRef(), args)),
@@ -730,7 +733,7 @@ public abstract class AbstractJimpleBody {
 
         Local base = localGenerator.generateLocal(type);
 
-        if (FrameworksOptions.isEnableGuards()) {
+        if (FrameworksOptions.isEnableGuards() && !isInCallToSuperOrOverloadedConstructor) {
             insertAndGuardStmt(
                     Jimple.v().newAssignStmt(base, buildNewExpr(type)),
                     Jimple.v()
@@ -877,7 +880,7 @@ public abstract class AbstractJimpleBody {
      * @param stmts
      */
     protected void insertAssignStmts(AssignStmt... stmts) {
-        if (FrameworksOptions.isEnableGuards()) {
+        if (FrameworksOptions.isEnableGuards() && !isInCallToSuperOrOverloadedConstructor) {
             insertAndGuardAssignStmts(stmts);
         } else {
             Arrays.stream(stmts).forEach(body.getUnits()::add);
@@ -904,7 +907,7 @@ public abstract class AbstractJimpleBody {
      * @param overrideGuard
      */
     protected void insertStmt(Stmt stmt, boolean overrideGuard) {
-        if (overrideGuard || !FrameworksOptions.isEnableGuards()) {
+        if (overrideGuard || !FrameworksOptions.isEnableGuards() || isInCallToSuperOrOverloadedConstructor) {
             body.getUnits().add(stmt);
         } else {
             stmt.apply(
