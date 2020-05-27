@@ -28,6 +28,14 @@ public final class FrameworksOptions {
                     .required()
                     .build();
 
+    private static Option testcase =
+            Option.builder("t")
+                    .longOpt("test")
+                    .desc("Setting this flag will append the test build directory to the classpath.  Most users will not need to set this flag.")
+                    .hasArg(false)
+                    .required(false)
+                    .build();
+
     private static Option prefix =
             Option.builder("p")
                     .longOpt("prefix")
@@ -111,7 +119,8 @@ public final class FrameworksOptions {
                     .addOption(analysis)
                     .addOption(help)
                     .addOption(enableGuards)
-                    .addOption(includeDependencies);
+                    .addOption(includeDependencies)
+                    .addOption(testcase);
 
     private static CommandLine cmd;
 
@@ -176,8 +185,7 @@ public final class FrameworksOptions {
      */
     public static String getSootClassPath() {
         String deps = getDependencies().stream().collect(Collectors.joining(File.pathSeparator));
-        String inputs = Paths.get("build", "classes", "java", "test").toString();
-//        getInputs().stream().collect(Collectors.joining(File.pathSeparator));
+        String inputs = getInputs().stream().collect(Collectors.joining(File.pathSeparator));
         String std =
                 FileUtils.listFiles(
                         new File(getJreDirectory()), FileFilters.jreFileFilter, TrueFileFilter.TRUE)
@@ -185,7 +193,18 @@ public final class FrameworksOptions {
                         .map(f -> f.getAbsolutePath())
                         .collect(Collectors.joining(File.pathSeparator));
 
-        return inputs + File.pathSeparator + (deps.isEmpty() ? "" : deps + File.pathSeparator) + std;
+        return inputs + File.pathSeparator
+                + (isAppendTestToClasspath() ? getTestBuildDrectory() + File.pathSeparator : "")
+                + (deps.isEmpty() ? "" : deps + File.pathSeparator) + std;
+    }
+
+    /**
+     * Get the directory containing the class files for the test cases
+     *
+     * @return
+     */
+    private static String getTestBuildDrectory() {
+        return Paths.get("build", "classes", "java", "test").toString();
     }
 
     /**
@@ -194,7 +213,11 @@ public final class FrameworksOptions {
      * @return
      */
     public static List<String> getClasses() {
-        return getClasses(getPrefix() + ".");
+        String prefix = getPrefix();
+        if (prefix.equals("")) {
+            return getClasses(prefix);
+        }
+        return getClasses( prefix + ".");
     }
 
     /**
@@ -247,6 +270,16 @@ public final class FrameworksOptions {
      */
     public static boolean isEnableGuards() {
         return cmd.hasOption(enableGuards.getOpt());
+    }
+
+    /**
+     * Setting this flag will append the test build directory to the classpath.
+     * Most users will not need to set this flag.
+     *
+     * @return
+     */
+    public static boolean isAppendTestToClasspath() {
+        return cmd.hasOption(testcase.getOpt());
     }
 
     /**

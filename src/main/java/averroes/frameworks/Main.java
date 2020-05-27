@@ -53,8 +53,9 @@ public class Main {
             Options.v().set_validate(true);
             if (FrameworksOptions.isIncludeDependencies()) {
                 Options.v().set_whole_program(true); // to model lib dependencies
-                Options.v().set_allow_phantom_refs(true); // to handle invokedynamic
+                //Options.v().set_allow_phantom_refs(true); // to handle invokedynamic
             }
+            Options.v().set_allow_phantom_refs(true); // to handle invokedynamic
 
             // Load the necessary classes
             TimeUtils.reset();

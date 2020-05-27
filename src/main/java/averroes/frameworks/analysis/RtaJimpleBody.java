@@ -105,6 +105,15 @@ public class RtaJimpleBody extends AbstractJimpleBody {
                         });
     }
 
+    @Override
+    protected void handleFieldsSuperOverload() {
+        fieldReadsForSuperOrOverloadedConstructor.stream()
+                .forEach(
+                        f -> {
+                            storeToSet(loadField(f, true));
+                        });
+    }
+
     /**
      * Load the RTA.set field into a local variable, if not loaded before.
      *

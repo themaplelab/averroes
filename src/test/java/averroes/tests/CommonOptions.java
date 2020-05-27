@@ -15,8 +15,6 @@ import org.apache.commons.io.filefilter.IOFileFilter;
  */
 public class CommonOptions {
 
-  public static boolean guard = false;
-  public static boolean whole = false;
 
   public static String base =
       Paths.get("build", "classes", "java", "test", "averroes", "testsuite").toString();

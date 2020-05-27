@@ -76,6 +76,7 @@ public class Main {
             Options.v().classes().addAll(provider.getApplicationClassNames());
             Options.v().set_main_class(AverroesOptions.getMainClass());
             Options.v().set_validate(true);
+            Options.v().set_allow_phantom_refs(true);
 
             // Load the necessary classes
             System.out.println();

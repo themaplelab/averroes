@@ -480,8 +480,12 @@ public class CodeGenerator {
             VoidType.v(),
             Modifier.PUBLIC | Modifier.STATIC);
 
+    // prevent SootMethod.getDeclaringClass() from throwing a runtime exception
+    clinit.setDeclaringClass(averroesLibraryClass);
+    clinit.setDeclared(true);
+
     AverroesJimpleBody body = new AverroesJimpleBody(clinit);
-    averroesLibraryClass.addMethod(clinit);
+    //averroesLibraryClass.addMethod(clinit);
 
     // Create instance and call the constructor
     Local instance =

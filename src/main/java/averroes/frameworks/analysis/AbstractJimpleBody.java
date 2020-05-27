@@ -30,16 +30,31 @@ public abstract class AbstractJimpleBody {
     protected LocalGenerator localGenerator;
     protected boolean readsArray = false;
     protected boolean writesArray = false;
+    protected boolean readsArrayBeforeSuperOrOverloadedContructor = false;
+    protected boolean writesArrayBeforeSuperOrOverloadedConstructor = false;
+    protected boolean hasCallToSuperOrOverloadedConstructor = false;
+    protected boolean isInCallToSuperOrOverloadedConstructor = false;
+    protected InvokeStmt callToSuperOrOverloadedConstructor;
 
     protected Map<Type, Local> casts;
+
+    protected LinkedHashSet<Type> castStmtsForSuperOrOverloadedConstructor =
+            new LinkedHashSet<>();
 
     // Various constructs collected from processing the original method body.
     // Arrays created within the original method body.
     protected LinkedHashSet<Type> arrayCreations = new LinkedHashSet<Type>();
 
+    protected LinkedHashSet<Type> arrayCreationsForSuperOrOverloadedConstructor =
+            new LinkedHashSet<>();
+
     // Objects, other than arrays, created within the original method body.
     protected LinkedHashSet<SpecialInvokeExpr> objectCreations =
             new LinkedHashSet<SpecialInvokeExpr>();
+
+    // Object creations that are used in a call to super or an overloaded constructor
+    protected LinkedHashSet<SpecialInvokeExpr> objCreationsForSuperOrOverloadedConstructor =
+            new LinkedHashSet<>();
 
     // Invoke statements (i.e., return value not assigned to any local
     // variables)
@@ -48,14 +63,23 @@ public abstract class AbstractJimpleBody {
     // Invoke expression (i.e., return value is assigned to some local variable)
     protected LinkedHashSet<InvokeExpr> invokeExprs = new LinkedHashSet<>();
 
+    protected LinkedHashSet<InvokeExpr> invokeExprsForSuperOrOverloadedConstructor =
+            new LinkedHashSet<>();
+
     // Thrown types
     protected LinkedHashSet<Type> throwables = new LinkedHashSet<>();
+
+//    protected LinkedHashSet<Type> throwablesForSuperOrOverloadedConstructor =
+//            new LinkedHashSet<>();
 
     // Checked exceptions (declared in the method signature)
     protected LinkedHashSet<SootClass> checkedExceptions = new LinkedHashSet<>();
 
     // Field reads
     protected LinkedHashSet<SootFieldRef> fieldReads = new LinkedHashSet<>();
+
+    protected LinkedHashSet<SootFieldRef> fieldReadsForSuperOrOverloadedConstructor =
+            new LinkedHashSet<>();
 
     // Field writes
     protected LinkedHashSet<SootFieldRef> fieldWrites = new LinkedHashSet<>();
@@ -110,6 +134,11 @@ public abstract class AbstractJimpleBody {
      * Handle field reads and writes.
      */
     protected abstract void handleFields();
+
+    /**
+     * Handle field reads which may occur before a call to super or overloaded constructor
+     */
+    protected abstract void handleFieldsSuperOverload();
 
     /**
      * Get the set that will be cast to a certain type for various operations. This is RTA.set for the
@@ -179,6 +208,9 @@ public abstract class AbstractJimpleBody {
                                                     writesArray = true;
                                                 } else if (isAssignInvoke(stmt)) {
                                                     invokeExprs.add((InvokeExpr) stmt.getRightOp());
+                                                } else if (isCastStmt(stmt) && !hasCallToSuperOrOverloadedConstructor) {
+                                                    CastExpr ce = (CastExpr) stmt.getRightOp();
+                                                    castStmtsForSuperOrOverloadedConstructor.add(ce.getCastType());
                                                 }
                                             }
 
@@ -188,6 +220,26 @@ public abstract class AbstractJimpleBody {
                                                     objectCreations.add((SpecialInvokeExpr) stmt.getInvokeExpr());
                                                 } else if (!isCallToSuperOrOverloadedConstructor(stmt)) {
                                                     invokeStmts.add(stmt.getInvokeExpr());
+                                                } else {
+                                                    // Must be a call to super or overloaded constructor
+                                                    hasCallToSuperOrOverloadedConstructor = true;
+                                                    callToSuperOrOverloadedConstructor = stmt;
+                                                    // Any non-identity stmts up to this point MUST be relevant
+                                                    // to the super / constructor call
+                                                    objCreationsForSuperOrOverloadedConstructor.addAll(objectCreations);
+                                                    objectCreations.clear();
+                                                    invokeExprsForSuperOrOverloadedConstructor.addAll(invokeExprs);
+                                                    invokeExprs.clear();
+                                                    fieldReadsForSuperOrOverloadedConstructor.addAll(fieldReads);
+                                                    fieldReads.clear();
+                                                    arrayCreationsForSuperOrOverloadedConstructor.addAll(arrayCreations);
+                                                    arrayCreations.clear();
+                                                    readsArrayBeforeSuperOrOverloadedContructor = readsArray;
+                                                    readsArray = false;
+                                                    writesArrayBeforeSuperOrOverloadedConstructor = writesArray;
+                                                    writesArray = false;
+//                                                    throwablesForSuperOrOverloadedConstructor.addAll(throwables);
+//                                                    throwables.clear();
                                                 }
                                             }
 
@@ -226,13 +278,19 @@ public abstract class AbstractJimpleBody {
          */
         if (method.isConstructor()) {
             Local base = body.getThisLocal();
-            Stmt firstNonIdentity = originalBody.getFirstNonIdentityStmt();
 
-            // don't guard calls to the super constructor => causes
+            // don't guard calls to the super constructor (or any stmts inside the call) => causes
             // uninitialized bytecode verification errors
-            if (isCallToSuperOrOverloadedConstructor(firstNonIdentity)) {
-                InvokeStmt stmt = (InvokeStmt) firstNonIdentity;
-                insertSpecialInvokeStmt(base, stmt.getInvokeExpr(), true, false);
+            if (hasCallToSuperOrOverloadedConstructor) {
+                isInCallToSuperOrOverloadedConstructor = true;
+                objCreationsForSuperOrOverloadedConstructor.forEach(this::createObjectByInvokeExpr);
+                arrayCreationsForSuperOrOverloadedConstructor.forEach(this::insertNewStmt);
+                handleInvokeExprs(invokeExprsForSuperOrOverloadedConstructor);
+                handleFieldsSuperOverload();
+                handleArraysSuperOverload();
+                handleCastsSuperOverload();
+                insertSpecialInvokeStmt(base, callToSuperOrOverloadedConstructor.getInvokeExpr(), true, false);
+                isInCallToSuperOrOverloadedConstructor = false;
             } else if (method.getDeclaringClass().hasSuperclass()) {
                 insertSpecialInvokeStmt(
                         base,
@@ -271,6 +329,7 @@ public abstract class AbstractJimpleBody {
         }
     }
 
+
     /**
      * Insert the standard footer for a library method.
      */
@@ -294,8 +353,15 @@ public abstract class AbstractJimpleBody {
     protected void createObjects() {
         objectCreations.forEach(e -> createObjectByInvokeExpr(e));
         arrayCreations.forEach(t -> insertNewStmt(t));
-        checkedExceptions.forEach(
-                cls -> createObjectByMethod(cls.getMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG)));
+        checkedExceptions.forEach(cls -> {
+            if (cls.declaresMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG)) {
+                createObjectByMethod(cls.getMethod(Names.DEFAULT_CONSTRUCTOR_SUBSIG));
+            } else {
+                // Handle classes without a default constructor
+                // As far as I can tell, the only Exception with this problem is java.text.ParseException
+                createObjectByMethod(cls.getMethodByNameUnsafe("<init>"));
+            }
+        });
     }
 
     /**
@@ -342,7 +408,16 @@ public abstract class AbstractJimpleBody {
     protected void callMethods() {
         invokeStmts.forEach(this::buildAndInsertInvokeStmt);
 
-        invokeExprs.forEach(
+        handleInvokeExprs(invokeExprs);
+    }
+
+    /**
+     * Insert method calls for which the result is stored locally.
+     *
+     * @param exprs
+     */
+    protected void handleInvokeExprs(Set<InvokeExpr> exprs) {
+        exprs.forEach(
                 e -> {
                     InvokeExpr expr = buildInvokeExpr(e);
 
@@ -368,6 +443,25 @@ public abstract class AbstractJimpleBody {
             ArrayRef arrayRef = Jimple.v().newArrayRef(cast, ARRAY_INDEX);
 
             if (readsArray) {
+                Local elem = localGenerator.generateLocal(Scene.v().getObjectType());
+
+                insertAssignStmts(Jimple.v().newAssignStmt(elem, arrayRef), buildStoreToSetExpr(elem));
+            } else {
+                insertStmt(Jimple.v().newAssignStmt(arrayRef, setToCast()));
+            }
+        }
+    }
+
+    /**
+     * Handle array reads and writes that occur within a call to super or a call to an overloaded constructor
+     */
+    private void handleArraysSuperOverload() {
+        if (readsArrayBeforeSuperOrOverloadedContructor || writesArrayBeforeSuperOrOverloadedConstructor) {
+            Local cast =
+                    (Local) getCompatibleValue(ArrayType.v(setToCast().getType(), ARRAY_LENGTH.value));
+            ArrayRef arrayRef = Jimple.v().newArrayRef(cast, ARRAY_INDEX);
+
+            if (readsArrayBeforeSuperOrOverloadedContructor) {
                 Local elem = localGenerator.generateLocal(Scene.v().getObjectType());
 
                 insertAssignStmts(Jimple.v().newAssignStmt(elem, arrayRef), buildStoreToSetExpr(elem));
@@ -419,6 +513,26 @@ public abstract class AbstractJimpleBody {
         }
 
         return casts.get(type);
+    }
+
+    /**
+     * Handle cast expressions that may arise in calls to super or to an overloaded constructor
+     */
+    protected void handleCastsSuperOverload() {
+        castStmtsForSuperOrOverloadedConstructor.forEach(type -> {
+            Value val;
+            if (type instanceof PrimType) {
+                val = getCompatibleValue(type);
+            } else {
+                val = body.getLocals().stream()
+                        .filter(l -> type.equals(l.getType()))
+                        .map(l -> (Value) l)
+                        .findFirst()
+                        .orElse(NullConstant.v());
+            }
+            Local tmp = localGenerator.generateLocal(type);
+            insertStmt(Jimple.v().newAssignStmt(tmp, Jimple.v().newCastExpr(val, type)));
+        });
     }
 
     /**
@@ -492,6 +606,22 @@ public abstract class AbstractJimpleBody {
                                         return NullConstant.v();
                                     } else if (a instanceof StringConstant) {
                                         return StringConstant.v("");
+                                    } else if (a instanceof ClassConstant) {
+                                        // TODO: come back to this and improve it
+                                        return ClassConstant.v("Ljava/lang/Object;"); // return a? or return the points-to set cast to type Class?
+                                    } else if (hasCallToSuperOrOverloadedConstructor &&
+                                                callToSuperOrOverloadedConstructor.getInvokeExpr().equals(toInvoke)) {
+                                        Optional<Local> local = body.getLocals().stream()
+                                                .filter(l -> a.getType().equals(l.getType()))
+                                                .findFirst();
+                                        if (local.isPresent()) {
+                                            return local.get();
+                                        } else if (readsArrayBeforeSuperOrOverloadedContructor) {
+                                            return insertCastStmt(setToCast(), a.getType());
+                                        } else {
+                                            throw new RuntimeException("Couldn't find appropriate local to use as arg for " +
+                                                    "special invoke statement in " + this.method.toString());
+                                        }
                                     } else {
                                         return body.getParameterLocals().stream()
                                                 .filter(l -> a.getType().equals(l.getType()))
@@ -572,7 +702,7 @@ public abstract class AbstractJimpleBody {
 
         Local base = localGenerator.generateLocal(type);
 
-        if (FrameworksOptions.isEnableGuards()) {
+        if (FrameworksOptions.isEnableGuards() && !isInCallToSuperOrOverloadedConstructor) {
             insertAndGuardStmt(
                     Jimple.v().newAssignStmt(base, buildNewExpr(type)),
                     Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(base, toInvoke.makeRef(), args)),
@@ -603,7 +733,7 @@ public abstract class AbstractJimpleBody {
 
         Local base = localGenerator.generateLocal(type);
 
-        if (FrameworksOptions.isEnableGuards()) {
+        if (FrameworksOptions.isEnableGuards() && !isInCallToSuperOrOverloadedConstructor) {
             insertAndGuardStmt(
                     Jimple.v().newAssignStmt(base, buildNewExpr(type)),
                     Jimple.v()
@@ -750,7 +880,7 @@ public abstract class AbstractJimpleBody {
      * @param stmts
      */
     protected void insertAssignStmts(AssignStmt... stmts) {
-        if (FrameworksOptions.isEnableGuards()) {
+        if (FrameworksOptions.isEnableGuards() && !isInCallToSuperOrOverloadedConstructor) {
             insertAndGuardAssignStmts(stmts);
         } else {
             Arrays.stream(stmts).forEach(body.getUnits()::add);
@@ -777,7 +907,7 @@ public abstract class AbstractJimpleBody {
      * @param overrideGuard
      */
     protected void insertStmt(Stmt stmt, boolean overrideGuard) {
-        if (overrideGuard || !FrameworksOptions.isEnableGuards()) {
+        if (overrideGuard || !FrameworksOptions.isEnableGuards() || isInCallToSuperOrOverloadedConstructor) {
             body.getUnits().add(stmt);
         } else {
             stmt.apply(
@@ -989,6 +1119,19 @@ public abstract class AbstractJimpleBody {
         if (stmt instanceof InvokeStmt) {
             InvokeStmt invoke = (InvokeStmt) stmt;
             return isCallToSuperConstructor(invoke) || isCallToOverloadedConstructor(invoke);
+        }
+
+        return false;
+    }
+
+    /**
+     * Is this statement casting a value to a new type?
+     * @param stmt
+     * @return
+     */
+    private boolean isCastStmt(AssignStmt stmt) {
+        if (stmt.getRightOp() instanceof CastExpr) {
+            return true;
         }
 
         return false;
