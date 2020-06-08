@@ -109,6 +109,14 @@ public final class FrameworksOptions {
                     .required(false)
                     .build();
 
+    private static Option reflectionLog =
+            Option.builder("refl")
+                    .longOpt("reflection-log")
+                    .desc("a tamiflex trace file modelling potential reflective calls in the library to be summarized")
+                    .hasArg()
+                    .required(false)
+                    .build();
+
     private static Options options =
             new Options()
                     .addOption(input)
@@ -120,7 +128,8 @@ public final class FrameworksOptions {
                     .addOption(help)
                     .addOption(enableGuards)
                     .addOption(includeDependencies)
-                    .addOption(testcase);
+                    .addOption(testcase)
+                    .addOption(reflectionLog);
 
     private static CommandLine cmd;
 
@@ -290,5 +299,23 @@ public final class FrameworksOptions {
      */
     public static boolean isIncludeDependencies() {
         return cmd.hasOption(includeDependencies.getOpt());
+    }
+
+    /**
+     * The tamiflex trace file modelling potential reflective calls in the library to be summarized
+     *
+     * @return
+     */
+    public static String getReflectionLog() {
+        return cmd.getOptionValue(reflectionLog.getOpt());
+    }
+
+    /**
+     * Return true if a reflection log has been provided.
+     *
+     * @return
+     */
+    public static boolean isModelReflection() {
+        return cmd.hasOption(reflectionLog.getOpt());
     }
 }

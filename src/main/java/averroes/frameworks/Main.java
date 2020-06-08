@@ -4,6 +4,7 @@ import averroes.JarFile;
 import averroes.frameworks.options.FrameworksOptions;
 import averroes.frameworks.soot.ClassWriter;
 import averroes.frameworks.soot.CodeGenerator;
+import averroes.frameworks.soot.ReflectionTraceGenerator;
 import averroes.soot.SootSceneUtil;
 import averroes.util.MathUtils;
 import averroes.util.SootUtils;
@@ -11,9 +12,10 @@ import averroes.util.TimeUtils;
 import averroes.util.io.Paths;
 import averroes.util.io.Printers;
 import org.apache.commons.io.FileUtils;
-import soot.G;
-import soot.Scene;
+import soot.*;
+import soot.jimple.toolkits.reflection.ReflectiveCallsInliner;
 import soot.options.Options;
+import soot.rtlib.tamiflex.*;
 
 import java.io.IOException;
 
@@ -50,10 +52,10 @@ public class Main {
             Options.v().classes().addAll(FrameworksOptions.getClasses());
             System.out.println(FrameworksOptions.getSootClassPath());
             Options.v().set_soot_classpath(FrameworksOptions.getSootClassPath());
+            Options.v().set_prepend_classpath(true);
             Options.v().set_validate(true);
             if (FrameworksOptions.isIncludeDependencies()) {
                 Options.v().set_whole_program(true); // to model lib dependencies
-                //Options.v().set_allow_phantom_refs(true); // to handle invokedynamic
             }
             Options.v().set_allow_phantom_refs(true); // to handle invokedynamic
 
@@ -61,6 +63,9 @@ public class Main {
             TimeUtils.reset();
             System.out.println("Loading classes...");
             Scene.v().loadNecessaryClasses();
+            if (FrameworksOptions.isModelReflection()) {
+                loadReflection();
+            }
             double soot = TimeUtils.elapsedTime();
             System.out.println("Soot loaded the input classes in " + soot + " seconds.");
 
@@ -101,5 +106,27 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Add reflective class instantiations and method calls to the scene.
+     */
+    private static void loadReflection() {
+        String path = "build/tmp/refl.log";
+        ReflectionTraceGenerator traceGen = new ReflectionTraceGenerator(path);
+        traceGen.generate();
+
+        PhaseOptions.v().setPhaseOption("cg", "reflection-log:" + path);
+        PackManager.v().getPack("wjpp").add(new Transform("wjpp.inlineReflCalls", new ReflectiveCallsInliner()));
+        Scene.v().addBasicClass(Object.class.getName());
+        Scene.v().forceResolve(SootSig.class.getName(), SootClass.BODIES);
+        Scene.v().forceResolve(UnexpectedReflectiveCall.class.getName(), SootClass.BODIES);
+        Scene.v().forceResolve(IUnexpectedReflectiveCallHandler.class.getName(), SootClass.BODIES);
+        Scene.v().forceResolve(DefaultHandler.class.getName(), SootClass.BODIES);
+        Scene.v().forceResolve(OpaquePredicate.class.getName(), SootClass.BODIES);
+        Scene.v().forceResolve(ReflectiveCalls.class.getName(), SootClass.BODIES);
+        Options.v().set_keep_line_number(true);
+        PackManager.v().getPack("wjpp").apply();
+        Scene.v().removeClass(Scene.v().getSootClass("soot.rtlib.tamiflex.ReflectiveCallsWrapper"));
     }
 }
