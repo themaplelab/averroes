@@ -19,9 +19,8 @@ dependencies {
 //    testImplementation 'de.tud.sse:soot-infoflow:2.7.1.1:tests'
     testImplementation 'org.slf4j:slf4j-simple:1.7.5'
 
-//    implementation 'ca.mcgill.sable:soot:3.3.0'
-//    implementation files('libs/sootclasses-trunk-jar-with-dependencies.jar')
-    implementation 'ca.mcgill.sable:soot:4.1.0'
+    implementation files('libs/sootclasses-trunk-jar-with-dependencies.jar')
+//    implementation 'ca.mcgill.sable:soot:4.1.0'
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'commons-io:commons-io:2.6'
     implementation 'commons-cli:commons-cli:1.4'
