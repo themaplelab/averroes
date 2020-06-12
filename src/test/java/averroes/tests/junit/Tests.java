@@ -275,8 +275,8 @@ public class Tests {
 
         if (whole) {
             args.add("-w");
-            args.add("-refl");
-            args.add("reflection/trace.log");
+//            args.add("-refl");
+//            args.add("reflection/trace.log");
         }
 
         // Process the arguments. This is necessary because many common
