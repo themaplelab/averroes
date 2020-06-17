@@ -24,6 +24,7 @@ import soot.SootClass;
 import soot.SourceLocator;
 import soot.options.Options;
 
+import java.io.File;
 import java.util.Collections;
 
 /**
@@ -67,21 +68,24 @@ public class Main {
             // Add the organized archives for the application and its
             // dependencies.
             TimeUtils.reset();
-            JarFactoryClassProvider provider = new JarFactoryClassProvider();
-            provider.prepareJarFactoryClasspath();
-
-            // Set some soot parameters
-            SourceLocator.v().setClassProviders(Collections.singletonList(provider));
-            SootSceneUtil.addCommonDynamicClasses(provider);
-            Options.v().classes().addAll(provider.getApplicationClassNames());
+//            JarFactoryClassProvider provider = new JarFactoryClassProvider();
+//            provider.prepareJarFactoryClasspath();
+//
+//            // Set some soot parameters
+//            SourceLocator.v().setClassProviders(Collections.singletonList(provider));
+//            SootSceneUtil.addCommonDynamicClasses(provider);
+            Options.v().set_soot_classpath(Paths.organizedApplicationJarFile().getAbsolutePath() + File.pathSeparator +
+                    Paths.organizedLibraryJarFile());
             Options.v().set_main_class(AverroesOptions.getMainClass());
             Options.v().set_validate(true);
             Options.v().set_allow_phantom_refs(true);
+            Options.v().set_whole_program(true);
 
             // Load the necessary classes
             System.out.println();
             System.out.println("Loading classes...");
             Scene.v().loadNecessaryClasses();
+            Scene.v().forceResolve(AverroesOptions.getMainClass(), SootClass.BODIES);
             Scene.v().setMainClassFromOptions();
             double soot = TimeUtils.elapsedTime();
             System.out.println("Soot loaded the input classes in " + soot + " seconds.");

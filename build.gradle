@@ -1,5 +1,6 @@
 plugins {
     id 'scala'
+    id 'application'
 }
 
 group 'ca.uwaterloo.plg'
@@ -31,4 +32,8 @@ dependencies {
 test {
     maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
     maxHeapSize = "6g"
+}
+
+application {
+    mainClassName = 'averroes.Main'
 }
