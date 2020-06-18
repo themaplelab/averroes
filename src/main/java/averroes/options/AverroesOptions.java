@@ -131,6 +131,15 @@ public final class AverroesOptions {
           .required(false)
           .build();
 
+  private static Option useASM =
+          Option.builder("asm")
+          .longOpt("use-asm-frontend")
+          .desc("setting ths flag will make averroes use the Soot ASM frontend, rather than the outdated Coffi frontend." +
+                  "  This option is required if analyzing Java 8+.")
+          .hasArg(false)
+          .required(false)
+          .build();
+
   private static Options options =
       new Options()
           .addOption(applicationRegex)
@@ -142,7 +151,8 @@ public final class AverroesOptions {
           .addOption(outputDirectory)
           .addOption(jreDirectory)
           .addOption(help)
-          .addOption(enableGuards);
+          .addOption(enableGuards)
+          .addOption(useASM);
 
   private static CommandLine cmd;
 
@@ -372,5 +382,15 @@ public final class AverroesOptions {
    */
   public static boolean isEnableGuards() {
     return cmd.hasOption(enableGuards.getOpt());
+  }
+
+  /**
+   * Setting ths flag will make averroes use the Soot ASM frontend, rather than the outdated Coffi frontend.
+   * This option is required if analyzing Java 8+.
+   *
+   * @return
+   */
+  public static boolean isUseASM() {
+    return cmd.hasOption(useASM.getOpt());
   }
 }

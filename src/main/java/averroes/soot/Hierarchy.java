@@ -28,7 +28,9 @@ import soot.SootField;
 import soot.SootMethod;
 import soot.Type;
 import soot.VoidType;
-import soot.coffi.AverroesApplicationConstantPool;
+import soot.coffi.AbsAverroesApplicationConstantPool;
+import soot.coffi.AsmAverroesApplicationConstantPool;
+import soot.coffi.CoffiAverroesApplicationConstantPool;
 import soot.tagkit.Tag;
 
 /**
@@ -40,7 +42,7 @@ public class Hierarchy {
 
   private static Hierarchy instance = new Hierarchy();
 
-  private AverroesApplicationConstantPool applicationConstantPool;
+  private AbsAverroesApplicationConstantPool applicationConstantPool;
 
   private SootBasicClassesDatabase basicClassesDatabase;
 
@@ -1496,7 +1498,7 @@ public class Hierarchy {
    *
    * @return
    */
-  public AverroesApplicationConstantPool getApplicationConstantPool() {
+  public AbsAverroesApplicationConstantPool getApplicationConstantPool() {
     return applicationConstantPool;
   }
 
@@ -1711,7 +1713,11 @@ public class Hierarchy {
    * constant pool.
    */
   private void findLibraryEntitiesReferencedInApplication() {
-    applicationConstantPool = new AverroesApplicationConstantPool(this);
+    if (AverroesOptions.isUseASM()) {
+      applicationConstantPool = new AsmAverroesApplicationConstantPool(this);
+    } else {
+      applicationConstantPool = new CoffiAverroesApplicationConstantPool(this);
+    }
 
     findApplicationClassesReferencedByName();
     findLibraryMethodsReferencedInApplication();
