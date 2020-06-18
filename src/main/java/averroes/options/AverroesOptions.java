@@ -9,13 +9,19 @@
  */
 package averroes.options;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.jar.Attributes;
+import java.util.jar.JarInputStream;
+import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
@@ -392,5 +398,31 @@ public final class AverroesOptions {
    */
   public static boolean isUseASM() {
     return cmd.hasOption(useASM.getOpt());
+  }
+
+  /**
+   * Return the specification version listed in the rt.jar manifest file as a float.
+   *
+   * @return
+   */
+  public static float getJreVersion() {
+    try {
+      JarInputStream jarInputStream =
+              new JarInputStream(
+                      new FileInputStream(
+                              Paths.get(getJreDirectory(), "rt.jar").toFile()
+                      )
+              );
+      Manifest mf = jarInputStream.getManifest();
+      if (! mf.getMainAttributes().containsKey(Attributes.Name.SPECIFICATION_VERSION)) {
+        throw new IOException();
+      }
+      String version = mf.getMainAttributes().getValue(Attributes.Name.SPECIFICATION_VERSION);
+      return Float.parseFloat(version);
+    } catch (IOException e) {
+      System.err.println("Unable to load manifest from rt.jar! Check your JRE directory.");
+      System.exit(0);
+      return 0;
+    }
   }
 }

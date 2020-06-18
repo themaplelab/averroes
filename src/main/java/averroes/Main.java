@@ -22,6 +22,7 @@ import soot.G;
 import soot.Scene;
 import soot.SootClass;
 import soot.SourceLocator;
+import soot.asm.AsmClassProvider;
 import soot.options.Options;
 
 import java.io.File;
@@ -68,22 +69,43 @@ public class Main {
             // Add the organized archives for the application and its
             // dependencies.
             TimeUtils.reset();
-//            JarFactoryClassProvider provider = new JarFactoryClassProvider();
-//            provider.prepareJarFactoryClasspath();
-//
-//            // Set some soot parameters
-//            SourceLocator.v().setClassProviders(Collections.singletonList(provider));
-//            SootSceneUtil.addCommonDynamicClasses(provider);
-            Options.v().set_soot_classpath(Paths.organizedApplicationJarFile().getAbsolutePath() + File.pathSeparator +
-                    Paths.organizedLibraryJarFile());
+
+            if (AverroesOptions.isUseASM()) {
+                Options.v().set_soot_classpath(Paths.organizedApplicationJarFile().getAbsolutePath() + File.pathSeparator +
+                        Paths.organizedLibraryJarFile());
+
+                // *WARNING* awful hack ahead
+                // TODO: fix the Soot SourceLocator class so we don't have to do this.
+                //  My best idea is just creating a method SourceLocator.initializeClasspath() which sets the classpath
+                //  to Scene.v().getSootClassPath().
+
+                // This is the only way I can see to initialize the SourceLocator with the soot classpath:
+                // Begin weird hack
+                SourceLocator.v().getClassSource("java.lang.Object");
+                // End weird hack
+                SootSceneUtil.addCommonDynamicClasses(new AsmClassProvider());
+            } else {
+                JarFactoryClassProvider provider = new JarFactoryClassProvider();
+                provider.prepareJarFactoryClasspath();
+
+                // Set some soot parameters
+                SourceLocator.v().setClassProviders(Collections.singletonList(provider));
+                SootSceneUtil.addCommonDynamicClasses(provider);
+            }
+
             Options.v().set_main_class(AverroesOptions.getMainClass());
             Options.v().set_validate(true);
-            Options.v().set_allow_phantom_refs(true);
             Options.v().set_whole_program(true);
+
+            // If we are using 1.8 or later, need to handle invokedynamic
+            if (AverroesOptions.getJreVersion() >= 1.8) {
+                Options.v().set_allow_phantom_refs(true);
+            }
 
             // Load the necessary classes
             System.out.println();
             System.out.println("Loading classes...");
+            AverroesOptions.getDynamicApplicationClasses().forEach(Scene.v()::addBasicClass);
             Scene.v().loadNecessaryClasses();
             Scene.v().forceResolve(AverroesOptions.getMainClass(), SootClass.BODIES);
             Scene.v().setMainClassFromOptions();

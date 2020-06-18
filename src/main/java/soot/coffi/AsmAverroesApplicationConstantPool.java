@@ -26,6 +26,9 @@ public class AsmAverroesApplicationConstantPool extends AbsAverroesApplicationCo
      * Find all invoke statements in the class and add their targets to the result set
      * if the target is a library method.
      *
+     * While this implementation looks VERY different from the coffi-based implementation, they both return
+     * the same set of methods.
+     *
      * @param applicationClass
      * @return
      */
@@ -34,17 +37,15 @@ public class AsmAverroesApplicationConstantPool extends AbsAverroesApplicationCo
 
         Set<SootMethod> result = new HashSet<SootMethod>();
 
-        // TODO: Ask Karim about method resolution in coffi: did it just look up the immediate (possibly abstract) target,
-        //  or did it handle some trivial virtual dispatch?
         if (applicationClass.getMethodCount() > 0) {
             applicationClass.getMethods().stream()
                     .filter(SootMethod::isConcrete)
                     .forEach(sootMethod -> {
                                 result.addAll(sootMethod.retrieveActiveBody().getUnits().stream()
-                                        .filter(u -> u instanceof InvokeStmt)
-                                        // get the target method, if available
-                                        .map(u -> ((InvokeStmt) u).getInvokeExpr().getMethodRef().tryResolve())
-                                        .filter(Objects::nonNull)
+                                        .filter(u -> u instanceof Stmt && ((Stmt) u).containsInvokeExpr())
+                                        // get the target method
+                                        .map(u -> ((Stmt) u).getInvokeExpr().getMethodRef().resolve())
+                                        .filter(hierarchy::isLibraryMethod)
                                         .collect(Collectors.toSet()));
                             }
                     );

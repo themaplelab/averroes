@@ -215,7 +215,7 @@ public class JarFactoryClassProvider implements ClassProvider {
   public ClassSource find(String className) {
     if (classes.containsKey(className)) {
       ZipEntryResource zer = (ZipEntryResource) classes.get(className);
-      FoundFile foundFile = new FoundFile(zer.entry().getName(), zer.archive().getName());
+      FoundFile foundFile = new FoundFile(zer.archive().getName(), zer.entry().getName());
       return new CoffiClassSource(className, foundFile);
     } else {
       return null;
