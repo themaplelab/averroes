@@ -73,6 +73,7 @@ public class Main {
             if (AverroesOptions.isUseASM()) {
                 Options.v().set_soot_classpath(Paths.organizedApplicationJarFile().getAbsolutePath() + File.pathSeparator +
                         Paths.organizedLibraryJarFile());
+                Options.v().set_process_dir(Collections.singletonList(Paths.organizedApplicationJarFile().getAbsolutePath()));
 
                 // *WARNING* awful hack ahead
                 // TODO: fix the Soot SourceLocator class so we don't have to do this.
@@ -98,7 +99,7 @@ public class Main {
             Options.v().set_whole_program(true);
 
             // If we are using 1.8 or later, need to handle invokedynamic
-            if (AverroesOptions.getJreVersion() >= 1.8) {
+            if (AverroesOptions.getJreVersion() > 1.7) {
                 Options.v().set_allow_phantom_refs(true);
             }
 
