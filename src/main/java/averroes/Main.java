@@ -70,15 +70,14 @@ public class Main {
             // dependencies.
             TimeUtils.reset();
 
+            // Set some specific options if we are using the ASM frontend
             if (AverroesOptions.isUseASM()) {
-                Options.v().set_soot_classpath(Paths.organizedApplicationJarFile().getAbsolutePath() + File.pathSeparator +
+                Options.v().set_soot_classpath(Paths.organizedApplicationJarFile().getAbsolutePath() +
+                        File.pathSeparator +
                         Paths.organizedLibraryJarFile());
                 Options.v().set_process_dir(Collections.singletonList(Paths.organizedApplicationJarFile().getAbsolutePath()));
 
                 // *WARNING* awful hack ahead
-                // TODO: fix the Soot SourceLocator class so we don't have to do this.
-                //  My best idea is just creating a method SourceLocator.initializeClasspath() which sets the classpath
-                //  to Scene.v().getSootClassPath().
 
                 // This is the only way I can see to initialize the SourceLocator with the soot classpath:
                 // Begin weird hack

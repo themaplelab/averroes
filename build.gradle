@@ -3,7 +3,7 @@ import java.text.SimpleDateFormat
 plugins {
     id 'scala'
     id 'application'
-    id 'com.github.johnrengelman.shadow' version '4.0.4'
+    id 'com.github.johnrengelman.shadow' //version '4.0.4'
 }
 
 group 'ca.uwaterloo.plg'

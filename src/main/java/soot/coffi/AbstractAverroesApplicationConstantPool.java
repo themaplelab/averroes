@@ -9,13 +9,13 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-public abstract class AbsAverroesApplicationConstantPool {
+public abstract class AbstractAverroesApplicationConstantPool {
     protected Set<SootClass> applicationClasses;
     protected Set<SootMethod> libraryMethods;
     protected Set<SootField> libraryFields;
     protected Hierarchy hierarchy;
 
-    public AbsAverroesApplicationConstantPool(Hierarchy hierarchy) {
+    public AbstractAverroesApplicationConstantPool(Hierarchy hierarchy) {
         applicationClasses = new HashSet<SootClass>();
         libraryMethods = new HashSet<SootMethod>();
         libraryFields = new HashSet<SootField>();

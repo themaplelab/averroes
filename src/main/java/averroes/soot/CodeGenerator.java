@@ -270,14 +270,16 @@ public class CodeGenerator {
    */
   public void createLibraryMethodBodies() throws IOException {
     for (SootClass libraryClass : getLibraryClasses()) {
-      for (SootMethod method : libraryClass.getMethods()) {
-        // Create our Jimple body for concrete methods only
-        if (method.isConcrete()) {
-          createJimpleBody(method);
+      if (!libraryClass.isPhantom()) {
+        for (SootMethod method : libraryClass.getMethods()) {
+          // Create our Jimple body for concrete methods only
+          if (method.isConcrete()) {
+            createJimpleBody(method);
+          }
         }
-      }
 
-      writeLibraryClassFile(libraryClass);
+        writeLibraryClassFile(libraryClass);
+      }
     }
   }
 
@@ -480,12 +482,13 @@ public class CodeGenerator {
             VoidType.v(),
             Modifier.PUBLIC | Modifier.STATIC);
 
+    averroesLibraryClass.addMethod(clinit);
+
     // prevent SootMethod.getDeclaringClass() from throwing a runtime exception
     clinit.setDeclaringClass(averroesLibraryClass);
     clinit.setDeclared(true);
 
     AverroesJimpleBody body = new AverroesJimpleBody(clinit);
-    //averroesLibraryClass.addMethod(clinit);
 
     // Create instance and call the constructor
     Local instance =

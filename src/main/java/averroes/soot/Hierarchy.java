@@ -28,7 +28,7 @@ import soot.SootField;
 import soot.SootMethod;
 import soot.Type;
 import soot.VoidType;
-import soot.coffi.AbsAverroesApplicationConstantPool;
+import soot.coffi.AbstractAverroesApplicationConstantPool;
 import soot.coffi.AsmAverroesApplicationConstantPool;
 import soot.coffi.CoffiAverroesApplicationConstantPool;
 import soot.tagkit.Tag;
@@ -42,7 +42,7 @@ public class Hierarchy {
 
   private static Hierarchy instance = new Hierarchy();
 
-  private AbsAverroesApplicationConstantPool applicationConstantPool;
+  private AbstractAverroesApplicationConstantPool applicationConstantPool;
 
   private SootBasicClassesDatabase basicClassesDatabase;
 
@@ -1498,7 +1498,7 @@ public class Hierarchy {
    *
    * @return
    */
-  public AbsAverroesApplicationConstantPool getApplicationConstantPool() {
+  public AbstractAverroesApplicationConstantPool getApplicationConstantPool() {
     return applicationConstantPool;
   }
 

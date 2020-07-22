@@ -1,19 +1,25 @@
 package soot.coffi;
 
 import averroes.soot.Hierarchy;
+import soot.Scene;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootFieldRef;
 import soot.SootMethod;
-import soot.jimple.InvokeStmt;
 import soot.jimple.Stmt;
 
+import java.util.Collections;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class AsmAverroesApplicationConstantPool extends AbsAverroesApplicationConstantPool {
+/**
+ * A class for accessing library methods and fields that are referenced in application code, using the
+ * ASM frontend.
+ *
+ * @author David Seekatz
+ */
+public class AsmAverroesApplicationConstantPool extends AbstractAverroesApplicationConstantPool {
 
     public AsmAverroesApplicationConstantPool(Hierarchy hierarchy) {
         super(hierarchy);
@@ -26,7 +32,7 @@ public class AsmAverroesApplicationConstantPool extends AbsAverroesApplicationCo
      * Find all invoke statements in the class and add their targets to the result set
      * if the target is a library method.
      *
-     * While this implementation looks VERY different from the coffi-based implementation, they both return
+     * While this implementation looks VERY different from the coffi-based implementation, they should both return
      * the same set of methods.
      *
      * @param applicationClass
@@ -44,13 +50,42 @@ public class AsmAverroesApplicationConstantPool extends AbsAverroesApplicationCo
                                 result.addAll(sootMethod.retrieveActiveBody().getUnits().stream()
                                         .filter(u -> u instanceof Stmt && ((Stmt) u).containsInvokeExpr())
                                         // get the target method
-                                        .map(u -> ((Stmt) u).getInvokeExpr().getMethodRef().resolve())
+                                        .map(u -> (Stmt) u)
+                                        .flatMap(u -> {
+                                            SootMethod tgt = u.getInvokeExpr().getMethodRef().resolve();
+                                            if (tgt.isAbstract()) {
+                                                // Could have multiple valid targets
+                                                Set<SootClass> allPossibleTargets = Scene.v().getClasses().stream()
+                                                        .filter(sc -> sc.declaresMethod(tgt.getSubSignature()))
+                                                        .collect(Collectors.toSet());
+                                                return getPossibleConcreteTargets(tgt, allPossibleTargets).stream();
+                                            } else {
+                                                return Collections.singleton(tgt).stream();
+                                            }
+                                        })
                                         .filter(hierarchy::isLibraryMethod)
                                         .collect(Collectors.toSet()));
                             }
                     );
         }
         return result;
+    }
+
+    /**
+     * We consider the possibility of methods that have a generic return type and are overridden by a method
+     * that returns a more restricted type.  In these cases, soot creates two methods, one for each return type,
+     * in the class where the overriding method is implemented.  Either could be a valid target.
+     *
+     * @param tgt
+     * @param classesToSearch
+     * @return
+     */
+    private Set<SootMethod> getPossibleConcreteTargets(SootMethod tgt, Set<SootClass> classesToSearch) {
+        return classesToSearch.stream()
+                .filter(sc -> sc.getMethod(tgt.getSubSignature()).isConcrete())
+                .flatMap(sc -> sc.getMethods().stream())
+                .filter(sm -> sm.getName().equals(tgt.getName()))
+                .collect(Collectors.toSet());
     }
 
     /**

@@ -107,7 +107,7 @@ public class JarOrganizer {
   }
 
   /**
-   * Process the JRE archives (recognized JAR files are: rt.jar, jsse.jar, jce.jar).
+   * Process the JRE archives (recognized JAR files are: rt.jar, jsse.jar, jce.jar, charsets.jar).
    *
    * @param dir
    */
@@ -115,9 +115,10 @@ public class JarOrganizer {
     File directory = new File(dir);
     org.apache.commons.io.filefilter.IOFileFilter nameFilter =
         FileFilterUtils.or(
-            FileFilterUtils.nameFileFilter("rt.jar"),
-            FileFilterUtils.nameFileFilter("jsse.jar"),
-            FileFilterUtils.nameFileFilter("jce.jar"));
+                FileFilterUtils.nameFileFilter("rt.jar"),
+                FileFilterUtils.nameFileFilter("jsse.jar"),
+                FileFilterUtils.nameFileFilter("jce.jar"),
+                FileFilterUtils.nameFileFilter("charsets.jar"));
 
     FileUtils.listFiles(directory, nameFilter, FileFilterUtils.trueFileFilter())
         .forEach(file -> processArchive(file.getPath(), false));

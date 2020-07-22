@@ -3,7 +3,6 @@ package soot.coffi;
 import averroes.soot.Hierarchy;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -12,7 +11,6 @@ import soot.SootClass;
 import soot.SootField;
 import soot.SootFieldRef;
 import soot.SootMethod;
-import soot.jimple.InvokeStmt;
 import soot.jimple.Stmt;
 
 /**
@@ -22,7 +20,7 @@ import soot.jimple.Stmt;
  *
  * @author karim
  */
-public class CoffiAverroesApplicationConstantPool extends AbsAverroesApplicationConstantPool {
+public class CoffiAverroesApplicationConstantPool extends AbstractAverroesApplicationConstantPool {
 
   /**
    * Initialize this constant pool with all the library methods and fields in the constant pool of
