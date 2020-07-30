@@ -29,7 +29,7 @@ import soot.SootMethod;
 import soot.Type;
 import soot.VoidType;
 import soot.coffi.AbstractAverroesApplicationConstantPool;
-import soot.coffi.AsmAverroesApplicationConstantPool;
+import soot.asm.AsmAverroesApplicationConstantPool;
 import soot.coffi.CoffiAverroesApplicationConstantPool;
 import soot.tagkit.Tag;
 

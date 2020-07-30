@@ -3,7 +3,7 @@ import java.text.SimpleDateFormat
 plugins {
     id 'scala'
     id 'application'
-    id 'com.github.johnrengelman.shadow' //version '4.0.4'
+//    id 'com.github.johnrengelman.shadow' version '4.0.4'
 }
 
 group 'ca.uwaterloo.plg'
@@ -11,6 +11,9 @@ version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
+    maven {
+        url 'https://soot-build.cs.uni-paderborn.de/nexus/repository/soot-release/'
+    }
 }
 
 dependencies {
@@ -20,14 +23,24 @@ dependencies {
 //    testImplementation 'de.tud.sse:soot-infoflow:2.7.1.1:tests'
     testImplementation 'org.slf4j:slf4j-simple:1.7.5'
 
-//    implementation 'ca.mcgill.sable:soot:3.3.0'
-    implementation files('libs/sootclasses-trunk-jar-with-dependencies.jar')
+    // TODO: The versions of ASM and soot defined below are the only specific combination of versions I can find that allows
+    //  Averroes to access the constant pool w/ ASM.  Unfortunately, this soot version breaks the RTA summary generator.
+    //  We either need to find a way to use multiple versions for different parts of the project, or find an alternative
+    //  to using ASM to access the constant pool.
+    implementation('org.ow2.asm:asm') {
+        version {
+            strictly '6.0'
+        }
+    }
+    implementation('ca.mcgill.sable:soot:3.3.0') {
+        exclude group: 'org.ow2.asm', module: 'asm'
+    }
+
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'commons-io:commons-io:2.6'
     implementation 'commons-cli:commons-cli:1.4'
     implementation 'org.apache.bcel:bcel:6.4.1'
     implementation 'org.scala-lang:scala-library:2.13.0'
-    implementation 'org.ow2.asm:asm:7.2'
 
     implementation files('libs/probe.jar')
 }
@@ -41,15 +54,15 @@ application {
     mainClassName = 'averroes.Main'
 }
 
-shadowJar {
-    manifest {
-        attributes(
-                'Built-By'       : System.properties['user.name'],
-                'Build-Timestamp': new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date()),
-                'Created-By'     : "Gradle ${gradle.gradleVersion}",
-                'Build-Jdk'      : "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})",
-                'Build-OS'       : "${System.properties['os.name']} ${System.properties['os.arch']} ${System.properties['os.version']}",
-                'Main-Class'     : "averroes.Main"
-        )
-    }
-}
+//shadowJar {
+//    manifest {
+//        attributes(
+//                'Built-By'       : System.properties['user.name'],
+//                'Build-Timestamp': new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date()),
+//                'Created-By'     : "Gradle ${gradle.gradleVersion}",
+//                'Build-Jdk'      : "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})",
+//                'Build-OS'       : "${System.properties['os.name']} ${System.properties['os.arch']} ${System.properties['os.version']}",
+//                'Main-Class'     : "averroes.Main"
+//        )
+//    }
+//}

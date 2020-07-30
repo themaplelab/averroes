@@ -238,7 +238,7 @@ public final class FrameworksOptions {
      */
     public static List<String> getClasses(String prefix) {
         return getInputs().stream()
-                .map(p -> SourceLocator.v().getClassesUnder(p, prefix))
+                .map(p -> SourceLocator.v().getClassesUnder(p/*, prefix*/))
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
     }

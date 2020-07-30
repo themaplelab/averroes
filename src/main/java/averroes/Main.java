@@ -22,7 +22,6 @@ import soot.G;
 import soot.Scene;
 import soot.SootClass;
 import soot.SourceLocator;
-import soot.asm.AsmClassProvider;
 import soot.options.Options;
 
 import java.io.File;
@@ -75,15 +74,17 @@ public class Main {
                 Options.v().set_soot_classpath(Paths.organizedApplicationJarFile().getAbsolutePath() +
                         File.pathSeparator +
                         Paths.organizedLibraryJarFile());
-                Options.v().set_process_dir(Collections.singletonList(Paths.organizedApplicationJarFile().getAbsolutePath()));
 
-                // *WARNING* awful hack ahead
+                Scene.v().addBasicClass("java.io.UnixFileSystem");
+                Scene.v().addBasicClass("java.io.WinNTFileSystem");
+                Scene.v().addBasicClass("java.io.Win32FileSystem");
 
-                // This is the only way I can see to initialize the SourceLocator with the soot classpath:
-                // Begin weird hack
-                SourceLocator.v().getClassSource("java.lang.Object");
-                // End weird hack
-                SootSceneUtil.addCommonDynamicClasses(new AsmClassProvider());
+                /* java.net.URL loads handlers dynamically */
+                Scene.v().addBasicClass("sun.net.www.protocol.file.Handler");
+                Scene.v().addBasicClass("sun.net.www.protocol.ftp.Handler");
+                Scene.v().addBasicClass("sun.net.www.protocol.http.Handler");
+                Scene.v().addBasicClass("sun.net.www.protocol.https.Handler");
+                Scene.v().addBasicClass("sun.net.www.protocol.jar.Handler");
             } else {
                 JarFactoryClassProvider provider = new JarFactoryClassProvider();
                 provider.prepareJarFactoryClasspath();
@@ -100,6 +101,8 @@ public class Main {
             // If we are using 1.8 or later, need to handle invokedynamic
             if (AverroesOptions.getJreVersion() > 1.7) {
                 Options.v().set_allow_phantom_refs(true);
+                // Not sure why this required for it to work with 1.8, but not for 1.6:
+                Options.v().classes().addAll(SourceLocator.v().getClassesUnder(Paths.organizedApplicationJarFile().getAbsolutePath()));
             }
 
             // Load the necessary classes

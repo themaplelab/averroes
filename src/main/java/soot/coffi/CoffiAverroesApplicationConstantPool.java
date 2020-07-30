@@ -1,17 +1,17 @@
 package soot.coffi;
 
 import averroes.soot.Hierarchy;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import averroes.util.BytecodeUtils;
+import soot.ResolutionFailedException;
+import soot.Scene;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootFieldRef;
 import soot.SootMethod;
-import soot.jimple.Stmt;
+import soot.Type;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A class that holds the values of library methods and fields found in the constant pool of
@@ -181,77 +181,56 @@ public class CoffiAverroesApplicationConstantPool extends AbstractAverroesApplic
      * org.jfree.data.xml.DatasetTags which is an interface that has some
      * final constants only.
      */
-//    if (applicationClass.getMethodCount() > 0) {
-//      ClassFile coffiClass = getCoffiClass(applicationClass);
-//      cp_info[] constantPool = coffiClass.constant_pool;
-//
-//      for (cp_info constantPoolEntry : constantPool) {
-//        if (constantPoolEntry instanceof CONSTANT_Fieldref_info) {
-//          CONSTANT_Fieldref_info fieldInfo = (CONSTANT_Fieldref_info) constantPoolEntry;
-//
-//          // Get the field declaring class
-//          CONSTANT_Class_info c = (CONSTANT_Class_info) constantPool[fieldInfo.class_index];
-//          String className = ((CONSTANT_Utf8_info) (constantPool[c.name_index])).convert();
-//          className = className.replace('/', '.');
-//          // TODO why is that?
-//          if (className.charAt(0) == '[') {
-//            className = "java.lang.Object";
-//          }
-//          SootClass cls = Scene.v().getSootClass(className);
-//
-//          // Get the field name, and type
-//          CONSTANT_NameAndType_info i =
-//              (CONSTANT_NameAndType_info) constantPool[fieldInfo.name_and_type_index];
-//          String fieldName = ((CONSTANT_Utf8_info) (constantPool[i.name_index])).convert();
-//          String fieldDescriptor =
-//              ((CONSTANT_Utf8_info) (constantPool[i.descriptor_index])).convert();
-//          Type fieldType = Util.v().jimpleTypeOfFieldDescriptor(fieldDescriptor);
-//
-//          // Get the field ref and resolve it to a Soot field
-//          SootFieldRef fieldRef = Scene.v().makeFieldRef(cls, fieldName, fieldType, false);
-//          SootField field;
-//
-//          /*
-//           * We have to do this ugly code. Try first and see if the
-//           * field is not static. If it is static, then create a new
-//           * fieldRef in the catch and resolve it again with isStatic
-//           * = true.
-//           */
-//          try {
-//            field = fieldRef.resolve();
-//          } catch (ResolutionFailedException e) {
-//            fieldRef = Scene.v().makeFieldRef(cls, fieldName, fieldType, true);
-//          }
-//          field = fieldRef.resolve();
-//
-//          // If the resolved field is in the library, add it to the
-//          // result
-//          if (hierarchy.isLibraryField(field)) {
-//            result.add(field);
-//          }
-//        }
-//      }
-//    }
-
-
-    // Adapted to use the Soot ASM frontend instead of the now-outdated coffi
-    // Find all (non-static) library field references in the class and add the resolved field
-    // to the result set.
-
     if (applicationClass.getMethodCount() > 0) {
-      applicationClass.getMethods().stream()
-              .filter(SootMethod::isConcrete)
-              .forEach(sootMethod -> {
-                        result.addAll(sootMethod.retrieveActiveBody().getUnits().stream()
-                                .filter(u -> u instanceof Stmt &&
-                                        ((Stmt) u).containsFieldRef())
-                                .map(u -> ((Stmt) u).getFieldRef().getFieldRef())
-                                .filter(sfr -> !sfr.isStatic())
-                                .map(SootFieldRef::resolve)
-                                .collect(Collectors.toSet())
-                        );
-                      }
-              );
+      ClassFile coffiClass = getCoffiClass(applicationClass);
+      cp_info[] constantPool = coffiClass.constant_pool;
+
+      for (cp_info constantPoolEntry : constantPool) {
+        if (constantPoolEntry instanceof CONSTANT_Fieldref_info) {
+          CONSTANT_Fieldref_info fieldInfo = (CONSTANT_Fieldref_info) constantPoolEntry;
+
+          // Get the field declaring class
+          CONSTANT_Class_info c = (CONSTANT_Class_info) constantPool[fieldInfo.class_index];
+          String className = ((CONSTANT_Utf8_info) (constantPool[c.name_index])).convert();
+          className = className.replace('/', '.');
+          // TODO why is that?
+          if (className.charAt(0) == '[') {
+            className = "java.lang.Object";
+          }
+          SootClass cls = Scene.v().getSootClass(className);
+
+          // Get the field name, and type
+          CONSTANT_NameAndType_info i =
+              (CONSTANT_NameAndType_info) constantPool[fieldInfo.name_and_type_index];
+          String fieldName = ((CONSTANT_Utf8_info) (constantPool[i.name_index])).convert();
+          String fieldDescriptor =
+              ((CONSTANT_Utf8_info) (constantPool[i.descriptor_index])).convert();
+          Type fieldType = Util.v().jimpleTypeOfFieldDescriptor(fieldDescriptor);
+
+          // Get the field ref and resolve it to a Soot field
+          SootFieldRef fieldRef = Scene.v().makeFieldRef(cls, fieldName, fieldType, false);
+          SootField field;
+
+          /*
+           * We have to do this ugly code. Try first and see if the
+           * field is not static. If it is static, then create a new
+           * fieldRef in the catch and resolve it again with isStatic
+           * = true.
+           */
+          try {
+            field = fieldRef.resolve();
+          } catch (ResolutionFailedException e) {
+            fieldRef = Scene.v().makeFieldRef(cls, fieldName, fieldType, true);
+          }
+          field = fieldRef.resolve();
+
+          // If the resolved field is in the library, add it to the
+          // result
+          if (hierarchy.isLibraryField(field)) {
+            result.add(field);
+          }
+        }
+      }
     }
 
     return result;
