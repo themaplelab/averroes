@@ -13,6 +13,7 @@ import averroes.util.io.Printers;
 import org.apache.commons.io.FileUtils;
 import soot.G;
 import soot.Scene;
+import soot.SootClass;
 import soot.options.Options;
 
 import java.io.IOException;
@@ -64,8 +65,20 @@ public class Main {
             double soot = TimeUtils.elapsedTime();
             System.out.println("Soot loaded the input classes in " + soot + " seconds.");
 
+            // Set superclass as java.lang.Object for classes that have not been assigned a superclass by Soot
+            Scene.v().getClasses().stream()
+                    .filter(c -> !c.hasSuperclass())
+                    .forEach(c -> {
+                        SootClass objClass = Scene.v().getSootClass("java.lang.Object");
+                        if (!c.equals(objClass)) {
+                            c.setSuperclass(objClass);
+                        }
+                    });
+
             // Add default constructors to all library classes
-            SootSceneUtil.getClasses().forEach(CodeGenerator::createEmptyDefaultConstructor);
+            SootSceneUtil.getClasses().stream()
+//                    .filter(sc -> !FrameworksOptions.getSummaryClassFilter().test(sc.getPackageName()))
+                    .forEach(CodeGenerator::createEmptyDefaultConstructor);
 
             // Now let Averroes do its thing
             TimeUtils.reset();
@@ -74,7 +87,7 @@ public class Main {
 
             System.out.println("Writing JSON files for framework methods...");
             // Print out JSON files
-            Printers.printGeneratedJson();
+            //Printers.printGeneratedJson();
 
             // Perform code cleanup
             SootUtils.cleanupClasses();

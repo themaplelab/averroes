@@ -10,6 +10,7 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -290,5 +291,15 @@ public final class FrameworksOptions {
      */
     public static boolean isIncludeDependencies() {
         return cmd.hasOption(includeDependencies.getOpt());
+    }
+
+    /**
+     * Get a predicate indicating which classes should not be summarized
+     *
+     * @return
+     */
+    public static Predicate<String> getSummaryClassFilter() {
+        // Java util
+        return s -> s.startsWith("java.util");
     }
 }

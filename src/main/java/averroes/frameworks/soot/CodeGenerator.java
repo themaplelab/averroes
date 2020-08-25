@@ -29,8 +29,12 @@ public class CodeGenerator {
      */
     public static void generateJimple() {
         // We ignore non-concrete methods, because they do not have method bodies (surprise!).
-        SootSceneUtil.getClasses().stream().map(SootClass::getMethods).flatMap(List::stream)
-                .filter(SootMethod::isConcrete).collect(Collectors.toList()).forEach(m -> getJimpleBodyCreator(m).generateCode());
+        SootSceneUtil.getClasses().stream()
+                .map(SootClass::getMethods)
+                .flatMap(List::stream)
+                .filter(SootMethod::isConcrete)
+                .collect(Collectors.toList())
+                .forEach(m -> getJimpleBodyCreator(m).generateCode());
     }
 
     /**

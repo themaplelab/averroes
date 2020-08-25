@@ -106,26 +106,30 @@ public abstract class AbstractJimpleBody {
     public void generateCode() {
         Printers.printJimple(PrinterType.ORIGINAL, method);
 
-        // Create Common Class
-        // NOTE: we will skip guarding any statements in this class
-        // because it contains the guard
-        ensureCommonClassExists();
+        // Generate new bodies for methods in classes that we aren't ignoring.
+        // If we do ignore a method, we just keep the original body
+        if (!FrameworksOptions.getSummaryClassFilter().test(method.getDeclaringClass().getPackageName())) {
+            // Create Common Class
+            // NOTE: we will skip guarding any statements in this class
+            // because it contains the guard
+            ensureCommonClassExists();
 
-        // Create the new Jimple body
-        insertJimpleBodyHeader();
-        createObjects();
-        callMethods();
-        handleArrays();
-        handleFields();
-        handleExceptions();
-        insertJimpleBodyFooter();
+            // Create the new Jimple body
+            insertJimpleBodyHeader();
+            createObjects();
+            callMethods();
+            handleArrays();
+            handleFields();
+            handleExceptions();
+            insertJimpleBodyFooter();
 
-        // Cleanup the generated body
-        SootUtils.cleanup(body);
+            // Cleanup the generated body
+            SootUtils.cleanup(body);
 
-        // Validate method Jimple body & assign it to the method
-        body.validate();
-        method.setActiveBody(body);
+            // Validate method Jimple body & assign it to the method
+            body.validate();
+            method.setActiveBody(body);
+        }
 
         Printers.printJimple(PrinterType.GENERATED, method);
     }
@@ -308,7 +312,7 @@ public abstract class AbstractJimpleBody {
                         Jimple.v()
                                 .newInstanceFieldRef(
                                         base, method.getDeclaringClass().getFieldByName("this$0").makeRef());
-                insertStmt(Jimple.v().newAssignStmt(fieldRef, body.getParameterLocal(0)), true);
+                insertStmt(Jimple.v().newAssignStmt(fieldRef, getThis0Local(fieldRef.getType())), true);
             }
         }
 
@@ -329,6 +333,14 @@ public abstract class AbstractJimpleBody {
         }
     }
 
+    private Local getThis0Local(Type type) {
+        for (Local l : body.getParameterLocals()) {
+            if (l.getType().equals(type)) {
+                return l;
+            }
+        }
+        return body.getParameterLocal(0);
+    }
 
     /**
      * Insert the standard footer for a library method.
