@@ -299,7 +299,12 @@ public final class FrameworksOptions {
      * @return
      */
     public static Predicate<String> getSummaryClassFilter() {
-        // Java util
-        return s -> s.startsWith("java.util");
+        // Java 8 API classes
+        return s -> s.startsWith("java.util") ||
+                    s.startsWith("javax.") ||
+                    s.startsWith("org.ietf.jgss") ||
+                    s.startsWith("org.omg") ||
+                    s.startsWith("org.w3c.dom") ||
+                    s.startsWith("org.xml.sax");
     }
 }
