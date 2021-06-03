@@ -1,31 +1,27 @@
-package soot.coffi;
+package org.objectweb.asm;
 
 import averroes.soot.Hierarchy;
 import averroes.util.BytecodeUtils;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-import soot.ResolutionFailedException;
-import soot.Scene;
-import soot.SootClass;
-import soot.SootField;
-import soot.SootFieldRef;
-import soot.SootMethod;
 import soot.Type;
+import soot.*;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A class that holds the values of library methods and fields found in the constant pool of
- * application classes. The class is in this specific package name because it accesses some
- * package-private classes (e.g., {@link CONSTANT_Fieldref_info}.
+ * application classes.
  *
- * @author karim
+ * @author Karim Ali
  */
-public class AverroesApplicationConstantPool {
+public class AsmAverroesApplicationConstantPool {
   private Set<SootClass> applicationClasses;
   private Set<SootMethod> libraryMethods;
   private Set<SootField> libraryFields;
 
-  private Hierarchy hierarchy;
+  private averroes.soot.Hierarchy hierarchy;
 
   /**
    * Initialize this constant pool with all the library methods and fields in the constant pool of
@@ -33,7 +29,7 @@ public class AverroesApplicationConstantPool {
    *
    * @param hierarchy
    */
-  public AverroesApplicationConstantPool(Hierarchy hierarchy) {
+  public AsmAverroesApplicationConstantPool(Hierarchy hierarchy) {
     applicationClasses = new HashSet<SootClass>();
     libraryMethods = new HashSet<SootMethod>();
     libraryFields = new HashSet<SootField>();
@@ -44,16 +40,23 @@ public class AverroesApplicationConstantPool {
   }
 
   /**
-   * Get the Coffi class corresponding to the given Soot class. From this coffi class, we can get
-   * the constant pool and all the related info.
+   * Get the constant pool entries for the given Soot class. This method uses the ASM symbol table
+   * to do so.
    *
    * @param cls
    * @return
+   * @throws IOException
    */
-  private static ClassFile getCoffiClass(SootClass cls) {
-    SootMethod anyMethod = cls.methodIterator().next();
-    CoffiMethodSource methodSource = (CoffiMethodSource) anyMethod.getSource();
-    return methodSource.coffiClass;
+  private static List<Symbol> getConstantPool(SootClass cls) throws IOException {
+    String clsFile = cls.getName().replace('.', '/') + ".class";
+    FoundFile sourceFile = SourceLocator.v().lookupInClassPath(clsFile);
+
+    InputStream classFileInputStream = sourceFile.inputStream();
+    ClassReader reader = new ClassReader(classFileInputStream);
+    ClassWriter writer = new ClassWriter(reader, 0);
+    AverroesSymbolTable symbolTable = new AverroesSymbolTable(writer, reader);
+
+    return Arrays.stream(symbolTable.getEntries()).collect(Collectors.toList());
   }
 
   /**
@@ -127,36 +130,24 @@ public class AverroesApplicationConstantPool {
      * final constants only.
      */
     if (applicationClass.getMethodCount() > 0) {
-      ClassFile coffiClass = getCoffiClass(applicationClass);
-      cp_info[] constantPool = coffiClass.constant_pool;
+      try {
+        List<Symbol> constantPool = getConstantPool(applicationClass);
+        for(Symbol symbol : constantPool) {
+          if(symbol.tag == Symbol.CONSTANT_METHODREF_TAG) {
+            // TODO still don't remember why I have this condition for class names (it's 2021 now!)
+            String className = symbol.owner.startsWith("[") ? "java.lang.Object" : symbol.owner.replace("/", ".");
+            String methodName = symbol.name;
+            String methodDescriptor = symbol.value;
+            SootMethod method = BytecodeUtils.makeSootMethod(className, methodName, methodDescriptor);
 
-      for (cp_info constantPoolEntry : constantPool) {
-        if (constantPoolEntry instanceof ICONSTANT_Methodref_info) {
-          ICONSTANT_Methodref_info methodInfo = (ICONSTANT_Methodref_info) constantPoolEntry;
-
-          // Get the method declaring class
-          CONSTANT_Class_info c = (CONSTANT_Class_info) constantPool[methodInfo.getClassIndex()];
-          String className = ((CONSTANT_Utf8_info) (constantPool[c.name_index])).convert();
-          className = className.replace('/', '.');
-          // TODO why is that?
-          if (className.charAt(0) == '[') {
-            className = "java.lang.Object";
-          }
-
-          // Get the method name, parameter types, and return type
-          CONSTANT_NameAndType_info i =
-              (CONSTANT_NameAndType_info) constantPool[methodInfo.getNameAndTypeIndex()];
-          String methodName = ((CONSTANT_Utf8_info) (constantPool[i.name_index])).convert();
-          String methodDescriptor =
-              ((CONSTANT_Utf8_info) (constantPool[i.descriptor_index])).convert();
-          SootMethod method = BytecodeUtils.makeSootMethod(className, methodName, methodDescriptor);
-
-          // If the resolved method is in the library, add it to the
-          // result
-          if (hierarchy.isLibraryMethod(method)) {
-            result.add(method);
+            // If the resolved method is in the library, add it to the result
+            if (hierarchy.isLibraryMethod(method)) {
+              result.add(method);
+            }
           }
         }
+      } catch (IOException e) {
+        e.printStackTrace();
       }
     }
 
@@ -226,30 +217,28 @@ public class AverroesApplicationConstantPool {
      * final constants only.
      */
     if (applicationClass.getMethodCount() > 0) {
-      ClassFile coffiClass = getCoffiClass(applicationClass);
-      cp_info[] constantPool = coffiClass.constant_pool;
+      try {
+        List<Symbol> constantPool = getConstantPool(applicationClass);
+        for(Symbol symbol : constantPool) {
+          if(symbol.tag == Symbol.CONSTANT_STRING_TAG) {
+            String className = symbol.value; // .trim();
 
-      for (cp_info constantPoolEntry : constantPool) {
-        if (constantPoolEntry instanceof CONSTANT_String_info) {
-          CONSTANT_String_info stringInfo = (CONSTANT_String_info) constantPoolEntry;
+            // if (className.length() > 2) {
+            // Set<SootClass> set =
+            // hierarchy.matchSubstrOfApplicationClass(className);
+            // if (!set.isEmpty()) {
+            // classes.addAll(set);
+            // substrings.add(className);
+            // }
+            // }
 
-          // Get the class name
-          CONSTANT_Utf8_info s = (CONSTANT_Utf8_info) constantPool[stringInfo.string_index];
-          String className = s.convert(); // .trim();
-
-          // if (className.length() > 2) {
-          // Set<SootClass> set =
-          // hierarchy.matchSubstrOfApplicationClass(className);
-          // if (!set.isEmpty()) {
-          // classes.addAll(set);
-          // substrings.add(className);
-          // }
-          // }
-
-          if (hierarchy.isApplicationClass(className)) {
-            result.add(hierarchy.getClass(className));
+            if (hierarchy.isApplicationClass(className)) {
+              result.add(hierarchy.getClass(className));
+            }
           }
         }
+      } catch (IOException e) {
+        e.printStackTrace();
       }
 
       /*
@@ -311,54 +300,44 @@ public class AverroesApplicationConstantPool {
      * final constants only.
      */
     if (applicationClass.getMethodCount() > 0) {
-      ClassFile coffiClass = getCoffiClass(applicationClass);
-      cp_info[] constantPool = coffiClass.constant_pool;
+      try {
+        List<Symbol> constantPool = getConstantPool(applicationClass);
+        for(Symbol symbol : constantPool) {
+          if(symbol.tag == Symbol.CONSTANT_FIELDREF_TAG) {
+            // TODO still don't remember why I have this condition for class names (it's 2021 now!)
+            String className = symbol.owner.startsWith("[") ? "java.lang.Object" : symbol.owner.replace("/", ".");
+            String fieldName = symbol.name;
+            String fieldDescriptor = symbol.value;
 
-      for (cp_info constantPoolEntry : constantPool) {
-        if (constantPoolEntry instanceof CONSTANT_Fieldref_info) {
-          CONSTANT_Fieldref_info fieldInfo = (CONSTANT_Fieldref_info) constantPoolEntry;
+            SootClass cls = Scene.v().getSootClass(className);
+            Type fieldType = BytecodeUtils.getFieldType(fieldDescriptor);
 
-          // Get the field declaring class
-          CONSTANT_Class_info c = (CONSTANT_Class_info) constantPool[fieldInfo.class_index];
-          String className = ((CONSTANT_Utf8_info) (constantPool[c.name_index])).convert();
-          className = className.replace('/', '.');
-          // TODO why is that?
-          if (className.charAt(0) == '[') {
-            className = "java.lang.Object";
-          }
-          SootClass cls = Scene.v().getSootClass(className);
+            // Get the field ref and resolve it to a Soot field
+            SootFieldRef fieldRef = Scene.v().makeFieldRef(cls, fieldName, fieldType, false);
+            SootField field;
 
-          // Get the field name, and type
-          CONSTANT_NameAndType_info i =
-              (CONSTANT_NameAndType_info) constantPool[fieldInfo.name_and_type_index];
-          String fieldName = ((CONSTANT_Utf8_info) (constantPool[i.name_index])).convert();
-          String fieldDescriptor =
-              ((CONSTANT_Utf8_info) (constantPool[i.descriptor_index])).convert();
-          Type fieldType = Util.v().jimpleTypeOfFieldDescriptor(fieldDescriptor);
-
-          // Get the field ref and resolve it to a Soot field
-          SootFieldRef fieldRef = Scene.v().makeFieldRef(cls, fieldName, fieldType, false);
-          SootField field;
-
-          /*
-           * We have to do this ugly code. Try first and see if the
-           * field is not static. If it is static, then create a new
-           * fieldRef in the catch and resolve it again with isStatic
-           * = true.
-           */
-          try {
+            /*
+             * We have to do this ugly code. Try first and see if the
+             * field is not static. If it is static, then create a new
+             * fieldRef in the catch and resolve it again with isStatic
+             * = true.
+             */
+            try {
+              field = fieldRef.resolve();
+            } catch (ResolutionFailedException e) {
+              fieldRef = Scene.v().makeFieldRef(cls, fieldName, fieldType, true);
+            }
             field = fieldRef.resolve();
-          } catch (ResolutionFailedException e) {
-            fieldRef = Scene.v().makeFieldRef(cls, fieldName, fieldType, true);
-          }
-          field = fieldRef.resolve();
 
-          // If the resolved field is in the library, add it to the
-          // result
-          if (hierarchy.isLibraryField(field)) {
-            result.add(field);
+            // If the resolved field is in the library, add it to the
+            // result
+            if (hierarchy.isLibraryField(field)) {
+              result.add(field);
+            }
           }
         }
+      } catch (IOException e) {
+        e.printStackTrace();
       }
     }
 

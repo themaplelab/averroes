@@ -10,8 +10,8 @@
 package averroes.soot;
 
 import averroes.options.AverroesOptions;
+import org.objectweb.asm.AsmAverroesApplicationConstantPool;
 import soot.*;
-import soot.coffi.AverroesApplicationConstantPool;
 import soot.tagkit.Tag;
 
 import java.util.*;
@@ -25,7 +25,7 @@ public class Hierarchy {
 
   private static Hierarchy instance = new Hierarchy();
 
-  private AverroesApplicationConstantPool applicationConstantPool;
+  private AsmAverroesApplicationConstantPool applicationConstantPool;
 
   private SootBasicClassesDatabase basicClassesDatabase;
 
@@ -1481,7 +1481,7 @@ public class Hierarchy {
    *
    * @return
    */
-  public AverroesApplicationConstantPool getApplicationConstantPool() {
+  public AsmAverroesApplicationConstantPool getApplicationConstantPool() {
     return applicationConstantPool;
   }
 
@@ -1696,7 +1696,7 @@ public class Hierarchy {
    * constant pool.
    */
   private void findLibraryEntitiesReferencedInApplication() {
-    applicationConstantPool = new AverroesApplicationConstantPool(this);
+    applicationConstantPool = new AsmAverroesApplicationConstantPool(this);
 
     findApplicationClassesReferencedByName();
     findLibraryMethodsReferencedInApplication();
