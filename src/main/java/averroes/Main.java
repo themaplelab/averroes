@@ -12,7 +12,6 @@ package averroes;
 import averroes.options.AverroesOptions;
 import averroes.soot.CodeGenerator;
 import averroes.soot.Hierarchy;
-import averroes.soot.JarFactoryClassProvider;
 import averroes.soot.SootSceneUtil;
 import averroes.util.MathUtils;
 import averroes.util.TimeUtils;
@@ -21,10 +20,7 @@ import org.apache.commons.io.FileUtils;
 import soot.G;
 import soot.Scene;
 import soot.SootClass;
-import soot.SourceLocator;
 import soot.options.Options;
-
-import java.util.Collections;
 
 /**
  * The main Averroes class.
@@ -67,13 +63,11 @@ public class Main {
             // Add the organized archives for the application and its
             // dependencies.
             TimeUtils.reset();
-            JarFactoryClassProvider provider = new JarFactoryClassProvider();
-            provider.prepareJarFactoryClasspath();
+            Options.v().set_soot_classpath(AverroesOptions.getSootClassPath());
 
             // Set some soot parameters
-            SourceLocator.v().setClassProviders(Collections.singletonList(provider));
-            SootSceneUtil.addCommonDynamicClasses(provider);
-            Options.v().classes().addAll(provider.getApplicationClassNames());
+            SootSceneUtil.addCommonDynamicClasses();
+            Options.v().classes().addAll(jarOrganizer.applicationClassNames());
             Options.v().set_main_class(AverroesOptions.getMainClass());
             Options.v().set_validate(true);
             Options.v().set_allow_phantom_refs(true);

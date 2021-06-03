@@ -10,26 +10,11 @@
 package averroes.soot;
 
 import averroes.options.AverroesOptions;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import soot.ArrayType;
-import soot.Modifier;
-import soot.RefLikeType;
-import soot.Scene;
-import soot.SootClass;
-import soot.SootField;
-import soot.SootMethod;
-import soot.Type;
-import soot.VoidType;
-import soot.coffi.AverroesApplicationConstantPool;
+import org.objectweb.asm.AsmAverroesApplicationConstantPool;
+import soot.*;
 import soot.tagkit.Tag;
+
+import java.util.*;
 
 /**
  * A representation of the class hierarchy Averroes uses for the input program.
@@ -40,7 +25,7 @@ public class Hierarchy {
 
   private static Hierarchy instance = new Hierarchy();
 
-  private AverroesApplicationConstantPool applicationConstantPool;
+  private AsmAverroesApplicationConstantPool applicationConstantPool;
 
   private SootBasicClassesDatabase basicClassesDatabase;
 
@@ -101,8 +86,8 @@ public class Hierarchy {
   private int removedLibraryFieldCount;
 
   /**
-   * Initialize the hierarchy with all the classes resolved at the level {@link
-   * ResolvingLevel.#SIGNATURES} from the Soot scene. Averroes is only interested in those classes
+   * Initialize the hierarchy with all the classes resolved at the level {@link ResolvingLevel#SIGNATURES}
+   * from the Soot scene. Averroes is only interested in those classes
    * so it doesn't make sense to include any more classes.
    */
   private Hierarchy() {
@@ -1496,7 +1481,7 @@ public class Hierarchy {
    *
    * @return
    */
-  public AverroesApplicationConstantPool getApplicationConstantPool() {
+  public AsmAverroesApplicationConstantPool getApplicationConstantPool() {
     return applicationConstantPool;
   }
 
@@ -1711,7 +1696,7 @@ public class Hierarchy {
    * constant pool.
    */
   private void findLibraryEntitiesReferencedInApplication() {
-    applicationConstantPool = new AverroesApplicationConstantPool(this);
+    applicationConstantPool = new AsmAverroesApplicationConstantPool(this);
 
     findApplicationClassesReferencedByName();
     findLibraryMethodsReferencedInApplication();
@@ -1772,7 +1757,7 @@ public class Hierarchy {
   }
 
   /**
-   * Check if the given class is resolved at least at the level {@link ResolvingLevel.#SIGNATURES}.
+   * Check if the given class is resolved at least at the level {@link ResolvingLevel#SIGNATURES}.
    *
    * @param cls
    */
@@ -1867,7 +1852,7 @@ public class Hierarchy {
    * Cleanup the tag list of a library class. There's no need for tags/annotations in a placeholder
    * library.
    *
-   * @param libraryMethod
+   * @param libraryClass
    */
   private void cleanupLibraryClassTags(SootClass libraryClass) {
     Set<String> toRemove = new HashSet<String>();
@@ -1929,7 +1914,7 @@ public class Hierarchy {
   /**
    * Check if it is safe to remove the given library method from its class.
    *
-   * @param libraryField
+   * @param libraryMethod
    * @return
    */
   private boolean isLibraryMethodRemovable(SootMethod libraryMethod) {
