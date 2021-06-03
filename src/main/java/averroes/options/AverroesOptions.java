@@ -9,6 +9,12 @@
  */
 package averroes.options;
 
+import averroes.util.io.Paths;
+import org.apache.commons.cli.*;
+import probe.ObjectManager;
+import probe.ProbeClass;
+import soot.SootClass;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -17,15 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import probe.ObjectManager;
-import probe.ProbeClass;
-import soot.SootClass;
 
 /**
  * A class that holds all the properties required by Averroes to run. For the possible values of
@@ -372,5 +369,15 @@ public final class AverroesOptions {
    */
   public static boolean isEnableGuards() {
     return cmd.hasOption(enableGuards.getOpt());
+  }
+
+  /**
+   * Get the Soot classpath, which depends on the organized fat JARs that Averroes creates for all input
+   * application and library classes.
+   *
+   * @return
+   */
+  public static String getSootClassPath() {
+    return Paths.organizedApplicationJarFile() + File.pathSeparator + Paths.organizedLibraryJarFile();
   }
 }
