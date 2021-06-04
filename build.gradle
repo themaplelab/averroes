@@ -31,3 +31,19 @@ dependencies {
 test {
     maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
 }
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'averroes.Main'
+    }
+}
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': 'averroes.Main'
+    }
+    baseName = 'averroes-all'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from { configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
