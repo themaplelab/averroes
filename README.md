@@ -18,6 +18,9 @@ The code bas for Averroes is in the form of an Eclipse project. It is setup with
      - [commons-cli](https://commons.apache.org/proper/commons-cli/)
      - [commons-io](https://commons.apache.org/proper/commons-io/)
 
+## Build
+Averroes uses Gradle as its build system. To build a fat JAR that includes all the dependencies, you need to run `./gradlew fatJar`. This command will generate `averroes-all-<version>.jar` in `build/libs`, which you can use to run Averroes. If you'd rather generate a JAR file for Averroes itself, simply use `./gradlew jar`.
+
 ## Usage
 
 ``` text
@@ -26,26 +29,26 @@ jar -jar averroes.jar <required parameters> [optional parameters]
 where required parameters include:
  -a,--application-jars <path>              A list of the application JAR
                                            files separated by path separator.
- 
+
  -j,--java-runtime-directory <directory>   The directory that contains the
                                            Java runtime environment that
                                            Averroes should model.
-                                           
+
  -m,--main-class <class>                   The main class that runs the
                                            application when the program
                                            executes.
-                                           
+
  -o,--output-directory <directory>         The directory to which Averroes
                                            will write any output files/folders.
-                                           
+
  -r,--application-regex <regex>            A list of regular expressions
-                                           for application packages or classes 
-                                           separated by path separator. Use 
-                                           <package_name>.* to include classes 
-                                           in a package, <package_name>.** to 
-                                           include classes in a package and all 
-                                           its subpackages, ** to include the 
-                                           default package, <full_class_name> to 
+                                           for application packages or classes
+                                           separated by path separator. Use
+                                           <package_name>.* to include classes
+                                           in a package, <package_name>.** to
+                                           include classes in a package and all
+                                           its subpackages, ** to include the
+                                           default package, <full_class_name> to
                                            include a single class.
 
 and optional parameters include:
@@ -54,15 +57,15 @@ and optional parameters include:
                                            dynamically by Averroes (e.g.,
                                            classes instantiated through
                                            reflection).
-                                           
+
  -h,--help                                 Prints out this help message.
- 
+
  -l,--library-jars <path>                  A list of the JAR files for
                                            library dependencies separated
                                            by path separator.
-                                           
+
  -t,--tamiflex-facts-file <file>           A file that contains reflection
-                                           facts generated for this application 
+                                           facts generated for this application
                                            in the TamiFlex format.
 ```
 
@@ -70,7 +73,7 @@ and optional parameters include:
 
 After running averroes on some input program, the output directory directory should contain the following:
 
-* **averroes-lib-class.jar**: the main `averroes` library class for the input program. 
+* **averroes-lib-class.jar**: the main `averroes` library class for the input program.
 * **placeholder-lib.jar**: the stubs `averroes` generates for the library classes of the given input program.
 * **organized-app.jar**: the original application code of the input program as is (i.e., not altered by `averroes` in any way).
 * **organized-lib.jar**: the original library code of the input program as is (i.e., not altered by `averroes` in any way).
@@ -81,4 +84,3 @@ The JAR files `averroes-lib-class.jar` and `placeholder-lib.jar` together form t
 ## License
 
 Averroes is available as Open Source under the [Eclipse Public License](https://www.eclipse.org/legal/epl-v10.html).
-
